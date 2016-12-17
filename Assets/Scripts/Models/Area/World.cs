@@ -129,6 +129,12 @@ public class World
     public PowerNetwork PowerNetwork { get; private set; }
 
     /// <summary>
+    /// Gets the power network.
+    /// </summary>
+    /// <value>The power network.</value>
+    public FluidNetwork FluidNetwork { get; private set; }
+
+    /// <summary>
     /// Gets the room manager.
     /// </summary>
     /// <value>The room manager.</value>
@@ -426,6 +432,7 @@ public class World
         jobQueue = new JobQueue();
         GameEventManager = new GameEventManager();
         PowerNetwork = new PowerNetwork();
+        FluidNetwork = new FluidNetwork();
         temperature = new Temperature();
         ShipManager = new ShipManager();
         Wallet = new Wallet();
@@ -521,6 +528,7 @@ public class World
         // Progress temperature modelling
         temperature.Update();
         PowerNetwork.Update(deltaTime);
+        FluidNetwork.Update(deltaTime);
     }
 
     /// <summary>

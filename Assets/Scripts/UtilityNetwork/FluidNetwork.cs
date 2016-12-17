@@ -12,64 +12,67 @@ using System.Linq;
 
 namespace ProjectPorcupine.PowerNetwork
 {
-    public class PowerNetwork
+    public class FluidNetwork
     {
-        private readonly HashSet<Grid> powerGrids;
+        private readonly HashSet<Grid> fluidGrids;
         private readonly float secondsToTick = 1.0f;
         private float secondsPassed;
 
-        public PowerNetwork()
+        public FluidNetwork()
         {
-            powerGrids = new HashSet<Grid>();
+            fluidGrids = new HashSet<Grid>();
         }
 
         public bool IsEmpty
         {
-            get { return powerGrids.Count == 0; }
+            get { return fluidGrids.Count == 0; }
         }
 
-        public bool CanPlugIn(IPlugable connection)
+        public bool CanPlugIn(IPluggable connection)
         {
             if (connection == null)
             {
                 throw new ArgumentNullException("connection");
             }
 
-            return powerGrids.Any(grid => grid.CanPlugIn(connection));
+            return fluidGrids.Any(grid => grid.CanPlugIn(connection));
         }
 
-        public bool PlugIn(IPlugable connection)
+        public bool PlugIn(IPluggable connection)
         {
             if (connection == null)
             {
                 throw new ArgumentNullException("connection");
             }
 
-            if (IsEmpty)
+            if (IsEmpty || !fluidGrids.Any(grid => grid.CanPlugIn(connection)))
             {
-                powerGrids.Add(new Grid());
+                fluidGrids.Add(new Grid());
+                UnityDebugger.Debugger.LogWarning("Adding new Grid");
             }
 
-            Grid powerGrid = powerGrids.First(grid => grid.CanPlugIn(connection));
-            return PlugIn(connection, powerGrid);
+            // TODO: Currently, this will create a "Universal" Fluid system... that is not ideal.
+            // In theory at this point there should either be a grid that can be plugged in, or there should be new grid added... that can be plugged in.
+            Grid fluidGrid = fluidGrids.FirstOrDefault(grid => grid.CanPlugIn(connection));
+            return PlugIn(connection, fluidGrid);
         }
 
-        public bool PlugIn(IPlugable connection, Grid grid)
+        public bool PlugIn(IPluggable connection, Grid grid)
         {
             if (connection == null)
             {
                 throw new ArgumentNullException("connection");
             }
 
-            if (!powerGrids.Contains(grid))
+            if (!fluidGrids.Contains(grid))
             {
-                powerGrids.Add(grid);
+                fluidGrids.Add(grid);
             }
 
             return grid != null && grid.PlugIn(connection);
         }
 
-        public bool IsPluggedIn(IPlugable connection, out Grid grid)
+        public bool IsPluggedIn(IPluggable connection, out Grid grid)
         {
             if (connection == null)
             {
@@ -82,11 +85,11 @@ namespace ProjectPorcupine.PowerNetwork
                 return false;
             }
 
-            grid = powerGrids.FirstOrDefault(powerGrid => powerGrid.IsPluggedIn(connection));
+            grid = fluidGrids.First(fluidGrid => fluidGrid.IsPluggedIn(connection));
             return grid != null;
         }
 
-        public void Unplug(IPlugable connection)
+        public void Unplug(IPluggable connection)
         {
             if (connection == null)
             {
@@ -105,30 +108,30 @@ namespace ProjectPorcupine.PowerNetwork
 
         public void RegisterGrid(Grid grid)
         {
-            if (powerGrids.Contains(grid))
+            if (fluidGrids.Contains(grid))
             {
                 return;
             }
 
-            powerGrids.Add(grid);
+            fluidGrids.Add(grid);
         }
 
         public void UnregisterGrid(Grid grid)
         {
-            if (!powerGrids.Contains(grid))
+            if (!fluidGrids.Contains(grid))
             {
                 return;
             }
 
-            powerGrids.Remove(grid);
+            fluidGrids.Remove(grid);
         }
 
         public int FindId(Grid grid)
         {
-            return powerGrids.ToList().IndexOf(grid);
+            return fluidGrids.ToList().IndexOf(grid);
         }
 
-        public void Unplug(IPlugable connection, Grid grid)
+        public void Unplug(IPluggable connection, Grid grid)
         {
             if (connection == null)
             {
@@ -143,7 +146,7 @@ namespace ProjectPorcupine.PowerNetwork
             grid.Unplug(connection);
         }
 
-        public bool HasPower(IPlugable connection)
+        public bool HasPower(IPluggable connection)
         {
             Grid grid;
             IsPluggedIn(connection, out grid);
@@ -164,7 +167,7 @@ namespace ProjectPorcupine.PowerNetwork
 
         public void RemoveGrid(Grid grid)
         {
-            powerGrids.Remove(grid);
+            fluidGrids.Remove(grid);
         }
 
         private void Tick()
@@ -174,9 +177,9 @@ namespace ProjectPorcupine.PowerNetwork
                 return;
             }
 
-            foreach (Grid powerGrid in powerGrids)
+            foreach (Grid fluidGrid in fluidGrids)
             {
-                powerGrid.Tick();
+                fluidGrid.Tick();
             }
         }
     }

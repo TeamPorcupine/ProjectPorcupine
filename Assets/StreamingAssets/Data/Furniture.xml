@@ -247,7 +247,7 @@
                 </Requires>
             </UseAnimation>
         </Component>
-        
+		
         <Component type="PowerConnection">
             <Requires rate="1"/>
             <ParameterDefinitions>
@@ -256,7 +256,17 @@
                 <IsRunning name="pow_is_running" />
             </ParameterDefinitions>
         </Component>
-
+		
+        <Component type="FluidConnection">
+            <Requires rate="1"/>
+			<FluidType>water</FluidType>
+            <ParameterDefinitions>
+                <CurrentAcumulatorCharge name="fluid_accumulator_charge" />
+                <CurrentAcumulatorChargeIndex name="fluid_accumulator_index" />
+                <IsRunning name="water_is_running" />
+            </ParameterDefinitions>
+        </Component>
+		
         <Component type="GasConnection">
             <!-- Rate should be 0.16 total for all gas generation, smaller amounts
                  for individual gasses allows O2 gen to mimic proper functionality
@@ -378,6 +388,89 @@
         
         <LocalizationCode>furn_fission_reactor</LocalizationCode>
         <UnlocalizedDescription>furn_fission_reactor_desc</UnlocalizedDescription>
+    </Furniture>
+
+    <Furniture type="water_generator">
+        <Name>Water Generator</Name>
+        <TypeTag>Generator</TypeTag>
+        <MovementCost>2</MovementCost>
+        <PathfindingModifier>0</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
+        <Width>1</Width>
+        <Height>1</Height>
+
+
+        <OrderAction type="Build">
+            <Job time="1" />
+            <Inventory type="Steel Plate" amount="2" />
+        </OrderAction>
+                
+        <OrderAction type="Deconstruct">
+            <Job time="1" />
+            <Inventory type="Steel Plate" amount="1" />
+        </OrderAction>
+<!--
+        <Component type="Workshop">
+            <ParameterDefinitions>
+                <CurrentProcessingTime name="cur_processing_time" />
+                <MaxProcessingTime name="max_processing_time" />
+                <IsProcessing name="cur_processed_inv" />
+                <CurrentProductionChainName name="cur_production_chain" />
+            </ParameterDefinitions>
+            <ProductionChain name="Power generation" processingTime="60">
+                <Input>
+                    <Item objectType="Power Cell" amount="1" slotPosX="0" slotPosY="0" hasHopper="false" />
+                </Input>
+            </ProductionChain>
+        </Component>
+    -->    
+        <Component type="FluidConnection">
+			<FluidType>water</FluidType>
+            <Provides rate="5"/>            
+			<!--
+            <Requires>
+                <Param name="cur_processed_inv" condition="IsGreaterThanZero" />
+            </Requires>            
+			-->
+        </Component>        
+
+        
+        
+        <LocalizationCode>furn_water_generator</LocalizationCode>
+        <UnlocalizedDescription>furn_water_generator_desc</UnlocalizedDescription>
+    </Furniture>
+
+    <Furniture type="water_tank">
+        <Name>Water Tank</Name>
+        <Description>Water Tank</Description>
+        <MovementCost>2</MovementCost>
+        <PathfindingModifier>0</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
+        <Width>1</Width>
+        <Height>1</Height>
+
+        <OrderAction type="Build">
+            <Job time="1" />
+            <Inventory type="Steel Plate" amount="2" />
+        </OrderAction>
+                
+        <OrderAction type="Deconstruct">
+            <Job time="1" />
+            <Inventory type="Steel Plate" amount="1" />
+        </OrderAction>
+		
+        <Component type="FluidConnection">
+            <Provides rate="10" capacity="50" capacityThresholds="5"/>
+            <Requires rate="5" />
+            <ParameterDefinitions>
+                <CurrentStoredAmount name="fluid_stored_amount" />
+                <CurrentStorageIndex name="fluid_storage_index" />
+                <IsRunning name="fluid_is_running" />
+            </ParameterDefinitions>
+        </Component>
+
+        <LocalizationCode>furn_tank</LocalizationCode>
+        <UnlocalizedDescription>furn_tank_desc</UnlocalizedDescription>
     </Furniture>
 
     <Furniture type="cloning_pod">

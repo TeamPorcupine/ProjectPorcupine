@@ -14,18 +14,18 @@
             <Job time="1" />
             <Inventory type="Copper Wire" amount="1" />
         </OrderAction>
-
+        
         <ContextMenuAction FunctionName="UtilityContextTest1" Text="Test Context 1" RequireCharacterSelected="false"/>
         <ContextMenuAction FunctionName="UtilityContextTest2" Text="Test Context 2" RequireCharacterSelected="false"/>
-
+        
         <LocalizationCode>util_power_cable</LocalizationCode>
         <UnlocalizedDescription>util_power_cable_desc</UnlocalizedDescription>
     </Utility>
-
-    <Utility type="water_pipe">
-        <Name>Water Pipe</Name>
-        <Description>This is a water pipe.</Description>
-        <TypeTag>Water</TypeTag>
+    
+    <Utility type="fluid_pipe">
+        <Name>Fluid Pipe</Name>
+        <Description>This is a fluid pipe.</Description>
+        <TypeTag>Fluid</TypeTag>
 
         <OrderAction type="Build">
             <Job time="1" />
@@ -36,8 +36,8 @@
             <Job time="1" />
             <Inventory type="Steel Plate" amount="1" />
         </OrderAction>
-
-        <LocalizationCode>util_water_pipe</LocalizationCode>
-        <UnlocalizedDescription>util_water_pipe_desc</UnlocalizedDescription>
+        
+        <LocalizationCode>util_fluid_pipe</LocalizationCode>
+        <UnlocalizedDescription>util_fluid_pipe_desc</UnlocalizedDescription>
     </Utility>
 </Utilities>

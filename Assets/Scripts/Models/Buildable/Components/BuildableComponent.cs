@@ -44,7 +44,8 @@ namespace ProjectPorcupine.Buildable.Components
             None = 0,
             Power = 1,
             Production = 1 << 1,
-            Gas = 1 << 2
+            Gas = 1 << 2,
+            Fluid = 1 << 3
         }
 
         public enum ConditionType

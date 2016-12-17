@@ -287,10 +287,15 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
             World.Current.PowerNetwork.RegisterGrid(obj.Grid);
         }
 
-        if (obj.Tile != null && obj.Tile.Furniture != null && obj.Tile.Furniture.GetComponent<PowerConnection>("PowerConnection") != null)
+        // try to reconnect furniture if present and compatible     
+        if (obj.Tile != null && obj.Tile.Furniture != null)
         {
-            // HACK: This will work for now, but needs expanded when we have other types of connections we'll want to plug in
-            obj.Tile.Furniture.GetComponent<PowerConnection>("PowerConnection").Reconnect();
+            IPluggable pluggableComponent = obj.Tile.Furniture.GetPluggable(proto.typeTags);
+            if (pluggableComponent != null)
+            {
+                // plug in
+                pluggableComponent.Reconnect();
+            }
         }
 
         // Call LUA install scripts

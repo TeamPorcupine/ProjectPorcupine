@@ -15,7 +15,7 @@ using ProjectPorcupine.PowerNetwork;
 public class PowerGridTest
 {
     private Grid grid;
-    private HashSet<IPlugable> connections;
+    private HashSet<IPluggable> connections;
 
     [SetUp]
     public void Init()
@@ -24,7 +24,7 @@ public class PowerGridTest
         Type powerGridType = typeof(Grid);
         FieldInfo field = powerGridType.GetField("connections", BindingFlags.NonPublic | BindingFlags.Instance);
         Assert.IsNotNull(field);
-        connections = field.GetValue(grid) as HashSet<IPlugable>;
+        connections = field.GetValue(grid) as HashSet<IPluggable>;
         Assert.IsNotNull(connections);
     }
 
@@ -92,7 +92,7 @@ public class PowerGridTest
     {
         MockConnection powerProducer = new MockConnection { OutputRate = 50.0f };
         MockConnection firstPowerConsumer = new MockConnection { InputRate = 30.0f };
-        MockConnection accumulator = new MockConnection { OutputRate = 10.0f, AccumulatorCapacity = 100.0f, InputRate = 10.0f };
+        MockConnection accumulator = new MockConnection { OutputRate = 10.0f, StorageCapacity = 100.0f, InputRate = 10.0f };
 
         grid.PlugIn(powerProducer);
         grid.PlugIn(firstPowerConsumer);
@@ -100,13 +100,13 @@ public class PowerGridTest
         Assert.AreEqual(3, connections.Count);
         grid.Tick();
         Assert.IsTrue(grid.IsOperating);
-        Assert.IsTrue(accumulator.AccumulatedAmount.AreEqual(10.0f));
+        Assert.IsTrue(accumulator.StoredAmount.AreEqual(10.0f));
         grid.Tick();
         Assert.IsTrue(grid.IsOperating);
-        Assert.IsTrue(accumulator.AccumulatedAmount.AreEqual(20.0f));
+        Assert.IsTrue(accumulator.StoredAmount.AreEqual(20.0f));
         grid.Tick();
         Assert.IsTrue(grid.IsOperating);
-        Assert.IsTrue(accumulator.AccumulatedAmount.AreEqual(30.0f));
+        Assert.IsTrue(accumulator.StoredAmount.AreEqual(30.0f));
     }
 
     [Test]
@@ -114,9 +114,9 @@ public class PowerGridTest
     {
         MockConnection powerProducer = new MockConnection { OutputRate = 30.0f };
         MockConnection firstPowerConsumer = new MockConnection { InputRate = 30.0f };
-        MockConnection firstAccumulator = new MockConnection { InputRate = 10.0f, OutputRate = 10.0f, AccumulatorCapacity = 100f };
-        MockConnection secondAccumulator = new MockConnection { InputRate = 10.0f, OutputRate = 10.0f, AccumulatorCapacity = 100f };
-        MockConnection thirdAccumulator = new MockConnection { InputRate = 10.0f, OutputRate = 10.0f, AccumulatorCapacity = 100f };
+        MockConnection firstAccumulator = new MockConnection { InputRate = 10.0f, OutputRate = 10.0f, StorageCapacity = 100f };
+        MockConnection secondAccumulator = new MockConnection { InputRate = 10.0f, OutputRate = 10.0f, StorageCapacity = 100f };
+        MockConnection thirdAccumulator = new MockConnection { InputRate = 10.0f, OutputRate = 10.0f, StorageCapacity = 100f };
         grid.PlugIn(powerProducer);
         grid.PlugIn(firstAccumulator);
         grid.PlugIn(secondAccumulator);
@@ -127,23 +127,23 @@ public class PowerGridTest
         grid.Tick();
         grid.Tick();
         Assert.IsTrue(grid.IsOperating);
-        Assert.IsTrue(firstAccumulator.AccumulatedAmount.AreEqual(30.0f));
-        Assert.IsTrue(secondAccumulator.AccumulatedAmount.AreEqual(30.0f));
-        Assert.IsTrue(thirdAccumulator.AccumulatedAmount.AreEqual(30.0f));
+        Assert.IsTrue(firstAccumulator.StoredAmount.AreEqual(30.0f));
+        Assert.IsTrue(secondAccumulator.StoredAmount.AreEqual(30.0f));
+        Assert.IsTrue(thirdAccumulator.StoredAmount.AreEqual(30.0f));
 
         grid.PlugIn(firstPowerConsumer);
         grid.Tick();
         Assert.IsTrue(grid.IsOperating);
-        Assert.IsTrue(firstAccumulator.AccumulatedAmount.AreEqual(30.0f));
-        Assert.IsTrue(secondAccumulator.AccumulatedAmount.AreEqual(30.0f));
-        Assert.IsTrue(thirdAccumulator.AccumulatedAmount.AreEqual(30.0f));
+        Assert.IsTrue(firstAccumulator.StoredAmount.AreEqual(30.0f));
+        Assert.IsTrue(secondAccumulator.StoredAmount.AreEqual(30.0f));
+        Assert.IsTrue(thirdAccumulator.StoredAmount.AreEqual(30.0f));
 
         grid.Unplug(powerProducer);
         grid.Tick();
         Assert.IsTrue(grid.IsOperating);
-        Assert.IsTrue(firstAccumulator.AccumulatedAmount.AreEqual(20.0f));
-        Assert.IsTrue(secondAccumulator.AccumulatedAmount.AreEqual(20.0f));
-        Assert.IsTrue(thirdAccumulator.AccumulatedAmount.AreEqual(20.0f));
+        Assert.IsTrue(firstAccumulator.StoredAmount.AreEqual(20.0f));
+        Assert.IsTrue(secondAccumulator.StoredAmount.AreEqual(20.0f));
+        Assert.IsTrue(thirdAccumulator.StoredAmount.AreEqual(20.0f));
 
         grid.Tick();
         grid.Tick();
@@ -161,8 +161,8 @@ public class PowerGridTest
     {
         MockConnection powerProducer = new MockConnection { OutputRate = 30.0f };
         MockConnection firstPowerConsumer = new MockConnection { InputRate = 30.0f };
-        MockConnection firstAccumulator = new MockConnection { InputRate = 10.0f, OutputRate = 10.0f, AccumulatorCapacity = 100.0f };
-        MockConnection secondAccumulator = new MockConnection { InputRate = 10.0f, OutputRate = 10.0f, AccumulatorCapacity = 100.0f };
+        MockConnection firstAccumulator = new MockConnection { InputRate = 10.0f, OutputRate = 10.0f, StorageCapacity = 100.0f };
+        MockConnection secondAccumulator = new MockConnection { InputRate = 10.0f, OutputRate = 10.0f, StorageCapacity = 100.0f };
         grid.PlugIn(powerProducer);
         grid.PlugIn(firstAccumulator);
         grid.PlugIn(secondAccumulator);
@@ -172,99 +172,99 @@ public class PowerGridTest
         grid.Tick();
         grid.Tick();
         Assert.IsTrue(grid.IsOperating);
-        Assert.IsTrue(firstAccumulator.AccumulatedAmount.AreEqual(30.0f));
-        Assert.IsTrue(secondAccumulator.AccumulatedAmount.AreEqual(30.0f));
+        Assert.IsTrue(firstAccumulator.StoredAmount.AreEqual(30.0f));
+        Assert.IsTrue(secondAccumulator.StoredAmount.AreEqual(30.0f));
 
         grid.PlugIn(firstPowerConsumer);
         grid.Tick();
         Assert.IsTrue(grid.IsOperating);
-        Assert.IsTrue(firstAccumulator.AccumulatedAmount.AreEqual(30.0f));
-        Assert.IsTrue(secondAccumulator.AccumulatedAmount.AreEqual(30.0f));
+        Assert.IsTrue(firstAccumulator.StoredAmount.AreEqual(30.0f));
+        Assert.IsTrue(secondAccumulator.StoredAmount.AreEqual(30.0f));
 
         grid.Unplug(powerProducer);
         grid.Tick();
         Assert.IsFalse(grid.IsOperating);
-        Assert.IsTrue(firstAccumulator.AccumulatedAmount.AreEqual(30.0f));
-        Assert.IsTrue(secondAccumulator.AccumulatedAmount.AreEqual(30.0f));
+        Assert.IsTrue(firstAccumulator.StoredAmount.AreEqual(30.0f));
+        Assert.IsTrue(secondAccumulator.StoredAmount.AreEqual(30.0f));
     }
 
     [Test]
     public void ChargeAccumulatorsCapacityTest()
     {
         MockConnection powerProducer = new MockConnection { OutputRate = 20.0f };
-        MockConnection accumulator = new MockConnection { InputRate = 15.0f, OutputRate = 10.0f, AccumulatorCapacity = 40.0f };
+        MockConnection accumulator = new MockConnection { InputRate = 15.0f, OutputRate = 10.0f, StorageCapacity = 40.0f };
         grid.PlugIn(powerProducer);
         grid.PlugIn(accumulator);
         Assert.AreEqual(2, connections.Count);
         grid.Tick();
         Assert.IsTrue(grid.IsOperating);
-        Assert.IsTrue(accumulator.AccumulatedAmount.AreEqual(15.0f));
+        Assert.IsTrue(accumulator.StoredAmount.AreEqual(15.0f));
         grid.Tick();
         Assert.IsTrue(grid.IsOperating);
-        Assert.IsTrue(accumulator.AccumulatedAmount.AreEqual(30.0f));
+        Assert.IsTrue(accumulator.StoredAmount.AreEqual(30.0f));
         grid.Tick();
         Assert.IsTrue(grid.IsOperating);
-        Assert.IsTrue(accumulator.AccumulatedAmount.AreEqual(40.0f));
+        Assert.IsTrue(accumulator.StoredAmount.AreEqual(40.0f));
         grid.Tick();
         Assert.IsTrue(grid.IsOperating);
-        Assert.IsTrue(accumulator.AccumulatedAmount.AreEqual(40.0f));
+        Assert.IsTrue(accumulator.StoredAmount.AreEqual(40.0f));
     }
 
     [Test]
     public void DischargeAccumulatorsCapacityTest()
     {
         MockConnection powerConsumer = new MockConnection { InputRate = 4.0f };
-        MockConnection accumulator = new MockConnection { InputRate = 10.0f, OutputRate = 10.0f, AccumulatorCapacity = 100.0f, AccumulatedAmount = 15.0f };
+        MockConnection accumulator = new MockConnection { InputRate = 10.0f, OutputRate = 10.0f, StorageCapacity = 100.0f, StoredAmount = 15.0f };
         grid.PlugIn(powerConsumer);
         grid.PlugIn(accumulator);
         Assert.AreEqual(2, connections.Count);
 
         grid.Tick();
         Assert.IsTrue(grid.IsOperating);
-        Assert.IsTrue(accumulator.AccumulatedAmount.AreEqual(11.0f));
+        Assert.IsTrue(accumulator.StoredAmount.AreEqual(11.0f));
 
         grid.Tick();
         Assert.IsTrue(grid.IsOperating);
-        Assert.IsTrue(accumulator.AccumulatedAmount.AreEqual(7.0f));
+        Assert.IsTrue(accumulator.StoredAmount.AreEqual(7.0f));
 
         grid.Tick();
         Assert.IsTrue(grid.IsOperating);
-        Assert.IsTrue(accumulator.AccumulatedAmount.AreEqual(3.0f));
+        Assert.IsTrue(accumulator.StoredAmount.AreEqual(3.0f));
 
         grid.Tick();
         Assert.IsFalse(grid.IsOperating);
-        Assert.IsTrue(accumulator.AccumulatedAmount.AreEqual(3.0f));
+        Assert.IsTrue(accumulator.StoredAmount.AreEqual(3.0f));
     }
 
     [Test]
     public void ChargeAccumulatorsInputRateTest()
     {
         MockConnection powerProducer = new MockConnection { OutputRate = 20.0f };
-        MockConnection accumulator1 = new MockConnection { InputRate = 15.0f, OutputRate = 10.0f, AccumulatorCapacity = 40.0f };
-        MockConnection accumulator2 = new MockConnection { InputRate = 15.0f, OutputRate = 10.0f, AccumulatorCapacity = 40.0f };
+        MockConnection accumulator1 = new MockConnection { InputRate = 15.0f, OutputRate = 10.0f, StorageCapacity = 40.0f };
+        MockConnection accumulator2 = new MockConnection { InputRate = 15.0f, OutputRate = 10.0f, StorageCapacity = 40.0f };
         grid.PlugIn(powerProducer);
         grid.PlugIn(accumulator1);
         grid.PlugIn(accumulator2);
         Assert.AreEqual(3, connections.Count);
         grid.Tick();
         Assert.IsTrue(grid.IsOperating);
-        Assert.IsTrue(accumulator1.AccumulatedAmount.AreEqual(15.0f), string.Format("Expected {0} Actual {1}", 15.0f, accumulator1.AccumulatedAmount));
-        Assert.IsTrue(accumulator2.AccumulatedAmount.AreEqual(5.0f), string.Format("Expected {0} Actual {1}", 5.0f, accumulator2.AccumulatedAmount));
+        Assert.IsTrue(accumulator1.StoredAmount.AreEqual(15.0f), string.Format("Expected {0} Actual {1}", 15.0f, accumulator1.StoredAmount));
+        Assert.IsTrue(accumulator2.StoredAmount.AreEqual(5.0f), string.Format("Expected {0} Actual {1}", 5.0f, accumulator2.StoredAmount));
 
         grid.Tick();
         Assert.IsTrue(grid.IsOperating);
-        Assert.IsTrue(accumulator1.AccumulatedAmount.AreEqual(30.0f), string.Format("Expected {0} Actual {1}", 30.0f, accumulator1.AccumulatedAmount));
-        Assert.IsTrue(accumulator2.AccumulatedAmount.AreEqual(10.0f), string.Format("Expected {0} Actual {1}", 10.0f, accumulator2.AccumulatedAmount));
+        Assert.IsTrue(accumulator1.StoredAmount.AreEqual(30.0f), string.Format("Expected {0} Actual {1}", 30.0f, accumulator1.StoredAmount));
+        Assert.IsTrue(accumulator2.StoredAmount.AreEqual(10.0f), string.Format("Expected {0} Actual {1}", 10.0f, accumulator2.StoredAmount));
 
         grid.Tick();
         Assert.IsTrue(grid.IsOperating);
-        Assert.IsTrue(accumulator1.AccumulatedAmount.AreEqual(40.0f), string.Format("Expected {0} Actual {1}", 40.0f, accumulator1.AccumulatedAmount));
-        Assert.IsTrue(accumulator2.AccumulatedAmount.AreEqual(20.0f), string.Format("Expected {0} Actual {1}", 20.0f, accumulator2.AccumulatedAmount));
+        Assert.IsTrue(accumulator1.StoredAmount.AreEqual(40.0f), string.Format("Expected {0} Actual {1}", 40.0f, accumulator1.StoredAmount));
+        Assert.IsTrue(accumulator2.StoredAmount.AreEqual(20.0f), string.Format("Expected {0} Actual {1}", 20.0f, accumulator2.StoredAmount));
 
         grid.Tick();
         Assert.IsTrue(grid.IsOperating);
-        Assert.IsTrue(accumulator1.AccumulatedAmount.AreEqual(40.0f), string.Format("Expected {0} Actual {1}", 40.0f, accumulator1.AccumulatedAmount));
-        Assert.IsTrue(accumulator2.AccumulatedAmount.AreEqual(35.0f), string.Format("Expected {0} Actual {1}", 35.0f, accumulator2.AccumulatedAmount));
+        Assert.IsTrue(accumulator1.StoredAmount.AreEqual(40.0f), string.Format("Expected {0} Actual {1}", 40.0f, accumulator1.StoredAmount));
+        Assert.IsTrue(accumulator2.StoredAmount.AreEqual(35.0f), string.Format("Expected {0} Actual {1}", 35.0f, accumulator2.StoredAmount));
     }
 
     [Test]
@@ -273,8 +273,8 @@ public class PowerGridTest
         MockConnection powerConsumer1 = new MockConnection { InputRate = 5.0f };
         MockConnection powerConsumer2 = new MockConnection { InputRate = 5.0f };
         MockConnection powerConsumer3 = new MockConnection { InputRate = 5.0f };
-        MockConnection accumulator1 = new MockConnection { InputRate = 10.0f, OutputRate = 10.0f, AccumulatorCapacity = 100.0f, AccumulatedAmount = 10.0f };
-        MockConnection accumulator2 = new MockConnection { InputRate = 10.0f, OutputRate = 10.0f, AccumulatorCapacity = 100.0f, AccumulatedAmount = 10.0f };
+        MockConnection accumulator1 = new MockConnection { InputRate = 10.0f, OutputRate = 10.0f, StorageCapacity = 100.0f, StoredAmount = 10.0f };
+        MockConnection accumulator2 = new MockConnection { InputRate = 10.0f, OutputRate = 10.0f, StorageCapacity = 100.0f, StoredAmount = 10.0f };
         grid.PlugIn(powerConsumer1);
         grid.PlugIn(powerConsumer2);
         grid.PlugIn(powerConsumer3);
@@ -284,48 +284,68 @@ public class PowerGridTest
 
         grid.Tick();
         Assert.IsTrue(grid.IsOperating);
-        Assert.IsTrue(accumulator1.AccumulatedAmount.AreEqual(0.0f), string.Format("Expected {0} Actual {1}", 0.0f, accumulator1.AccumulatedAmount));
-        Assert.IsTrue(accumulator2.AccumulatedAmount.AreEqual(5.0f), string.Format("Expected {0} Actual {1}", 5.0f, accumulator2.AccumulatedAmount));
+        Assert.IsTrue(accumulator1.StoredAmount.AreEqual(0.0f), string.Format("Expected {0} Actual {1}", 0.0f, accumulator1.StoredAmount));
+        Assert.IsTrue(accumulator2.StoredAmount.AreEqual(5.0f), string.Format("Expected {0} Actual {1}", 5.0f, accumulator2.StoredAmount));
 
         grid.Tick();
         Assert.IsFalse(grid.IsOperating);
-        Assert.IsTrue(accumulator1.AccumulatedAmount.AreEqual(0.0f), string.Format("Expected {0} Actual {1}", 0.0f, accumulator1.AccumulatedAmount));
-        Assert.IsTrue(accumulator2.AccumulatedAmount.AreEqual(5.0f), string.Format("Expected {0} Actual {1}", 5.0f, accumulator2.AccumulatedAmount));
+        Assert.IsTrue(accumulator1.StoredAmount.AreEqual(0.0f), string.Format("Expected {0} Actual {1}", 0.0f, accumulator1.StoredAmount));
+        Assert.IsTrue(accumulator2.StoredAmount.AreEqual(5.0f), string.Format("Expected {0} Actual {1}", 5.0f, accumulator2.StoredAmount));
     }
 
-    private class MockConnection : IPlugable
+    private class MockConnection : IPluggable
     {
         public event Action Reconnecting;
 
-        public float AccumulatedAmount { get; set; }
+        public float StoredAmount { get; set; }
 
-        public float AccumulatorCapacity { get; set; }
+        public float StorageCapacity { get; set; }
 
         public float InputRate { get; set; }
 
-        public bool IsAccumulator
+        public bool IsStorage
         {
-            get { return AccumulatorCapacity > 0f; }
+            get { return StorageCapacity > 0f; }
         }
 
         public bool IsConsumer
         {
-            get { return InputRate > 0f && !IsAccumulator; }
+            get { return InputRate > 0f && !IsStorage; }
         }
 
         public bool IsEmpty
         {
-            get { return AccumulatedAmount == 0f; }
+            get { return StoredAmount == 0f; }
         }
 
         public bool IsFull
         {
-            get { return AccumulatedAmount.AreEqual(AccumulatorCapacity); }
+            get { return StoredAmount.AreEqual(StorageCapacity); }
+        }
+
+        public string UtilityType 
+        { 
+            get 
+            { 
+                return "Power";
+            }
+        }
+
+        public string SubType 
+        {
+            get 
+            {
+                return string.Empty;
+            }
+
+            set
+            {
+            }
         }
 
         public bool IsProducer
         {
-            get { return OutputRate > 0f && !IsAccumulator; }
+            get { return OutputRate > 0f && !IsStorage; }
         }
 
         public float OutputRate { get; set; }

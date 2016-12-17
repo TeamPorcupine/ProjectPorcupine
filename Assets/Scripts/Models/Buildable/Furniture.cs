@@ -502,7 +502,6 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         // requirements from components (gas, ...)
         bool canFunction = true;
         Requirements = BuildableComponent.Requirements.None;
-
         foreach (BuildableComponent component in components)
         {
             bool componentCanFunction = component.CanFunction();
@@ -1040,6 +1039,23 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         }
 
         yield return GetProgressInfo();
+    }
+
+    public IPluggable GetPluggable(HashSet<string> utilityTags)
+    {
+        if (components != null)
+        {
+            foreach (BuildableComponent component in components)
+            {
+                IPluggable pluggable = component as IPluggable;
+                if (pluggable != null && utilityTags.Contains(pluggable.UtilityType))
+                {
+                    return pluggable;
+                }
+            }
+        }
+
+        return null;
     }
 
     /// <summary>
