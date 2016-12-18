@@ -35,6 +35,12 @@ public class RoomPath_AStar
         // Set path to empty Queue so that there always is something to check count on
         path = new Queue<Room>();
 
+        if (roomStart == null)
+        {
+            // We don't have a room so just bail with an empty path.
+            return;
+        }
+
         // if tileEnd is null, then we are simply scanning for the nearest objectType.
         // We can do this by ignoring the heuristic component of AStar, which basically
         // just turns this into an over-engineered Dijkstra's algo

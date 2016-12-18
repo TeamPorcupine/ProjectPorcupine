@@ -6,12 +6,14 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using MoonSharp.Interpreter;
 using Newtonsoft.Json.Linq;
 using ProjectPorcupine.Localization;
+using ProjectPorcupine.Pathfinding;
 using ProjectPorcupine.Rooms;
 using UnityEngine;
 
@@ -515,7 +517,11 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
         return World.Current.GetTileAt(X, Y, Z + 1);
     }
 
-    public Room GetNearestAdjacentRoom()
+    /// <summary>
+    /// Gets the nearest room.
+    /// </summary>
+    /// <returns>The nearest room. If this tile has a room, it will return this tile's room.</returns>
+    public Room GetNearestRoom()
     {
         if (Room != null)
         {
@@ -531,7 +537,7 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
             }
         }
 
-        return null;
+        return Pathfinder.FindNearestRoom(this);
     }
 
     public Enterability IsEnterable()
