@@ -68,20 +68,20 @@ public class CSharpFunctions : IFunctions
         {
             evaluator = new Evaluator(new CompilerContext(new CompilerSettings(), CompilationResult));
 
+            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                // skip System.Core to prevent ambigious error when using System.Linq in scripts
+                if (!assembly.FullName.Contains("System.Core"))
+                {
+                    evaluator.ReferenceAssembly(assembly);
+                }
+            }
+
             // first, try if it already exists
             var resAssembly = GetCompiledAssembly(scriptName);
 
             if (resAssembly == null)
-            {
-                foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
-                {
-                    // skip System.Core to prevent ambigious error when using System.Linq in scripts
-                    if (!assembly.FullName.Contains("System.Core"))
-                    {
-                        evaluator.ReferenceAssembly(assembly);
-                    }
-                }
-
+            {         
                 evaluator.Compile(text + GetConnectionPointClassDeclaration(scriptName));
                 resAssembly = GetCompiledAssembly(scriptName);
             }
