@@ -49,7 +49,7 @@ public class CharacterNameManager
         }
 
         // Re-Loop Pointer
-        if (ptr > 0 && ptr >= characterNames.Length)
+        if (ptr >= characterNames.Length)
         {
             ptr = 0;
         }
