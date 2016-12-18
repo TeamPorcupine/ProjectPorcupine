@@ -62,38 +62,53 @@ public class CSharpFunctions : IFunctions
     /// <param name="scriptName">The script name.</param>
     public bool LoadScript(string text, string scriptName)
     {
-        evaluator = new Evaluator(new CompilerContext(new CompilerSettings(), CompilationResult));
-        foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+        bool success = false;
+
+        try
         {
+            evaluator = new Evaluator(new CompilerContext(new CompilerSettings(), CompilationResult));
+
+            // first, try if it already exists
+            var resAssembly = GetCompiledAssembly(scriptName);
+
+            if (resAssembly == null)
             {
-                evaluator.ReferenceAssembly(assembly);
-            }
-        }
+                foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    // skip System.Core to prevent ambigious error when using System.Linq in scripts
+                    if (!assembly.FullName.Contains("System.Core"))
+                    {
+                        evaluator.ReferenceAssembly(assembly);
+                    }
+                }
 
-        var resAssembly = GetCompiledAssembly(scriptName);
-
-        if (resAssembly == null)
-        {
-            CompiledMethod cm = evaluator.Compile(text + GetConnectionPointClassDeclaration(scriptName));
-
-            resAssembly = GetCompiledAssembly(scriptName);
-        }
-
-        if (resAssembly == null)
-        {
-            if (CompilationResult.HasErrors)
-            {
-                UnityDebugger.Debugger.LogError(
-                    "CSharp",
-                    string.Format("[{0}] CSharp compile errors ({1}): {2}", scriptName, CompilationResult.Errors.Count, CompilationResult.GetErrorsLog()));
+                evaluator.Compile(text + GetConnectionPointClassDeclaration(scriptName));
+                resAssembly = GetCompiledAssembly(scriptName);
             }
 
-            return false;
+            if (resAssembly == null)
+            {
+                if (CompilationResult.HasErrors)
+                {
+                    UnityDebugger.Debugger.LogError(
+                        "CSharp",
+                        string.Format("[{0}] CSharp compile errors ({1}): {2}", scriptName, CompilationResult.Errors.Count, CompilationResult.GetErrorsLog()));
+                }
+
+                return false;
+            }
+
+            CreateDelegates(resAssembly);
+            success = true;
+        }
+        catch (Exception ex)
+        {
+            UnityDebugger.Debugger.LogError(
+                        "CSharp",
+                        string.Format("[{0}] Problem loading functions from CSharp script: {1}", scriptName, ex.ToString()));
         }
 
-        CreateDelegates(resAssembly);
-
-        return true;
+        return success;
     }
 
     /// <summary>
