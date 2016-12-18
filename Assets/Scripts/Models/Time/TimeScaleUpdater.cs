@@ -25,13 +25,19 @@ public class TimeScaleUpdater : MonoBehaviour
     private Text textDisplay;
     private Slider slider;
 
-    private int oldTimeScalePosition = -2;
+    private bool isPaused;
+    private bool userDriven = true;
 
     public void SetSpeed(float value)
     {
-        if (TimeManager.Instance != null)
+        if (userDriven && TimeManager.Instance != null)
         {
             TimeManager.Instance.SetTimeScalePosition((int)value);
+            TimeManager.Instance.IsPaused = false;
+
+            // This is basically just a dirty flag to force the UI to redo
+            // Doesn't effect gameplay.
+            isPaused = true;
         }
     }
 
@@ -46,11 +52,22 @@ public class TimeScaleUpdater : MonoBehaviour
 
     private bool DoUpdate()
     {
-        return
-            TimeManager.Instance != null
-            || oldTimeScalePosition != -2
-            || (oldTimeScalePosition == -1 && TimeManager.Instance.IsPaused)
-            || (oldTimeScalePosition != TimeManager.Instance.TimeScalePosition && TimeManager.Instance.IsPaused == false);
+        if (TimeManager.Instance == null)
+        {
+            return false;
+        }
+
+        if (isPaused != TimeManager.Instance.IsPaused)
+        {
+            return true;
+        }
+
+        if (slider.value != TimeManager.Instance.TimeScalePosition)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     /// <summary>
@@ -60,13 +77,13 @@ public class TimeScaleUpdater : MonoBehaviour
     {
         if (DoUpdate())
         {
-            UpdateVisuals(TimeManager.Instance.IsPaused ? -1 : TimeManager.Instance.TimeScalePosition, TimeManager.Instance.IsPaused ? "||" : TimeManager.Instance.TimeScale.ToString() + "x");
+            UpdateVisuals(TimeManager.Instance.TimeScalePosition, TimeManager.Instance.IsPaused, TimeManager.Instance.IsPaused ? "||" : TimeManager.Instance.TimeScale.ToString() + "x");
         }
     }
 
     // This way we can update it regardless of its actual value
     // If timeScalePosition < 0 then its paused
-    private void UpdateVisuals(int timeScalePosition, string text)
+    private void UpdateVisuals(int timeScalePosition, bool isPaused, string text)
     {
         textDisplay.text = text;
 
@@ -74,7 +91,7 @@ public class TimeScaleUpdater : MonoBehaviour
         {
             if (colorTimeScaleArray.Length > 0)
             {
-                if (timeScalePosition < 0)
+                if (isPaused)
                 {
                     img.color = colorTimeScaleArray[colorTimeScaleArray.Length - 1];
                 }
@@ -85,14 +102,14 @@ public class TimeScaleUpdater : MonoBehaviour
             }
         }
 
-        imageElement.sprite = (timeScalePosition < 0) ? timePaused : timeUnPaused;
+        imageElement.sprite = isPaused ? timePaused : timeUnPaused;
 
-        if (timeScalePosition != -1)
-        {
-            slider.value = timeScalePosition;
-        }
+        // Due to Unity's system, we need to implement this kind of hack -_-, ik stupid.
+        userDriven = false;
+        slider.value = timeScalePosition;
+        userDriven = true;
 
-        oldTimeScalePosition = timeScalePosition;
+        this.isPaused = isPaused;
     }
 
     private void Awake()
@@ -118,6 +135,12 @@ public class TimeScaleUpdater : MonoBehaviour
         // Hardcoded till timemanager gets a little bit of attention and becomes less constant heavy
         slider.minValue = 0;
         slider.maxValue = timeScales.Length;
+
+        isPaused = TimeManager.Instance.IsPaused;
+
+        userDriven = false;
+        slider.value = TimeManager.Instance.TimeScalePosition;
+        userDriven = true;
 
         // This will scale it nicely and make sure we always have colors
         if (colorTimeScaleArray.Length < timeScales.Length)
