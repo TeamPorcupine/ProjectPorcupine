@@ -159,6 +159,7 @@ namespace ProjectPorcupine.State
                     goal.Inventory.ReleaseClaim(character);
                 }
             }
+
             base.Interrupt();
         }
 
