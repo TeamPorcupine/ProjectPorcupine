@@ -86,7 +86,7 @@ public class Inventory : ISelectable, IContextActionProvider
         get
         {
             DateTime requestTime = DateTime.Now;
-            return this.stackSize - (claims.Where(claim => (requestTime - claim.time).TotalSeconds > 5).Sum(claim => claim.amount));
+            return this.stackSize - (claims.Where(claim => (requestTime - claim.time).TotalSeconds < 5).Sum(claim => claim.amount));
         }
     }
 
@@ -101,16 +101,18 @@ public class Inventory : ISelectable, IContextActionProvider
     {
         // FIXME: The various Claim related functions should most likely track claim time in an in game time increment.
         DateTime requestTime = DateTime.Now;
-        List<InventoryClaim> validClaims = claims.Where(claim => (requestTime - claim.time).TotalSeconds > 5).ToList();
+        List<InventoryClaim> validClaims = claims.Where(claim => (requestTime - claim.time).TotalSeconds < 5).ToList();
         int availableInventory = this.stackSize - validClaims.Sum(claim => claim.amount);
         if (availableInventory >= amount)
         {
+            UnityDebugger.Debugger.LogWarning(availableInventory.ToString() + " Available, claiming some");
             validClaims.Add(new InventoryClaim(requestTime, character, amount));
         }
 
         // Set claims to validClaims to keep claims from filling up with old claims
         claims = validClaims;
-//        if ((requestTime - claim).TotalSeconds > 5)
+        UnityDebugger.Debugger.LogWarning(AvailableInventory + " Still Available.");
+//        if ((requestTime - claim).TotalSeconds < 5)
 //        {
 //            claim = requestTime;
 //            return true;
@@ -131,7 +133,7 @@ public class Inventory : ISelectable, IContextActionProvider
 //        {
 //            return true;
 //        }
-        List<InventoryClaim> validClaims = claims.Where(claim => (requestTime - claim.time).TotalSeconds > 5).ToList();
+        List<InventoryClaim> validClaims = claims.Where(claim => (requestTime - claim.time).TotalSeconds < 5).ToList();
         int availableInventory = this.stackSize - validClaims.Sum(claim => claim.amount);
 
         // Set claims to validClaims to keep claims from filling up with old claims
@@ -163,6 +165,7 @@ public class Inventory : ISelectable, IContextActionProvider
     {
         // Does inventory have hitpoints? How does it get destroyed? Maybe it's just a percentage chance based on damage.
         yield return string.Format("StackSize: {0}", stackSize);
+        yield return string.Format("Available Amount: {0}", AvailableInventory);
         yield return string.Format("Category: {0}", BasePrice);
         yield return string.Format("BasePrice: {0:N2}", BasePrice);
     }
