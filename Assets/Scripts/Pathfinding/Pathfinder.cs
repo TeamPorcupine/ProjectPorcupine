@@ -86,37 +86,47 @@ namespace ProjectPorcupine.Pathfinding
                 return null;
             }
 
-            RoomPath_AStar roomResolver = new RoomPath_AStar(World.Current, start.Room, RoomGoalInventoryEvaluator(types, canTakeFromStockpile), RoomHeuristic());
+            RoomPath_AStar roomResolver = new RoomPath_AStar(World.Current, start.GetNearestRoom(), RoomGoalInventoryEvaluator(types, canTakeFromStockpile), RoomHeuristic());
             List<Room> roomPath = roomResolver.GetList();
 
-            Tile nearestExit;
-            if (roomPath.Count == 1)
+            if (roomPath.Count >= 1)
             {
-                nearestExit = start;
+                Tile nearestExit;
+                if (roomPath.Count == 1)
+                {
+                    nearestExit = start;
+                }
+                else
+                {
+                    nearestExit = GetNearestExit(roomPath);
+                }
+
+                Tile targetTile = null;
+                float distance = 0f;
+
+                foreach (Inventory inventory in World.Current.InventoryManager.Inventories.Where(dictEntry => types.Contains(dictEntry.Key)).SelectMany(dictEntry => dictEntry.Value))
+                {
+                    if (inventory.Tile == null)
+                    {
+                        continue;
+                    }
+
+                    if (targetTile == null || Vector3.Distance(nearestExit.Vector3, inventory.Tile.Vector3) < distance)
+                    {
+                        distance = Vector3.Distance(nearestExit.Vector3, inventory.Tile.Vector3);
+                        targetTile = inventory.Tile;
+                    }
+                }
+
+                return FindPathToTile(start, targetTile);
             }
             else
             {
-                nearestExit = GetNearestExit(roomPath);
+                // Since we don't have a roomPath, someone's done something weird, like a room of doors, so just use Dijkstra to find our way
+                Path_AStar resolver = new Path_AStar(World.Current, start, GoalInventoryEvaluator(types, canTakeFromStockpile), DijkstraDistance());
+                List<Tile> path = resolver.GetList();
+                return path;
             }
-
-            Tile targetTile = null;
-            float distance = 0f;
-
-            foreach (Inventory inventory in World.Current.InventoryManager.Inventories.Where(dictEntry => types.Contains(dictEntry.Key)).SelectMany(dictEntry => dictEntry.Value))
-            {
-                if (inventory.Tile == null)
-                {
-                    continue;
-                }
-
-                if (targetTile == null || Vector3.Distance(nearestExit.Vector3, inventory.Tile.Vector3) < distance)
-                {
-                    distance = Vector3.Distance(nearestExit.Vector3, inventory.Tile.Vector3);
-                    targetTile = inventory.Tile;
-                }
-            }
-
-            return FindPathToTile(start, targetTile);
         }
 
         /// <summary>
@@ -129,36 +139,59 @@ namespace ProjectPorcupine.Pathfinding
                 return null;
             }
 
-            RoomPath_AStar roomResolver = new RoomPath_AStar(World.Current, start.Room, RoomGoalInventoryEvaluator(type, canTakeFromStockpile), RoomHeuristic());
+            RoomPath_AStar roomResolver = new RoomPath_AStar(World.Current, start.GetNearestRoom(), RoomGoalInventoryEvaluator(type, canTakeFromStockpile), RoomHeuristic());
             List<Room> roomPath = roomResolver.GetList();
 
-            Tile nearestExit;
-            if (roomPath.Count == 1)
+            if (roomPath.Count >= 1)
             {
-                nearestExit = start;
+                Tile nearestExit;
+                if (roomPath.Count == 1)
+                {
+                    nearestExit = start;
+                }
+                else
+                {
+                    nearestExit = GetNearestExit(roomPath);
+                }
+
+                Tile targetTile = null;
+                float distance = 0f;
+                foreach (Inventory inventory in World.Current.InventoryManager.Inventories[type])
+                {
+                    if (inventory.Tile == null)
+                    {
+                        continue;
+                    }
+
+                    if (targetTile == null || Vector3.Distance(nearestExit.Vector3, inventory.Tile.Vector3) < distance)
+                    {
+                        distance = Vector3.Distance(nearestExit.Vector3, inventory.Tile.Vector3);
+                        targetTile = inventory.Tile;
+                    }
+                }
+
+                return FindPathToTile(start, targetTile);
             }
             else
             {
-                nearestExit = GetNearestExit(roomPath);
+                // Since we don't have a roomPath, someone's done something weird, like a room of doors, so just use Dijkstra to find our way
+                Path_AStar resolver = new Path_AStar(World.Current, start, GoalInventoryEvaluator(type, canTakeFromStockpile), DijkstraDistance());
+                List<Tile> path = resolver.GetList();
+                return path;
             }
+        }
 
-            Tile targetTile = null;
-            float distance = 0f;
-            foreach (Inventory inventory in World.Current.InventoryManager.Inventories[type])
+        public static Room FindNearestRoom(Tile start)
+        {
+            Path_AStar tileResolver = new Path_AStar(World.Current, start, GoalHasRoomEvaluator(), DijkstraDistance());
+            List<Tile> pathToRoom = tileResolver.GetList();
+
+            if (tileResolver.Length() >= 1)
             {
-                if (inventory.Tile == null)
-                {
-                    continue;
-                }
-
-                if (targetTile == null || Vector3.Distance(nearestExit.Vector3, inventory.Tile.Vector3) < distance)
-                {
-                    distance = Vector3.Distance(nearestExit.Vector3, inventory.Tile.Vector3);
-                    targetTile = inventory.Tile;
-                }
+                return tileResolver.EndTile().Room;
             }
 
-            return FindPathToTile(start, targetTile);
+            return null;
         }
 
         /// <summary>
@@ -174,31 +207,41 @@ namespace ProjectPorcupine.Pathfinding
                 return null;
             }
 
-            RoomPath_AStar roomResolver = new RoomPath_AStar(World.Current, start.Room, RoomGoalFurnitureEvaluator(type), RoomHeuristic());
+            RoomPath_AStar roomResolver = new RoomPath_AStar(World.Current, start.GetNearestRoom(), RoomGoalFurnitureEvaluator(type), RoomHeuristic());
             List<Room> roomPath = roomResolver.GetList();
 
-            Tile nearestExit;
-            if (roomPath.Count == 1)
+            if (roomPath.Count >= 1)
             {
-                nearestExit = start;
+                Tile nearestExit;
+                if (roomPath.Count == 1)
+                {
+                    nearestExit = start;
+                }
+                else
+                {
+                    nearestExit = GetNearestExit(roomPath);
+                }
+
+                Tile targetTile = null;
+                float distance = 0f;
+                foreach (Furniture furniture in World.Current.FurnitureManager.Where(furniture => furniture.Type == type))
+                {
+                    if (targetTile == null || Vector3.Distance(nearestExit.Vector3, furniture.Tile.Vector3) < distance)
+                    {
+                        distance = Vector3.Distance(nearestExit.Vector3, furniture.Tile.Vector3);
+                        targetTile = furniture.Tile;
+                    }
+                }
+
+                return FindPathToTile(start, targetTile);
             }
             else
             {
-                nearestExit = GetNearestExit(roomPath);
+                // Since we don't have a roomPath, someone's done something weird, like a room of doors, so just use Dijkstra to find our way
+                Path_AStar resolver = new Path_AStar(World.Current, start, GoalFurnitureEvaluator(type), DijkstraDistance());
+                List<Tile> path = resolver.GetList();
+                return path;
             }
-
-            Tile targetTile = null;
-            float distance = 0f;
-            foreach (Furniture furniture in World.Current.FurnitureManager.Where(furniture => furniture.Type == type))
-            {
-                if (targetTile == null || Vector3.Distance(nearestExit.Vector3, furniture.Tile.Vector3) < distance)
-                {
-                    distance = Vector3.Distance(nearestExit.Vector3, furniture.Tile.Vector3);
-                    targetTile = furniture.Tile;
-                }
-            }
-
-            return FindPathToTile(start, targetTile);
         }
 
         /// <summary>
@@ -289,6 +332,11 @@ namespace ProjectPorcupine.Pathfinding
             return current => current.Furniture != null && current.Furniture.Type == type;
         }
 
+        public static GoalEvaluator GoalHasRoomEvaluator()
+        {
+            return current => current.Room != null;
+        }
+
         /// <summary>
         /// Evaluates if it is an appropriate place to dump inventory of type <paramref name="type"/> and <paramref name="amount"/>.
         /// </summary>
@@ -318,17 +366,17 @@ namespace ProjectPorcupine.Pathfinding
         public static RoomGoalEvaluator RoomGoalInventoryEvaluator(string[] types, bool canTakeFromStockpile = true)
         {
             return room =>
-                World.Current.InventoryManager.Inventories.Where(dictEntry => types.Contains(dictEntry.Key)).SelectMany(dictEntry => dictEntry.Value).Any(inv => inv != null && inv.CanBePickedUp(canTakeFromStockpile) && inv.Tile != null && inv.Tile.GetNearestAdjacentRoom() == room);
+                World.Current.InventoryManager.Inventories.Where(dictEntry => types.Contains(dictEntry.Key)).SelectMany(dictEntry => dictEntry.Value).Any(inv => inv != null && inv.CanBePickedUp(canTakeFromStockpile) && inv.Tile != null && inv.Tile.GetNearestRoom() == room);
         }
 
         public static RoomGoalEvaluator RoomGoalInventoryEvaluator(string type, bool canTakeFromStockpile = true)
         {
-            return room => World.Current.InventoryManager.Inventories.Keys.Contains(type) && World.Current.InventoryManager.Inventories[type].Any(inv => inv.Tile.GetNearestAdjacentRoom() == room && inv.CanBePickedUp(canTakeFromStockpile));
+            return room => World.Current.InventoryManager.Inventories.Keys.Contains(type) && World.Current.InventoryManager.Inventories[type].Any(inv => inv.Tile.GetNearestRoom() == room && inv.CanBePickedUp(canTakeFromStockpile));
         }
 
         public static RoomGoalEvaluator RoomGoalFurnitureEvaluator(string type)
         {
-            return currentRoom => World.Current.FurnitureManager.Any(furniture => furniture.Type == type && furniture.Tile.GetNearestAdjacentRoom() == currentRoom);
+            return currentRoom => World.Current.FurnitureManager.Any(furniture => furniture.Type == type && furniture.Tile.GetNearestRoom() == currentRoom);
         }
 
         public static Tile GetNearestExit(List<Room> roomList)
