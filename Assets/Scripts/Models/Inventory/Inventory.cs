@@ -115,7 +115,12 @@ public class Inventory : ISelectable, IContextActionProvider
 
     public void ReleaseClaim(Character character)
     {
+        bool noneAvailable = AvailableInventory == 0;
         claims.RemoveAll(claim => claim.character == character);
+        if (noneAvailable && AvailableInventory > 0)
+        {
+            World.Current.jobQueue.ReevaluateWaitingQueue(this);
+        }
     }
 
     public bool CanClaim()
