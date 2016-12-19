@@ -5,6 +5,9 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+using System.Linq;
+
+
 #endregion
 using System;
 using System.Collections.Generic;
@@ -18,10 +21,11 @@ using Newtonsoft.Json.Linq;
 public class Inventory : ISelectable, IContextActionProvider
 {
     private int stackSize = 1;
-    private DateTime claim;
+    private List<InventoryClaim> claims;
 
     public Inventory()
     {
+        claims = new List<InventoryClaim>();
     }
 
     public Inventory(string type, int stackSize, int maxStackSize = 50)
@@ -29,6 +33,7 @@ public class Inventory : ISelectable, IContextActionProvider
         Type = type;
         ImportPrototypeSettings(maxStackSize, 1f, "inv_cat_none");
         StackSize = stackSize;
+        claims = new List<InventoryClaim>();
     }
 
     private Inventory(Inventory other)
@@ -39,6 +44,7 @@ public class Inventory : ISelectable, IContextActionProvider
         Category = other.Category;
         StackSize = other.StackSize;
         Locked = other.Locked;
+        claims = new List<InventoryClaim>();
     }
 
     public event Action<Inventory> StackSizeChanged;
@@ -75,6 +81,15 @@ public class Inventory : ISelectable, IContextActionProvider
         }
     }
 
+    public int AvailableInventory
+    {
+        get
+        {
+            DateTime requestTime = DateTime.Now;
+            return this.stackSize - (claims.Where(claim => (requestTime - claim.time).TotalSeconds > 5).Sum(claim => claim.amount));
+        }
+    }
+
     public bool IsSelected { get; set; }
 
     public Inventory Clone()
@@ -82,27 +97,46 @@ public class Inventory : ISelectable, IContextActionProvider
         return new Inventory(this);
     }
 
-    public bool Claim()
+    public void Claim(Character character, int amount)
     {
         // FIXME: The various Claim related functions should most likely track claim time in an in game time increment.
         DateTime requestTime = DateTime.Now;
-        if ((requestTime - claim).TotalSeconds > 5)
+        List<InventoryClaim> validClaims = claims.Where(claim => (requestTime - claim.time).TotalSeconds > 5).ToList();
+        int availableInventory = this.stackSize - validClaims.Sum(claim => claim.amount);
+        if (availableInventory >= amount)
         {
-            claim = requestTime;
-            return true;
+            validClaims.Add(new InventoryClaim(requestTime, character, amount));
         }
 
-        return false;
+        // Set claims to validClaims to keep claims from filling up with old claims
+        claims = validClaims;
+//        if ((requestTime - claim).TotalSeconds > 5)
+//        {
+//            claim = requestTime;
+//            return true;
+//        }
+//
+//        return false;
     }
 
-    public void ReleaseClaim()
+    public void ReleaseClaim(Character character)
     {
-        claim = new DateTime();
+        claims.RemoveAll(claim => claim.character == character);
     }
 
     public bool CanClaim()
     {
-        return (DateTime.Now - claim).TotalSeconds > 5;
+        DateTime requestTime = DateTime.Now;
+//        if (claims.Count == 0)
+//        {
+//            return true;
+//        }
+        List<InventoryClaim> validClaims = claims.Where(claim => (requestTime - claim.time).TotalSeconds > 5).ToList();
+        int availableInventory = this.stackSize - validClaims.Sum(claim => claim.amount);
+
+        // Set claims to validClaims to keep claims from filling up with old claims
+        claims = validClaims;
+        return availableInventory > 0;
     }
 
     public string GetName()
@@ -187,6 +221,20 @@ public class Inventory : ISelectable, IContextActionProvider
     public override string ToString()
     {
         return string.Format("{0} [{1}/{2}]", Type, StackSize, MaxStackSize);
+    }
+
+    public struct InventoryClaim
+    {
+        public DateTime time;
+        public Character character;
+        public int amount;
+
+        public InventoryClaim(DateTime time, Character character, int amount)
+        {
+            this.time = time;
+            this.character = character;
+            this.amount = amount;
+        }
     }
 
     private void ImportPrototypeSettings(int defaulMaxStackSize, float defaultBasePrice, string defaultCategory)
