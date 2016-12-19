@@ -5,12 +5,11 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-using System.Linq;
-
-
 #endregion
+
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using MoonSharp.Interpreter;
 using Newtonsoft.Json.Linq;
 
@@ -86,7 +85,7 @@ public class Inventory : ISelectable, IContextActionProvider
         get
         {
             DateTime requestTime = DateTime.Now;
-            return this.stackSize - (claims.Where(claim => (requestTime - claim.time).TotalSeconds < 5).Sum(claim => claim.amount));
+            return this.stackSize - claims.Where(claim => (requestTime - claim.time).TotalSeconds < 5).Sum(claim => claim.amount);
         }
     }
 
@@ -112,13 +111,6 @@ public class Inventory : ISelectable, IContextActionProvider
         // Set claims to validClaims to keep claims from filling up with old claims
         claims = validClaims;
         UnityDebugger.Debugger.LogWarning(AvailableInventory + " Still Available.");
-//        if ((requestTime - claim).TotalSeconds < 5)
-//        {
-//            claim = requestTime;
-//            return true;
-//        }
-//
-//        return false;
     }
 
     public void ReleaseClaim(Character character)
@@ -129,10 +121,6 @@ public class Inventory : ISelectable, IContextActionProvider
     public bool CanClaim()
     {
         DateTime requestTime = DateTime.Now;
-//        if (claims.Count == 0)
-//        {
-//            return true;
-//        }
         List<InventoryClaim> validClaims = claims.Where(claim => (requestTime - claim.time).TotalSeconds < 5).ToList();
         int availableInventory = this.stackSize - validClaims.Sum(claim => claim.amount);
 
@@ -226,20 +214,6 @@ public class Inventory : ISelectable, IContextActionProvider
         return string.Format("{0} [{1}/{2}]", Type, StackSize, MaxStackSize);
     }
 
-    public struct InventoryClaim
-    {
-        public DateTime time;
-        public Character character;
-        public int amount;
-
-        public InventoryClaim(DateTime time, Character character, int amount)
-        {
-            this.time = time;
-            this.character = character;
-            this.amount = amount;
-        }
-    }
-
     private void ImportPrototypeSettings(int defaulMaxStackSize, float defaultBasePrice, string defaultCategory)
     {
         if (PrototypeManager.Inventory.Has(Type))
@@ -263,6 +237,20 @@ public class Inventory : ISelectable, IContextActionProvider
         if (handler != null)
         {
             handler(inventory);
+        }
+    }
+
+    public struct InventoryClaim
+    {
+        public DateTime time;
+        public Character character;
+        public int amount;
+
+        public InventoryClaim(DateTime time, Character character, int amount)
+        {
+            this.time = time;
+            this.character = character;
+            this.amount = amount;
         }
     }
 }
