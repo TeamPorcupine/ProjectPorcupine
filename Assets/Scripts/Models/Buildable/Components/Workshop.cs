@@ -97,6 +97,7 @@ namespace ProjectPorcupine.Buildable.Components
 
         public override bool CanFunction()
         {
+            bool canWork = false;
             string curSetupChainName = CurrentProductionChainName.ToString();
 
             if (!string.IsNullOrEmpty(curSetupChainName))
@@ -104,9 +105,14 @@ namespace ProjectPorcupine.Buildable.Components
                 ProductionChain prodChain = GetProductionChainByName(curSetupChainName);
                 //// create possible jobs for factory(hauling input)
                 HaulingJobForInputs(prodChain);
+                canWork = true;
+            }
+            else
+            {
+                componentRequirements = Requirements.Production;
             }
 
-            return true;
+            return canWork;
         }
 
         public override void FixedFrequencyUpdate(float deltaTime)

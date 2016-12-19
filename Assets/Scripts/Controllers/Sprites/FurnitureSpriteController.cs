@@ -6,7 +6,9 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using ProjectPorcupine.Buildable.Components;
 using UnityEngine;
 
@@ -14,11 +16,19 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
 {
     private Dictionary<Furniture, FurnitureChildObjects> childObjectMap;
 
+    private Dictionary<BuildableComponent.Requirements, Vector3> statusIndicatorOffsets;
+
     // Use this for initialization
     public FurnitureSpriteController(World world) : base(world, "Furniture")
     {
         // Instantiate our dictionary that tracks which GameObject is rendering which Tile data.
         childObjectMap = new Dictionary<Furniture, FurnitureChildObjects>();
+
+        statusIndicatorOffsets = new Dictionary<BuildableComponent.Requirements, Vector3>();
+        statusIndicatorOffsets[BuildableComponent.Requirements.Power] = new Vector3(0.2f, -0.2f, 0);
+        statusIndicatorOffsets[BuildableComponent.Requirements.Fluid] = new Vector3(-0.2f, -0.2f, 0);
+        statusIndicatorOffsets[BuildableComponent.Requirements.Gas] = new Vector3(0.2f, 0.2f, 0);
+        statusIndicatorOffsets[BuildableComponent.Requirements.Production] = new Vector3(-0.2f, 0.2f, 0);
 
         // Register our callback so that our GameObject gets updated whenever
         // the tile's type changes.
@@ -155,17 +165,28 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
             spriteRendererOverlay.sortingLayerName = "Furniture";
             spriteRendererOverlay.sortingOrder = Mathf.RoundToInt(furn_go.transform.position.y * -1) + 1;
         }
-        
-        childObjects.PowerStatusIndicator = new GameObject();
-        childObjects.PowerStatusIndicator.transform.parent = furn_go.transform;
-        childObjects.PowerStatusIndicator.transform.position = furn_go.transform.position;
 
-        SpriteRenderer powerSpriteRenderer = childObjects.PowerStatusIndicator.AddComponent<SpriteRenderer>();
-        powerSpriteRenderer.sprite = GetPowerStatusSprite();
-        powerSpriteRenderer.sortingLayerName = "Power";
-        powerSpriteRenderer.color = Color.red;
+        // indicators (power, fluid, ...)
+        BuildableComponent.Requirements furnReq = furniture.GetPossibleRequirements();
+        foreach (BuildableComponent.Requirements req in Enum.GetValues(typeof(BuildableComponent.Requirements)))
+        {
+            if (req != BuildableComponent.Requirements.None && (furnReq & req) == req)
+            {
+                GameObject indicator = new GameObject();
+                indicator.transform.parent = furn_go.transform;
+                indicator.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+                indicator.transform.position = furn_go.transform.position + statusIndicatorOffsets[req];
 
-        UpdateIconObjectsVisibility(furniture, childObjects.PowerStatusIndicator);
+                SpriteRenderer powerSpriteRenderer = indicator.AddComponent<SpriteRenderer>();
+                powerSpriteRenderer.sprite = GetStatusIndicatorSprite(req);
+                powerSpriteRenderer.sortingLayerName = "Power";
+                powerSpriteRenderer.color = Color.red;
+
+                childObjects.AddStatus(req, indicator);
+            }
+        }
+
+        UpdateIconObjectsVisibility(furniture, childObjects);
         
         if (furniture.Animation != null)
         { 
@@ -263,18 +284,25 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
             return;
         }
 
-        UpdateIconObjectsVisibility(furniture, childObjectMap[furniture].PowerStatusIndicator);
+        UpdateIconObjectsVisibility(furniture, childObjectMap[furniture]);
     }
 
-    private void UpdateIconObjectsVisibility(Furniture furniture, GameObject powerGameObject)
+    private void UpdateIconObjectsVisibility(Furniture furniture, FurnitureChildObjects statuses)
     {
-        if ((furniture.Requirements & BuildableComponent.Requirements.Power) == 0)
+        if (statuses.StatusIndicators != null && statuses.StatusIndicators.Count > 0)
         {
-            powerGameObject.SetActive(false);
-        }
-        else
-        {
-            powerGameObject.SetActive(true);
+            foreach (BuildableComponent.Requirements req in Enum.GetValues(typeof(BuildableComponent.Requirements)).Cast<BuildableComponent.Requirements>()
+                .Where(x => x != BuildableComponent.Requirements.None && statuses.StatusIndicators.ContainsKey(x)))
+            {                
+                if ((furniture.Requirements & req) == 0)
+                {
+                    statuses.StatusIndicators[req].SetActive(false);
+                }
+                else
+                {
+                    statuses.StatusIndicators[req].SetActive(true);
+                }                
+            }
         }
     }
 
@@ -299,21 +327,37 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         return string.Empty;
     }
 
-    private Sprite GetPowerStatusSprite()
+    private Sprite GetStatusIndicatorSprite(BuildableComponent.Requirements oneIdicator)
     {
-        return SpriteManager.GetSprite("Power", "PowerIcon");
+        return SpriteManager.GetSprite("Icon", string.Format("{0}Indicator", oneIdicator.ToString()));
     }
 
     public class FurnitureChildObjects
     {
         public GameObject Overlay { get; set; }
 
-        public GameObject PowerStatusIndicator { get; set; }
+        public Dictionary<BuildableComponent.Requirements, GameObject> StatusIndicators { get; set; }
+        
+        public void AddStatus(BuildableComponent.Requirements requirements, GameObject gameObj)
+        {
+            if (StatusIndicators == null)
+            {
+                StatusIndicators = new Dictionary<BuildableComponent.Requirements, GameObject>();
+            }
 
+            StatusIndicators[requirements] = gameObj;
+        }
+        
         public void Destroy()
         {
             GameObject.Destroy(Overlay);
-            GameObject.Destroy(PowerStatusIndicator);
+            if (StatusIndicators != null)
+            {
+                foreach (GameObject status in StatusIndicators.Values)
+                {
+                    GameObject.Destroy(status);
+                }
+            }
         }
     }
 }
