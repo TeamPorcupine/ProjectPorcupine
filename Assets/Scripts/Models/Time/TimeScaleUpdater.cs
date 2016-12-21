@@ -137,10 +137,7 @@ public class TimeScaleUpdater : MonoBehaviour
         slider.maxValue = timeScales.Length;
 
         isPaused = TimeManager.Instance.IsPaused;
-
-        userDriven = false;
         slider.value = TimeManager.Instance.TimeScalePosition;
-        userDriven = true;
 
         // This will scale it nicely and make sure we always have colors
         if (colorTimeScaleArray.Length < timeScales.Length)
