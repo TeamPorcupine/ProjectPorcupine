@@ -312,16 +312,23 @@ namespace DeveloperConsole
 
                     if (runnable != null)
                     {
-                        if (args == null && commandToCall.DefaultValue != null)
+                        if (commandToCall.Parameters == null || commandToCall.Parameters == string.Empty)
                         {
-                            args = commandToCall.DefaultValue;
+                            args = string.Empty;
                         }
-
-                        // They really need a better literal system...
-                        // This is the closet we can get basically
-                        if (args == string.Empty || args == '"'.ToString())
+                        else
                         {
-                            args = @"""";
+                            if (args == null && commandToCall.DefaultValue != null)
+                            {
+                                args = commandToCall.DefaultValue;
+                            }
+
+                            // They really need a better literal system...
+                            // This is the closet we can get basically
+                            if (args == string.Empty || args == '"'.ToString())
+                            {
+                                args = @"""";
+                            }
                         }
 
                         runnable.ExecuteCommand(args);
