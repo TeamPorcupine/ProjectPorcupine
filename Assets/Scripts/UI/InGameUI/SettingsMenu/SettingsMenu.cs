@@ -131,6 +131,10 @@ public class SettingsMenu : MonoBehaviour
                 }
             }
         }
+        if (category == "Mods")
+        {
+            ModMenu.Load();
+        }
     }
 
     public void Apply()
