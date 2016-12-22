@@ -10,7 +10,7 @@ public static class ModMenu {
 	
 	public static void Load ()
     {
-        JObject modSettings = (JObject)JToken.ReadFrom(new JsonTextReader(File.OpenText(Path.Combine(Application.persistentDataPath, "Settings.json"))));
+        JObject modSettings = (JObject)JToken.ReadFrom(new JsonTextReader(File.OpenText(Path.Combine(Application.persistentDataPath, "ModSettings.json"))));
         JArray active = (JArray)modSettings["activeMods"];
         foreach (DirectoryInfo mod in ModsManager.GetModsFiles())
         {
