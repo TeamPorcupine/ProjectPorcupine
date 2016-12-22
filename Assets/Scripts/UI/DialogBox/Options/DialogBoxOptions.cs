@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
@@ -35,19 +35,37 @@ public class DialogBoxOptions : DialogBox
     public void OnButtonOpenSettings()
     {
         this.CloseDialog();
-        dialogManager.dialogBoxSettings.ShowDialog();
+        SettingsMenu.Open();
     }
 
-    // Quit the app whether in editor or a build version.
     public void OnButtonQuitGame()
     {
-        // Maybe ask the user if he want to save or is sure they want to quit??
-#if UNITY_EDITOR
-        // Allows you to quit in the editor.
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-        Application.Quit();
-#endif
+        UnityEngine.Object buttonPrefab = Resources.Load("UI/Components/MenuButton");
+
+        DestroyButtons();
+        this.GetComponent<RectTransform>().sizeDelta = new Vector2(this.GetComponent<RectTransform>().sizeDelta.x, 260);
+
+        GameObject cancelButton = CreateButtonGO(buttonPrefab, "Resume", "menu_resume");
+        cancelButton.GetComponent<Button>().onClick.AddListener(delegate
+        {
+            this.CloseDialog();
+            DestroyButtons();
+            RenderButtons();
+            this.GetComponent<RectTransform>().sizeDelta = new Vector2(this.GetComponent<RectTransform>().sizeDelta.x, 400);
+        });
+
+        GameObject mainMenuButton = CreateButtonGO(buttonPrefab, "Quit To Main Menu", "menu_quit_to_menu");
+        mainMenuButton.GetComponent<Button>().onClick.AddListener(delegate
+        {
+            this.CloseDialog();
+            SceneController.Instance.LoadMainMenu();
+        });
+
+        GameObject quitButton = CreateButtonGO(buttonPrefab, "QuitGame", "menu_quit_game");
+        quitButton.GetComponent<Button>().onClick.AddListener(delegate
+        {
+            SceneController.Instance.QuitGame();
+        });
     }
 
     private IEnumerator CheckIfSaveGameBefore(string prompt)
@@ -99,7 +117,7 @@ public class DialogBoxOptions : DialogBox
             dialogManager.dialogBoxPromptOrInfo.SetPrompt("message_creating_new_world");
             dialogManager.dialogBoxPromptOrInfo.ShowDialog();
 
-            WorldController.Instance.LoadWorld(null);
+            SceneController.Instance.ConfigureNewWorld();
         }
     }
 
@@ -122,7 +140,6 @@ public class DialogBoxOptions : DialogBox
     private void RenderButtons()
     {
         UnityEngine.Object buttonPrefab = Resources.Load("UI/Components/MenuButton");
-
         GameObject resumeButton = CreateButtonGO(buttonPrefab, "Resume", "menu_resume");
         resumeButton.GetComponent<Button>().onClick.AddListener(delegate
         {
@@ -166,8 +183,9 @@ public class DialogBoxOptions : DialogBox
         buttonGameObject.transform.SetParent(this.transform, false);
         buttonGameObject.name = "Button " + name;
 
-        string localLocalizationCode = localizationCode;
-        buttonGameObject.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(localLocalizationCode) };
+        TextLocalizer textLocalizer = buttonGameObject.transform.GetComponentInChildren<TextLocalizer>();
+        textLocalizer.formatValues = new string[] { LocalizationTable.GetLocalization(localizationCode) };
+        textLocalizer.defaultText = localizationCode;
 
         return buttonGameObject;
     }
@@ -184,6 +202,17 @@ public class DialogBoxOptions : DialogBox
         if (Input.GetKey(KeyCode.Escape))
         {
             this.CloseDialog();
+        }
+    }
+
+    private void DestroyButtons()
+    {
+        foreach (Transform t in transform)
+        {
+            if (t.name.StartsWith("Button"))
+            {
+                Destroy(t.gameObject);
+            }
         }
     }
 }

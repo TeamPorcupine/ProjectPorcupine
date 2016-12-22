@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModDialogBoxInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Title>Filter</Title>
+  <Control name="Text1" type="Text">
+    <Position>
+      <x>100</x>
+      <y>-50</y>
+      <z>0</z>
+    </Position>
+    <Size>
+      <x>25</x>
+      <y>25</y>
+    </Size>
+    <Data xsi:type="xsd:string">Hello World!</Data>
+  </Control>
+  <Buttons>Yes</Buttons>
+  <Buttons>No</Buttons>
+  <Buttons>Cancel</Buttons>
+  <Actions>
+    <Action>
+      <Key xsi:type="xsd:string">OnYesClicked</Key>
+      <Value xsi:type="xsd:string">Filter_YesClicked</Value>
+    </Action>
+    <Action>
+      <Key xsi:type="xsd:string">OnNoClicked</Key>
+      <Value xsi:type="xsd:string">Filter_NoClicked</Value>
+    </Action>
+    <Action>
+      <Key xsi:type="xsd:string">OnCancelClicked</Key>
+      <Value xsi:type="xsd:string">Filter_CancelClicked</Value>
+    </Action>
+  </Actions>
+</ModDialogBoxInformation>

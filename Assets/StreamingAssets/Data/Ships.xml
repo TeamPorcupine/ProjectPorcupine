@@ -1,0 +1,40 @@
+<Ships>
+    <Ship type="essentia" width="3" height="5">
+        <BerthPoint x="1" y="5" direction="NORTH" />
+        <Storages>
+            <Storage x="0" y="0" />
+            <Storage x="0" y="1" />
+            
+            <Storage x="2" y="0" />
+            <Storage x="2" y="1" />
+            
+            <Storage x="0" y="3" />
+            <Storage x="0" y="4" />
+            
+            <Storage x="2" y="3" />
+            <Storage x="2" y="4" />
+        </Storages>
+        
+        <Tiles>
+            <Tile x="0" y="0" type="Floor" />
+            <Tile x="1" y="0" type="Floor" />
+            <Tile x="2" y="0" type="Floor" />
+            <Tile x="0" y="1" type="Floor" />
+            <Tile x="1" y="1" type="Floor" />
+            <Tile x="2" y="1" type="Floor" />
+            <Tile x="0" y="2" type="Floor" />
+            <Tile x="1" y="2" type="Floor" />
+            <Tile x="2" y="2" type="Floor" />
+            <Tile x="0" y="3" type="Floor" />
+            <Tile x="1" y="3" type="Floor" />
+            <Tile x="2" y="3" type="Floor" />
+            <Tile x="0" y="4" type="Floor" />
+            <Tile x="1" y="4" type="Floor" />
+            <Tile x="2" y="4" type="Floor" />
+        </Tiles>
+        
+        <Furnitures>
+            <Furniture x="1" y="0" type="steel_wall" />
+        </Furnitures>
+    </Ship>
+</Ships>

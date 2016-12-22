@@ -6,9 +6,8 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Animation
 {
@@ -68,7 +67,7 @@ namespace Animation
         {
             if (frame >= frameCount)
             {
-                Debug.ULogErrorChannel("Animation", "SetFrame frame " + frame + " int is larger than array length " + frameCount + ".");
+                UnityDebugger.Debugger.LogError("Animation", "SetFrame frame " + frame + " int is larger than array length " + frameCount + ".");
                 return;
             }
 

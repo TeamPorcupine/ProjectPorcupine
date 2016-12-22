@@ -6,7 +6,8 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System.Collections.Generic;
+
+using ProjectPorcupine.Rooms;
 using Scheduler;
 
 /// <summary>
@@ -22,19 +23,20 @@ public class PrototypeManager
         Inventory = new PrototypeMap<InventoryCommon>("Inventories", "Inventory");
         TileType = new PrototypeMap<TileType>("Tiles", "Tile");
         Furniture = new PrototypeMap<Furniture>("Furnitures", "Furniture");
-        FurnitureConstructJob = new PrototypeMap<Job>();
-        FurnitureDeconstructJob = new PrototypeMap<Job>();
         Utility = new PrototypeMap<Utility>("Utilities", "Utility");
-        UtilityConstructJob = new PrototypeMap<Job>();
-        UtilityDeconstructJob = new PrototypeMap<Job>();
+        RoomBehavior = new PrototypeMap<RoomBehavior>("RoomBehaviors", "RoomBehavior");
         Need = new PrototypeMap<Need>("Needs", "Need");
         Trader = new PrototypeMap<TraderPrototype>("Traders", "Trader");
         Currency = new PrototypeMap<Currency>("Currencies", "Currency");
         Quest = new PrototypeMap<Quest>("Quests", "Quest");
         Stat = new PrototypeMap<Stat>("Stats", "Stat");
-        SchedulerEvent = new PrototypeMap<ScheduledEvent>("Events", "Event");
+        GameEvent = new PrototypeMap<GameEvent>("GameEvents", "GameEvent");
+        ScheduledEvent = new PrototypeMap<ScheduledEvent>("ScheduledEvents", "ScheduledEvent");
         Headline = new PrototypeMap<Headline>("Headlines", "Headline");
         Overlay = new PrototypeMap<OverlayDescriptor>("Overlays", "Overlay");
+        Ship = new PrototypeMap<Ship>("Ships", "Ship");
+        DevConsole = new PrototypeMap<DeveloperConsole.CommandPrototype>("ConsoleCommands", "ConsoleCommand");
+        SettingsCategories = new PrototypeMap<SettingsCategory>("Categories", "Category");
     }
 
     /// <summary>
@@ -48,34 +50,17 @@ public class PrototypeManager
     /// </summary>
     /// <value>The furniture prototype map.</value>
     public static PrototypeMap<Furniture> Furniture { get; private set; }
-
-    /// <summary>
-    /// Gets the furniture job construct prototype map.
-    /// </summary>
-    /// <value>The furniture job construct prototype map.</value>
-    public static PrototypeMap<Job> FurnitureConstructJob { get; private set; }
-
-    /// <summary>
-    /// Gets the furniture job deconstruct prototype map.
-    /// </summary>
-    /// <value>The furniture job deconstruct prototype map.</value>
-    public static PrototypeMap<Job> FurnitureDeconstructJob { get; private set; }
-
+  
     /// <summary>
     /// Gets the utility prototype map.
     /// </summary>
     /// <value>The utility prototype map.</value>
     public static PrototypeMap<Utility> Utility { get; private set; }
-
-    /// Gets the furniture construct job prototype map.
+    
+    /// Gets the roomBehavior prototype map.
     /// </summary>
-    /// <value>The furniture construct job prototype map.</value>
-    public static PrototypeMap<Job> UtilityConstructJob { get; private set; }
-
-    /// Gets the furniture deconstruct job prototype map.
-    /// </summary>
-    /// <value>The furniture deconstructjob prototype map.</value>
-    public static PrototypeMap<Job> UtilityDeconstructJob { get; private set; }
+    /// <value>The roomBehavior prototype map.</value>
+    public static PrototypeMap<RoomBehavior> RoomBehavior { get; private set; }
 
     /// <summary>
     /// Gets the inventory prototype map.
@@ -114,10 +99,16 @@ public class PrototypeManager
     public static PrototypeMap<Stat> Stat { get; private set; }
 
     /// <summary>
-    /// Gets the scheduler event prototype map.
+    /// Gets the game event prototype map.
     /// </summary>
-    /// <value>The scheduler event prototype map.</value>
-    public static PrototypeMap<ScheduledEvent> SchedulerEvent { get; private set; }
+    /// <value>The game event prototype map.</value>
+    public static PrototypeMap<GameEvent> GameEvent { get; private set; }
+
+    /// <summary>
+    /// Gets the scheduled event prototype map.
+    /// </summary>
+    /// <value>The scheduled event prototype map.</value>
+    public static PrototypeMap<ScheduledEvent> ScheduledEvent { get; private set; }
 
     /// <summary>
     /// Gets the headline prototype map.
@@ -130,4 +121,22 @@ public class PrototypeManager
     /// </summary>
     /// <value>The overlay prototype map.</value>
     public static PrototypeMap<OverlayDescriptor> Overlay { get; private set; }
+
+    /// <summary>
+    /// Gets the DevConsole prototype map.
+    /// </summary>
+    /// <value>The DevConsole prototype map.</value>
+    public static PrototypeMap<DeveloperConsole.CommandPrototype> DevConsole { get; private set; }
+
+    /// <summary>
+    /// Gets the SettingsCategory prototype map.
+    /// </summary>
+    /// <value>The SettingsCategory prototype map.</value>
+    public static PrototypeMap<SettingsCategory> SettingsCategories { get; private set; }
+
+    /// <summary>
+    /// Gets the ship prototype map.
+    /// </summary>
+    /// <value>The ship prototype map.</value>
+    public static PrototypeMap<Ship> Ship { get; private set; }
 }

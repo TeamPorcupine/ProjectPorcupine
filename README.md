@@ -1,9 +1,10 @@
 # ProjectPorcupine [![Build Status](https://travis-ci.org/TeamPorcupine/ProjectPorcupine.svg?branch=master)](https://travis-ci.org/TeamPorcupine/ProjectPorcupine)
-Project Porcupine: A Base-Building Game...in Space!
+## Project Porcupine will remain on Unity 5.4, till a more stable version of 5.5 is released.  
+We __won't__ be migrating to Unity 5.5 on January the 1st of 2017, we will remain on Unity 5.4 (for now).
 
+### Project Porcupine: A Base-Building Game...in Space!
 
-![Preview Thumbnail](http://i.imgur.com/t0l6PNk.png)
-
+![Preview Thumbnail](https://cloud.githubusercontent.com/assets/22880786/19826387/7ad0f0d2-9dd4-11e6-92f3-eb47b395ac63.png)
 
 [About](#about)  
 [Copyright & Licensing](#copyright--licensing)  
@@ -56,6 +57,10 @@ All non-code assets (e.g. art, sound) is licensed under CC BY-NC-SA 3.0
 The original tutorial project files, which feature no community-contributed code,
 are licensed under the MIT License and can be found here:
  * <http://quill18.com/porcupine/project_files/>
+ 
+Audio engine : FMOD by Firelight Technologies
+
+Logger: Based on UnityDebugger by Valian (at <https://github.com/Valian/UnityDebugger>), modified source code available at <https://github.com/koosemose/UnityDebugger>
 
 ## Contributing
 
@@ -63,7 +68,7 @@ Please check the [CONTRIBUTING.md](CONTRIBUTING.md) file for contribution instru
 
 For further information, such as Roadmaps, explanations of systems and features, Standards and Conventions, and all your Git needs and troubleshooting see the [Wiki](https://github.com/TeamPorcupine/ProjectPorcupine/wiki)
 
-Make sure that you are using [Unity 5.4] (https://unity3d.com/unity/beta).
+Make sure that you are using Unity 5.4.2 [Windows] (https://unity3d.com/get-unity/download?thank-you=update&download_nid=43049&os=Win) | [Mac] (https://unity3d.com/get-unity/download?thank-you=update&download_nid=43049&os=Mac) but we are currently migrating towards Unity 5.5 [Windows] (https://unity3d.com/get-unity/download?thank-you=update&download_nid=44093&os=Win) | [Mac] (https://unity3d.com/get-unity/download?thank-you=update&download_nid=44093&os=Mac)
 
 ## Vote on Proposed Features
 
@@ -75,7 +80,7 @@ Here's the current list of proposed features:
 ## Community
 
 * [Unoffical Discord Channel ](https://discord.gg/68hkpSA)<discord.projectporcupine.com>
-* [Official Subreddit](https://reddit.com/r/ProjectPorcupine)
+* [Unoffical Subreddit](https://reddit.com/r/ProjectPorcupine)
 
 ## Contact
 

@@ -76,7 +76,6 @@ public class UtilitySpriteController : BaseSpriteController<Utility>
 
     protected override void OnCreated(Utility utility)
     {
-        // FIXME: Does not consider rotated objects
         GameObject util_go = new GameObject();
 
         // Add our tile/GO pair to the dictionary.
@@ -102,7 +101,7 @@ public class UtilitySpriteController : BaseSpriteController<Utility>
         // Make sure the utility's graphics are correct.
         if (objectGameObjectMap.ContainsKey(util) == false)
         {
-            Debug.ULogErrorChannel("UtilitySpriteController", "OnUtilityChanged -- trying to change visuals for utility not in our map.");
+            UnityDebugger.Debugger.LogError("UtilitySpriteController", "OnUtilityChanged -- trying to change visuals for utility not in our map.");
             return;
         }
 
@@ -116,7 +115,7 @@ public class UtilitySpriteController : BaseSpriteController<Utility>
     {
         if (objectGameObjectMap.ContainsKey(util) == false)
         {
-            Debug.ULogErrorChannel("UtilitySpriteController", "OnUtilityRemoved -- trying to change visuals for utility not in our map.");
+            UnityDebugger.Debugger.LogError("UtilitySpriteController", "OnUtilityRemoved -- trying to change visuals for utility not in our map.");
             return;
         }
 

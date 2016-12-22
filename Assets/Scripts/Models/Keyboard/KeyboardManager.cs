@@ -18,7 +18,7 @@ public class KeyboardManager
     private static KeyboardManager instance;
 
     private Dictionary<string, KeyboadMappedInput> mapping;
-  
+
     public KeyboardManager()
     {
         instance = this;
@@ -58,6 +58,14 @@ public class KeyboardManager
         }
     }
 
+    public void UnRegisterModalInputField(InputField filterField)
+    {
+        if (ModalInputFields.Contains(filterField))
+        {
+            ModalInputFields.Remove(filterField);
+        }
+    }
+
     public void ReadXmlOrJsonAfterWeDecide()
     {
         // mock data for now until xml vs json is decided
@@ -89,9 +97,27 @@ public class KeyboardManager
         RegisterInputMapping("DecreaseSpeed", KeyboardInputModifier.None, KeyCode.Minus, KeyCode.KeypadMinus);
         RegisterInputMapping("IncreaseSpeed", KeyboardInputModifier.None, KeyCode.Plus, KeyCode.KeypadPlus);
 
+        RegisterInputMapping("RotateFurnitureLeft", KeyboardInputModifier.None, KeyCode.R);
+        RegisterInputMapping("RotateFurnitureRight", KeyboardInputModifier.None, KeyCode.T);
+
         RegisterInputMapping("Pause", KeyboardInputModifier.None, KeyCode.Space, KeyCode.Pause);
+        RegisterInputMapping("Return", KeyboardInputModifier.None, KeyCode.Return);
 
         RegisterInputMapping("DevMode", KeyboardInputModifier.None, KeyCode.F12);
+        RegisterInputMapping("DevConsole", KeyboardInputModifier.Control, KeyCode.BackQuote);
+
+        RegisterInputMapping("ToggleCursorTextBox", KeyboardInputModifier.Control, KeyCode.M);
+    }
+
+    /// <summary>
+    /// This won't care about the focus fields.  Needed for some things like DevConsole.
+    /// </summary>
+    public void TriggerActionIfValid(string inputName)
+    {
+        if (mapping.ContainsKey(inputName))
+        {
+            mapping[inputName].TriggerActionIfInputValid();
+        }
     }
 
     public void Update()
@@ -124,6 +150,14 @@ public class KeyboardManager
                     OnTrigger = onTrigger,
                     Type = inputType
                 });
+        }
+    }
+
+    public void UnRegisterInputAction(string inputName)
+    {
+        if (mapping.ContainsKey(inputName))
+        {
+            mapping.Remove(inputName);
         }
     }
 

@@ -1,8 +1,8 @@
 #region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
-// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
-// and you are welcome to redistribute it under certain conditions; See 
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
@@ -20,7 +20,7 @@ public class Path_AStar
     {
         if (path == null || !path.Any())
         {
-            Debug.ULogWarningChannel("Path_AStar", "Created path with no tiles, is this intended?");
+            UnityDebugger.Debugger.LogWarning("Path_AStar", "Created path with no tiles, is this intended?");
         }
 
         this.path = path;
@@ -55,7 +55,7 @@ public class Path_AStar
         // Make sure our start/end tiles are in the list of nodes!
         if (nodes.ContainsKey(tileStart) == false)
         {
-            Debug.ULogErrorChannel("Path_AStar", "The starting tile isn't in the list of nodes!");
+            UnityDebugger.Debugger.LogError("Path_AStar", "The starting tile isn't in the list of nodes!");
 
             return;
         }
@@ -141,13 +141,13 @@ public class Path_AStar
     {
         if (path == null)
         {
-            Debug.ULogErrorChannel("Path_AStar", "Attempting to dequeue from an null path.");
+            UnityDebugger.Debugger.LogError("Path_AStar", "Attempting to dequeue from an null path.");
             return null;
         }
 
         if (path.Count <= 0)
         {
-            Debug.ULogErrorChannel("Path_AStar", "Path queue is zero or less elements long.");
+            UnityDebugger.Debugger.LogError("Path_AStar", "Path queue is zero or less elements long.");
             return null;
         }
 
@@ -168,7 +168,7 @@ public class Path_AStar
     {
         if (path == null || path.Count == 0)
         {
-            Debug.ULogChannel("Path_AStar", "Path is null or empty.");
+            UnityDebugger.Debugger.Log("Path_AStar", "Path is null or empty.");
             return null;
         }
 
@@ -201,7 +201,8 @@ public class Path_AStar
 
         return Mathf.Sqrt(
             Mathf.Pow(a.data.X - b.data.X, 2) +
-            Mathf.Pow(a.data.Y - b.data.Y, 2));
+            Mathf.Pow(a.data.Y - b.data.Y, 2) +
+            Mathf.Pow(a.data.Z - b.data.Z, 2));
     }
 
     private float Dist_between(Path_Node<Tile> a, Path_Node<Tile> b)
@@ -210,21 +211,28 @@ public class Path_AStar
         // on a grid at this point.
 
         // Hori/Vert neighbours have a distance of 1
-        if (Mathf.Abs(a.data.X - b.data.X) + Mathf.Abs(a.data.Y - b.data.Y) == 1)
+        if (Mathf.Abs(a.data.X - b.data.X) + Mathf.Abs(a.data.Y - b.data.Y) == 1 && a.data.Z == b.data.Z)
         {
             return 1f;
         }
 
         // Diag neighbours have a distance of 1.41421356237
-        if (Mathf.Abs(a.data.X - b.data.X) == 1 && Mathf.Abs(a.data.Y - b.data.Y) == 1)
+        if (Mathf.Abs(a.data.X - b.data.X) == 1 && Mathf.Abs(a.data.Y - b.data.Y) == 1 && a.data.Z == b.data.Z)
         {
             return 1.41421356237f;
+        }
+
+        // Up/Down neighbors have a distance of 1
+        if (a.data.X == b.data.X && a.data.Y == b.data.Y && Mathf.Abs(a.data.Z - b.data.Z) == 1)
+        {
+            return 1f;
         }
 
         // Otherwise, do the actual math.
         return Mathf.Sqrt(
             Mathf.Pow(a.data.X - b.data.X, 2) +
-            Mathf.Pow(a.data.Y - b.data.Y, 2));
+            Mathf.Pow(a.data.Y - b.data.Y, 2) +
+            Mathf.Pow(a.data.Z - b.data.Z, 2));
     }
 
     private void Reconstruct_path(

@@ -6,10 +6,9 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System;
+
 using System.Collections.Generic;
 using Priority_Queue;
-using UnityEngine;
 
 /// <summary>
 /// Wraps the FastPriorityQueue class so that it's both easy-to-use,
@@ -72,7 +71,7 @@ public class PathfindingPriorityQueue<T>
     {
         if (mapDataToWrappedNode.ContainsKey(data))
         {
-            Debug.ULogErrorChannel("PathfindingPriorityQueue", "Priority Queue can't re-enqueue a node that's already enqueued.");
+            UnityDebugger.Debugger.LogError("PathfindingPriorityQueue", "Priority Queue can't re-enqueue a node that's already enqueued.");
             return;
         }
 

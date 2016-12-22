@@ -6,7 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System.Collections;
+
 using UnityEngine;
 
 public class UIMenuController : MonoBehaviour
@@ -22,7 +22,7 @@ public class UIMenuController : MonoBehaviour
 
         // Add the menus.
         AddMenu("MenuTop");
-        AddMenu("MenuBottom");
+        AddMenu("GameMenu");
         AddMenu("MenuLeft");
         AddMenu("Headlines");
     }

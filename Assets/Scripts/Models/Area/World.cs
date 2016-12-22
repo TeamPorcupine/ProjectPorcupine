@@ -1,30 +1,27 @@
 #region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
-// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
-// and you are welcome to redistribute it under certain conditions; See 
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
 using MoonSharp.Interpreter;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using ProjectPorcupine.PowerNetwork;
 using ProjectPorcupine.Rooms;
 using UnityEngine;
 
 [MoonSharpUserData]
-public class World : IXmlSerializable
+public class World
 {
     // TODO: Should this be also saved with the world data?
     // If so - beginner task!
     public readonly string GameVersion = "Someone_will_come_up_with_a_proper_naming_scheme_later";
-
     public Material skybox;
 
     // Store all temperature information
@@ -33,13 +30,12 @@ public class World : IXmlSerializable
     // The pathfinding graph used to navigate our world map.
     public Path_TileGraph tileGraph;
     public Path_RoomGraph roomGraph;
-    
+
     // TODO: Most likely this will be replaced with a dedicated
     // class for managing job queues (plural!) that might also
     // be semi-static or self initializing or some damn thing.
     // For now, this is just a PUBLIC member of World
     public JobQueue jobQueue;
-    public JobQueue jobWaitingQueue;
 
     // A three-dimensional array to hold our tile data.
     private Tile[,,] tiles;
@@ -55,23 +51,15 @@ public class World : IXmlSerializable
         // Creates an empty world.
         SetupWorld(width, height, depth);
         int seed = UnityEngine.Random.Range(0, int.MaxValue);
-        WorldGenerator.Generate(this, seed);
-        Debug.ULogChannel("World", "Generated World");
+        Debug.LogWarning("World Seed: " + seed);
+        WorldGenerator.Instance.Generate(this, seed);
+        UnityDebugger.Debugger.Log("World", "Generated World");
 
-        // Adding air to enclosed rooms
-        foreach (Room room in this.RoomManager)
-        {
-            if (room.ID > 0)
-            {
-                room.ChangeGas("O2", 0.2f * room.TileCount);
-                room.ChangeGas("N2", 0.8f * room.TileCount);
-            }
-        }
+        tileGraph = new Path_TileGraph(this);
+        roomGraph = new Path_RoomGraph(this);
 
         // Make one character.
-        CharacterManager.Create(GetTileAt(Width / 2, Height / 2, 0));
-
-        TestRoomGraphGeneration(this);
+        CharacterManager.Create(GetTileAt((Width / 2) - 1, Height / 2, 0));
     }
 
     /// <summary>
@@ -91,6 +79,8 @@ public class World : IXmlSerializable
     }
 
     public event Action<Tile> OnTileChanged;
+
+    public event Action<Tile> OnTileTypeChanged;
 
     public static World Current { get; protected set; }
 
@@ -139,10 +129,28 @@ public class World : IXmlSerializable
     public PowerNetwork PowerNetwork { get; private set; }
 
     /// <summary>
+    /// Gets the power network.
+    /// </summary>
+    /// <value>The power network.</value>
+    public FluidNetwork FluidNetwork { get; private set; }
+
+    /// <summary>
     /// Gets the room manager.
     /// </summary>
     /// <value>The room manager.</value>
     public RoomManager RoomManager { get; private set; }
+
+    /// <summary>
+    /// Gets the game event manager.
+    /// </summary>
+    /// <value>The game event manager.</value>
+    public GameEventManager GameEventManager { get; private set; }
+
+    /// <summary>
+    /// Gets the ship manager.
+    /// </summary>
+    /// <value>The ship manager.</value>
+    public ShipManager ShipManager { get; private set; }
 
     /// <summary>
     /// Gets the camera data.
@@ -164,7 +172,7 @@ public class World : IXmlSerializable
     /// The invisible enities can be updated less frequent for better performance.
     /// </summary>
     public void OnCameraMoved(Bounds cameraBounds)
-    {        
+    {
         FurnitureManager.OnCameraMoved(cameraBounds);
     }
 
@@ -198,7 +206,7 @@ public class World : IXmlSerializable
     }
 
     /// <summary>
-    /// Reserves the furniture's work spot, preventing it from being built on.
+    /// Reserves the furniture's work spot, preventing it from being built on. Will not reserve a workspot inside of the furniture.
     /// </summary>
     /// <param name="furniture">The furniture whose workspot will be reserved.</param>
     /// <param name="tile">The tile on which the furniture is located, for furnitures which don't have a tile, such as prototypes.</param>
@@ -209,9 +217,15 @@ public class World : IXmlSerializable
             tile = furniture.Tile;
         }
 
+        // if it's an internal workspot bail before reserving.
+        if (furniture.Jobs.WorkSpotIsInternal())
+        {
+            return;
+        }
+
         GetTileAt(
-            tile.X + (int)furniture.Jobs.WorkSpotOffset.x, 
-            tile.Y + (int)furniture.Jobs.WorkSpotOffset.y, 
+            tile.X + (int)furniture.Jobs.WorkSpotOffset.x,
+            tile.Y + (int)furniture.Jobs.WorkSpotOffset.y,
             tile.Z)
             .ReservedAsWorkSpotBy.Add(furniture);
     }
@@ -229,41 +243,20 @@ public class World : IXmlSerializable
         }
 
         World.Current.GetTileAt(
-            tile.X + (int)furniture.Jobs.WorkSpotOffset.x, 
+            tile.X + (int)furniture.Jobs.WorkSpotOffset.x,
             tile.Y + (int)furniture.Jobs.WorkSpotOffset.y,
             tile.Z)
             .ReservedAsWorkSpotBy.Remove(furniture);
     }
 
-    public XmlSchema GetSchema()
+    public bool IsRoomBehaviorValidForRoom(string roomBehaviorType, Room room)
     {
-        return null;
+        return PrototypeManager.RoomBehavior.Get(roomBehaviorType).IsValidRoom(room);
     }
 
-    public void WriteXml(XmlWriter writer)
+    public JToken TilesToJson()
     {
-        // Save info here
-        writer.WriteAttributeString("Width", Width.ToString());
-        writer.WriteAttributeString("Height", Height.ToString());
-        writer.WriteAttributeString("Depth", Depth.ToString());
-
-        writer.WriteStartElement("Rooms");
-        foreach (Room r in RoomManager)
-        {
-            if (RoomManager.OutsideRoom == r)
-            {
-                // Skip the outside room. Alternatively, should SetupWorld be changed to not create one?
-                continue;
-            }
-
-            writer.WriteStartElement("Room");
-            r.WriteXml(writer);
-            writer.WriteEndElement();
-        }
-
-        writer.WriteEndElement();
-
-        writer.WriteStartElement("Tiles");
+        JArray tileJArray = new JArray();
         for (int x = 0; x < Width; x++)
         {
             for (int y = 0; y < Height; y++)
@@ -272,108 +265,148 @@ public class World : IXmlSerializable
                 {
                     if (tiles[x, y, z].Type != TileType.Empty)
                     {
-                        writer.WriteStartElement("Tile");
-                        tiles[x, y, z].WriteXml(writer);
-                        writer.WriteEndElement();
+                        tileJArray.Add(tiles[x, y, z].ToJson());
                     }
                 }
             }
         }
 
-        writer.WriteEndElement();
-        writer.WriteStartElement("Inventories");
-        foreach (Inventory inventory in InventoryManager.Inventories.SelectMany(pair => pair.Value))
-        {
-            // If we don't have a tile, that means this is in a character's inventory (or some other non-tile location
-            //      which means we shouldn't save that Inventory here, the character will take care of saving and loading
-            //      the inventory properly.
-            if (inventory.Tile != null)
-            {
-                writer.WriteStartElement("Inventory");
-                inventory.WriteXml(writer);
-                writer.WriteEndElement();
-            }
-        }
-
-        writer.WriteEndElement();
-
-        writer.WriteStartElement("Furnitures");
-        FurnitureManager.WriteXml(writer);
-        writer.WriteEndElement();
-
-        writer.WriteStartElement("Utilities");
-        UtilityManager.WriteXml(writer);
-        writer.WriteEndElement();
-
-        writer.WriteStartElement("Characters");
-        CharacterManager.WriteXml(writer);
-        writer.WriteEndElement();
-
-        writer.WriteStartElement("CameraData");
-        CameraData.WriteXml(writer);
-        writer.WriteEndElement();
-
-        writer.WriteElementString("Skybox", skybox.name);
-
-        writer.WriteStartElement("Wallet");
-        Wallet.WriteXml(writer);
-        writer.WriteEndElement();
-
-        Scheduler.Scheduler.Current.WriteXml(writer);
+        return tileJArray;
     }
 
-    public void ReadXml(XmlReader reader)
+    public void TilesFromJson(JToken tilesToken)
     {
-        // Load info here
-        Width = int.Parse(reader.GetAttribute("Width"));
-        Height = int.Parse(reader.GetAttribute("Height"));
-        Depth = int.Parse(reader.GetAttribute("Depth"));
+        JArray tilesJArray = (JArray)tilesToken;
+
+        foreach (JToken tileToken in tilesJArray)
+        {
+            int x = (int)tileToken["X"];
+            int y = (int)tileToken["Y"];
+            int z = (int)tileToken["Z"];
+
+            tiles[x, y, z].FromJson(tileToken);
+        }
+    }
+
+    public JObject ToJson()
+    {
+        JObject worldJson = new JObject();
+        worldJson.Add("Width", Width.ToString());
+        worldJson.Add("Height", Height.ToString());
+        worldJson.Add("Depth", Depth.ToString());
+        worldJson.Add("Rooms", RoomManager.ToJson());
+        worldJson.Add("Tiles", TilesToJson());
+        worldJson.Add("Inventories", InventoryManager.ToJson());
+        worldJson.Add("Furnitures", FurnitureManager.ToJson());
+        worldJson.Add("Utilities", UtilityManager.ToJson());
+        worldJson.Add("RoomBehaviors", RoomManager.BehaviorsToJson());
+        worldJson.Add("Characters", CharacterManager.ToJson());
+        worldJson.Add("CameraData", CameraData.ToJson());
+        worldJson.Add("Skybox", skybox.name);
+        worldJson.Add("Wallet", Wallet.ToJson());
+        worldJson.Add("Scheduler", Scheduler.Scheduler.Current.ToJson());
+        return worldJson;
+    }
+
+    public void ReadJson(string filename)
+    {
+        StreamReader reader = File.OpenText(filename);
+        ReadJson((JObject)JToken.ReadFrom(new JsonTextReader(reader)));
+    }
+
+    public void ReadJson(JObject worldJson)
+    {
+        Width = (int)worldJson["Width"];
+        Height = (int)worldJson["Height"];
+        Depth = (int)worldJson["Depth"];
 
         SetupWorld(Width, Height, Depth);
 
-        while (reader.Read())
+        RoomManager.FromJson(worldJson["Rooms"]);
+        TilesFromJson(worldJson["Tiles"]);
+        InventoryManager.FromJson(worldJson["Inventories"]);
+        FurnitureManager.FromJson(worldJson["Furnitures"]);
+        UtilityManager.FromJson(worldJson["Utilities"]);
+        RoomManager.BehaviorsFromJson(worldJson["RoomBehaviors"]);
+        CharacterManager.FromJson(worldJson["Characters"]);
+        CameraData.FromJson(worldJson["CameraData"]);
+        LoadSkybox((string)worldJson["Skybox"]);
+        Wallet.FromJson(worldJson["Wallet"]);
+        Scheduler.Scheduler.Current.FromJson(worldJson["Scheduler"]);
+
+        tileGraph = new Path_TileGraph(this);
+    }
+
+    public void ResizeWorld(Vector3 worldSize)
+    {
+        ResizeWorld((int)worldSize.x, (int)worldSize.y, (int)worldSize.z);
+    }
+
+    public void ResizeWorld(int width, int height, int depth)
+    {
+        if (width < Width || height < Height || depth < Depth)
         {
-            switch (reader.Name)
+            if (width < Width)
             {
-                case "Rooms":
-                    ReadXml_Rooms(reader);
-                    break;
-                case "Tiles":
-                    ReadXml_Tiles(reader);
-                    break;
-                case "Inventories":
-                    ReadXml_Inventories(reader);
-                    break;
-                case "Furnitures":
-                    ReadXml_Furnitures(reader);
-                    break;
-                case "CameraData":
-                    CameraData.ReadXml(reader);
-                    break;
-                case "Utilities":
-                    ReadXml_Utilities(reader);
-                    break;
-                case "Characters":
-                    ReadXml_Characters(reader);
-                    break;
-                case "Skybox":
-                    LoadSkybox(reader.ReadElementString("Skybox"));
-                    break;
-                case "Wallet":
-                    ReadXml_Wallet(reader);
-                    break;
-                case "Scheduler":
-                    Scheduler.Scheduler.Current.ReadXml(reader);
-                    break;
+                Debug.LogWarning("Width too small: " + Width + " " + width);
             }
+
+            if (height < Height)
+            {
+                Debug.LogWarning("Height too small: " + Height + " " + height);
+            }
+
+            if (depth < Depth)
+            {
+                Debug.LogWarning("Depth too small: " + Depth + " " + depth);
+            }
+
+            Debug.LogError("Shrinking the world is not presently supported");
+            return;
+        }
+
+        if (width == Width && height == Height && depth == Depth)
+        {
+            // No change, just bail
+            return;
+        }
+
+        int offsetX = (width - Width) / 2;
+        int offsetY = ((height - Height) / 2) + 1;
+
+        Tile[,,] oldTiles = (Tile[,,])tiles.Clone();
+        tiles = new Tile[width, height, depth];
+
+        int oldWidth = Width;
+        int oldHeight = Height;
+        int oldDepth = Depth;
+
+        Width = width;
+        Height = height;
+        Depth = depth;
+
+        FillTilesArray();
+        tileGraph = null;
+        roomGraph = null;
+
+        // Reset temperature, so it properly sizes arrays to the new world size
+        temperature = new Temperature();
+
+        for (int x = 0; x < oldWidth; x++)
+        {
+            for (int y = 0; y < oldHeight; y++)
+            {
+                for (int z = 0; z < oldDepth; z++)
+                {
+                    tiles[x + offsetX, y + offsetY, z] = oldTiles[x, y, z];
+                    oldTiles[x, y, z].MoveTile(x + offsetX, y + offsetY, z);
+                }
+            }   
         }
     }
 
     private void SetupWorld(int width, int height, int depth)
     {
-        jobQueue = new JobQueue();
-        jobWaitingQueue = new JobQueue();
-
         // Set the current world to be this world.
         // TODO: Do we need to do any cleanup of the old world?
         Current = this;
@@ -388,6 +421,29 @@ public class World : IXmlSerializable
         RoomManager.Adding += (room) => roomGraph = null;
         RoomManager.Removing += (room) => roomGraph = null;
 
+        FillTilesArray();
+
+        FurnitureManager = new FurnitureManager();
+        FurnitureManager.Created += OnFurnitureCreated;
+
+        UtilityManager = new UtilityManager();
+        CharacterManager = new CharacterManager();
+        InventoryManager = new InventoryManager();
+        jobQueue = new JobQueue();
+        GameEventManager = new GameEventManager();
+        PowerNetwork = new PowerNetwork();
+        FluidNetwork = new FluidNetwork();
+        temperature = new Temperature();
+        ShipManager = new ShipManager();
+        Wallet = new Wallet();
+        CameraData = new CameraData();
+
+        LoadSkybox();
+        AddEventListeners();
+    }
+
+    private void FillTilesArray()
+    {
         for (int x = 0; x < Width; x++)
         {
             for (int y = 0; y < Height; y++)
@@ -396,24 +452,11 @@ public class World : IXmlSerializable
                 {
                     tiles[x, y, z] = new Tile(x, y, z);
                     tiles[x, y, z].TileChanged += OnTileChangedCallback;
+                    tiles[x, y, z].TileTypeChanged += OnTileTypeChangedCallback;
                     tiles[x, y, z].Room = RoomManager.OutsideRoom; // Rooms 0 is always going to be outside, and that is our default room
                 }
             }
         }
-
-        FurnitureManager = new FurnitureManager();
-        FurnitureManager.Created += OnFurnitureCreated;
-
-        UtilityManager = new UtilityManager();
-        CharacterManager = new CharacterManager();
-        InventoryManager = new InventoryManager();
-        CameraData = new CameraData();
-        PowerNetwork = new ProjectPorcupine.PowerNetwork.PowerNetwork();
-        temperature = new Temperature();
-        Wallet = new Wallet();
-
-        LoadSkybox();
-        AddEventListeners();
     }
 
     private void LoadSkybox(string name = null)
@@ -455,7 +498,7 @@ public class World : IXmlSerializable
         }
         else
         {
-            Debug.ULogWarningChannel("World", "No skyboxes detected! Falling back to black.");
+            UnityDebugger.Debugger.LogWarning("World", "No skyboxes detected! Falling back to black.");
         }
     }
 
@@ -468,6 +511,9 @@ public class World : IXmlSerializable
     {
         CharacterManager.Update(deltaTime);
         FurnitureManager.TickEveryFrame(deltaTime);
+        UtilityManager.TickEveryFrame(deltaTime);
+        GameEventManager.Update(deltaTime);
+        ShipManager.Update(deltaTime);
     }
 
     /// <summary>
@@ -477,14 +523,16 @@ public class World : IXmlSerializable
     private void TickFixedFrequency(float deltaTime)
     {
         FurnitureManager.TickFixedFrequency(deltaTime);
+        UtilityManager.TickFixedFrequency(deltaTime);
 
         // Progress temperature modelling
         temperature.Update();
         PowerNetwork.Update(deltaTime);
+        FluidNetwork.Update(deltaTime);
     }
 
     /// <summary>
-    /// Called when a furniture is created so that we can regenerate the til graph.
+    /// Called when a furniture is created so that we can regenerate the tile graph.
     /// </summary>
     /// <param name="furniture">Furniture.</param>
     private void OnFurnitureCreated(Furniture furniture)
@@ -497,7 +545,7 @@ public class World : IXmlSerializable
             // occasionally avoid invalidating pathfinding graphs.
             // InvalidateTileGraph();    // Reset the pathfinding system
             if (tileGraph != null)
-            {   
+            {
                 tileGraph.RegenerateGraphAtTile(furniture.Tile);
             }
         }
@@ -512,355 +560,22 @@ public class World : IXmlSerializable
         }
 
         OnTileChanged(t);
+    }
 
-        // InvalidateTileGraph();
+    // Gets called whenever ANY tile changes type
+    private void OnTileTypeChangedCallback(Tile t)
+    {
+        if (OnTileTypeChanged == null)
+        {
+            return;
+        }
+
+        OnTileTypeChanged(t);
+
         if (tileGraph != null)
         {
             tileGraph.RegenerateGraphAtTile(t);
+            tileGraph.RegenerateGraphAtTile(t.Down());
         }
     }
-
-    private void ReadXml_Tiles(XmlReader reader)
-    {
-        // We are in the "Tiles" element, so read elements until
-        // we run out of "Tile" nodes.
-        if (reader.ReadToDescendant("Tile"))
-        {
-            // We have at least one tile, so do something with it.
-            do
-            {
-                int x = int.Parse(reader.GetAttribute("X"));
-                int y = int.Parse(reader.GetAttribute("Y"));
-                int z = int.Parse(reader.GetAttribute("Z"));
-                tiles[x, y, z].ReadXml(reader);
-            }
-            while (reader.ReadToNextSibling("Tile"));
-        }
-    }
-
-    private void ReadXml_Inventories(XmlReader reader)
-    {
-        Debug.ULogChannel("World", "ReadXml_Inventories");
-
-        if (reader.ReadToDescendant("Inventory"))
-        {
-            do
-            {
-                int x = int.Parse(reader.GetAttribute("X"));
-                int y = int.Parse(reader.GetAttribute("Y"));
-                int z = int.Parse(reader.GetAttribute("Z"));
-
-                // Create our inventory from the file
-                Inventory inv = new Inventory(
-                    reader.GetAttribute("type"),
-                    int.Parse(reader.GetAttribute("stackSize")),
-                    int.Parse(reader.GetAttribute("maxStackSize")))
-                {
-                    Locked = bool.Parse(reader.GetAttribute("locked"))
-                };
-
-                InventoryManager.PlaceInventory(tiles[x, y, z], inv);
-            }
-            while (reader.ReadToNextSibling("Inventory"));
-        }
-    }
-
-    private void ReadXml_Furnitures(XmlReader reader)
-    {
-        if (reader.ReadToDescendant("Furniture"))
-        {
-            do
-            {
-                int x = int.Parse(reader.GetAttribute("X"));
-                int y = int.Parse(reader.GetAttribute("Y"));
-                int z = int.Parse(reader.GetAttribute("Z"));
-
-                Furniture furniture = FurnitureManager.PlaceFurniture(reader.GetAttribute("type"), tiles[x, y, z], false);
-                furniture.ReadXml(reader);
-            }
-            while (reader.ReadToNextSibling("Furniture"));
-        }
-    }
-
-    private void ReadXml_Utilities(XmlReader reader)
-    {
-        if (reader.ReadToDescendant("Utility"))
-        {
-            do
-            {
-                int x = int.Parse(reader.GetAttribute("X"));
-                int y = int.Parse(reader.GetAttribute("Y"));
-                int z = int.Parse(reader.GetAttribute("Z"));
-
-                Utility utility = UtilityManager.PlaceUtility(reader.GetAttribute("objectType"), tiles[x, y, z], false);
-                utility.ReadXml(reader);
-            }
-            while (reader.ReadToNextSibling("Utility"));
-        }
-    }
-
-    private void ReadXml_Rooms(XmlReader reader)
-    {
-        if (reader.ReadToDescendant("Room"))
-        {
-            do
-            {
-                Room r = new Room();
-                RoomManager.Add(r);
-                r.ReadXml(reader);
-            }
-            while (reader.ReadToNextSibling("Room"));
-        }
-    }
-
-    private void ReadXml_Characters(XmlReader reader)
-    {
-        if (reader.ReadToDescendant("Character"))
-        {
-            do
-            {
-                Character character;
-
-                int x = int.Parse(reader.GetAttribute("X"));
-                int y = int.Parse(reader.GetAttribute("Y"));
-                int z = int.Parse(reader.GetAttribute("Z"));
-
-                if (reader.GetAttribute("r") != null)
-                {
-                    Color color = ColorUtilities.ParseColorFromString(reader.GetAttribute("r"), reader.GetAttribute("g"), reader.GetAttribute("b"));
-                    Color colorUni = ColorUtilities.ParseColorFromString(reader.GetAttribute("rUni"), reader.GetAttribute("gUni"), reader.GetAttribute("bUni"));
-                    Color colorSkin = ColorUtilities.ParseColorFromString(reader.GetAttribute("rSkin"), reader.GetAttribute("gSkin"), reader.GetAttribute("bSkin"));
-                    character = CharacterManager.Create(tiles[x, y, z], color, colorUni, colorSkin);
-                }
-                else
-                {
-                    character = CharacterManager.Create(tiles[x, y, z]);
-                }
-
-                character.name = reader.GetAttribute("name");
-                character.ReadXml(reader);
-
-                // Read the children elements.
-                // TODO: This should either not be XML, or use XmlSerializer.
-                while (reader.Read())
-                {
-                    // Read until the end of the character.
-                    if (reader.NodeType == XmlNodeType.EndElement)
-                    {
-                        break;
-                    }
-
-                    switch (reader.Name)
-                    {
-                        case "Stats":
-                            character.ReadStatsFromSave(reader);
-                            break;
-                        case "Inventories":
-                            if (reader.ReadToDescendant("Inventory"))
-                            {
-                                do
-                                {
-                                    // Create our inventory from the file
-                                    Inventory inv = new Inventory(
-                                        reader.GetAttribute("type"),
-                                        int.Parse(reader.GetAttribute("stackSize")),
-                                        int.Parse(reader.GetAttribute("maxStackSize")))
-                                    {
-                                        Locked = bool.Parse(reader.GetAttribute("locked"))
-                                    };
-
-                                    InventoryManager.PlaceInventory(character, inv);
-                                }
-                                while (reader.ReadToNextSibling("Inventory"));
-                            }
-
-                            break;
-                    }
-                }
-            }
-            while (reader.ReadToNextSibling("Character"));
-        }
-    }
-
-    private void ReadXml_Wallet(XmlReader reader)
-    {
-        if (reader.ReadToDescendant("Currency"))
-        {
-            do
-            {
-                Wallet.AddCurrency(
-                    reader.GetAttribute("Name"),
-                    float.Parse(reader.GetAttribute("Balance")));
-            }
-            while (reader.ReadToNextSibling("Currency"));
-        }
-    }
-
-    #region TestFunctions
-    /// <summary>
-    /// Tests the room graph generation for the default world.
-    /// </summary>
-    private void TestRoomGraphGeneration(World world)
-    {
-        // FIXME: This code is fugly!!!
-        // TODO: Make it work for other testing maps?
-
-        // roomGraph is auto-generated by Path_AStar if needed
-        // doing this explicitly here to make sure we have one now
-        roomGraph = new Path_RoomGraph(world);
-
-        int errorCount = 0;
-
-        if (roomGraph.nodes.Count() != 6)
-        {
-            Debug.ULogErrorChannel("Path_RoomGraph", "Generated incorrect number of nodes: " + roomGraph.nodes.Count().ToString());
-            errorCount++;
-        }
-
-        foreach (Room r in world.RoomManager)
-        {
-            if (roomGraph.nodes.ContainsKey(r) == false)
-            {
-                Debug.ULogErrorChannel("Path_RoomGraph", "Does not contain room: " + r.ID);
-                errorCount++;
-            }
-            else
-            {
-                Path_Node<Room> node = roomGraph.nodes[r];
-                int edgeCount = node.edges.Count();
-                switch (r.ID)
-                {
-                    case 0: // the outside room has two edges both connecting to room 2
-                        if (edgeCount != 2)
-                        {
-                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 0 supposed to have 2 edges. Instead has: " + edgeCount);
-                            errorCount++;
-                            continue;
-                        }
-
-                        if (node.edges[0].node.data != world.RoomManager[2] || node.edges[1].node.data != world.RoomManager[2])
-                        {
-                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 0 supposed to have edges to Room 2.");
-                            Debug.ULogErrorChannel(
-                                "Path_RoomGraph",
-                                string.Format("Instead has: {1} and {2}", node.edges[0].node.data.ID, node.edges[1].node.data.ID));
-
-                            // "Instead has: " + node.edges[0].node.data.ID.ToString() + " and "
-                            // + node.edges[1].node.data.ID.ToString());
-                            errorCount++;
-                        }
-
-                        break;
-                    case 1: // Room 1 has one edge connecting to room 2
-                        if (edgeCount != 1)
-                        {
-                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 1 supposed to have 1 edge. Instead has: " + edgeCount);
-                            errorCount++;
-                            continue;
-                        }
-
-                        if (node.edges[0].node.data != world.RoomManager[2])
-                        {
-                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 1 supposed to have edge to Room 2.");
-                            Debug.ULogErrorChannel("Path_RoomGraph", "Instead has: " + node.edges[0].node.data.ID.ToString());
-                            errorCount++;
-                        }
-
-                        break;
-                    case 2: // Room 2 has two edges both connecting to the outside room, one connecting to room 1 and one connecting to room 5
-                        if (edgeCount != 4)
-                        {
-                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 2 supposed to have 4 edges. Instead has: " + edgeCount);
-                            errorCount++;
-                            continue;
-                        }
-
-                        // group edges by target room
-                        IEnumerable<IGrouping<Room, Path_Edge<Room>>> query =
-                            node.edges.GroupBy(edge => edge.node.data, edge => edge);
-
-                        foreach (IGrouping<Room, Path_Edge<Room>> group in query)
-                        {
-                            switch (group.Key.ID)
-                            {
-                                case 0:
-                                    if (group.Count() != 2)
-                                    {
-                                        Debug.ULogErrorChannel("Path_RoomGraph", "Room 2 supposed to have two edges to Room 0.");
-                                        errorCount++;
-                                    }
-
-                                    break;
-                                case 1:
-                                    if (group.Count() != 1)
-                                    {
-                                        Debug.ULogErrorChannel("Path_RoomGraph", "Room 2 supposed to have one edge to Room 1.");
-                                        errorCount++;
-                                    }
-
-                                    break;
-                                case 5:
-                                    if (group.Count() != 1)
-                                    {
-                                        Debug.ULogErrorChannel("Path_RoomGraph", "Room 2 supposed to have one edge to Room 5.");
-                                        errorCount++;
-                                    }
-
-                                    break;
-                                default:
-                                    Debug.ULogErrorChannel("Path_RoomGraph", "Room 2 only supposed to have edges to Rooms 0, 1 and 5.");
-                                    errorCount++;
-                                    break;
-                            }
-                        }
-
-                        break;
-                    case 3: // Room 3 has no edges
-                        if (edgeCount != 0)
-                        {
-                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 3 supposed to have no edges. Instead has: " + edgeCount);
-                            errorCount++;
-                            continue;
-                        }
-
-                        break;
-                    case 4: // Room 4 has no edges
-                        if (edgeCount != 0)
-                        {
-                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 4 supposed to have no edges. Instead has: " + edgeCount);
-                            errorCount++;
-                            continue;
-                        }
-
-                        break;
-                    case 5: // Room 5 has one edge to Room 2
-                        if (edgeCount != 1)
-                        {
-                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 5 supposed to have 1 edge. Instead has: " + edgeCount);
-                            errorCount++;
-                            continue;
-                        }
-
-                        if (node.edges[0].node.data != world.RoomManager[2])
-                        {
-                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 5 supposed to have edge to Room 2.");
-                            Debug.ULogErrorChannel("Path_RoomGraph", "Instead has: " + node.edges[0].node.data.ID.ToString());
-                            errorCount++;
-                        }
-
-                        break;
-                    default:
-                        Debug.ULogErrorChannel("Path_RoomGraph", "Unknown room ID: " + r.ID);
-                        errorCount++;
-                        break;
-                }
-            }
-        }
-
-        if (errorCount == 0)
-        {
-            Debug.ULogChannel("Path_RoomGraph", "TestRoomGraphGeneration completed without errors!");
-        }
-    }
-    #endregion
 }

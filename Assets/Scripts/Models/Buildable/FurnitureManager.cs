@@ -10,18 +10,20 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
+using MoonSharp.Interpreter;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
+[MoonSharpUserData]
 public class FurnitureManager : IEnumerable<Furniture>
 {
     private List<Furniture> furnitures;
 
     // A temporary list of all visible furniture. Gets updated when camera moves.
-    private List<Furniture> furnituresVisible;
+    private HashSet<Furniture> furnituresVisible;
 
     // A temporary list of all invisible furniture. Gets updated when camera moves.
-    private List<Furniture> furnituresInvisible;
+    private HashSet<Furniture> furnituresInvisible;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FurnitureManager"/> class.
@@ -29,8 +31,8 @@ public class FurnitureManager : IEnumerable<Furniture>
     public FurnitureManager()
     {
         furnitures = new List<Furniture>();
-        furnituresVisible = new List<Furniture>();
-        furnituresInvisible = new List<Furniture>();
+        furnituresVisible = new HashSet<Furniture>();
+        furnituresInvisible = new HashSet<Furniture>();
     }
 
     /// <summary>
@@ -45,15 +47,17 @@ public class FurnitureManager : IEnumerable<Furniture>
     /// <param name="type">The type of the furniture.</param>
     /// <param name="tile">The tile to place the furniture at.</param>
     /// <param name="doRoomFloodFill">If set to <c>true</c> do room flood fill.</param>
-    public Furniture PlaceFurniture(string type, Tile tile, bool doRoomFloodFill = true)
+    /// /// <param name="rotation">The rotation applied to te furniture.</param>
+    public Furniture PlaceFurniture(string type, Tile tile, bool doRoomFloodFill = true, float rotation = 0f)
     {
         if (PrototypeManager.Furniture.Has(type) == false)
         {
-            Debug.ULogErrorChannel("World", "furniturePrototypes doesn't contain a proto for key: " + type);
+            UnityDebugger.Debugger.LogError("World", "furniturePrototypes doesn't contain a proto for key: " + type);
             return null;
         }
 
-        Furniture furn = PrototypeManager.Furniture.Get(type);
+        Furniture furn = PrototypeManager.Furniture.Get(type).Clone();
+        furn.SetRotation(rotation);
 
         return PlaceFurniture(furn, tile, doRoomFloodFill);
     }
@@ -80,10 +84,11 @@ public class FurnitureManager : IEnumerable<Furniture>
         furnitures.Add(furniture);
         furnituresVisible.Add(furniture);
 
-        // Do we need to recalculate our rooms?
+        // Do we need to recalculate our rooms/reachability for other jobs?
         if (doRoomFloodFill && furniture.RoomEnclosure)
         {
             World.Current.RoomManager.DoRoomFloodFill(furniture.Tile, true);
+            World.Current.jobQueue.ReevaluateReachability();
         }
 
         if (Created != null)
@@ -100,14 +105,12 @@ public class FurnitureManager : IEnumerable<Furniture>
     /// <param name="job">The completed job.</param>
     public void ConstructJobCompleted(Job job)
     {
+        Furniture furn = (Furniture)job.buildablePrototype;
+
         // Let our workspot tile know it is no longer reserved for us
-        World.Current.UnreserveTileAsWorkSpot((Furniture)job.buildablePrototype, job.tile);
+        World.Current.UnreserveTileAsWorkSpot(furn, job.tile);
 
-        PlaceFurniture(job.JobObjectType, job.tile);
-
-        // FIXME: I don't like having to manually and explicitly set
-        // flags that prevent conflicts. It's too easy to forget to set/clear them!
-        job.tile.PendingBuildJob = null;
+        PlaceFurniture(furn, job.tile);
     }
 
     /// <summary>
@@ -116,9 +119,12 @@ public class FurnitureManager : IEnumerable<Furniture>
     /// <returns><c>true</c> if the placement is valid; otherwise, <c>false</c>.</returns>
     /// <param name="type">The furniture type.</param>
     /// <param name="tile">The tile where the furniture will be placed.</param>
-    public bool IsPlacementValid(string type, Tile tile)
+    /// <param name="rotation">The rotation applied to the furniture.</param>
+    public bool IsPlacementValid(string type, Tile tile, float rotation = 0f)
     {
-        return PrototypeManager.Furniture.Get(type).IsValidPosition(tile);
+        Furniture furn = PrototypeManager.Furniture.Get(type).Clone();
+        furn.SetRotation(rotation);
+        return furn.IsValidPosition(tile);
     }
 
     /// <summary>
@@ -130,6 +136,14 @@ public class FurnitureManager : IEnumerable<Furniture>
     public bool IsWorkSpotClear(string type, Tile tile)
     {
         Furniture proto = PrototypeManager.Furniture.Get(type);
+
+        // If the workspot is internal, we don't care about furniture blocking it, this will be stopped or allowed
+        //      elsewhere depending on if the furniture being placed can replace the furniture already in this tile.
+        if (proto.Jobs.WorkSpotIsInternal())
+        {
+            return true;
+        }
+
         if (proto.Jobs != null && World.Current.GetTileAt((int)(tile.X + proto.Jobs.WorkSpotOffset.x), (int)(tile.Y + proto.Jobs.WorkSpotOffset.y), (int)tile.Z).Furniture != null)
         {
             return false;
@@ -149,7 +163,7 @@ public class FurnitureManager : IEnumerable<Furniture>
     }
 
     /// <summary>
-    /// Reuturns a list of furniture using the given filter function.
+    /// Returns a list of furniture using the given filter function.
     /// </summary>
     /// <returns>A list of furnitures.</returns>
     /// <param name="filterFunc">The filter function.</param>
@@ -160,11 +174,13 @@ public class FurnitureManager : IEnumerable<Furniture>
 
     /// <summary>
     /// Calls the furnitures update function on every frame.
+    /// The list needs to be copied temporarily in case furnitures are added or removed during the update.
     /// </summary>
     /// <param name="deltaTime">Delta time.</param>
     public void TickEveryFrame(float deltaTime)
     {
-        foreach (Furniture furniture in furnituresVisible)
+        List<Furniture> tempFurnituresVisible = new List<Furniture>(furnituresVisible);
+        foreach (Furniture furniture in tempFurnituresVisible)
         {
             furniture.EveryFrameUpdate(deltaTime);
         }
@@ -172,6 +188,7 @@ public class FurnitureManager : IEnumerable<Furniture>
 
     /// <summary>
     /// Calls the furnitures update function on a fixed frequency.
+    /// The list needs to be copied temporarily in case furnitures are added or removed during the update.
     /// </summary>
     /// <param name="deltaTime">Delta time.</param>
     public void TickFixedFrequency(float deltaTime)
@@ -181,13 +198,15 @@ public class FurnitureManager : IEnumerable<Furniture>
         //       FixedFrequencyUpdate on invisible furniture could also be even slower.
 
         // Update furniture outside of the camera view
-        foreach (Furniture furniture in furnituresInvisible)
+        List<Furniture> tempFurnituresInvisible = new List<Furniture>(furnituresInvisible);
+        foreach (Furniture furniture in tempFurnituresInvisible)
         {
             furniture.EveryFrameUpdate(deltaTime);
         }
 
         // Update all furniture with EventActions
-        foreach (Furniture furniture in furnitures)
+        List<Furniture> tempFurnitures = new List<Furniture>(furnitures);
+        foreach (Furniture furniture in tempFurnitures)
         {
             furniture.FixedFrequencyUpdate(deltaTime);
         }
@@ -219,7 +238,7 @@ public class FurnitureManager : IEnumerable<Furniture>
     /// The invisible enities can be updated less frequent for better performance.
     /// </summary>
     public void OnCameraMoved(Bounds cameraBounds)
-    {        
+    {
         // Expand bounds to include tiles on the edge where the centre isn't inside the bounds
         cameraBounds.Expand(1);
 
@@ -245,21 +264,34 @@ public class FurnitureManager : IEnumerable<Furniture>
                     furnituresVisible.Remove(furn);
                     furnituresInvisible.Add(furn);
                 }
-            }            
+            }
         }
     }
 
-    /// <summary>
-    /// Writes the furniture to the XML.
-    /// </summary>
-    /// <param name="writer">The Xml Writer.</param>
-    public void WriteXml(XmlWriter writer)
+    public JToken ToJson()
     {
-        foreach (Furniture furn in furnitures)
+        JArray furnituresJson = new JArray();
+        foreach (Furniture furniture in furnitures)
         {
-            writer.WriteStartElement("Furniture");
-            furn.WriteXml(writer);
-            writer.WriteEndElement();
+            furnituresJson.Add(furniture.ToJSon());
+        }
+
+        return furnituresJson;
+    }
+
+    public void FromJson(JToken furnituresToken)
+    {
+        JArray furnituresJArray = (JArray)furnituresToken;
+
+        foreach (JToken furnitureToken in furnituresJArray)
+        {
+            int x = (int)furnitureToken["X"];
+            int y = (int)furnitureToken["Y"];
+            int z = (int)furnitureToken["Z"];
+            string type = (string)furnitureToken["Type"];
+            float rotation = (float)furnitureToken["Rotation"];
+            Furniture furniture = PlaceFurniture(type, World.Current.GetTileAt(x, y, z), false, rotation);
+            furniture.FromJson(furnitureToken);
         }
     }
 
@@ -273,11 +305,14 @@ public class FurnitureManager : IEnumerable<Furniture>
 
         if (furnituresInvisible.Contains(furniture))
         {
-            furnituresInvisible.Remove(furniture);            
+            furnituresInvisible.Remove(furniture);
         }
         else if (furnituresVisible.Contains(furniture))
         {
             furnituresVisible.Remove(furniture);
         }
+
+        // Movement to jobs might have been opened, let's move jobs back into the queue to be re-evaluated.
+        World.Current.jobQueue.ReevaluateReachability();
     }
 }
