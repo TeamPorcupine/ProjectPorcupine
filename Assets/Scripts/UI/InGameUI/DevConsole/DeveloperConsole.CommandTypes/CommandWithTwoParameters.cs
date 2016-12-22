@@ -19,28 +19,22 @@ namespace DeveloperConsole.CommandTypes
     [MoonSharpUserData]
     public class Command<T0, T1> : CSharpCommand
     {
-        public Command(string title, ConsoleMethod method) : base(title, method)
+        public Command(string title, ConsoleMethod method, string helpText, string defaultValue = "") : base(title, method, helpText, defaultValue)
         {
         }
 
-        public Command(string title, ConsoleMethod method, string helpText) : base(title, method, helpText)
+        public Command(string title, ConsoleMethod method, HelpMethod helpMethod, string defaultValue = "") : base(title, method, helpMethod, defaultValue)
         {
         }
 
-        public Command(string title, ConsoleMethod method, HelpMethod helpMethod) : base(title, method, helpMethod)
+        public Command(string title, ConsoleMethod method, string descriptiveText, string[] tags) : this(title, method, descriptiveText)
         {
+            this.Tags = tags;
         }
 
-        public Command(ConsoleMethod method) : base(method)
+        public Command(string title, ConsoleMethod method, HelpMethod helpMethod, string[] tags) : this(title, method, helpMethod)
         {
-        }
-
-        public Command(ConsoleMethod method, string helpText) : base(method, helpText)
-        {
-        }
-
-        public Command(ConsoleMethod method, HelpMethod helpMethod) : base(method, helpMethod)
-        {
+            this.Tags = tags;
         }
 
         public delegate void ConsoleMethod(T0 arg0, T1 arg1);

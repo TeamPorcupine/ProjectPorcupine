@@ -257,7 +257,7 @@ namespace DeveloperConsole
         public static void Execute(string command)
         {
             // Guard
-            if (instance == null)
+            if (instance == null || command == string.Empty)
             {
                 return;
             }
@@ -290,17 +290,64 @@ namespace DeveloperConsole
 
                 return;
             }
+            else
+            {
+                // Do a default
+                // We will do a null checker
+                // If its null then set to default which is "" by default :P
+                args = null;
+            }
 
             // Execute command
             commandsToCall = instance.consoleCommands.Where(cB => cB.Title.ToLower() == method.ToLower().Trim());
 
-            foreach (CommandBase commandToCall in commandsToCall)
+            if (commandsToCall.Count() > 0)
             {
-                ICommandRunnable runnable = (ICommandRunnable)commandToCall;
-
-                if (runnable != null)
+                foreach (CommandBase commandToCall in commandsToCall)
                 {
-                    runnable.ExecuteCommand(args);
+                    ICommandRunnable runnable = (ICommandRunnable)commandToCall;
+
+                    if (runnable != null)
+                    {
+                        if (args == null)
+                        {
+                            args = commandToCall.DefaultValue;
+                        }
+
+                        // This just is a blank object
+                        // Causing it to call the default value for the function if it exists
+                        // ORRRR just the ()
+                        if (args == string.Empty)
+                        {
+                            args = @"""";
+                        }
+
+                        runnable.ExecuteCommand(args);
+                    }
+                }
+            }
+            else
+            {
+                // User entered a command that doesn't 'exist'
+                LogWarning("Command doesn't exist?  You entered: " + command);
+
+                // Gotta be greater than 3 else no use too many matches
+                if (method.Length >= 3)
+                {
+                    LogWarning("Did you mean?");
+                    IEnumerable<CommandBase> commandsToShow = instance.consoleCommands.Where(cB => cB.Title.ToLower().Contains(method.Substring(0, (int)Mathf.Ceil(method.Length / 1.5f)).ToLower()));
+
+                    if (commandsToShow.Count() == 0)
+                    {
+                        LogWarning("No close matches found so looking with less precision");
+                        commandsToShow = instance.consoleCommands.Where(cB => cB.Title.ToLower().Contains(method.Substring(0, (int)Mathf.Ceil(method.Length / 3f)).ToLower()));
+                    }
+
+                    foreach (CommandBase commandToShow in commandsToShow)
+                    {
+                        // Yah its close enough either 2/3rds similar or 1/3rd if no matches found
+                        Log(commandToShow.Title, "green");
+                    }
                 }
             }
         }
@@ -401,17 +448,41 @@ namespace DeveloperConsole
         /// <summary>
         /// Returns an IEnumerator that allows iteration consisting of all the commands.
         /// </summary>
-        public static IEnumerator<CommandBase> CommandIterator()
+        public static IEnumerator<CommandBase> CommandIterator(string withTag = "")
         {
-            return (instance != null) ? instance.consoleCommands.GetEnumerator() : new List<CommandBase>.Enumerator();
+            if (instance == null)
+            {
+                return new List<CommandBase>.Enumerator();
+            }
+
+            if (withTag != string.Empty)
+            {
+                return instance.consoleCommands.Where(x => x.Tags != null && x.Tags.Count() > 0 && x.Tags.Contains(withTag, System.StringComparer.OrdinalIgnoreCase)).GetEnumerator();
+            }
+            else
+            {
+                return instance.consoleCommands.GetEnumerator();
+            }
         }
 
         /// <summary>
         /// Returns an array of all the commands.
         /// </summary>
-        public static CommandBase[] CommandArray()
+        public static CommandBase[] CommandArray(string withTag = "")
         {
-            return (instance != null) ? instance.consoleCommands.ToArray() : new CommandBase[] { };
+            if (instance == null)
+            {
+                return new CommandBase[] { };
+            }
+
+            if (withTag != string.Empty)
+            {
+                return instance.consoleCommands.Where(x => x.Tags != null && x.Tags.Count() > 0 && x.Tags.Contains(withTag, System.StringComparer.OrdinalIgnoreCase)).ToArray();
+            }
+            else
+            {
+                return instance.consoleCommands.ToArray();
+            }
         }
 
         /// <summary>
@@ -792,8 +863,8 @@ namespace DeveloperConsole
 
             // Load Base Commands
             AddCommands(
-                new Command("Help", CoreCommands.Help, "Returns information on all commands"),
-                new Command<Vector3>("ChangeCameraPosition", CoreCommands.ChangeCameraPosition, "Change Camera Position (Written in CSharp)"),
+                new Command<string>("Help", CoreCommands.Help, "Returns information on all commands"),
+                new Command<Vector3>("ChangeCameraPosition", CoreCommands.ChangeCameraPosition, "Change Camera Position (Written in CSharp)", new string[] { "Test" }),
                 new Command<string>("Run_LUA", CoreCommands.Run_LUA, "Runs the text as a LUA function"),
                 new Command<string>("SetText", CoreCommands.SetText, "Sets the devConsole text"),
                 new Command("Clear", CoreCommands.Clear, "Clears the developer console"),

@@ -54,6 +54,16 @@ namespace DeveloperConsole.CommandTypes
             get; protected set;
         }
 
+        public string[] Tags
+        {
+            get; protected set;
+        }
+
+        public string DefaultValue
+        {
+            get; protected set;
+        }
+
         /// <summary>
         /// Parse the arguments.
         /// </summary>

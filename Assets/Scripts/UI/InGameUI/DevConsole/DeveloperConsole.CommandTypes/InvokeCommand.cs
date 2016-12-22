@@ -31,12 +31,14 @@ namespace DeveloperConsole.CommandTypes
         /// <param name="descriptiveText"> The text that describes this command. </param>
         /// <param name="helpFunctionName"> The help function name of the command (can be C# or LUA). </param>
         /// <param name="parameters"> The parameters ( should be invokeable format of (using [any character];)? type variableName, ... ). </param>
-        public InvokeCommand(string title, string functionName, string descriptiveText, string helpFunctionName, string parameters)
+        public InvokeCommand(string title, string functionName, string descriptiveText, string helpFunctionName, string parameters, string[] tags, string defaultValue)
         {
             Title = title;
             FunctionName = functionName;
             DescriptiveText = descriptiveText;
             HelpFunctionName = helpFunctionName;
+            Tags = tags;
+            DefaultValue = defaultValue;
 
             HelpMethod = delegate
             {
