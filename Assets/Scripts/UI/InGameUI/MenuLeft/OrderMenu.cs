@@ -66,7 +66,7 @@ public class OrderMenu : MonoBehaviour
         RenderMineButton();
 
         InputField filterField = GetComponentInChildren<InputField>();
-        filterField.onValueChanged.AddListener (delegate {FilterTextChanged(filterField.text);});
+        filterField.onValueChanged.AddListener(delegate { FilterTextChanged(filterField.text); });
         KeyboardManager.Instance.RegisterModalInputField(filterField);
     }    
 
