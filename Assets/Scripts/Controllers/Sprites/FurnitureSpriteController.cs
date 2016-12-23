@@ -18,6 +18,9 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
 
     private Dictionary<BuildableComponent.Requirements, Vector3> statusIndicatorOffsets;
 
+    const float IndicatorOffset = 0.25f;
+    const float IndicatorScale = 0.5f;
+
     // Use this for initialization
     public FurnitureSpriteController(World world) : base(world, "Furniture")
     {
@@ -25,10 +28,10 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         childObjectMap = new Dictionary<Furniture, FurnitureChildObjects>();
 
         statusIndicatorOffsets = new Dictionary<BuildableComponent.Requirements, Vector3>();
-        statusIndicatorOffsets[BuildableComponent.Requirements.Power] = new Vector3(0.2f, -0.2f, 0);
-        statusIndicatorOffsets[BuildableComponent.Requirements.Fluid] = new Vector3(-0.2f, -0.2f, 0);
-        statusIndicatorOffsets[BuildableComponent.Requirements.Gas] = new Vector3(0.2f, 0.2f, 0);
-        statusIndicatorOffsets[BuildableComponent.Requirements.Production] = new Vector3(-0.2f, 0.2f, 0);
+        statusIndicatorOffsets[BuildableComponent.Requirements.Power] = new Vector3(IndicatorOffset, -IndicatorOffset, 0);
+        statusIndicatorOffsets[BuildableComponent.Requirements.Fluid] = new Vector3(-IndicatorOffset, -IndicatorOffset, 0);
+        statusIndicatorOffsets[BuildableComponent.Requirements.Gas] = new Vector3(IndicatorOffset, IndicatorOffset, 0);
+        statusIndicatorOffsets[BuildableComponent.Requirements.Production] = new Vector3(-IndicatorOffset, IndicatorOffset, 0);
 
         // Register our callback so that our GameObject gets updated whenever
         // the tile's type changes.
@@ -174,7 +177,7 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
             {
                 GameObject indicator = new GameObject();
                 indicator.transform.parent = furn_go.transform;
-                indicator.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+                indicator.transform.localScale = new Vector3(IndicatorScale, IndicatorScale, IndicatorScale);
                 indicator.transform.position = furn_go.transform.position + statusIndicatorOffsets[req];
 
                 SpriteRenderer powerSpriteRenderer = indicator.AddComponent<SpriteRenderer>();
