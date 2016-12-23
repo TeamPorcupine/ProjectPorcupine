@@ -9,14 +9,17 @@ using Newtonsoft.Json.Linq;
 public static class ModMenu {
     public static Dictionary<string, bool> activeMods { get; private set; }
     static Dictionary<string,string> modDirs;
+    static Dictionary<string, string> revModDirs;
     public static List<string> activeModDirs;
     static Dictionary<string, bool> activeModsWaiting;
     static List<string> activeModDirsWaiting;
+    static List<string> nonSaving;
 
     public static void Load()
     {
         modDirs = new Dictionary<string, string>();
         JArray active;
+        nonSaving = new List<string>();
         if (File.Exists(Path.Combine(Application.persistentDataPath, "ModSettings.json")))
         {
             JObject modSettings = (JObject)JToken.ReadFrom(new JsonTextReader(File.OpenText(Path.Combine(Application.persistentDataPath, "ModSettings.json"))));
@@ -30,10 +33,21 @@ public static class ModMenu {
         foreach (DirectoryInfo mod in ModsManager.GetModsFiles())
         {
             string modPath = Path.Combine(mod.FullName, "mod.json");
-            JObject modData = (JObject)JToken.ReadFrom(new JsonTextReader(File.OpenText(modPath)));
-            string name = (string)modData["name"];
+            string[] y = mod.FullName.Split('\\');
+            string name = y[y.Length - 1];
+            if (File.Exists(modPath))
+            {
+                JObject modData = (JObject)JToken.ReadFrom(new JsonTextReader(File.OpenText(modPath)));
+                name = (string)modData["name"];
+                bool noSave = (bool)(modData["doNotSave"] ?? false);
+                if (noSave)
+                {
+                    nonSaving.Add(mod.FullName);
+                }
+            }
             activeMods.Add(name, active.Contains(name));
             modDirs.Add(name,mod.FullName);
+            revModDirs.Add(mod.FullName, name);
         }
         foreach (JObject activeMod in active)
         {
@@ -51,9 +65,15 @@ public static class ModMenu {
         GameObject prefab = (GameObject)Resources.Load("Prefab/DialogBoxPrefabs/Mod");
         foreach (string mod in activeModDirsWaiting)
         {
-            JObject modData = (JObject)JToken.ReadFrom(new JsonTextReader(File.OpenText(Path.Combine(mod,"mod.json"))));
-            string name = (string)modData["name"];
-            string desc = (string)modData["desc"];
+            string[] y = mod.Split('\\');
+            string name = y[y.Length-1];
+            string desc = string.Empty;
+            if (File.Exists(Path.Combine(mod, "mod.json")))
+            {
+                JObject modData = (JObject)JToken.ReadFrom(new JsonTextReader(File.OpenText(Path.Combine(mod, "mod.json"))));
+                name = (string)modData["name"];
+                desc = (string)modData["desc"] ?? string.Empty;
+            }
             GameObject m = (GameObject)Object.Instantiate(prefab, parent);
             m.transform.FindChild("Title").GetComponent<Text>().text = name;
             m.transform.FindChild("Description").GetComponent<Text>().text = desc;
@@ -65,9 +85,15 @@ public static class ModMenu {
             {
                 continue;
             }
-            JObject modData = (JObject)JToken.ReadFrom(new JsonTextReader(File.OpenText(Path.Combine(mod, "mod.json"))));
-            string name = (string)modData["name"];
-            string desc = (string)modData["desc"];
+            string[] y = mod.Split('\\');
+            string name = y[y.Length-1];
+            string desc = string.Empty;
+            if (File.Exists(Path.Combine(mod, "mod.json")))
+            {
+                JObject modData = (JObject)JToken.ReadFrom(new JsonTextReader(File.OpenText(Path.Combine(mod, "mod.json"))));
+                name = (string)modData["name"];
+                desc = (string)modData["desc"] ?? string.Empty;
+            }
             GameObject m = (GameObject)Object.Instantiate(prefab, parent);
             m.transform.FindChild("Title").GetComponent<Text>().text = name;
             m.transform.FindChild("Description").GetComponent<Text>().text = desc;
@@ -88,13 +114,13 @@ public static class ModMenu {
     }
     public static void reorderMod(string mod,int up)
     {
-        if (activeModDirs.Contains(modDirs[mod]) == false)
+        if (activeModDirsWaiting.Contains(modDirs[mod]) == false)
         {
             setEnabled(mod, true);
             return;
         }
-        int i = activeModDirs.IndexOf(modDirs[mod]);
-        if (i == activeModDirs.Count-1 && up < 0)
+        int i = activeModDirsWaiting.IndexOf(modDirs[mod]);
+        if (i == activeModDirsWaiting.Count-1 && up < 0)
         {
             setEnabled(mod, false);
             return;
@@ -103,9 +129,45 @@ public static class ModMenu {
         {
             return;
         }
-        activeModDirs.Remove(modDirs[mod]);
+        activeModDirsWaiting.Remove(modDirs[mod]);
         i -= up;
         i = Mathf.Clamp(i, 0, activeModDirs.Count-1);
-        activeModDirs.Insert(i, modDirs[mod]);
+        activeModDirsWaiting.Insert(i, modDirs[mod]);
+    }
+    public static void commit()
+    {
+        activeModDirs = activeModDirsWaiting;
+        activeMods = activeModsWaiting;
+    }
+    public static void reset()
+    {
+        activeModDirsWaiting = activeModDirs;
+        activeModsWaiting = activeMods;
+    }
+    public static JArray WriteJSON()
+    {
+        JArray output = new JArray();
+        foreach (string mod in activeModDirs)
+        {
+            if(nonSaving.Contains(mod))
+            {
+                continue;
+            }
+            output.Add(revModDirs[mod]);
+        }
+        return output;
+    }
+    public static void Save()
+    {
+        StreamWriter sw = new StreamWriter(Path.Combine(Application.persistentDataPath, "ModSettings.json"));
+        JsonWriter writer = new JsonTextWriter(sw);
+        JObject ModJSON = new JObject();
+        JsonSerializer serializer = new JsonSerializer();
+        serializer.NullValueHandling = NullValueHandling.Ignore;
+        serializer.Formatting = Formatting.Indented;
+        ModJSON.Add("activeMods", WriteJSON());
+        serializer.Serialize(writer, ModJSON);
+
+        writer.Flush();
     }
 }
