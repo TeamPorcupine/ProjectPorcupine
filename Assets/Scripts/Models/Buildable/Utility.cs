@@ -305,30 +305,6 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
     }
 
     /// <summary>
-    /// This function is called to update the utility. This will also trigger EventsActions.
-    /// This checks if the utility is a PowerConsumer, and if it does not have power it cancels its job.
-    /// </summary>
-    /// <param name="deltaTime">The time since the last update was called.</param>
-    public void EveryFrameUpdate(float deltaTime)
-    {
-        gridUpdatedThisFrame = false;
-    }
-
-    /// <summary>
-    /// This function is called to update the utility. This will also trigger EventsActions.
-    /// This checks if the utility is a PowerConsumer, and if it does not have power it cancels its job.
-    /// </summary>
-    /// <param name="deltaTime">The time since the last update was called.</param>
-    public void FixedFrequencyUpdate(float deltaTime)
-    {
-        if (EventActions != null)
-        {
-            // updateActions(this, deltaTime);
-            EventActions.Trigger("OnUpdate", this, deltaTime);
-        }
-    }
-
-    /// <summary>
     /// Check if the utility has a function to determine the sprite name and calls that function.
     /// </summary>
     /// <returns>Name of the sprite.</returns>
