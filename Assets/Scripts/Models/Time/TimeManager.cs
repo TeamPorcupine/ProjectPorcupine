@@ -16,9 +16,6 @@ public class TimeManager
 
     private float gameTickPerSecond = 5;
 
-    // Current position in that array.
-    private int timeScalePosition = 2;
-
     // An array of possible time multipliers.
     private float[] possibleTimeScales = new float[6] { 0.1f, 0.5f, 1f, 2f, 4f, 8f };
 
@@ -30,8 +27,9 @@ public class TimeManager
         instance = this;
         TimeScale = 1f;
         TotalDeltaTime = 0f;
+        TimeScalePosition = 2;
         IsPaused = false;
-        
+
         KeyboardManager.Instance.RegisterInputAction("SetSpeed1", KeyboardMappedInputType.KeyUp, () => SetTimeScalePosition(2));
         KeyboardManager.Instance.RegisterInputAction("SetSpeed2", KeyboardMappedInputType.KeyUp, () => SetTimeScalePosition(3));
         KeyboardManager.Instance.RegisterInputAction("SetSpeed3", KeyboardMappedInputType.KeyUp, () => SetTimeScalePosition(4));
@@ -81,6 +79,10 @@ public class TimeManager
         }
     }
 
+    // Current position in that array.
+    // Public so TimeScaleUpdater can easily get a position appropriate to an image.
+    public int TimeScalePosition { get; private set; }
+
     /// <summary>
     /// Gets the game time tick delay.
     /// </summary>
@@ -107,6 +109,15 @@ public class TimeManager
     /// </summary>
     /// <value><c>true</c> if this game is paused; otherwise, <c>false</c>.</value>
     public bool IsPaused { get; set; }
+
+    /// <summary>
+    /// Returns a copy of the time scale array.
+    /// </summary>
+    /// <returns> A non reference copy of the time scale array. </returns>
+    public float[] GetTimeScaleArrayCopy()
+    {
+        return possibleTimeScales;
+    }
 
     /// <summary>
     /// Update the total time and invoke the required events.
@@ -154,9 +165,9 @@ public class TimeManager
     /// <param name="newTimeScalePosition">New time scale position.</param>
     public void SetTimeScalePosition(int newTimeScalePosition)
     {
-        if (newTimeScalePosition < possibleTimeScales.Length && newTimeScalePosition >= 0 && newTimeScalePosition != timeScalePosition)
+        if (newTimeScalePosition < possibleTimeScales.Length && newTimeScalePosition >= 0 && newTimeScalePosition != TimeScalePosition)
         {
-            timeScalePosition = newTimeScalePosition;
+            TimeScalePosition = newTimeScalePosition;
             TimeScale = possibleTimeScales[newTimeScalePosition];
             UnityDebugger.Debugger.Log("Game speed", "Game speed set to " + TimeScale + "x");
         }
@@ -167,7 +178,7 @@ public class TimeManager
     /// </summary>
     public void IncreaseTimeScale()
     {
-        SetTimeScalePosition(timeScalePosition + 1);
+        SetTimeScalePosition(TimeScalePosition + 1);
     }
 
     /// <summary>
@@ -175,7 +186,7 @@ public class TimeManager
     /// </summary>
     public void DecreaseTimeScale()
     {
-        SetTimeScalePosition(timeScalePosition - 1);
+        SetTimeScalePosition(TimeScalePosition - 1);
     }
 
     /// <summary>
