@@ -64,6 +64,8 @@ public class OverlayMap : MonoBehaviour
 
     private static List<Color32> randomColors;
 
+    private static List<Color32> paletteColors;
+
     private int currentLayer = 0;
 
     /// <summary>
@@ -201,6 +203,13 @@ public class OverlayMap : MonoBehaviour
                     return randomColors[v];
                 };
                 break;
+            case OverlayDescriptor.ColorMapOption.Palette:
+                GeneratePaletteColors();
+                map = (int v) =>
+                {
+                    return paletteColors[v % paletteColors.Count];
+                };
+                break;
         }
 
         for (int i = 0; i < size; i++)
@@ -258,7 +267,7 @@ public class OverlayMap : MonoBehaviour
 
             if (FunctionsManager.Overlay.HasFunction(descr.LuaFunctionName) == false)
             {
-                UnityDebugger.Debugger.LogError("OverlayMap", string.Format("Couldn't find a function named '{0}' in '{1}'", descr.LuaFunctionName));
+                UnityDebugger.Debugger.LogError("OverlayMap", string.Format("Couldn't find a function named '{0}' in Overlay functions", descr.LuaFunctionName));
                 return;
             }
 
@@ -308,6 +317,31 @@ public class OverlayMap : MonoBehaviour
         {
             randomColors.Add(UnityEngine.Random.ColorHSV());
         }
+    }
+
+    private static void GeneratePaletteColors()
+    {
+        if (paletteColors == null)
+        {
+            paletteColors = new List<Color32>();
+        }
+
+        // basic colors
+        paletteColors.Add(new Color32(255, 255, 255, 255));
+        paletteColors.Add(new Color32(255, 0, 0, 255));
+        paletteColors.Add(new Color32(0, 255, 0, 255));
+        paletteColors.Add(new Color32(0, 0, 255, 255));
+        paletteColors.Add(new Color32(255, 255, 0, 255));
+        paletteColors.Add(new Color32(0, 255, 255, 255));
+        paletteColors.Add(new Color32(255, 0, 255, 255));
+        paletteColors.Add(new Color32(192, 192, 192, 255));
+        paletteColors.Add(new Color32(128, 128, 128, 255));
+        paletteColors.Add(new Color32(128, 0, 0, 255));
+        paletteColors.Add(new Color32(128, 128, 0, 255));
+        paletteColors.Add(new Color32(0, 128, 0, 255));
+        paletteColors.Add(new Color32(128, 0, 128, 255));
+        paletteColors.Add(new Color32(0, 128, 128, 255));
+        paletteColors.Add(new Color32(0, 0, 128, 255));
     }
 
     /// <summary>

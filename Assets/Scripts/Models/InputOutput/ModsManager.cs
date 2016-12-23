@@ -78,6 +78,7 @@ public class ModsManager
         LoadFunctions("Overlay.lua", "Overlay");
 
         LoadFunctions("FurnitureFunctions.cs", "Furniture");
+        LoadFunctions("OverlayFunctions.cs", "Overlay");
 
         LoadPrototypes("Tiles.xml", PrototypeManager.TileType.LoadPrototypes);
         LoadPrototypes("Furniture.xml", PrototypeManager.Furniture.LoadPrototypes);

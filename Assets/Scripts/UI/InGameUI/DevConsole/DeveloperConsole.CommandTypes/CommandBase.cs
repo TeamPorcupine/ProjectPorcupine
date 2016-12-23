@@ -13,6 +13,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using MoonSharp.Interpreter;
+using UnityEngine;
 
 namespace DeveloperConsole.CommandTypes
 {
@@ -54,14 +55,14 @@ namespace DeveloperConsole.CommandTypes
             get; protected set;
         }
 
-        /// <summary>
-        /// Parse the arguments.
-        /// </summary>
-        /// <param name="arguments"> Arguments to parse.</param>
-        /// <returns> The parsed arguments.</returns>
-        protected virtual object[] ParseArguments(string arguments)
+        public string[] Tags
         {
-            return RegexToStandardPattern(arguments);
+            get; protected set;
+        }
+
+        public string DefaultValue
+        {
+            get; protected set;
         }
 
         /// <summary>
@@ -89,13 +90,15 @@ namespace DeveloperConsole.CommandTypes
                 [...] | NOT',' then check for (,[...]|NOT',')*
             */
 
+            string mutableArgs = arguments;
+            string constantsPattern = @"(?:\'(.*?)\')";
+
+            mutableArgs = Regex.Replace(arguments, constantsPattern, MatchEval, RegexOptions.IgnoreCase);
+
             string pattern = @"\s*((?:\[.*?\])|(?:[^,]*))\s*";
 
-            MatchCollection result = Regex.Matches(arguments, pattern);
+            MatchCollection result = Regex.Matches(mutableArgs, pattern);
 
-            // Regex IS slower then a for loop, 
-            // but in this case its better because it increases readabilty and we AREN'T focusing on speed
-            // because this is a developer tool so having it run 100 ms slower isn't a problem that we care about
             return result
                 .Cast<Match>()
                 .Select(m => m.Value.Trim())
@@ -103,13 +106,59 @@ namespace DeveloperConsole.CommandTypes
                 .ToArray();
         }
 
+        protected string MatchEval(Match match)
+        {
+            if (match.Groups.Count < 2)
+            {
+                return string.Empty;
+            }
+
+            World world;
+            bool worldSuccess = ModUtils.GetCurrentWorld(out world);
+
+            switch (match.Groups[1].Value.ToLower())
+            {
+                case "center":
+                case "centre":
+                    if (worldSuccess)
+                    {
+                        Tile t = world.GetCenterTile();
+                        return "[" + t.X + ", " + t.Y + ", " + t.Z + "]";
+                    }
+
+                    break;
+                case "mousePos":
+                    Vector3 mousePos = Input.mousePosition;
+                    return "[" + mousePos.x + ", " + mousePos.y + ", " + mousePos.z + "]";
+                case "timeScale":
+                    return (TimeManager.Instance != null) ? TimeManager.Instance.TimeScale.ToString() : string.Empty;
+                case "pi":
+                    return Mathf.PI.ToString();
+                default:
+                    DevConsole.LogWarning("You entered an constant identifier that doesn't exist?  Check spelling.");
+                    break;
+            }
+
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Parse the arguments.
+        /// </summary>
+        /// <param name="arguments"> Arguments to parse.</param>
+        /// <returns> The parsed arguments.</returns>
+        protected virtual object[] ParseArguments(string arguments)
+        {
+            return RegexToStandardPattern(arguments);
+        }
+
         /// <summary>
         /// Get the value type of the argument.
         /// </summary>
-        /// <typeparam name="T"> the type of the argument.</typeparam>
-        /// <param name="arg"> the argument to find the value type.</param>
-        /// <returns> The type of the argument given.</returns>
-        /// <exception cref="Exception"> Throws exception if arg is not type T, SHOULD BE CAUGHT by command&ltT0...&gt.</exception>
+        /// <typeparam name="T"> The type of the argument. </typeparam>
+        /// <param name="arg"> The argument to find the value type. </param>
+        /// <returns> The type of the argument given. </returns>
+        /// <exception cref="Exception"> Throws exception if arg is not type T, SHOULD BE CAUGHT by command. </exception>
         protected T GetValueType<T>(string arg, Type typeVariable = null)
         {
             Type typeOfT;
@@ -176,6 +225,7 @@ namespace DeveloperConsole.CommandTypes
                                 }
                                 else
                                 {
+                                    Debug.LogWarning(possibleParameters[j].ParameterType);
                                     parameters.Add(Convert.ChangeType(args[j], possibleParameters[j].ParameterType));
                                 }
                             }
@@ -211,7 +261,7 @@ namespace DeveloperConsole.CommandTypes
             }
             catch (Exception e)
             {
-                DevConsole.LogError(Errors.TypeConsoleError.Description(this));
+                DevConsole.LogError(Errors.ParametersNotInFormat(this));
                 throw e;
             }
         }
