@@ -36,9 +36,9 @@ namespace DeveloperConsole
         /// <param name="description"> The description of the command.</param>
         /// <param name="helpFunctionName"> The name of the function to call to show help.</param>
         /// <param name="parameters"> The parameters that this class requires (a string in C# type formats and comma between them).</param>
-        public CommandPrototype(string title, string methodFunctionName, string description, string helpFunctionName, string parameters) : this()
+        public CommandPrototype(string title, string methodFunctionName, string description, string helpFunctionName, string parameters, string tags, string defaultValue) : this()
         {
-            ConsoleCommand = new InvokeCommand(title, methodFunctionName, description, helpFunctionName, parameters);
+            ConsoleCommand = new InvokeCommand(title, methodFunctionName, description, helpFunctionName, parameters, tags.Split(','), defaultValue);
         }
 
         /// <summary>
@@ -83,20 +83,22 @@ namespace DeveloperConsole
             string description = reader.GetAttribute("Description");
             string helpFunctionName = reader.GetAttribute("HelpFunctionName");
             string parameters = reader.GetAttribute("Parameters");
+            string tags = reader.GetAttribute("Tags");
 
-            ConsoleCommand = new InvokeCommand(title, functionName, description, helpFunctionName, parameters);
-        }
+            string defaultValue = reader.GetAttribute("DefaultValue");
 
-        /// <summary>
-        /// Writes to the writer provided.
-        /// </summary>
-        public void WriteXml(XmlWriter writer)
-        {
-            writer.WriteAttributeString("Title", ConsoleCommand.Title);
-            writer.WriteAttributeString("FunctionName", ConsoleCommand.FunctionName);
-            writer.WriteAttributeString("Description", ConsoleCommand.DescriptiveText);
-            writer.WriteAttributeString("HelpFunctionName", ConsoleCommand.HelpFunctionName);
-            writer.WriteAttributeString("Parameters", ConsoleCommand.Parameters);
+            // This is an optional checker basically
+            if (tags == null)
+            {
+                tags = string.Empty;
+            }
+
+            if (defaultValue == null)
+            {
+                defaultValue = string.Empty;
+            }
+
+            ConsoleCommand = new InvokeCommand(title, functionName, description, helpFunctionName, parameters, tags.Split(','), defaultValue);
         }
     }
 }

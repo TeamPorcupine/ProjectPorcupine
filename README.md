@@ -1,6 +1,8 @@
 # ProjectPorcupine [![Build Status](https://travis-ci.org/TeamPorcupine/ProjectPorcupine.svg?branch=master)](https://travis-ci.org/TeamPorcupine/ProjectPorcupine)
-# Project Porcupine will migrate to Unity 5.5.0 on January 1st 2017, be sure to update your Unity installation before then.
-Project Porcupine: A Base-Building Game...in Space!
+## Project Porcupine will remain on Unity 5.4, till a more stable version of 5.5 is released.  
+We __won't__ be migrating to Unity 5.5 on January the 1st of 2017, we will remain on Unity 5.4 (for now).
+
+### Project Porcupine: A Base-Building Game...in Space!
 
 ![Preview Thumbnail](https://cloud.githubusercontent.com/assets/22880786/19826387/7ad0f0d2-9dd4-11e6-92f3-eb47b395ac63.png)
 

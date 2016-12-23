@@ -10,6 +10,8 @@
     <Overlay type="room" min="0" max="1" colorMap="Random">roomNumberValueAt</Overlay>
     <Overlay type="power" min="0" max="1" colorMap="Jet">powerValueAt</Overlay>
     <Overlay type="temperature" min="0" max="1" colorMap="Jet">temperatureValueAt</Overlay>
+    <Overlay type="power_network" min="0" max="1" colorMap="Palette">PowerGridAt</Overlay>
+    <Overlay type="fluid_network" min="0" max="1" colorMap="Palette">FluidGridAt</Overlay>
     <Overlay type="debug_thermal_diffusivity" min="0" max="1" colorMap="Jet">thermalDiffusivityValueAt</Overlay>
     <Overlay type="debug_heat_generation" min="0" max="1" colorMap="Jet">heatGenerationValueAt</Overlay>
 </Overlays>

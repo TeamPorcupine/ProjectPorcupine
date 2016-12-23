@@ -15,7 +15,7 @@ using UnityEngine;
 [MoonSharpUserData]
 public static class ModUtils
 {
-    private static string defaultLogChannel = "Lua";
+    private static string defaultLogChannel = "ModUtility";
 
     public static Vector2 LUAVector2(float x, float y)
     {
@@ -30,6 +30,38 @@ public static class ModUtils
     public static Vector3 LUAVector4(float x, float y, float z, float w)
     {
         return new Vector4(x, y, z, w);
+    }
+
+    /// <summary>
+    /// Returns true if the Tile Exists at that point.
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <param name="t"></param>
+    /// <returns></returns>
+    public static bool GetTileAt(Vector3 pos, out Tile t)
+    {
+        // Get reference to world
+        World world;
+        if (GetCurrentWorld(out world))
+        {
+            t = world.GetTileAt((int)pos.x, (int)pos.y, (int)pos.z);
+            return t != null;
+        }
+        else
+        {
+            t = null;
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Returns true if World.Current is real.
+    /// </summary>
+    public static bool GetCurrentWorld(out World world)
+    {
+        world = World.Current;
+
+        return world != null;
     }
 
     public static float Clamp01(float value)
