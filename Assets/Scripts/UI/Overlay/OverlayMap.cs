@@ -343,11 +343,17 @@ public class OverlayMap : MonoBehaviour
         paletteColors.Add(new Color32(0, 128, 128, 255));
         paletteColors.Add(new Color32(0, 0, 128, 255));
     }
-
+    private void Start()
+    {
+        if(World.ReadyToStart)
+        {
+            Startup();
+        }
+    }
     /// <summary>
     /// Grabs references, sets a dummy size and evaluation function.
     /// </summary>
-    private void Start()
+    public void Startup()
     {
         // Grab references.
         meshRenderer = GetComponent<MeshRenderer>();
