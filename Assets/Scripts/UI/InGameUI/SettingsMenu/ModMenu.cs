@@ -7,11 +7,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 public static class ModMenu {
-    public static Dictionary<string, bool> activeMods { get; private set; }
     static Dictionary<string,string> modDirs;
     static Dictionary<string, string> revModDirs;
     public static List<string> activeModDirs;
-    static Dictionary<string, bool> activeModsWaiting;
     static List<string> activeModDirsWaiting;
     static List<string> nonSaving;
     static Transform UIParent;
@@ -24,15 +22,16 @@ public static class ModMenu {
         nonSaving = new List<string>();
         if (File.Exists(Path.Combine(Application.persistentDataPath, "ModSettings.json")))
         {
-            JObject modSettings = (JObject)JToken.ReadFrom(new JsonTextReader(File.OpenText(Path.Combine(Application.persistentDataPath, "ModSettings.json"))));
+            StreamReader s = File.OpenText(Path.Combine(Application.persistentDataPath, "ModSettings.json"));
+            JObject modSettings = (JObject)JToken.ReadFrom(new JsonTextReader(s));
             active = (JArray)modSettings["activeMods"];
+            s.Close();
         }
         else
         {
             active = new JArray();
         }
         activeModDirs = new List<string>();
-        activeMods = new Dictionary<string, bool>();
         foreach (DirectoryInfo mod in ModsManager.GetModsFiles())
         {
             string modPath = Path.Combine(mod.FullName, "mod.json");
@@ -48,26 +47,25 @@ public static class ModMenu {
                     nonSaving.Add(mod.FullName);
                 }
             }
-            activeMods.Add(name, active.Contains(name));
             modDirs.Add(name,mod.FullName);
             revModDirs.Add(mod.FullName, name);
         }
-        foreach (JObject activeMod in active)
+        for (int i = 0; i < active.Count; i++)
         {
-            if (activeMods[(string) activeMod])
+            JToken activeMod = active[i];
+            if (modDirs.ContainsKey((string)activeMod))
             {
                 activeModDirs.Add(modDirs[(string)activeMod]);
             }
         }
         activeModDirsWaiting = activeModDirs;
-        activeModsWaiting = activeMods;
 	}
     public static void DisplaySettings(Transform parent)
     {
         while (parent.childCount > 0)
         {
             Transform c = parent.GetChild(0);
-            c.parent = null;
+            c.SetParent(null);
             Object.Destroy(c.gameObject);
         }
         GameObject prefab = (GameObject)Resources.Load("Prefab/DialogBoxPrefabs/Mod");
@@ -109,6 +107,10 @@ public static class ModMenu {
             m.transform.FindChild("Toggle").GetComponent<Toggle>().isOn = false;
             m.name = name;
         }
+        parent.GetComponent<AutomaticVerticalSize>().AdjustSize();
+        parent.parent.GetComponent<RectTransform>().sizeDelta = parent.GetComponent<RectTransform>().sizeDelta;
+        parent.parent.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
+        parent.parent.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
         UIParent = parent;
     }
     public static void setEnabled(string mod,bool enabled)
@@ -117,7 +119,6 @@ public static class ModMenu {
         {
             return;
         }
-        activeMods[mod] = enabled;
         if (enabled)
         {
             activeModDirs.Add(modDirs[mod]);
@@ -151,26 +152,24 @@ public static class ModMenu {
         }
         activeModDirsWaiting.Remove(modDirs[mod]);
         i -= up;
-        i = Mathf.Clamp(i, 0, activeModDirs.Count-1);
+        i = Mathf.Clamp(i, 0, activeModDirs.Count);
         activeModDirsWaiting.Insert(i, modDirs[mod]);
         DisplaySettings(UIParent);
     }
     public static void commit()
     {
         activeModDirs = activeModDirsWaiting;
-        activeMods = activeModsWaiting;
     }
     public static void reset()
     {
         activeModDirsWaiting = activeModDirs;
-        activeModsWaiting = activeMods;
     }
-    public static JArray WriteJSON()
+    public static JArray WriteJSON(bool forSave)
     {
         JArray output = new JArray();
         foreach (string mod in activeModDirs)
         {
-            if(nonSaving.Contains(mod))
+            if(nonSaving.Contains(mod) && forSave)
             {
                 continue;
             }
@@ -180,24 +179,27 @@ public static class ModMenu {
     }
     public static void Save()
     {
-        StreamWriter sw = new StreamWriter(Path.Combine(Application.persistentDataPath, "ModSettings.json"));
-        JsonWriter writer = new JsonTextWriter(sw);
-        JObject ModJSON = new JObject();
-        JsonSerializer serializer = new JsonSerializer();
-        serializer.NullValueHandling = NullValueHandling.Ignore;
-        serializer.Formatting = Formatting.Indented;
-        ModJSON.Add("activeMods", WriteJSON());
-        serializer.Serialize(writer, ModJSON);
+        JObject ModJson = new JObject();
+        ModJson.Add("activeMods", WriteJSON(false));
+        string jsonData = JsonConvert.SerializeObject(ModJson, Formatting.Indented);
 
-        writer.Flush();
+        // Save the document.
+        try
+        {
+            using (StreamWriter writer = new StreamWriter(Path.Combine(Application.persistentDataPath, "ModSettings.json")))
+            {
+                writer.WriteLine(jsonData);
+            }
+        }
+        catch (System.Exception e)
+        {
+            UnityDebugger.Debugger.LogWarning("Settings", "Settings could not be saved to " + Path.Combine(Application.persistentDataPath, "ModSettings.json"));
+            UnityDebugger.Debugger.LogWarning("Settings", e.Message);
+        }
     }
     public static void DisableAll()
     {
         activeModDirs = new List<string>();
-        foreach (string mod in activeMods.Keys)
-        {
-            activeMods[mod] = false;
-        }
         reset();
     }
 }
