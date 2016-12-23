@@ -108,6 +108,7 @@ public class ModsManager
 
     private void LoadSharedFiles()
     {
+        ModMenu.reportModsLoaded();
         LoadDirectoryAssets("Shared/Images", SpriteManager.LoadSpriteFiles);
         LoadDirectoryAssets("Shared/Audio", AudioManager.LoadAudioFiles);
 

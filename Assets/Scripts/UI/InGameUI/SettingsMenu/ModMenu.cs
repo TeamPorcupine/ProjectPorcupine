@@ -7,8 +7,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 public static class ModMenu {
-    static Dictionary<string,string> modDirs;
-    static Dictionary<string, string> revModDirs;
+    public static Dictionary<string,string> modDirs { get; private set; }
+    public static Dictionary<string, string> revModDirs { get; private set; }
     public static List<string> activeModDirs;
     static List<string> activeModDirsWaiting;
     static List<string> nonSaving;
@@ -120,6 +120,10 @@ public static class ModMenu {
         {
             return;
         }
+        if (modDirs.ContainsKey(mod) == false)
+        {
+            return;
+        }
         if (enabled)
         {
             activeModDirs.Add(modDirs[mod]);
@@ -168,13 +172,23 @@ public static class ModMenu {
     public static JArray WriteJSON(bool forSave)
     {
         JArray output = new JArray();
-        foreach (string mod in activeModDirs)
+        if (forSave)
         {
-            if(nonSaving.Contains(mod) && forSave)
+            foreach (string mod in loadedMods)
             {
-                continue;
+                if(nonSaving.Contains(mod))
+                {
+                    continue;
+                }
+                output.Add(mod);
             }
-            output.Add(revModDirs[mod]);
+        }
+        else
+        {
+            foreach (string mod in activeModDirs)
+            {
+                output.Add(revModDirs[mod]);
+            }
         }
         return output;
     }

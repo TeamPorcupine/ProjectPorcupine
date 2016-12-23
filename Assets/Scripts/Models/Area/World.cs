@@ -19,6 +19,7 @@ using UnityEngine;
 [MoonSharpUserData]
 public class World
 {
+    public static bool ReadyToStart;
     // TODO: Should this be also saved with the world data?
     // If so - beginner task!
     public readonly string GameVersion = "Someone_will_come_up_with_a_proper_naming_scheme_later";
@@ -291,6 +292,7 @@ public class World
     public JObject ToJson()
     {
         JObject worldJson = new JObject();
+        worldJson.Add("ActiveMods", ModMenu.WriteJSON(true));
         worldJson.Add("Width", Width.ToString());
         worldJson.Add("Height", Height.ToString());
         worldJson.Add("Depth", Depth.ToString());
@@ -404,7 +406,77 @@ public class World
             }   
         }
     }
+    
+    public static void CheckMods(string filename)
+    {
+        ReadyToStart = false;
+        if (File.Exists(filename) == false)
+        {
+            SceneController.Instance.LoadMainMenu();
+            return;
+        }
+        StreamReader file = File.OpenText(filename);
+        JObject worldFile = (JObject)JToken.ReadFrom(new JsonTextReader(file));
+        JArray modsNeeded = (JArray)worldFile["ActiveMods"];
+        if (modsNeeded == null)
+        {
+            ReadyToStart = true;
+            WorldController.Instance.Enable();
+        }
+        for (int i = 0; i < modsNeeded.Count; i++)
+        {
+            JToken mod = modsNeeded[i];
+            if (ModMenu.activeModDirs.Contains(ModMenu.modDirs[(string)mod]) == false)
+            {
+                //Activate inactive mods prompt
+                Debug.Log("inactive mods");
+                AudioManager.LoadAudioFiles(Path.Combine(Application.streamingAssetsPath, "Shared/Audio/Sound"));
+                DialogBoxPromptOrInfo check;
+                GameObject DialogBoxGO = GameObject.Find("Dialog Boxes");
+                GameObject tempGoObj = (GameObject)GameObject.Instantiate(Resources.Load("UI/DialogBoxes/DB_PromptOrInfo"), DialogBoxGO.transform.position, DialogBoxGO.transform.rotation, DialogBoxGO.transform);
+                tempGoObj.name = "Prompt or Info";
+                check = tempGoObj.GetComponent<DialogBoxPromptOrInfo>();
+                check.SetPrompt("This world was saved with mods that are not loaded. Load mods?");
+                check.SetButtons(new DialogBoxResult[] { DialogBoxResult.Yes, DialogBoxResult.No, DialogBoxResult.Cancel });
+                check.Closed =
+                    () =>
+                    {
+                        switch (check.Result)
+                        {
+                            case DialogBoxResult.Yes:
+                                // Load mods
+                                for (int m = 0; m < modsNeeded.Count; m++)
+                                {
+                                    ModMenu.setEnabled((string)modsNeeded[m], true);
+                                }
+                                ModMenu.reset();
+                                GameController.Instance.soundController.OnButtonSFX();
+                                break;
+                            case DialogBoxResult.No:
+                                GameController.Instance.soundController.OnButtonSFX();
+                                break;
+                            case DialogBoxResult.Cancel:
+                                GameController.Instance.soundController.OnButtonSFX();
+                                break;
+                        }
+                        ReadyToStart = true;
+                        WorldController.Instance.Enable();
+                        UnityEngine.Object.Destroy(tempGoObj);
+                        WorldController.Instance.Startup();
+                        WorldController.Instance.GetComponentInChildren<OverlayMap>().Startup();
 
+                    };
+                check.ShowDialog();
+                GameController.Instance.IsModal = true;
+                ReadyToStart = false;
+                return;
+            }
+        }
+        ReadyToStart = true;
+        WorldController.Instance.Enable();
+        Debug.Log("ModCheck sucessful");
+    }
+    
     private void SetupWorld(int width, int height, int depth)
     {
         // Set the current world to be this world.

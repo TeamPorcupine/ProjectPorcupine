@@ -65,22 +65,29 @@ public class WorldController : MonoBehaviour
                 "ping_log",
                 (evt) => UnityDebugger.Debugger.LogFormat("Scheduler", "Event {0} fired", evt.Name)));
 
-        modsManager = new ModsManager();
-
         if (SceneController.loadWorldFromFileName != null)
         {
-            CreateWorldFromSaveFile(SceneController.loadWorldFromFileName);
-            SceneController.loadWorldFromFileName = null;
+            World.CheckMods(SceneController.loadWorldFromFileName);
+            return;
         }
         else
         {
+            modsManager = new ModsManager();
             CreateEmptyWorld();
         }
 
         soundController = new SoundController(World);
     }
+    
+    public void Enable()
+    {
+        modsManager = new ModsManager();
+        CreateWorldFromSaveFile(SceneController.loadWorldFromFileName);
+        SceneController.loadWorldFromFileName = null;
+        soundController = new SoundController(World);
+    }
 
-    public void Start()
+    public void Startup()
     {
         // Create GameObject so we can have access to a transform which has a position of "Vector3.zero".
         new GameObject("VisualPath", typeof(VisualPath));
@@ -210,6 +217,14 @@ public class WorldController : MonoBehaviour
         t.Start();
 
         return t;
+    }
+
+    private void Start()
+    {
+        if(World.ReadyToStart)
+        {
+            Startup();
+        }
     }
 
     /// <summary>
