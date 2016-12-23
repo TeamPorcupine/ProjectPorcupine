@@ -13,6 +13,7 @@ public static class ModMenu {
     static List<string> activeModDirsWaiting;
     static List<string> nonSaving;
     static Transform UIParent;
+    public static List<string> loadedMods;
 
     public static void Load()
     {
@@ -201,5 +202,13 @@ public static class ModMenu {
     {
         activeModDirs = new List<string>();
         reset();
+    }
+    public static void reportModsLoaded()
+    {
+        loadedMods = new List<string>();
+        foreach (string mod in activeModDirs)
+        {
+            loadedMods.Add(revModDirs[mod]);
+        }
     }
 }

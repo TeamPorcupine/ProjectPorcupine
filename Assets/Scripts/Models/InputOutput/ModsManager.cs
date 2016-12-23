@@ -13,12 +13,9 @@ using UnityEngine;
 
 public class ModsManager
 {
-    private DirectoryInfo[] mods;
 
     public ModsManager()
     {
-        mods = GetModsFiles();
-
         LoadSharedFiles();
 
         if (SceneController.Instance.IsAtIntroScene())
