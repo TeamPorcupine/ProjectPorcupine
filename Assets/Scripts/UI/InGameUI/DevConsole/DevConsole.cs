@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DeveloperConsole.CommandTypes;
@@ -16,6 +17,8 @@ using UnityEngine.UI;
 
 namespace DeveloperConsole
 {
+    public delegate void Method(params object[] parameters);
+
     public delegate void HelpMethod();
 
     [MoonSharpUserData]
@@ -257,7 +260,7 @@ namespace DeveloperConsole
         public static void Execute(string command)
         {
             // Guard
-            if (instance == null)
+            if (instance == null || command.Trim() == string.Empty)
             {
                 return;
             }
@@ -290,17 +293,66 @@ namespace DeveloperConsole
 
                 return;
             }
+            else
+            {
+                // Do a default
+                // We will do a null checker
+                // If its null then set to default which is "" by default :P
+                args = null;
+            }
 
             // Execute command
             commandsToCall = instance.consoleCommands.Where(cB => cB.Title.ToLower() == method.ToLower().Trim());
 
-            foreach (CommandBase commandToCall in commandsToCall)
+            if (commandsToCall.Count() > 0)
             {
-                ICommandRunnable runnable = (ICommandRunnable)commandToCall;
-
-                if (runnable != null)
+                foreach (CommandBase commandToCall in commandsToCall)
                 {
-                    runnable.ExecuteCommand(args);
+                    ICommandRunnable runnable = (ICommandRunnable)commandToCall;
+
+                    if (runnable != null)
+                    {
+                        if (commandToCall.Parameters == null || commandToCall.Parameters == string.Empty)
+                        {
+                            args = string.Empty;
+                        }
+                        else
+                        {
+                            if (args == null && commandToCall.DefaultValue != null)
+                            {
+                                args = commandToCall.DefaultValue;
+                            }
+
+                            // They really need a better literal system...
+                            // This is the closet we can get basically
+                            if (args == string.Empty || args == '"'.ToString())
+                            {
+                                args = @"""";
+                            }
+                        }
+
+                        runnable.ExecuteCommand(args);
+                    }
+                }
+            }
+            else
+            {
+                // User entered a command that doesn't 'exist'
+                LogWarning("Command doesn't exist?  You entered: " + command);
+
+                LogWarning("Did you mean?");
+                IEnumerable<CommandBase> commandsToShow = instance.consoleCommands.Where(cB => cB.Title.ToLower().Contains(method.Substring(0, (method.Length >= 3) ? (int)Mathf.Ceil(method.Length / 1.5f) : method.Length).ToLower()));
+
+                if (commandsToShow.Count() == 0)
+                {
+                    LogWarning("No close matches found so looking with less precision");
+                    commandsToShow = instance.consoleCommands.Where(cB => cB.Title.ToLower().Contains(method.Substring(0, (int)Mathf.Ceil(method.Length / 3f)).ToLower()));
+                }
+
+                foreach (CommandBase commandToShow in commandsToShow)
+                {
+                    // Yah its close enough either 2/3rds similar or 1/3rd if no matches found
+                    Log(commandToShow.Title, "green");
                 }
             }
         }
@@ -401,17 +453,41 @@ namespace DeveloperConsole
         /// <summary>
         /// Returns an IEnumerator that allows iteration consisting of all the commands.
         /// </summary>
-        public static IEnumerator<CommandBase> CommandIterator()
+        public static IEnumerator<CommandBase> CommandIterator(string withTag = "")
         {
-            return (instance != null) ? instance.consoleCommands.GetEnumerator() : new List<CommandBase>.Enumerator();
+            if (instance == null)
+            {
+                return new List<CommandBase>.Enumerator();
+            }
+
+            if (withTag != string.Empty)
+            {
+                return instance.consoleCommands.Where(x => x.Tags != null && x.Tags.Count() > 0 && x.Tags.Contains(withTag, System.StringComparer.OrdinalIgnoreCase)).GetEnumerator();
+            }
+            else
+            {
+                return instance.consoleCommands.GetEnumerator();
+            }
         }
 
         /// <summary>
         /// Returns an array of all the commands.
         /// </summary>
-        public static CommandBase[] CommandArray()
+        public static CommandBase[] CommandArray(string withTag = "")
         {
-            return (instance != null) ? instance.consoleCommands.ToArray() : new CommandBase[] { };
+            if (instance == null)
+            {
+                return new CommandBase[] { };
+            }
+
+            if (withTag != string.Empty)
+            {
+                return instance.consoleCommands.Where(x => x.Tags != null && x.Tags.Count() > 0 && x.Tags.Contains(withTag, System.StringComparer.OrdinalIgnoreCase)).ToArray();
+            }
+            else
+            {
+                return instance.consoleCommands.ToArray();
+            }
         }
 
         /// <summary>
@@ -492,6 +568,66 @@ namespace DeveloperConsole
 
             instance.textArea.fontSize = CommandSettings.FontSize;
             instance.scrollRect.scrollSensitivity = CommandSettings.ScrollingSensitivity;
+        }
+
+        /// <summary>
+        /// Logs all the tags.
+        /// We don't care about the params object.
+        /// </summary>
+        public static void AllTags(params object[] objects)
+        {
+            Log("All the tags: ", "green");
+            Log(string.Join(", ", CommandArray().SelectMany(x => x.Tags).Select(x => x.Trim()).Distinct().ToArray()));
+        }
+
+        /// <summary>
+        /// Just returns help dependent on each command.
+        /// </summary>
+        /// <param name="objects"> First one should be a string tag. </param>
+        public static void Help(params object[] objects)
+        {
+            string tag = string.Empty;
+
+            if (objects != null && objects.Length > 0 && objects[0] is string)
+            {
+                tag = objects[0] as string;
+            }
+
+            Log("-- Help --", "green");
+
+            string text = string.Empty;
+
+            CommandBase[] consoleCommands = CommandArray(tag);
+
+            for (int i = 0; i < consoleCommands.Length; i++)
+            {
+                text += "\n<color=orange>" + consoleCommands[i].Title + GetParameters(consoleCommands[i]) + "</color>" + (consoleCommands[i].DescriptiveText == null ? string.Empty : " //" + consoleCommands[i].DescriptiveText);
+            }
+
+            Log(text);
+
+            Log("\n<color=orange>Note:</color> If the function has no parameters you <color=red> don't</color> need to use the parameter modifier.");
+            Log("<color=orange>Note:</color> You <color=red>don't</color> need to use the trailing parameter modifier either");
+            Log("You can use constants to replace common parameters (they are case insensitive but require ' ' around them):");
+            Log("- 'Center' (or 'Centre') is a position of the center/centre of the map.");
+            Log("- 'MousePos' is the position of the mouse");
+            Log("- 'TimeScale' is the current time scale");
+            Log("- 'Pi' is Pi");
+        }
+
+        /// <summary>
+        /// Clears the text area and history.
+        /// </summary>
+        /// <param name="objects"> We don't care about the objects :D. </param>
+        public static void Clear(params object[] objects)
+        {
+            ClearHistory();
+            Text textObj = TextObject();
+
+            if (textObj != null)
+            {
+                TextObject().text = "\n<color=green>Clear Successful :D</color>\n";
+            }
         }
 
         /// <summary>
@@ -613,7 +749,7 @@ namespace DeveloperConsole
             if (textArea == null || inputField == null || autoComplete == null || scrollRect == null || root == null)
             {
                 gameObject.SetActive(false);
-                UnityDebugger.Debugger.LogError("DevConsole", "Missing gameobjects, look at the serializeable fields");
+                UnityDebugger.Debugger.LogError("DevConsole", "Missing gameobjects, look at the serializable fields");
             }
 
             textArea.fontSize = CommandSettings.FontSize;
@@ -792,36 +928,9 @@ namespace DeveloperConsole
 
             // Load Base Commands
             AddCommands(
-                new Command("Help", CoreCommands.Help, "Returns information on all commands"),
-                new Command<Vector3>("ChangeCameraPosition", CoreCommands.ChangeCameraPosition, "Change Camera Position (Written in CSharp)"),
-                new Command<string>("Run_LUA", CoreCommands.Run_LUA, "Runs the text as a LUA function"),
-                new Command<string>("SetText", CoreCommands.SetText, "Sets the devConsole text"),
-                new Command("Clear", CoreCommands.Clear, "Clears the developer console"),
-                new Command<string, float>("SetCharacterHealth", CoreCommands.SetCharacterHealth, "Sets the character's health"),
-                new Command<string, float>("DamageCharacter", CoreCommands.DamageCharacter, "Damages said character"),
-                new Command<string>("ClearCharStateQueue", CoreCommands.CharacterClearStateQueue, "Clears the said character's state queue"),
-                new Command("ClearAllCharStateQueue", CoreCommands.AllCharactersClearStateQueue, "Clears all chaaracter's state queue"),
-                new Command<string, float>("AddCurrency", CoreCommands.AddCurrency, "Adds x amount of currency to wallet"),
-                new Command<Vector3, int>("ConsumeInventory", CoreCommands.ConsumeInventory, "Consumes x amount of inventory at position provided"),
-                new Command<Vector3, string, Vector2>("PlaceInventoryPos", CoreCommands.PlaceInventory, "Places inventory at position provided"),
-                new Command<string, int, string, Vector2>("PlaceInventoryChar", CoreCommands.PlaceInventory, "Places inventory at character provided"),
-                new Command<string, int, bool>("RemoveInventoryOfType", CoreCommands.RemoveInventoryOfType, "Remove inventory of type x"),
-                new Command<string, Vector3, float>("PlaceFurniture", CoreCommands.PlaceFurniture, "Places furniture"),
-                new Command<string, Vector3>("IsWorkSpotClear", CoreCommands.IsWorkSpotClear, "Is the work spot at the position provided clear"),
-                new Command<string, Vector3, float>("IsPlacementValid", CoreCommands.IsPlacementValid, "Is the spot provided available for furniture"),
-                new Command<Vector3>("GetTemperature", CoreCommands.GetTemperature, "Logs the current temperature at the square provided"),
-                new Command<Vector3>("GetThermalDiffusivity", CoreCommands.GetThermallDiffusivity, "Logs the current Thermal Diffusivity at the square provided"),
-                new Command<Vector3>("FloodFillRoom", CoreCommands.FloodFillRoomAt, "Flood fills the room at the position provided"),
-                new Command("GetRoomIDs", CoreCommands.GetAllRoomIDs, "Logs all the room IDs"),
-                new Command<int, string, Vector3>("DoBuild", CoreCommands.DoBuild, CoreCommands.DoBuildHelp),
-                new Command("DirtyTileGraph", CoreCommands.InvalidateTileGraph, "Invalidates the tile graph"),
-                new Command("GetCharNames", CoreCommands.GetCharacterNames, "Logs all the character names"),
-                new Command<int, string, float>("SetRoomGas", CoreCommands.SetRoomGas, "Sets the gas in the room"),
-                new Command<string, float>("SetAllRoomsGas", CoreCommands.SetAllRoomsGas, "Sets the gas in all rooms"),
-                new Command<int>("FillRoomWithAir", CoreCommands.FillRoomWithAir, "Set's the room's gasses to standard atmosphere (20/80 O2/N2 mix)"),
-                new Command("FillAllRoomsWithAir", CoreCommands.FillAllRoomsWithAir, "Set's all rooms' gasses to standard atmosphere (20/80 O2/N2 mix)"),
-                new Command<int>("EmptyRoom", CoreCommands.EmptyRoom, "Empties the room's atmosphere"),
-                new Command("EmptyAllRooms", CoreCommands.EmptyAllRooms, "Empties all rooms' atmosphere"));
+                new InternalCommand("Help", Help, "Returns information on all commands.  Can take in a parameter as a tag to search for all commands with that tag", new string[] { "System" }, new Type[] { typeof(string) }, new string[] { "tag" }),
+                new InternalCommand("Clear", Clear, "Clears the developer console", new string[] { "System" }),
+                new InternalCommand("Tags", AllTags, "Logs all the tags used", new string[] { "System" }));
 
             // Load Commands from XML (will be changed to JSON AFTER the current upgrade)
             // Covers both CSharp and LUA

@@ -543,7 +543,8 @@ public class World
             // by the furniture's movement cost, a furniture movement cost
             // of exactly 1 doesn't impact our pathfinding system, so we can
             // occasionally avoid invalidating pathfinding graphs.
-            // InvalidateTileGraph();    // Reset the pathfinding system
+            // InvalidateTileGraph();    
+            // Reset the pathfinding system
             if (tileGraph != null)
             {
                 tileGraph.RegenerateGraphAtTile(furniture.Tile);

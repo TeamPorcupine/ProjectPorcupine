@@ -6,16 +6,18 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using DeveloperConsole.CommandTypes;
-using DeveloperConsole.Interfaces;
+using System;
 
-namespace DeveloperConsole.Errors
+namespace DeveloperConsole.Interfaces
 {
-    public static class ExecuteConsoleError
+    public interface ICommandInternal : ICommandRunnable
     {
-        public static string Description(CommandBase command)
+        /// <summary>
+        /// The method to be called.
+        /// </summary>
+        Method Method
         {
-            return "An execute error as occured, this could be due to a type error or parameter missing error; or could be the method raising an error (or causing an error).";
+            get;
         }
     }
 }

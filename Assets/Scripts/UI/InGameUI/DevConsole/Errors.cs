@@ -9,13 +9,23 @@
 using DeveloperConsole.CommandTypes;
 using DeveloperConsole.Interfaces;
 
-namespace DeveloperConsole.Errors
+namespace DeveloperConsole
 {
-    public static class TypeConsoleError
+    public static class Errors
     {
-        public static string Description(CommandBase command)
+        public static string ParametersNotInFormat(CommandBase command)
         {
             return "The entered parameters do not conform to the types (in order): " + command.Parameters;
+        }
+
+        public static string ParametersMissing(CommandBase command)
+        {
+            return "The entered parameters do not conform to the types (in order): " + command.Parameters;
+        }
+
+        public static string UnknownError(CommandBase command)
+        {
+            return "An execute error as occured, this could be the method raising an error (or causing an error).  We could not locate the specific error however.";
         }
     }
 }
