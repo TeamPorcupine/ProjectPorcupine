@@ -1,9 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Categories>
   <Category Name="General">
     <OptionHeading Name="Autosave">
-      <Option Name="Autosave Every" Key="AutosaveInterval" DefaultValue="10" ClassName="AutosaveIntervalNumberField" />
-      <Option Name="Max Autosaves" Key="AutosaveFiles" DefaultValue="5" ClassName="AutosaveNumberField" />
+      <Option Name="autosave_every" Key="AutosaveInterval" DefaultValue="10" ClassName="AutosaveIntervalNumberField" />
+      <Option Name="max_autosaves" Key="AutosaveFiles" DefaultValue="5" ClassName="AutosaveNumberField" />
     </OptionHeading>
     <OptionHeading Name="Localization">
       <Option Name="Language" Key="localization" DefaultValue="en_US" ClassName="LocalizationComboBox" />
@@ -11,8 +11,8 @@
   </Category>
   <Category Name="Sound">
     <OptionHeading Name="Volume">
-      <Option Name="Master Volume" Key="masterVolume" DefaultValue="1" ClassName="SoundSlider" />
-      <Option Name="Music Volume" Key="DialogBoxSettings_musicVolume" DefaultValue="1" ClassName="SoundSlider" />
+      <Option Name="master_volume" Key="masterVolume" DefaultValue="1" ClassName="SoundSlider" />
+      <Option Name="music_volume" Key="DialogBoxSettings_musicVolume" DefaultValue="1" ClassName="SoundSlider" />
     </OptionHeading>
   </Category>
   <Category Name="Video">

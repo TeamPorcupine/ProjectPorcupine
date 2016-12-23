@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using ProjectPorcupine.Localization;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -132,7 +133,7 @@ public abstract class BaseSettingsElement
     protected Text CreateText(string withText, bool autoFit = false, TextAnchor alignment = TextAnchor.MiddleLeft)
     {
         Text text = GameObject.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsText")).GetComponent<Text>();
-        text.text = withText;
+        text.text = LocalizationTable.GetLocalization(withText);
         text.alignment = alignment;
 
         if (autoFit == true)
@@ -166,7 +167,7 @@ public abstract class BaseSettingsElement
     protected InputField CreateInputField(string withText)
     {
         InputField field = GameObject.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsField")).GetComponent<InputField>();
-        field.text = withText;
+        field.text = LocalizationTable.GetLocalization(withText);
 
         return field;
     }

@@ -46,7 +46,7 @@ namespace ProjectPorcupine.Localization
 
         public enum FallbackMode
         {
-            ReturnKey, ReturnDefaultLanguage
+            ReturnKey, ReturnDefaultLanguage, test
         }
 
         /// <summary>
@@ -76,10 +76,20 @@ namespace ProjectPorcupine.Localization
         /// </summary>
         public static string GetLocalization(string key, FallbackMode fallbackMode, string language, params object[] additionalValues)
         {
+            //for debug
+            fallbackMode = FallbackMode.test;
+
             string value;
             if (localizationTable.ContainsKey(language) && localizationTable[language].TryGetValue(key, out value))
             {
                 return string.Format(value, additionalValues);
+            }
+
+            // If the key is improperly formatted then try to fix it and retry the lookup.
+            if (key.Contains(" ") || key.Any(c => char.IsUpper(c)))
+            {
+                key = key.Replace(' ', '_').ToLower();
+                GetLocalization(key, fallbackMode, language, additionalValues);
             }
 
             if (!missingKeysLogged.Contains(key))
@@ -95,7 +105,7 @@ namespace ProjectPorcupine.Localization
                 case FallbackMode.ReturnDefaultLanguage:
                     return GetLocalization(key, FallbackMode.ReturnKey, DefaultLanguage, additionalValues);
                 default:
-                    return string.Empty;
+                    return "IM LOCALIZED";// string.Empty;
             }
         }
 
