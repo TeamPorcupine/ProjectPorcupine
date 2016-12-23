@@ -4,8 +4,6 @@
 # The chmod-ing may be uneccesary 
 language: objective-c
 osx_image: xcode6.4
-rvm:
-- 2.1.2
 before_install:
  - chmod +x ./Scripts/Install/unity.sh
  - chmod +x ./Scripts/Install/mono.sh
