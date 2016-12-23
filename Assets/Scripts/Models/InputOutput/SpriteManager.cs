@@ -8,6 +8,7 @@
 #endregion
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using UnityEngine;
 
@@ -60,6 +61,27 @@ public class SpriteManager
         else
         {
             sprite = Sprite.Create(noResourceTexture, new Rect(Vector2.zero, new Vector3(32, 32)), new Vector2(0.5f, 0.5f), 32);
+            UnityDebugger.Debugger.LogWarningFormat("SpriteManager", "No sprite: {0}, using fallback sprite.", spriteName);
+        }
+
+        return sprite;
+    }
+
+    /// <summary>
+    /// Gets a random sprite from a category.
+    /// </summary>
+    /// <returns>The sprite.</returns>
+    /// <param name="categoryName">Category name.</param>
+    public static Sprite GetRandomSprite(string categoryName)
+    {
+        Sprite sprite = null;
+
+        Dictionary<string, Sprite> spritesFromCategory = sprites.Where(p => p.Key.StartsWith(categoryName)).ToDictionary(p => p.Key, p => p.Value);
+
+        if (spritesFromCategory.Count > 0)
+        {
+            System.Random rand = new System.Random();
+            sprite = spritesFromCategory.ElementAt(rand.Next(0, spritesFromCategory.Count)).Value;
         }
 
         return sprite;
@@ -162,7 +184,7 @@ public class SpriteManager
                 }
                 else
                 {
-                    Debug.ULogErrorChannel("SpriteManager", "Could not find a <Sprites> tag.");
+                    UnityDebugger.Debugger.LogError("SpriteManager", "Could not find a <Sprites> tag.");
                     return;
                 }
             }

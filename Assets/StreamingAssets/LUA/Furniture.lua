@@ -153,6 +153,10 @@ function Stockpile_GetItemsFromFilter( furniture )
 	return furniture.AcceptsForStorage()
 end
 
+function Stockpile_SetNewFilter( furniture, character )
+    WorldController.Instance.dialogBoxManager.ShowDialogBoxByName("Filter")
+end
+
 function Stockpile_UpdateAction( furniture, deltaTime )
     -- We need to ensure that we have a job on the queue
     -- asking for either:
@@ -221,7 +225,7 @@ function Stockpile_UpdateAction( furniture, deltaTime )
     		Job.JobPriority.Low,
     		false
   	)
-  	job.JobDescription = "job_stockpile_moving_desc"
+  	job.Description = "job_stockpile_moving_desc"
   	job.acceptsAny = true
 
   	-- TODO: Later on, add stockpile priorities, so that we can take from a lower
@@ -237,7 +241,7 @@ function Stockpile_JobWorked(job)
 
     -- TODO: Change this when we figure out what we're doing for the all/any pickup job.
     --values = job.GetInventoryRequirementValues();
-    for k, inv in pairs(job.HeldInventory) do
+    for k, inv in pairs(job.DeliveredItems) do
         if(inv.StackSize > 0) then
             World.Current.inventoryManager.PlaceInventory(job.tile, inv)
             return -- There should be no way that we ever end up with more than on inventory requirement with StackSize > 0
@@ -279,7 +283,7 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 	)
 
 	job.RegisterJobCompletedCallback("MiningDroneStation_JobComplete")
-	job.JobDescription = "job_mining_drone_station_mining_desc"
+	job.Description = "job_mining_drone_station_mining_desc"
 	furniture.Jobs.Add(job)
 end
 
@@ -361,7 +365,7 @@ end
 function MetalSmelter_JobWorked(job)
     job.CancelJob()
     local inputSpot = job.tile.Furniture.Jobs.InputSpotTile
-    for k, inv in pairs(job.HeldInventory) do
+    for k, inv in pairs(job.DeliveredItems) do
         if(inv ~= nil and inv.StackSize > 0) then
             World.Current.inventoryManager.PlaceInventory(inputSpot, inv)
             inputSpot.Inventory.Locked = true
@@ -389,7 +393,7 @@ function CloningPod_UpdateAction(furniture, deltaTime)
     furniture.SetAnimationState("idle")
     job.RegisterJobWorkedCallback("CloningPod_JobRunning")
     job.RegisterJobCompletedCallback("CloningPod_JobComplete")
-	job.JobDescription = "job_cloning_pod_cloning_desc"
+	job.Description = "job_cloning_pod_cloning_desc"
     furniture.Jobs.Add(job)
 end
 
@@ -402,49 +406,16 @@ function CloningPod_JobComplete(job)
     job.buildable.Deconstruct()
 end
 
-function PowerGenerator_UpdateAction(furniture, deltatime)
-    if (furniture.Jobs.Count < 1 and furniture.Parameters["burnTime"].ToFloat() == 0) then
-        furniture.PowerConnection.OutputRate = 0
-        local itemsDesired = {RequestedItem.__new("Power Cell", 1, 1)}
-
-        local job = Job.__new(
-            furniture.Jobs.WorkSpotTile,
-            "PowerGenerator_UpdateAction",
-            nil,
-            0.5,
-            itemsDesired,
-            Job.JobPriority.High,
-            false
-        )
-
-        job.RegisterJobCompletedCallback("PowerGenerator_JobComplete")
-        job.JobDescription = "job_power_generator_filling_desc"
-        furniture.Jobs.Add(job)
-    else
-        furniture.Parameters["burnTime"].ChangeFloatValue(-deltatime)
-        if ( furniture.Parameters["burnTime"].ToFloat() < 0 ) then
-            furniture.Parameters["burnTime"].SetValue(0)
-        end
-    end
-    if (furniture.Parameters["burnTime"].ToFloat() == 0) then
-        furniture.SetAnimationState("idle")
-    else
-        furniture.SetAnimationState("running")
-    end
-end
-
-function PowerGenerator_JobComplete(job)
-    job.buildable.Parameters["burnTime"].SetValue(job.buildable.Parameters["burnTimeRequired"].ToFloat())
-    job.buildable.PowerConnection.OutputRate = 5
-end
-
 function PowerGenerator_FuelInfo(furniture)
-    local curBurn = furniture.Parameters["burnTime"].ToFloat()
-	local maxBurn = furniture.Parameters["burnTimeRequired"].ToFloat()
+    local curBurn = furniture.Parameters["cur_processing_time"].ToFloat()
+	local maxBurn = furniture.Parameters["max_processing_time"].ToFloat()
 
 	local perc = 0
 	if (maxBurn != 0) then
-		perc = curBurn * 100 / maxBurn
+		perc = 100 - (curBurn * 100 / maxBurn)
+		if (perc <= 0) then
+			perc = 0
+		end
 	end
 
     return "Fuel: " .. string.format("%.1f", perc) .. "%"
@@ -469,19 +440,8 @@ function Heater_UninstallAction( furniture, deltaTime)
 end
 
 function Heater_UpdateTemperature( furniture, deltaTime)
-    if (furniture.tile.Room.IsOutsideRoom() == true) then
-        return
-    end
-
-    tile = furniture.tile
-    pressure = tile.Room.GetGasPressure() / tile.Room.TileCount
-    efficiency = ModUtils.Clamp01(pressure / furniture.Parameters["pressure_threshold"].ToFloat())
-    temperatureChangePerSecond = furniture.Parameters["base_heating"].ToFloat() * efficiency
-    temperatureChange = temperatureChangePerSecond * deltaTime
-
-    World.Current.temperature.ChangeTemperature(tile.X, tile.Y, tile.Z, temperatureChange)
-    --ModUtils.ULogChannel("Temperature", "Heat change: " .. temperatureChangePerSecond .. " => " .. World.current.temperature.GetTemperature(tile.X, tile.Y))
-end
+    UpdateTemperature(furniture, deltaTime)
+  end
 
 -- Should maybe later be integrated with GasGenerator function by
 -- someone who knows how that would work in this case
@@ -527,7 +487,7 @@ function SolarPanel_OnUpdate(furniture, deltaTime)
 end
 
 function AirPump_OnUpdate(furniture, deltaTime)
-    if (furniture.DoesntNeedOrHasPower == false) then
+    if (furniture.IsOperating == false) then
         return
     end
 
@@ -559,7 +519,7 @@ function AirPump_OnUpdate(furniture, deltaTime)
                 targetRoom = west.Room
             end
         else
-            ModUtils.UChannelLogWarning("Furniture", "Air Pump blocked. Direction unclear")
+            ModUtils.ULogWarningChannel("Furniture", "Air Pump blocked. Direction unclear")
             return
         end
         
@@ -670,9 +630,9 @@ end
 
 function Door_GetSpriteName(furniture)
 	if (furniture.verticalDoor) then
-	    return furniture.Type .. "Vertical_0"
+	    return furniture.Type .. "_vertical_0"
 	else
-	    return furniture.Type .. "Horizontal_0"
+	    return furniture.Type .. "_horizontal_0"
 	end
 end
 
@@ -690,10 +650,10 @@ function OreMine_CreateMiningJob(furniture, character)
         true
 	)
 
-    job.JobDescription = "job_ore_mine_mining_desc"
+    job.Description = "job_ore_mine_mining_desc"
     job.RegisterJobWorkedCallback("OreMine_OreMined")
-    furniture.Jobs.Add(job)
     ModUtils.ULog("Create Mining Job - Mining Job Created")
+    return job
 end
 
 function OreMine_OreMined(job)
@@ -737,19 +697,8 @@ function Rtg_UninstallAction( furniture, deltaTime)
 end
 
 function Rtg_UpdateTemperature( furniture, deltaTime)
-    if (furniture.tile.Room.IsOutsideRoom() == true) then
-        return
+    UpdateTemperature(furniture, deltaTime)
     end
-
-    tile = furniture.tile
-    pressure = tile.Room.GetGasPressure() / tile.Room.TileCount
-    efficiency = ModUtils.Clamp01(pressure / furniture.Parameters["pressure_threshold"].ToFloat())
-    temperatureChangePerSecond = furniture.Parameters["base_heating"].ToFloat() * efficiency
-    temperatureChange = temperatureChangePerSecond * deltaTime
-
-    World.Current.temperature.ChangeTemperature(tile.X, tile.Y, tile.Z, temperatureChange)
-    --ModUtils.ULogChannel("Temperature", "Heat change: " .. temperatureChangePerSecond .. " => " .. World.current.temperature.GetTemperature(tile.X, tile.Y))
-end
 
 function Berth_TestSummoning(furniture, deltaTime)
     if (furniture.Parameters["occupied"].ToFloat() <= 0) then
@@ -779,6 +728,24 @@ function Berth_DismissShip(furniture, character)
         shipManager.DeberthShip(furniture)
         ship.SetDestination(0, 0)
     end
+end
+
+function UpdateTemperature( furniture, deltaTime )
+    if (furniture.tile.Room.IsOutsideRoom() == true) then
+        return
+    end
+
+    tile = furniture.tile
+    pressure = tile.Room.GetTotalGasPressure()
+    efficiency = ModUtils.Clamp01(pressure / furniture.Parameters["pressure_threshold"].ToFloat())
+    temperatureChangePerSecond = furniture.Parameters["base_heating"].ToFloat() * efficiency
+    temperatureChange = temperatureChangePerSecond * deltaTime
+    -- Multiply by this just to make the game make sense.
+    temperatureChange = temperatureChange * 10
+
+    World.Current.temperature.SetTemperature(tile.X, tile.Y, tile.Z, temperatureChange)
+    --ModUtils.ULogChannel("Temperature", "Heat change: " .. temperatureChangePerSecond .. " => " .. World.current.temperature.GetTemperature(tile.X, tile.Y))
+
 end
 
 ModUtils.ULog("Furniture.lua loaded")

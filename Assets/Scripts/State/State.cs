@@ -66,7 +66,7 @@ namespace ProjectPorcupine.State
         protected void DebugLog(string message, params object[] par)
         {
             string prefixedMessage = string.Format("{0} {1}: {2}", character.GetName(), StateStack(), message);
-            Debug.ULogChannel("FSM", prefixedMessage, par);
+            UnityDebugger.Debugger.LogFormat("FSM", prefixedMessage, par);
         }
 
         private string StateStack()

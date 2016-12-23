@@ -10,8 +10,6 @@
 using System;
 using System.Collections.Generic;
 using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using UnityEngine;
 
@@ -240,7 +238,7 @@ public class Ship : IPrototypable
     {
         if (goalBerth == null)
         {
-            Debug.ULogError("Ships", "Destination berth should not be set to null this way. Use Berth property or SetDestination(x,y) instead.");
+            UnityDebugger.Debugger.LogError("Ships", "Destination berth should not be set to null this way. Use Berth property or SetDestination(x,y) instead.");
             return;
         }
 
@@ -299,10 +297,10 @@ public class Ship : IPrototypable
                 // Change tile to defined contents
                 if (tile.Type.Equals(TileType.Empty) == false || tile.Furniture != null)
                 {
-                    Debug.ULogErrorChannel("Ships", "Tile " + tile.X + "," + tile.Y + " is not empty. Replacing anyway.");
+                    UnityDebugger.Debugger.LogError("Ships", "Tile " + tile.X + "," + tile.Y + " is not empty. Replacing anyway.");
                 }
 
-                tile.Type = PrototypeManager.TileType.Get(tileTypes[x, y]);
+                tile.SetTileType(PrototypeManager.TileType.Get(tileTypes[x, y]));
                 if (furnitureTypes[x, y] != null)
                 {
                     World.Current.FurnitureManager.PlaceFurniture(furnitureTypes[x, y], tile, false);
@@ -330,7 +328,7 @@ public class Ship : IPrototypable
                     tile.Furniture.Deconstruct();
                 }
 
-                tile.Type = TileType.Empty;
+                tile.SetTileType(TileType.Empty);
             }
         }
     }
@@ -434,7 +432,7 @@ public class Ship : IPrototypable
             default:
                 worldX = 0;
                 worldY = 0;
-                Debug.ULogErrorChannel("Ships", "Invalid berthing direction: " + BerthDirection);
+                UnityDebugger.Debugger.LogError("Ships", "Invalid berthing direction: " + BerthDirection);
                 break;
         }
 

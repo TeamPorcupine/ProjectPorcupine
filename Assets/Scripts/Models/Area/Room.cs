@@ -6,26 +6,22 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
 using MoonSharp.Interpreter;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace ProjectPorcupine.Rooms
 {
     [MoonSharpUserData]
-    public class Room : IXmlSerializable
+    public class Room
     {
         // Dictionary with the amount of gas in room stored in preasure(in atm) multiplyed by number of tiles.
         private Dictionary<string, float> atmosphericGasses;
         private Dictionary<string, string> deltaGas;
 
         private List<Tile> tiles;
-        private float temperature;
 
         public Room()
         {
@@ -51,16 +47,25 @@ namespace ProjectPorcupine.Rooms
             }
         }
 
-        public float Temperature
-        {
-            get
-            {
-                return temperature;
-            }
-        }
-
         // RoomBehavior is something like an airlock or office.
         public Dictionary<string, RoomBehavior> RoomBehaviors { get; private set; }
+
+        public Tile FindExitBetween(Room room2)
+        {
+            List<Tile> exits = this.FindExits();
+
+            foreach (Tile exit in exits)
+            {
+                if (exit.GetNeighbours().Any(tile => tile.Room == room2))
+                {
+                    return exit;
+                }
+            }
+
+            // In theory this should never be reached, if we are passed two rooms from a roomPath, there should always be an exit between
+            // But we should probably add some kind of error checking anyways.
+            return null;
+        }
 
         public void AssignTile(Tile tile)
         {
@@ -140,7 +145,7 @@ namespace ProjectPorcupine.Rooms
                             // We have found an exit
                             exits.Add(tile2);
                         }
-                    } 
+                    }
                 }
             }
 
@@ -218,6 +223,16 @@ namespace ProjectPorcupine.Rooms
             {
                 atmosphericGasses[name] = 0;
             }
+        }
+
+        public void SetGas(string name, float amount)
+        {
+            if (IsOutsideRoom())
+            {
+                return;
+            }
+
+            atmosphericGasses[name] = amount;
         }
 
         public string ChangeInGas(string name)
@@ -337,50 +352,29 @@ namespace ProjectPorcupine.Rooms
             room.ChangeGas(name, amountMoved);
         }
 
-        public float GetTemperature()
-        {
-            return temperature;
-        }
-
-        public void ChangeTemperature(float change)
-        {
-            temperature += change;
-        }
-
         public string[] GetGasNames()
         {
             return atmosphericGasses.Keys.ToArray();
         }
 
-        public XmlSchema GetSchema()
+        public JObject ToJson()
         {
-            return null;
-        }
-
-        public void WriteXml(XmlWriter writer)
-        {
-            // Write out gas info.
+            JObject roomGasses = new JObject();
             foreach (string k in atmosphericGasses.Keys)
             {
-                writer.WriteStartElement("Param");
-                writer.WriteAttributeString("name", k);
-                writer.WriteAttributeString("value", atmosphericGasses[k].ToString());
-                writer.WriteEndElement();
+                roomGasses.Add(k, atmosphericGasses[k]);
             }
+
+            return roomGasses;
         }
 
-        public void ReadXml(XmlReader reader)
+        public void FromJson(JToken room)
         {
-            // Read gas info.
-            if (reader.ReadToDescendant("Param"))
+            foreach (JProperty gas in ((JObject)room).Properties())
             {
-                do
-                {
-                    string k = reader.GetAttribute("name");
-                    float v = float.Parse(reader.GetAttribute("value"));
-                    atmosphericGasses[k] = v;
-                }
-                while (reader.ReadToNextSibling("Param"));
+                string k = gas.Name;
+                float v = (float)gas.Value;
+                atmosphericGasses[k] = v;
             }
         }
 
@@ -414,7 +408,7 @@ namespace ProjectPorcupine.Rooms
 
             if (objInstance.IsValidRoom(this) == false)
             {
-                Debug.ULogErrorChannel("Tile", "Trying to assign a RoomBehavior to a room that isn't valid!");
+                UnityDebugger.Debugger.LogError("Tile", "Trying to assign a RoomBehavior to a room that isn't valid!");
                 return false;
             }
 
@@ -458,7 +452,7 @@ namespace ProjectPorcupine.Rooms
                             // We have found an enclosing furniture, which means it is on our border
                             borderingTiles.Add(tile2);
                         }
-                    } 
+                    }
                 }
             }
 

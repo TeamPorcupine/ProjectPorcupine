@@ -6,10 +6,9 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System.Collections;
+
 using System.IO;
 using System.Linq;
-using System.Xml.Serialization;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,7 +29,7 @@ public class DialogBoxLoadSaveGame : DialogBox
     {
         if (Directory.Exists(directoryPath) == false)
         {
-            Debug.ULogWarningChannel("DialogBoxLoadSaveGame", "Directory: " + directoryPath + " doesn't exist - creating.");
+            UnityDebugger.Debugger.LogWarning("DialogBoxLoadSaveGame", "Directory: " + directoryPath + " doesn't exist - creating.");
             Directory.CreateDirectory(directoryPath);
         }
     }
@@ -40,13 +39,13 @@ public class DialogBoxLoadSaveGame : DialogBox
         base.ShowDialog();
 
         // Get list of files in save location
-        string saveDirectoryPath = WorldController.Instance.FileSaveBasePath();
+        string saveDirectoryPath = GameController.Instance.FileSaveBasePath();
 
         EnsureDirectoryExists(saveDirectoryPath);
 
         DirectoryInfo saveDir = new DirectoryInfo(saveDirectoryPath);
 
-        FileInfo[] saveGames = saveDir.GetFiles("*.sav").OrderByDescending(f => f.CreationTime).ToArray();
+        FileInfo[] saveGames = saveDir.GetFiles("*.sav").OrderByDescending(f => f.LastWriteTime).ToArray();
 
         // Our save dialog has an input field, which the fileListItems fill out for
         // us when we click on them
@@ -66,7 +65,7 @@ public class DialogBoxLoadSaveGame : DialogBox
             // Path.GetFileNameWithoutExtension(file) returns "SomeFileName"
             string fileName = Path.GetFileNameWithoutExtension(file.FullName);
 
-            go.GetComponentInChildren<Text>().text = string.Format("{0}\n<size=11><i>{1}</i></size>", fileName, file.CreationTime);
+            go.GetComponentInChildren<Text>().text = string.Format("{0}\n<size=11><i>{1}</i></size>", fileName, file.LastWriteTime);
 
             DialogListItem listItem = go.GetComponent<DialogListItem>();
             listItem.fileName = fileName;

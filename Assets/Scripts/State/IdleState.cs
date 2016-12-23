@@ -7,6 +7,9 @@
 // ====================================================
 #endregion
 
+using System;
+using System.Collections.Generic;
+using ProjectPorcupine.Pathfinding;
 using Random = UnityEngine.Random;
 
 namespace ProjectPorcupine.State
@@ -26,11 +29,24 @@ namespace ProjectPorcupine.State
 
         public override void Update(float deltaTime)
         {
+            // Moves character in a random direction while idle.
             timeSpentIdle += deltaTime;
             if (timeSpentIdle >= totalIdleTime)
             {
-                // We are done. Lets look for work.
-                character.SetState(null);
+                Tile[] neighbors = character.CurrTile.GetNeighbours();
+                Tile endTile = neighbors[Random.Range(0, 4)];
+                List<Tile> path = new List<Tile>() { character.CurrTile, endTile };
+
+                if (endTile.MovementCost != 0)
+                {
+                    // See if the desired tile is walkable, then go there if we can.
+                    character.SetState(new MoveState(character, Pathfinder.GoalTileEvaluator(endTile, true), path));
+                }
+                else
+                {
+                    // If the tile is unwalkable, just get a new state.
+                    character.SetState(null);
+                }
             }
         }
     }

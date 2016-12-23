@@ -9,43 +9,55 @@
 using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using Newtonsoft.Json;
 using ProjectPorcupine.Rooms;
 
 namespace ProjectPorcupine.Buildable.Components
 {
     [Serializable]
+    [JsonObject(MemberSerialization.OptIn)]
     [XmlRoot("Component")]
     [BuildableComponentName("GasConnection")]
     public class GasConnection : BuildableComponent
     {
-        private event Action<bool> OnRunningStateChanged;
+        public GasConnection()
+        {
+        }
+
+        private GasConnection(GasConnection other) : base(other)
+        {
+            Provides = other.Provides;
+            Requires = other.Requires;
+        }
 
         [XmlElement("Provides")]
+        [JsonProperty("Provides")]
         public List<GasInfo> Provides { get; set; }
 
         [XmlElement("Requires")]
+        [JsonProperty("Requires")]
         public List<GasInfo> Requires { get; set; }
 
-        [XmlElement("UsedAnimations")]
-        public UsedAnimations UsedAnimation { get; set; }
+        public override BuildableComponent Clone()
+        {
+            return new GasConnection(this);
+        }
 
-        [XmlIgnore]
-        public bool IsRunning { get; private set; }
-        
         public override bool CanFunction()
         {
             bool canFunction = true;
-            //// check if all requirements are fullfilled
+
+            // check if all requirements are fullfilled
             if (Requires != null && Requires.Count > 0)
             {
                 Room room = ParentFurniture.Tile.Room;
                 foreach (GasInfo reqGas in Requires)
                 {
-                    // get current gas rounded so it is in sync with UI
-                    float curGasPressure = (float)Math.Round((decimal)room.GetGasPressure(reqGas.Gas), 3);
+                    // get actual gas pressure so it matches what gas really is, not the prettified version for display
+                    float curGasPressure = room.GetGasPressure(reqGas.Gas);
                     if (curGasPressure < reqGas.MinLimit || curGasPressure > reqGas.MaxLimit)
                     {
-                        canFunction &= false;
+                        canFunction = false;
                     }
                 }
             }
@@ -55,62 +67,29 @@ namespace ProjectPorcupine.Buildable.Components
 
         public override void FixedFrequencyUpdate(float deltaTime)
         {
-            bool isWorking = false;
             if (Provides != null && Provides.Count > 0)
             {
                 Room room = ParentFurniture.Tile.Room;
                 foreach (GasInfo provGas in Provides)
                 {
-                    // get current gas rounded so it is in sync with UI
-                    float curGasPressure = (float)Math.Round((decimal)room.GetGasPressure(provGas.Gas), 3);
+                    // get actual gas pressure so it matches what gas really is, not the prettified version for display
+                    float curGasPressure = room.GetGasPressure(provGas.Gas);
                     if ((provGas.Rate > 0 && curGasPressure < provGas.MaxLimit) ||
                         (provGas.Rate < 0 && curGasPressure > provGas.MinLimit))
                     {
                         room.ChangeGas(provGas.Gas, provGas.Rate * deltaTime, provGas.MaxLimit);
-                        isWorking |= true;
-                    }                    
-                }
-            }
-
-            if (isWorking)
-            {
-                //// trigger running state change
-                if (!IsRunning)
-                {
-                    OnRunningStateChanged(IsRunning = true);
-                }
-            }
-            else
-            {
-                //// trigger running state change
-                if (IsRunning)
-                {
-                    OnRunningStateChanged(IsRunning = false);
+                    }
                 }
             }
         }
 
         protected override void Initialize()
         {
-            IsRunning = false;
-            OnRunningStateChanged += RunningStateChanged;
+            componentRequirements = Requirements.Gas;
         }
 
-        private void RunningStateChanged(bool newIsRunningState)
-        {
-            if (UsedAnimation != null)
-            {
-                if (newIsRunningState == true && !string.IsNullOrEmpty(UsedAnimation.Running))
-                {
-                    ParentFurniture.Animation.SetState(UsedAnimation.Running);
-                }
-                else if (newIsRunningState == false && !string.IsNullOrEmpty(UsedAnimation.Idle))
-                {
-                    ParentFurniture.Animation.SetState(UsedAnimation.Idle);
-                }
-            }
-        }
-
+        [Serializable]
+        [JsonObject(MemberSerialization.OptOut)]
         public class GasInfo
         {
             public GasInfo()
@@ -130,7 +109,7 @@ namespace ProjectPorcupine.Buildable.Components
 
             [XmlAttribute("maxLimit")]
             public float MaxLimit { get; set; }
-            
+
             public override string ToString()
             {
                 return string.Format("gas:{0}, rate:{1}, min:{2}, max:{3}", Gas, Rate, MinLimit, MaxLimit);

@@ -100,6 +100,7 @@ if [ "$endTestsFold" = 0 ]; then
     travecho 'travis_fold:end:tests'
 fi
 
+
 #TERRIBLE error check logic - Please fix ASAP
 errorCount=$(grep "failures" EditorTestResults.xml | awk -F"\"" '{print $8}') #find line with 'failures' and returns characters between quotation mark 8 and 9
 
@@ -110,8 +111,7 @@ if [ "$errorCount" != "0" ]; then
     printf '\nThe following unit tests failed:'
     echo | grep 'success="False"' EditorTestResults.xml | grep 'test-case'
 
-    rm "$(pwd)"/EditorTestResults.xml
-    exit 1
+    exitStatus=1
 fi
 
 errorCount=$(grep "failures" EditorTestResults.xml | awk -F"\"" '{print $6}') #now for errors
@@ -119,8 +119,7 @@ errorCount=$(grep "failures" EditorTestResults.xml | awk -F"\"" '{print $6}') #n
 if [ "$errorCount" != "0" ]; then
     echo "$errorCount" ' unit tests threw errors!'
 
-    rm "$(pwd)"/EditorTestResults.xml
-    exit 1
+    exitStatus=1
 fi
 
 errorCount=$(grep "failures" EditorTestResults.xml | awk -F"\"" '{print $12}') #inconlusive tests
@@ -128,8 +127,7 @@ errorCount=$(grep "failures" EditorTestResults.xml | awk -F"\"" '{print $12}') #
 if [ "$errorCount" != "0" ]; then
     echo "$errorCount" ' unit tests were inconlusive!'
 
-    rm "$(pwd)"/EditorTestResults.xml
-    exit 1
+    exitStatus=1
 fi
 
 
@@ -138,9 +136,8 @@ errorCount=$(grep "failures" EditorTestResults.xml | awk -F"\"" '{print $18}') #
 if [ "$errorCount" != "0" ]; then
     echo "$errorCount" ' unit tests were invalid!'
 
-    rm "$(pwd)"/EditorTestResults.xml
-    exit 1
+    exitStatus=1
 fi
-#end of unit test checks. at this point the test have suceeded or exited with an error code.
-
+#end of unit test checks. at this point the test have suceeded or set exitStatus to 1.
 rm "$(pwd)"/EditorTestResults.xml
+exit $exitStatus

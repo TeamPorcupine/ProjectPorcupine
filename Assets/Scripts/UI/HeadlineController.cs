@@ -7,9 +7,6 @@
 // ====================================================
 #endregion
 
-using System.Collections;
-using System.IO;
-using System.Xml;
 using Scheduler;
 using UnityEngine;
 using UnityEngine.UI;
@@ -57,7 +54,7 @@ public class HeadlineController : MonoBehaviour
         canvasGroup.interactable = true;
         canvasGroup.blocksRaycasts = true;
 
-        Debug.ULogChannel("Headline", newHeadline);
+        UnityDebugger.Debugger.Log("Headline", newHeadline);
         textBox.text = newHeadline;
 
         Scheduler.Scheduler.Current.DeregisterEvent(scheduledEvent);

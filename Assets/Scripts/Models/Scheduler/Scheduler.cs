@@ -7,16 +7,11 @@
 // ====================================================
 #endregion
 
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
-using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
 using MoonSharp.Interpreter;
-using UnityEngine;
+using Newtonsoft.Json.Linq;
 
 namespace Scheduler
 {
@@ -24,7 +19,7 @@ namespace Scheduler
     /// Generic scheduler class for tracking and dispatching ScheduledEvents.
     /// </summary>
     [MoonSharpUserData]
-    public class Scheduler : IXmlSerializable
+    public class Scheduler
     {
         private static Scheduler instance;
         private List<ScheduledEvent> events;
@@ -96,7 +91,7 @@ namespace Scheduler
         {
             if (PrototypeManager.ScheduledEvent.Has(name) == false)
             {
-                Debug.ULogWarningChannel("Scheduler", "Tried to schedule an event from a prototype '{0}' which does not exist. Bailing.", name);
+                UnityDebugger.Debugger.LogWarningFormat("Scheduler", "Tried to schedule an event from a prototype '{0}' which does not exist. Bailing.", name);
                 return;
             }
 
@@ -115,7 +110,7 @@ namespace Scheduler
             {
                 if (IsRegistered(evt))
                 {
-                    Debug.ULogChannel("Scheduler", "Event '{0}' registered more than once.", evt.Name);
+                    UnityDebugger.Debugger.LogFormat("Scheduler", "Event '{0}' registered more than once.", evt.Name);
                 }
 
                 eventsToAddNextTick.Add(evt);
@@ -196,64 +191,10 @@ namespace Scheduler
             PrototypeManager.ScheduledEvent.Add(eventPrototype);
         }
 
-        #region IXmlSerializable implementation
-
-        /// <summary>
-        /// This does absolutely nothing.
-        /// This is required to implement IXmlSerializable.
-        /// </summary>
-        /// <returns>NULL and NULL.</returns>
-        public XmlSchema GetSchema()
+        public JToken ToJson()
         {
-            return null;
-        }
+            JArray eventsJArray = new JArray();
 
-        /// <summary>
-        /// Generates a Scheduler from its XML representation.
-        /// Clears any previous events in the queue.
-        /// </summary>
-        public void ReadXml(XmlReader reader)
-        {
-            Debug.ULogChannel("Scheduler", "Reading save file...", Events.Count);
-            CleanUp();
-
-            if (reader.ReadToDescendant("Event"))
-            {
-                do
-                {
-                    // there are no sensible defaults for name and cooldown so we do want to throw an exception if their xml is borked
-                    string name = reader.GetAttribute("name");
-                    float cooldown = float.Parse(reader.GetAttribute("cooldown"));
-
-                    float timeToWait = cooldown;
-                    float.TryParse(reader.GetAttribute("timeToWait"), out timeToWait);
-
-                    bool repeatsForever = false;
-                    bool.TryParse(reader.GetAttribute("repeatsForever"), out repeatsForever);
-
-                    int repeatsLeft = 0;
-                    int.TryParse(reader.GetAttribute("repeatsLeft"), out repeatsLeft);
-
-                    this.ScheduleEvent(name, cooldown, timeToWait, repeatsForever, repeatsLeft);
-                }
-                while (reader.ReadToNextSibling("Event"));
-            }
-            else
-            {
-                Debug.ULogWarningChannel("Scheduler", "Malformed 'Scheduler' serialization: does not have any 'Event' elements.");
-            }
-
-            this.Update(0); // update the event list
-            Debug.ULogChannel("Scheduler", "Save file loaded. Event queue contains {0} events.", Events.Count);
-        }
-
-        /// <summary>
-        /// Converts a Scheduler into its XML representation.
-        /// Only serializes events with IsSaveable == true.
-        /// </summary>
-        public void WriteXml(XmlWriter writer)
-        {
-            writer.WriteStartElement("Scheduler");
             foreach (ScheduledEvent evt in Events)
             {
                 if (evt.IsSaveable == false)
@@ -261,13 +202,35 @@ namespace Scheduler
                     continue;
                 }
 
-                evt.WriteXml(writer);
+                eventsJArray.Add(evt.ToJson());
             }
 
-            writer.WriteEndElement();
+            return eventsJArray;
         }
 
-        #endregion
+        public void FromJson(JToken schedulerToken)
+        {
+            if (schedulerToken == null)
+            {
+                return;
+            }
+
+            CleanUp();
+            JArray schedulerJArray = (JArray)schedulerToken;
+
+            foreach (JToken eventToken in schedulerJArray)
+            {
+                string name = (string)eventToken["Name"];
+                float cooldown = (float)eventToken["Cooldown"];
+                float timeToWait = (float)eventToken["TimeToWait"];
+                bool repeatsForever = (bool)eventToken["RepeatsForever"];
+                int repeatsLeft = (int)eventToken["RepeatsLeft"];
+
+                ScheduleEvent(name, cooldown, timeToWait, repeatsForever, repeatsLeft);
+            }
+
+            Update(0); // update the event list
+        }
 
         /// <summary>
         /// Destroy this instance.

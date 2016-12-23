@@ -7,8 +7,6 @@
 // ====================================================
 #endregion
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ShipSpriteController : BaseSpriteController<Ship>
@@ -21,7 +19,7 @@ public class ShipSpriteController : BaseSpriteController<Ship>
 
     protected override void OnCreated(Ship ship)
     {
-        Debug.ULogChannel("Ships", "Ship created: " + ship.Type);
+        UnityDebugger.Debugger.Log("Ships", "Ship created: " + ship.Type);
 
         GameObject ship_go = new GameObject();
 

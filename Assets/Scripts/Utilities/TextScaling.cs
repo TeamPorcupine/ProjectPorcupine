@@ -58,12 +58,18 @@ public class TextScaling : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        activationList.Remove(this);
+        StopCoroutine(LateStart());
+    }
+
     private void Start()
     {
         activationList.Add(this);
         textScript = GetComponent<Text>();
         rectTrans = GetComponent<RectTransform>();
-        
+
         // Delayed, width is 0 on start.
         StartCoroutine(LateStart());
     }
@@ -72,7 +78,7 @@ public class TextScaling : MonoBehaviour
     {
         yield return null;
         originalWidth = transform.parent.GetComponent<RectTransform>().rect.width;
-        
+
         // Resize localization texts on start.
         UpdateScale();
     }

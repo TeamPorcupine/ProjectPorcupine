@@ -7,9 +7,7 @@
 // ====================================================
 #endregion
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using ProjectPorcupine.Pathfinding;
 
 namespace ProjectPorcupine.State
@@ -28,7 +26,7 @@ namespace ProjectPorcupine.State
             job.OnJobStopped += OnJobStopped;
             job.IsBeingWorked = true;
 
-            DebugLog("created {0}", job.JobObjectType ?? "Unnamed Job");
+            DebugLog("created {0}", job.Type ?? "Unnamed Job");
         }
 
         public Job Job { get; private set; }
@@ -65,6 +63,12 @@ namespace ProjectPorcupine.State
                 }
                 else
                 {
+                    // Add character to the list of characters unable to reach the job.
+                    if (!World.Current.jobQueue.CharacterCantReachHelper(Job, character))
+                    {
+                        Job.CharsCantReach.Add(character);
+                    }
+                   
                     Interrupt();
                 }
             }
@@ -96,7 +100,7 @@ namespace ProjectPorcupine.State
         private void AbandonJob()
         {
             DebugLog(" - Job abandoned!");
-            Debug.ULogChannel("Character", character.GetName() + " abandoned their job.");
+            UnityDebugger.Debugger.Log("Character", character.GetName() + " abandoned their job.");
 
             Job.OnJobCompleted -= OnJobCompleted;
             Job.OnJobStopped -= OnJobStopped;
@@ -110,11 +114,11 @@ namespace ProjectPorcupine.State
                 return;
             }
 
-            // Drops the priority a level.
-            Job.DropPriority();
-
             // If the job gets abandoned because of pathing issues or something else, just return it to the queue
             World.Current.jobQueue.Enqueue(Job);
+
+            // Tell the player that we need a new task.
+            character.SetState(null);
         }
 
         private void OnJobStopped(Job stoppedJob)
@@ -130,7 +134,7 @@ namespace ProjectPorcupine.State
 
             if (Job != stoppedJob)
             {
-                Debug.ULogErrorChannel("Character", "Character being told about job that isn't his. You forgot to unregister something.");
+                UnityDebugger.Debugger.LogError("Character", "Character being told about job that isn't his. You forgot to unregister something.");
                 return;
             }
         }
@@ -149,7 +153,7 @@ namespace ProjectPorcupine.State
 
                 if (Job != finishedJob)
                 {
-                    Debug.ULogErrorChannel("Character", "Character being told about job that isn't his. You forgot to unregister something.");
+                    UnityDebugger.Debugger.LogError("Character", "Character being told about job that isn't his. You forgot to unregister something.");
                     return;
                 }
             }

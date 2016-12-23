@@ -29,7 +29,7 @@ namespace ProjectPorcupine.Localization
             LoadLocalizationInDirectory(Application.streamingAssetsPath);
 
             // Load mods localization files
-            foreach (DirectoryInfo mod in WorldController.Instance.modsManager.GetMods())
+            foreach (DirectoryInfo mod in ModsManager.GetModsFiles())
             {
                 LoadLocalizationInDirectory(mod.FullName);
             }
@@ -58,6 +58,9 @@ namespace ProjectPorcupine.Localization
                 return;
             }
 
+            // Load the localization config file first
+            LocalizationTable.LoadConfigFile(Path.Combine(filePath, "config.xml"));
+
             // Loop through all files.
             // TODO: Think over the extension ".lang", might change that in the future.
             foreach (string file in Directory.GetFiles(filePath, "*.lang"))
@@ -66,7 +69,7 @@ namespace ProjectPorcupine.Localization
                 LocalizationTable.LoadLocalizationFile(file);
 
                 // Just write a little debug info into the console.
-                Debug.ULogChannel("LocalizationLoader", "Loaded localization at path: " + file);
+                UnityDebugger.Debugger.Log("LocalizationLoader", "Loaded localization at path: " + file);
             }
         }
 

@@ -8,19 +8,17 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
 using MoonSharp.Interpreter;
+using Newtonsoft.Json.Linq;
 
 // Inventory are things that are lying on the floor/stockpile, like a bunch of metal bars
 // or potentially a non-installed copy of furniture (e.g. a cabinet still in the box from Ikea).
 [MoonSharpUserData]
 [System.Diagnostics.DebuggerDisplay("Inventory {ObjectType} {StackSize}/{MaxStackSize}")]
-public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
+public class Inventory : ISelectable, IContextActionProvider
 {
     private int stackSize = 1;
+    private DateTime claim;
 
     public Inventory()
     {
@@ -84,6 +82,29 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
         return new Inventory(this);
     }
 
+    public bool Claim()
+    {
+        // FIXME: The various Claim related functions should most likely track claim time in an in game time increment.
+        DateTime requestTime = DateTime.Now;
+        if ((requestTime - claim).TotalSeconds > 5)
+        {
+            claim = requestTime;
+            return true;
+        }
+
+        return false;
+    }
+
+    public void ReleaseClaim()
+    {
+        claim = new DateTime();
+    }
+
+    public bool CanClaim()
+    {
+        return (DateTime.Now - claim).TotalSeconds > 5;
+    }
+
     public string GetName()
     {
         return Type;
@@ -93,7 +114,7 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
     {
         return string.Format("StackSize: {0}\nCategory: {1}\nBasePrice: {2:N2}", StackSize, Category, BasePrice);
     }
-    
+
     public string GetJobDescription()
     {
         return string.Empty;
@@ -112,48 +133,50 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
         yield return string.Format("BasePrice: {0:N2}", BasePrice);
     }
 
-    public XmlSchema GetSchema()
+    public object ToJSon()
     {
-        return null;
-    }
-
-    public void WriteXml(XmlWriter writer)
-    {
-        // If we reach this point through inventories we definitely have a tile
-        // If we don't have a tile, that means we're writing a character's inventory
+        JObject inventoryJson = new JObject();
         if (Tile != null)
         {
-            writer.WriteAttributeString("X", Tile.X.ToString());
-            writer.WriteAttributeString("Y", Tile.Y.ToString());
-            writer.WriteAttributeString("Z", Tile.Z.ToString());
+            inventoryJson.Add("X", Tile.X);
+            inventoryJson.Add("Y", Tile.Y);
+            inventoryJson.Add("Z", Tile.Z);
         }
 
-        writer.WriteAttributeString("type", Type);
-        writer.WriteAttributeString("maxStackSize", MaxStackSize.ToString());
-        writer.WriteAttributeString("stackSize", StackSize.ToString());
-        writer.WriteAttributeString("basePrice", BasePrice.ToString(CultureInfo.InvariantCulture));
-        writer.WriteAttributeString("category", Category);
-        writer.WriteAttributeString("locked", Locked.ToString());
+        inventoryJson.Add("Type", Type);
+        inventoryJson.Add("MaxStackSize", MaxStackSize);
+        inventoryJson.Add("StackSize", StackSize);
+        inventoryJson.Add("BasePrice", BasePrice);
+        inventoryJson.Add("Category", Category);
+        inventoryJson.Add("Locked", Locked);
+
+        return inventoryJson;
     }
 
-    public void ReadXml(XmlReader reader)
+    public void FromJson(JToken inventoryToken)
     {
+        Type = (string)inventoryToken["Type"];
+        MaxStackSize = (int)inventoryToken["MaxStackSize"];
+        StackSize = (int)inventoryToken["StackSize"];
+        BasePrice = (float)inventoryToken["BasePrice"];
+        Category = (string)inventoryToken["Category"];
+        Locked = (bool)inventoryToken["Locked"];
     }
 
     public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
     {
         yield return new ContextMenuAction
         {
-            Text = "Sample Item Context action",
+            LocalizationKey = "Sample Item Context action",
             RequireCharacterSelected = true,
-            Action = (cm, c) => Debug.ULogChannel("Inventory", "Sample menu action")
+            Action = (cm, c) => UnityDebugger.Debugger.Log("Inventory", "Sample menu action")
         };
     }
 
     public bool CanBePickedUp(bool canTakeFromStockpile)
     {
         // You can't pick up stuff that isn't on a tile or if it's locked
-        if (Tile == null || Locked)
+        if (Tile == null || Locked || !CanClaim())
         {
             return false;
         }

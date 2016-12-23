@@ -39,14 +39,14 @@ public class PowerNetworkTest
     [Test]
     public void PlugInTest()
     {
-        Assert.IsTrue(powerNetwork.PlugIn(new Connection()));
+        Assert.IsTrue(powerNetwork.PlugIn(new MockConnection()));
         Assert.AreEqual(1, powerGrids.Count);
     }
 
     [Test]
     public void IsPluggedInTest()
     {
-        Connection connection = new Connection();
+        MockConnection connection = new MockConnection();
         Assert.IsTrue(powerNetwork.PlugIn(connection));
         Assert.AreEqual(1, powerGrids.Count);
         Grid grid;
@@ -57,21 +57,19 @@ public class PowerNetworkTest
     [Test]
     public void UnplugTest()
     {
-        Connection connection = new Connection();
-        Assert.IsTrue(powerNetwork.PlugIn(connection));
+        MockConnection connection = new MockConnection();
+        Grid grid = new Grid();
+        Assert.IsTrue(powerNetwork.PlugIn(connection, grid));
         Assert.AreEqual(1, powerGrids.Count);
         powerNetwork.Unplug(connection);
-        Assert.AreEqual(1, powerGrids.Count);
-
-        powerNetwork.Update(1.0f);
-        Assert.AreEqual(0, powerGrids.Count);
+        Assert.AreEqual(0, grid.ConnectionCount);
     }
 
     [Test]
     public void UpdateEnoughPowerTest()
     {
-        Connection powerProducer = new Connection { OutputRate = 50.0f };
-        Connection firstPowerConsumer = new Connection { InputRate = 30.0f };
+        MockConnection powerProducer = new MockConnection { OutputRate = 50.0f };
+        MockConnection firstPowerConsumer = new MockConnection { InputRate = 30.0f };
         powerNetwork.PlugIn(powerProducer);
         powerNetwork.PlugIn(firstPowerConsumer);
         Assert.AreEqual(1, powerGrids.Count);
@@ -84,9 +82,9 @@ public class PowerNetworkTest
     [Test]
     public void UpdateNotEnoughPowerTest()
     {
-        Connection powerProducer = new Connection { OutputRate = 50.0f };
-        Connection firstPowerConsumer = new Connection { InputRate = 30.0f };
-        Connection secondPowerConsumer = new Connection { InputRate = 30.0f };
+        MockConnection powerProducer = new MockConnection { OutputRate = 50.0f };
+        MockConnection firstPowerConsumer = new MockConnection { InputRate = 30.0f };
+        MockConnection secondPowerConsumer = new MockConnection { InputRate = 30.0f };
         powerNetwork.PlugIn(powerProducer);
         powerNetwork.PlugIn(firstPowerConsumer);
         powerNetwork.PlugIn(secondPowerConsumer);
@@ -101,8 +99,8 @@ public class PowerNetworkTest
     [Test]
     public void UpdateIntervalTest()
     {
-        Connection powerProducer = new Connection { OutputRate = 50.0f };
-        Connection firstPowerConsumer = new Connection { InputRate = 30.0f };
+        MockConnection powerProducer = new MockConnection { OutputRate = 50.0f };
+        MockConnection firstPowerConsumer = new MockConnection { InputRate = 30.0f };
         powerNetwork.PlugIn(powerProducer);
         powerNetwork.PlugIn(firstPowerConsumer);
         Assert.AreEqual(1, powerGrids.Count);
@@ -120,5 +118,68 @@ public class PowerNetworkTest
         powerNetwork.Update(0.2f);
         Assert.IsTrue(powerNetwork.HasPower(powerProducer));
         Assert.IsTrue(powerNetwork.HasPower(firstPowerConsumer));
+    }
+
+    private class MockConnection : IPluggable
+    {
+        public event Action Reconnecting;
+
+        public float StoredAmount { get; set; }
+
+        public float StorageCapacity { get; set; }
+
+        public float InputRate { get; set; }
+
+        public bool IsStorage
+        {
+            get { return StorageCapacity > 0f; }
+        }
+
+        public bool IsConsumer
+        {
+            get { return InputRate > 0f && !IsStorage; }
+        }
+
+        public bool IsEmpty
+        {
+            get { return StoredAmount == 0f; }
+        }
+
+        public bool IsFull
+        {
+            get { return StoredAmount.AreEqual(StorageCapacity); }
+        }
+
+        public string UtilityType 
+        { 
+            get 
+            { 
+                return "Power";
+            }
+        }
+
+        public string SubType 
+        {
+            get 
+            {
+                return string.Empty;
+            }
+
+            set
+            {
+            }
+        }
+
+        public bool IsProducer
+        {
+            get { return OutputRate > 0f && !IsStorage; }
+        }
+
+        public float OutputRate { get; set; }
+
+        public void Reconnect()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -6,9 +6,8 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System.Collections;
+
 using System.IO;
-using System.Xml.Serialization;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -59,7 +58,7 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
         //    C:\Users\Quill18\ApplicationData\MyCompanyName\MyGameName\Saves\SaveGameName123.sav
 
         // Application.persistentDataPath == C:\Users\<username>\ApplicationData\MyCompanyName\MyGameName\
-        string saveDirectoryPath = WorldController.Instance.FileSaveBasePath();
+        string saveDirectoryPath = GameController.Instance.FileSaveBasePath();
 
         EnsureDirectoryExists(saveDirectoryPath);
 
@@ -94,7 +93,7 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
     {
         string fileName = gameObject.GetComponentInChildren<InputField>().text;
 
-        string saveDirectoryPath = WorldController.Instance.FileSaveBasePath();
+        string saveDirectoryPath = GameController.Instance.FileSaveBasePath();
 
         EnsureDirectoryExists(saveDirectoryPath);
 
@@ -138,13 +137,13 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
         // from the load dialog box.
 
         // Get the file name from the save file dialog box.
-        Debug.ULogChannel("DialogBoxLoadGame", "LoadWorld button was clicked.");
+        UnityDebugger.Debugger.Log("DialogBoxLoadGame", "LoadWorld button was clicked.");
 
         DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
         dbm.dialogBoxPromptOrInfo.SetPrompt("message_loading_game");
         dbm.dialogBoxPromptOrInfo.ShowDialog();
 
-        WorldController.Instance.LoadWorld(filePath);
+        SceneController.Instance.LoadWorld(filePath);
     }
 
     private void Update()

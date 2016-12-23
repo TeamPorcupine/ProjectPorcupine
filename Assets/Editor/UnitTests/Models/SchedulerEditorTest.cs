@@ -8,9 +8,8 @@
 #endregion
 using System;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Text;
-using System.Xml;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Scheduler;
 
@@ -21,7 +20,7 @@ public class SchedulerEditorTest
             ModUtils.ULogChannel(""Scheduler"", ""Scheduled Lua event '"" .. event.Name .. ""'"")
             return
         end";
-    
+
     private const string XmlPrototypeString = @"
         <ScheduledEvents>
             <ScheduledEvent name=""ping_log_lua"" onFire=""ping_log_lua""/>
@@ -33,28 +32,26 @@ public class SchedulerEditorTest
     [SetUp]
     public void Init()
     {
-        Debug.IsLogEnabled = false;
-
         if (FunctionsManager.ScheduledEvent == null)
         {
             new FunctionsManager();
         }
 
-        FunctionsManager.ScheduledEvent.LoadScript(LuaFunctionString, "ScheduledEvent");
+        FunctionsManager.ScheduledEvent.LoadScript(LuaFunctionString, "ScheduledEvent", Functions.Type.Lua);
 
         if (PrototypeManager.ScheduledEvent == null)
         {
             new PrototypeManager();
         }
 
-        PrototypeManager.ScheduledEvent.Add(new ScheduledEvent("ping_log", evt => Debug.ULogChannel("Scheduler", "Event {0} fired", evt.Name)));
+        PrototypeManager.ScheduledEvent.Add(new ScheduledEvent("ping_log", evt => UnityDebugger.Debugger.LogFormat("Scheduler", "Event {0} fired", evt.Name)));
         PrototypeManager.ScheduledEvent.LoadPrototypes(XmlPrototypeString);
 
         // The problem with unit testing singletons
         ///scheduler = Scheduler.Scheduler.Current;
         scheduler = new Scheduler.Scheduler();
 
-        callback = evt => Debug.ULogChannel("SchedulerTest", "Event {0} fired", evt.Name);
+        callback = evt => UnityDebugger.Debugger.LogFormat("SchedulerTest", "Event {0} fired", evt.Name);
     }
 
     [Test]
@@ -260,22 +257,19 @@ public class SchedulerEditorTest
     }
 
     [Test]
-    public void SchedulerWriteXmlTest()
+    public void ScedulerToJsonTest()
     {
         scheduler.ScheduleEvent("ping_log", 1f, true, 0);
         scheduler.ScheduleEvent("ping_log_lua", 2f, false, 3);
         scheduler.Update(0); // updates the event list
 
-        StringBuilder sb = new StringBuilder();
-        XmlWriter writer = new XmlTextWriter(new StringWriter(sb));
-        scheduler.WriteXml(writer);
+        string jsonString = JsonConvert.SerializeObject(scheduler.ToJson());
 
-        string expectedXml = "<Scheduler><Event name=\"ping_log\" cooldown=\"1\" timeToWait=\"1\" repeatsForever=\"True\" /><Event name=\"ping_log_lua\" cooldown=\"2\" timeToWait=\"2\" repeatsLeft=\"3\" /></Scheduler>";
-        Assert.That(sb.ToString(), Is.EqualTo(expectedXml));
+        Assert.That(jsonString, Is.EqualTo("[{\"Name\":\"ping_log\",\"Cooldown\":1.0,\"TimeToWait\":1.0,\"RepeatsForever\":true,\"RepeatsLeft\":0},{\"Name\":\"ping_log_lua\",\"Cooldown\":2.0,\"TimeToWait\":2.0,\"RepeatsForever\":false,\"RepeatsLeft\":3}]"));
     }
 
     [Test]
-    public void SchedulerWriteXmlDoesNotWriteNoSaveFlaggedEventsTest()
+    public void SchedulerToJsonDoesNotConvertNoSaveFlaggedEventsTest()
     {
         ScheduledEvent evt = new ScheduledEvent(
             "test",
@@ -287,62 +281,48 @@ public class SchedulerEditorTest
         scheduler.RegisterEvent(evt);
         scheduler.Update(0); // updates the event list
 
-        StringBuilder sb = new StringBuilder();
-        XmlWriter writer = new XmlTextWriter(new StringWriter(sb));
-        scheduler.WriteXml(writer);
+        string jsonString = JsonConvert.SerializeObject(scheduler.ToJson());
 
-        string expectedXml = "<Scheduler />";
-        Assert.That(sb.ToString(), Is.EqualTo(expectedXml));
+        Assert.That(jsonString, Is.EqualTo("[]"));
     }
 
     [Test]
-    public void SchedulerReadXmlTest()
+    public void SchedulerFromJsonTest()
     {
-        // prepare a scheduler instance to serialize
-        scheduler.ScheduleEvent("ping_log", 1f, true, 0);
-        scheduler.ScheduleEvent("ping_log_lua", 2f, false, 3);
-        scheduler.Update(0.5f);
+        string schedulerJsonString = "[{\"Name\":\"ping_log\",\"Cooldown\":1.0,\"TimeToWait\":1.0,\"RepeatsForever\":true,\"RepeatsLeft\":0},{\"Name\":\"ping_log_lua\",\"Cooldown\":2.0,\"TimeToWait\":2.0,\"RepeatsForever\":false,\"RepeatsLeft\":3}]";
+        JToken schedulerJson = (JToken)JsonConvert.DeserializeObject(schedulerJsonString);
 
-        // serialize it
-        StringBuilder sb = new StringBuilder();
-        XmlWriter writer = new XmlTextWriter(new StringWriter(sb));
-        scheduler.WriteXml(writer);
-        XmlReader reader = new XmlTextReader(new StringReader(sb.ToString()));
-
-        // Tt is not actually necessary to replace the scheduler: it will properly clear the old one.
-        // This just proves that it does work to recreate the scheduler from nothing.
         scheduler = new Scheduler.Scheduler();
-        scheduler.ReadXml(reader);
+        scheduler.FromJson(schedulerJson);
 
         Assert.That(scheduler.Events.Count, Is.EqualTo(2));
         Assert.That(scheduler.Events[0].Name, Is.EqualTo("ping_log"));
         Assert.That(scheduler.Events[0].Cooldown, Is.EqualTo(1));
-        Assert.That(scheduler.Events[0].TimeToWait, Is.EqualTo(0.5f));
+        Assert.That(scheduler.Events[0].TimeToWait, Is.EqualTo(1f));
         Assert.That(scheduler.Events[0].RepeatsForever, Is.True);
         Assert.That(scheduler.Events[0].RepeatsLeft, Is.EqualTo(0));
         Assert.That(scheduler.Events[1].Name, Is.EqualTo("ping_log_lua"));
         Assert.That(scheduler.Events[1].Cooldown, Is.EqualTo(2));
-        Assert.That(scheduler.Events[1].TimeToWait, Is.EqualTo(1.5f));
+        Assert.That(scheduler.Events[1].TimeToWait, Is.EqualTo(2f));
         Assert.That(scheduler.Events[1].RepeatsForever, Is.False);
         Assert.That(scheduler.Events[1].RepeatsLeft, Is.EqualTo(3));
 
         // Prove that it works even without creating a new scheduler instance.
-        // First add an event so that the Asserts will fail if ReadXml does nothing.
+        // First add an event so that the Asserts will fail if FromJson does nothing.
         scheduler.ScheduleEvent("ping_log_lua", 5f, false, 20);
         scheduler.Update(0);
 
-        reader = new XmlTextReader(new StringReader(sb.ToString()));
-        scheduler.ReadXml(reader);
+        scheduler.FromJson(schedulerJson);
 
         Assert.That(scheduler.Events.Count, Is.EqualTo(2));
         Assert.That(scheduler.Events[0].Name, Is.EqualTo("ping_log"));
         Assert.That(scheduler.Events[0].Cooldown, Is.EqualTo(1));
-        Assert.That(scheduler.Events[0].TimeToWait, Is.EqualTo(0.5f));
+        Assert.That(scheduler.Events[0].TimeToWait, Is.EqualTo(1f));
         Assert.That(scheduler.Events[0].RepeatsForever, Is.True);
         Assert.That(scheduler.Events[0].RepeatsLeft, Is.EqualTo(0));
         Assert.That(scheduler.Events[1].Name, Is.EqualTo("ping_log_lua"));
         Assert.That(scheduler.Events[1].Cooldown, Is.EqualTo(2));
-        Assert.That(scheduler.Events[1].TimeToWait, Is.EqualTo(1.5f));
+        Assert.That(scheduler.Events[1].TimeToWait, Is.EqualTo(2f));
         Assert.That(scheduler.Events[1].RepeatsForever, Is.False);
         Assert.That(scheduler.Events[1].RepeatsLeft, Is.EqualTo(3));
     }

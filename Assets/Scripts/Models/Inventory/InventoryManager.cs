@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MoonSharp.Interpreter;
+using Newtonsoft.Json.Linq;
 using ProjectPorcupine.Pathfinding;
 using UnityEngine;
 
@@ -106,11 +107,13 @@ public class InventoryManager
         {
             // The tile did not accept the inventory for whatever reason, therefore stop.
             return false;
+
+            // TODO: Geoffrotism. Is this where we would hook in to handle inventory not being able to be placed in a tile.
         }
 
         CleanupInventory(inventory);
 
-        // We may also created a new stack on the tile, if the startTile was previously empty.
+        // We may also have to create a new stack on the tile, if the startTile was previously empty.
         if (tileWasEmpty)
         {
             if (Inventories.ContainsKey(tile.Inventory.Type) == false)
@@ -125,6 +128,20 @@ public class InventoryManager
         return true;
     }
 
+    public bool ConsumeInventory(Tile tile, int amount)
+    {
+        if (tile.Inventory == null)
+        {
+            return false;
+        }
+        else
+        {
+            tile.Inventory.StackSize -= amount;
+            CleanupInventory(tile.Inventory);
+            return true;
+        }
+    }
+
     public bool PlaceInventory(Job job, Character character)
     {
         Inventory sourceInventory = character.inventory;
@@ -132,17 +149,17 @@ public class InventoryManager
         // Check that it's wanted by the job
         if (job.RequestedItems.ContainsKey(sourceInventory.Type) == false)
         {
-            Debug.ULogErrorChannel(InventoryManagerLogChanel, "Trying to add inventory to a job that it doesn't want.");
+            UnityDebugger.Debugger.LogError(InventoryManagerLogChanel, "Trying to add inventory to a job that it doesn't want.");
             return false;
         }
 
         // Check that there is a target to transfer to
-        if (job.HeldInventory.ContainsKey(sourceInventory.Type) == false)
+        if (job.DeliveredItems.ContainsKey(sourceInventory.Type) == false)
         {
-            job.HeldInventory[sourceInventory.Type] = new Inventory(sourceInventory.Type, 0, sourceInventory.MaxStackSize);
+            job.DeliveredItems[sourceInventory.Type] = new Inventory(sourceInventory.Type, 0, sourceInventory.MaxStackSize);
         }
 
-        Inventory targetInventory = job.HeldInventory[sourceInventory.Type];
+        Inventory targetInventory = job.DeliveredItems[sourceInventory.Type];
         int transferAmount = Mathf.Min(targetInventory.MaxStackSize - targetInventory.StackSize, sourceInventory.StackSize);
 
         sourceInventory.StackSize -= transferAmount;
@@ -156,16 +173,21 @@ public class InventoryManager
     public bool PlaceInventory(Character character, Inventory sourceInventory, int amount = -1)
     {
         amount = amount < 0 ? sourceInventory.StackSize : Math.Min(amount, sourceInventory.StackSize);
-
+        sourceInventory.ReleaseClaim();
         if (character.inventory == null)
         {
             character.inventory = sourceInventory.Clone();
             character.inventory.StackSize = 0;
+            if (Inventories.ContainsKey(character.inventory.Type) == false)
+            {
+                Inventories[character.inventory.Type] = new List<Inventory>();
+            }
+
             Inventories[character.inventory.Type].Add(character.inventory);
         }
         else if (character.inventory.Type != sourceInventory.Type)
         {
-            Debug.ULogErrorChannel(InventoryManagerLogChanel, "Character is trying to pick up a mismatched inventory object type.");
+            UnityDebugger.Debugger.LogError(InventoryManagerLogChanel, "Character is trying to pick up a mismatched inventory object type.");
             return false;
         }
 
@@ -285,6 +307,39 @@ public class InventoryManager
         return Pathfinder.FindPathToInventory(tile, objectTypes, canTakeFromStockpile);
     }
 
+    public JToken ToJson()
+    {
+        JArray inventoriesJson = new JArray();
+        foreach (Inventory inventory in Inventories.SelectMany(pair => pair.Value))
+        {
+            // Skip any inventory without a tile, these are inventories in a character or elsewhere that will handle it itself.
+            if (inventory.Tile == null)
+            {
+                continue;
+            }
+
+            inventoriesJson.Add(inventory.ToJSon());
+        }
+
+        return inventoriesJson;
+    }
+
+    public void FromJson(JToken inventoriesToken)
+    {
+        JArray inventoriesJArray = (JArray)inventoriesToken;
+
+        foreach (JToken inventoryToken in inventoriesJArray)
+        {
+            int x = (int)inventoryToken["X"];
+            int y = (int)inventoryToken["Y"];
+            int z = (int)inventoryToken["Z"];
+
+            Inventory inventory = new Inventory();
+            inventory.FromJson(inventoryToken);
+            PlaceInventory(World.Current.GetTileAt(x, y, z), inventory);
+        }
+    }
+
     private void CleanupInventory(Inventory inventory)
     {
         if (inventory.StackSize != 0)
@@ -320,6 +375,9 @@ public class InventoryManager
         if (handler != null)
         {
             handler(inventory);
+
+            // Let the JobQueue know there is new inventory available.
+            World.Current.jobQueue.ReevaluateReachability();
         }
     }
 

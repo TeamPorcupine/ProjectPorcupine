@@ -6,21 +6,16 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
 using MoonSharp.Interpreter;
-using UnityEngine;
 
 /// <summary>
 /// This class handles LUA actions take in response to events triggered within C# or LUA. For each event name (e.g. OnUpdate, ...) there
 /// is a list of LUA function that are registered and will be called once the event with that name is fired.
 /// </summary>
 [MoonSharpUserData]
-public class EventActions : IXmlSerializable
+public class EventActions
 {
     /// <summary>
     /// Stores a list of LUA functions for each type of event (eventName). All will be called at once.
@@ -49,43 +44,22 @@ public class EventActions : IXmlSerializable
         reader.Read();
         if (reader.Name != "Action")
         {
-            Debug.ULogErrorChannel("EventActions", string.Format("The element is not an Action, but a \"{0}\"", reader.Name));
+            UnityDebugger.Debugger.LogError("EventActions", string.Format("The element is not an Action, but a \"{0}\"", reader.Name));
         }
 
         string name = reader.GetAttribute("event");
         if (name == null)
         {
-            Debug.ULogErrorChannel("EventActions", string.Format("The attribute \"event\" is a mandatory for an \"Action\" element."));
+            UnityDebugger.Debugger.LogError("EventActions", string.Format("The attribute \"event\" is a mandatory for an \"Action\" element."));
         }
 
         string functionName = reader.GetAttribute("functionName");
         if (functionName == null)
         {
-            Debug.ULogErrorChannel("EventActions", string.Format("No function name was provided for the Action {0}.", name));
+            UnityDebugger.Debugger.LogError("EventActions", string.Format("No function name was provided for the Action {0}.", name));
         }
 
         Register(name, functionName);
-    }
-
-    public XmlSchema GetSchema()
-    {
-        return null;
-    }
-
-    public void WriteXml(XmlWriter writer)
-    {
-        foreach (string evt in actionsList.Keys)
-        {
-            writer.WriteStartElement("Action");
-
-            foreach (string func in actionsList[evt])
-            {
-                writer.WriteAttributeString("event", evt);
-                writer.WriteAttributeString("functionName", func);
-            }
-
-            writer.WriteEndElement();
-        }
     }
 
     /// <summary>

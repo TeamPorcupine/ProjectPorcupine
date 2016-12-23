@@ -17,6 +17,7 @@ public class TileSpriteController : BaseSpriteController<Tile>
     public TileSpriteController(World world) : base(world, "Tiles")
     {
         world.OnTileChanged += OnChanged;
+        world.OnTileTypeChanged += OnChanged;
 
         for (int x = 0; x < world.Width; x++)
         {
@@ -64,7 +65,7 @@ public class TileSpriteController : BaseSpriteController<Tile>
     {
         if (objectGameObjectMap.ContainsKey(tile) == false)
         {
-            Debug.ULogErrorChannel("TileSpriteController", "tileGameObjectMap doesn't contain the tile_data -- did you forget to add the tile to the dictionary? Or maybe forget to unregister a callback?");
+            UnityDebugger.Debugger.LogError("TileSpriteController", "tileGameObjectMap doesn't contain the tile_data -- did you forget to add the tile to the dictionary? Or maybe forget to unregister a callback?");
             return;
         }
 
@@ -72,7 +73,7 @@ public class TileSpriteController : BaseSpriteController<Tile>
 
         if (tile_go == null)
         {
-            Debug.ULogErrorChannel("TileSpriteController", "tileGameObjectMap's returned GameObject is null -- did you forget to add the tile to the dictionary? Or maybe forget to unregister a callback?");
+            UnityDebugger.Debugger.LogError("TileSpriteController", "tileGameObjectMap's returned GameObject is null -- did you forget to add the tile to the dictionary? Or maybe forget to unregister a callback?");
             return;
         }
 

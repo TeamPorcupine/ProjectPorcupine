@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
@@ -6,14 +6,15 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
+using Newtonsoft.Json.Linq;
+using ProjectPorcupine.Localization;
 
 namespace ProjectPorcupine.Rooms
 {
@@ -21,7 +22,7 @@ namespace ProjectPorcupine.Rooms
     /// Room Behaviors are functions added to specific rooms, such as an airlock, a dining room, or an abattoir.
     /// </summary>
     [MoonSharpUserData]
-    public class RoomBehavior : IXmlSerializable, ISelectable, IPrototypable, IContextActionProvider
+    public class RoomBehavior : ISelectable, IPrototypable, IContextActionProvider
     {
         /// <summary>
         /// These context menu lua action are used to build the context menu of the room behavior.
@@ -90,7 +91,7 @@ namespace ProjectPorcupine.Rooms
                 requiredFurniture = new List<FurnitureRequirement>(other.requiredFurniture);
             }
 
-            if (other.ControlledFurniture != null) 
+            if (other.ControlledFurniture != null)
             {
                 ControlledFurniture = new Dictionary<string, List<Furniture>>(other.ControlledFurniture);
             }
@@ -195,29 +196,6 @@ namespace ProjectPorcupine.Rooms
         }
 
         /// <summary>
-        /// This does absolutely nothing.
-        /// This is required to implement IXmlSerializable.
-        /// </summary>
-        /// <returns>NULL and NULL.</returns>
-        public XmlSchema GetSchema()
-        {
-            return null;
-        }
-
-        /// <summary>
-        /// Writes the room behavior to XML.
-        /// </summary>
-        /// <param name="writer">The XML writer to write to.</param>
-        public void WriteXml(XmlWriter writer)
-        {
-            writer.WriteAttributeString("Room", Room.ID.ToString());
-            writer.WriteAttributeString("type", Type);
-
-            // Let the Parameters handle their own xml
-            Parameters.WriteXml(writer);
-        }
-
-        /// <summary>
         /// Reads the prototype room behavior from XML.
         /// </summary>
         /// <param name="readerParent">The XML reader to read from.</param>
@@ -256,12 +234,12 @@ namespace ProjectPorcupine.Rooms
                         break;
                     case "ContextMenuAction":
                         contextMenuLuaActions.Add(new ContextMenuLuaAction
-                            {
-                                LuaFunction = reader.GetAttribute("FunctionName"),
-                                Text = reader.GetAttribute("Text"),
-                                RequireCharacterSelected = bool.Parse(reader.GetAttribute("RequireCharacterSelected")),
-                                DevModeOnly = bool.Parse(reader.GetAttribute("DevModeOnly") ?? "false")
-                            });
+                        {
+                            LuaFunction = reader.GetAttribute("FunctionName"),
+                            LocalizationKey = reader.GetAttribute("Text"),
+                            RequireCharacterSelected = bool.Parse(reader.GetAttribute("RequireCharacterSelected")),
+                            DevModeOnly = bool.Parse(reader.GetAttribute("DevModeOnly") ?? "false")
+                        });
                         break;
                     case "Params":
                         ReadXmlParams(reader);  // Read in the Param tag
@@ -373,7 +351,7 @@ namespace ProjectPorcupine.Rooms
         {
             yield return new ContextMenuAction
             {
-                Text = "Deconstruct " + Name,
+                LocalizationKey = LocalizationTable.GetLocalization("deconstruct", LocalizationCode),
                 RequireCharacterSelected = false,
                 Action = (contextMenuAction, character) => Deconstruct(this)
             };
@@ -381,12 +359,12 @@ namespace ProjectPorcupine.Rooms
             foreach (ContextMenuLuaAction contextMenuLuaAction in contextMenuLuaActions)
             {
                 if (!contextMenuLuaAction.DevModeOnly ||
-                    Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
+                    Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false))
                 {
                     // TODO The Action could be done via a lambda, but it always uses the same space of memory, thus if 2 actions are performed, the same action will be produced for each.
                     yield return new ContextMenuAction
                     {
-                        Text = contextMenuLuaAction.Text,
+                        LocalizationKey = contextMenuLuaAction.LocalizationKey,
                         RequireCharacterSelected = contextMenuLuaAction.RequireCharacterSelected,
                         Action = InvokeContextMenuLuaAction,
                         Parameter = contextMenuLuaAction.LuaFunction    // Note that this is only in place because of the problem with the previous statement.
@@ -406,7 +384,7 @@ namespace ProjectPorcupine.Rooms
             return new RoomBehavior(this);
         }
 
-        public void Control(Room room) 
+        public void Control(Room room)
         {
             this.Room = room;
             List<Tile> innerTiles = room.GetInnerTiles();
@@ -418,13 +396,21 @@ namespace ProjectPorcupine.Rooms
             {
                 string furnitureKey = requirement.type ?? requirement.typeTag;
                 ControlledFurniture.Add(furnitureKey, new List<Furniture>());
-                foreach (Tile tile in allTiles.FindAll(tile => (tile.Furniture != null && (tile.Furniture.Type == requirement.type || tile.Furniture.HasTypeTag(requirement.typeTag))))) 
+                foreach (Tile tile in allTiles.FindAll(tile => (tile.Furniture != null && (tile.Furniture.Type == requirement.type || tile.Furniture.HasTypeTag(requirement.typeTag)))))
                 {
                     ControlledFurniture[furnitureKey].Add(tile.Furniture);
                 }
             }
 
             EventActions.Trigger("OnControl", this);
+        }
+
+        public JObject ToJson()
+        {
+            JObject behaviorJson = new JObject();
+            behaviorJson.Add("Room", Room.ID);
+            behaviorJson.Add("Behavior", Type);
+            return behaviorJson;
         }
 
         [MoonSharpVisible(true)]
@@ -435,7 +421,7 @@ namespace ProjectPorcupine.Rooms
 
         private bool DefaultIsValidRoom(Room room)
         {
-            if (room.TileCount < requiredSize) 
+            if (room.TileCount < requiredSize)
             {
                 return false;
             }
@@ -447,7 +433,7 @@ namespace ProjectPorcupine.Rooms
 
             foreach (FurnitureRequirement requirement in requiredFurniture)
             {
-                if (allTiles.Count(tile => (tile.Furniture != null && (tile.Furniture.Type == requirement.type || tile.Furniture.HasTypeTag(requirement.typeTag)))) < requirement.count) 
+                if (allTiles.Count(tile => (tile.Furniture != null && (tile.Furniture.Type == requirement.type || tile.Furniture.HasTypeTag(requirement.typeTag)))) < requirement.count)
                 {
                     return false;
                 }

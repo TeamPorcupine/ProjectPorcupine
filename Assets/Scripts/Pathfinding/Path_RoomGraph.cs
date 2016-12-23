@@ -8,7 +8,6 @@
 #endregion
 using System.Collections.Generic;
 using ProjectPorcupine.Rooms;
-using UnityEngine;
 
 public class Path_RoomGraph
 {
@@ -16,12 +15,12 @@ public class Path_RoomGraph
 
     public Path_RoomGraph(World world)
     {
-        Debug.ULogChannel("Path_RoomGraph", "Entered Path_RoomGraph");
+        UnityDebugger.Debugger.Log("Path_RoomGraph", "Entered Path_RoomGraph");
 
         // Loop through all rooms of the world
         // For each room, create a node
         nodes = new Dictionary<Room, Path_Node<Room>>();
-        Debug.ULogChannel("Path_RoomGraph", "There are " + world.RoomManager.Count + " Rooms");
+        UnityDebugger.Debugger.Log("Path_RoomGraph", "There are " + world.RoomManager.Count + " Rooms");
         foreach (Room room in world.RoomManager)
         {
             Path_Node<Room> n = new Path_Node<Room>();
@@ -29,7 +28,7 @@ public class Path_RoomGraph
             nodes.Add(room, n);
         }
 
-        Debug.ULogChannel("Path_RoomGraph", "Created " + nodes.Count + " nodes.");
+        UnityDebugger.Debugger.Log("Path_RoomGraph", "Created " + nodes.Count + " nodes.");
 
         // Now loop through all nodes again
         // Create edges for neighbours
@@ -45,10 +44,10 @@ public class Path_RoomGraph
 
         foreach (Room room in nodes.Keys)
         {
-            Debug.ULogChannel("Path_RoomGraph", "Room " + room.ID + " has edges to:");
+            UnityDebugger.Debugger.Log("Path_RoomGraph", "Room " + room.ID + " has edges to:");
             foreach (Path_Edge<Room> edge in nodes[room].edges)
             {
-                Debug.ULogChannel("Path_RoomGraph", "\tEdge connects to " + edge.node.data.ID);
+                UnityDebugger.Debugger.Log("\tEdge connects to " + edge.node.data.ID);
             }
         }
     }

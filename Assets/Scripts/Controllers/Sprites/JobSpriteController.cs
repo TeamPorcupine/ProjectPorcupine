@@ -63,14 +63,12 @@ public class JobSpriteController : BaseSpriteController<Job>
 
     protected override void OnCreated(Job job)
     {
-        if (job.JobTileType == null && job.JobObjectType == null)
+        if (job.JobTileType == null && job.Type == null)
         {
             // This job doesn't really have an associated sprite with it, so no need to render.
             return;
         }
 
-        // FIXME: We can only do furniture-building jobs.
-        // TODO: Sprite
         if (objectGameObjectMap.ContainsKey(job))
         {
             return;
@@ -81,7 +79,7 @@ public class JobSpriteController : BaseSpriteController<Job>
         // Add our tile/GO pair to the dictionary.
         objectGameObjectMap.Add(job, job_go);
 
-        job_go.name = "JOB_" + job.JobObjectType + "_" + job.tile.X + "_" + job.tile.Y + "_" + job.tile.Z;
+        job_go.name = "JOB_" + job.Type + "_" + job.tile.X + "_" + job.tile.Y + "_" + job.tile.Z;
         job_go.transform.SetParent(objectParent.transform, true);
 
         SpriteRenderer sr = job_go.AddComponent<SpriteRenderer>();
@@ -94,13 +92,13 @@ public class JobSpriteController : BaseSpriteController<Job>
             sr.sprite = SpriteManager.GetSprite("Tile", "Solid");
             sr.color = new Color32(128, 255, 128, 192);
         }
-        else if (job.JobDescription.Contains("deconstruct"))
+        else if (job.Description.Contains("deconstruct"))
         {
             sr.sprite = SpriteManager.GetSprite("UI", "CursorCircle");
             sr.color = Color.red;
             job_go.transform.position = job.tile.Vector3;
         }
-        else if (job.JobDescription.Contains("mine"))
+        else if (job.Description.Contains("mine"))
         {
             sr.sprite = SpriteManager.GetSprite("UI", "MiningIcon");
             sr.color = new Color(1, 1, 1, 0.25f);
@@ -118,13 +116,13 @@ public class JobSpriteController : BaseSpriteController<Job>
             if (job.buildablePrototype.GetType().ToString() == "Furniture")
             {
                 Furniture furnitureToBuild = (Furniture)job.buildablePrototype;
-                sr.sprite = fsc.GetSpriteForFurniture(job.JobObjectType);
+                sr.sprite = fsc.GetSpriteForFurniture(job.Type);
                 job_go.transform.position = job.tile.Vector3 + ImageUtils.SpritePivotOffset(sr.sprite, furnitureToBuild.Rotation);
                 job_go.transform.Rotate(0, 0, furnitureToBuild.Rotation);
             }
             else if (job.buildablePrototype.GetType().ToString() == "Utility")
             {
-                sr.sprite = usc.GetSpriteForUtility(job.JobObjectType);
+                sr.sprite = usc.GetSpriteForUtility(job.Type);
                 job_go.transform.position = job.tile.Vector3 + ImageUtils.SpritePivotOffset(sr.sprite);
             }
 
@@ -134,7 +132,7 @@ public class JobSpriteController : BaseSpriteController<Job>
         sr.sortingLayerName = "Jobs";
 
         // FIXME: This hardcoding is not ideal!  <== Understatement
-        if (job.JobObjectType == "Door")
+        if (job.Type == "Door")
         {
             // By default, the door graphic is meant for walls to the east & west
             // Check to see if we actually have a wall north/south, and if so

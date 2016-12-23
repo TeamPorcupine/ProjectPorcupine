@@ -57,7 +57,7 @@ public class QuestController
             }
         }
     }
-    
+
     private bool IsQuestCompleted(Quest quest)
     {
         quest.IsCompleted = true;

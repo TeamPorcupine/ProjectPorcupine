@@ -7,7 +7,6 @@
 // ====================================================
 #endregion
 using System.Collections.Generic;
-using UnityEngine;
 
 public class Path_TileGraph
 {
@@ -18,7 +17,7 @@ public class Path_TileGraph
 
     public Path_TileGraph(World world)
     {
-        Debug.ULogChannel("Path_TileGraph", "Entered Path_TileGraph");
+        UnityDebugger.Debugger.Log("Path_TileGraph", "Entered Path_TileGraph");
 
        /*
         * Loop through all tiles of the world
@@ -45,7 +44,7 @@ public class Path_TileGraph
             }
         }
 
-        Debug.ULogChannel("Path_TileGraph", "Created " + nodes.Count + " nodes.");
+        UnityDebugger.Debugger.Log("Path_TileGraph", "Created " + nodes.Count + " nodes.");
 
         // Now loop through all nodes again
         // Create edges for neighbours
@@ -57,6 +56,11 @@ public class Path_TileGraph
         
     public void RegenerateGraphAtTile(Tile changedTile)
     {
+        if (changedTile == null)
+        {
+            return;
+        }
+
         GenerateEdgesByTile(changedTile);
         foreach (Tile tile in changedTile.GetNeighbours(true))
         {

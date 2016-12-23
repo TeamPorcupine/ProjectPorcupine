@@ -8,6 +8,7 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ProjectPorcupine.Jobs;
 
 public class JobQueue
@@ -23,13 +24,6 @@ public class JobQueue
         unreachableJobs = new Queue<Job>();
 
         World.Current.InventoryManager.InventoryCreated += ReevaluateWaitingQueue;
-
-        PrototypeManager.ScheduledEvent.Add(
-            new Scheduler.ScheduledEvent(
-                "JobQueue_ReevaluateReachability",
-                (evt) => ReevaluateReachability()));
-
-        Scheduler.Scheduler.Current.ScheduleEvent("JobQueue_ReevaluateReachability", 60f, true);
     }
 
     public event Action<Job> OnJobCreated;
@@ -46,9 +40,13 @@ public class JobQueue
         return jobQueue.Count;
     }
 
+    /// <summary>
+    /// Add a job to the JobQueue.
+    /// </summary>
+    /// <param name="job">The job to be inserted into the Queue.</param>
     public void Enqueue(Job job)
     {
-        DebugLog("Enqueue({0})", job.JobObjectType);
+        DebugLog("Enqueue({0})", job.Type);
         if (job.JobTime < 0)
         {
             // Job has a negative job time, so it's not actually
@@ -57,7 +55,7 @@ public class JobQueue
             return;
         }
 
-        // If the job requres material but there is nothing available, store it in jobsWaitingForInventory
+        // If the job requires material but there is nothing available, store it in jobsWaitingForInventory
         if (job.RequestedItems.Count > 0 && job.GetFirstFulfillableInventoryRequirement() == null)
         {
             string missing = job.acceptsAny ? "*" : job.GetFirstDesiredItem().Type;
@@ -69,9 +67,11 @@ public class JobQueue
 
             jobsWaitingForInventory[missing].Add(job);
         }
-        else if (job.tile != null && job.tile.IsReachableFromAnyNeighbor(true) == false)
+        else if ((job.tile != null && job.tile.IsReachableFromAnyNeighbor(true) == false) ||
+            job.CharsCantReach.Count == World.Current.CharacterManager.characters.Count)
         {
-            DebugLog(" - Job can't be reached");
+            // No one can reach the job.
+            DebugLog("JobQueue", "- Job can't be reached");
             unreachableJobs.Enqueue(job);
         }
         else
@@ -83,7 +83,8 @@ public class JobQueue
             }
 
             DebugLog(" - job ok");
-            jobQueue.Add(job.Priority, job);
+
+            jobQueue.Add(job.Priority, job);       
         }
 
         if (OnJobCreated != null)
@@ -92,6 +93,9 @@ public class JobQueue
         }
     }
 
+    /// <summary>
+    /// Returns the first job from the JobQueue.
+    /// </summary>
     public Job Dequeue()
     {
         if (jobQueue.Count == 0)
@@ -119,12 +123,26 @@ public class JobQueue
         for (int i = 0; i < jobQueue.Count; i++)
         {
             Job job = jobQueue.Values[i];
+            jobQueue.RemoveAt(i);
 
             // TODO: This is a simplistic version and needs to be expanded.
             // If we can get all material and we can walk to the tile, the job is workable.
             if (job.IsRequiredInventoriesAvailable() && job.tile.IsReachableFromAnyNeighbor(true))
             {
-                jobQueue.RemoveAt(i);
+                if (CharacterCantReachHelper(job, character))
+                {
+                    UnityDebugger.Debugger.LogError("Character could not find a path to the job site.");
+                    ReInsertHelper(job);
+                    continue;
+                }
+                else if ((job.RequestedItems.Count > 0) && !job.CanGetToInventory(character))
+                {
+                    job.AddCharCantReach(character);
+                    UnityDebugger.Debugger.LogError("Character could not find a path to any inventory available.");
+                    ReInsertHelper(job);
+                    continue;
+                }
+
                 return job;
             }
 
@@ -171,6 +189,45 @@ public class JobQueue
         }
     }
 
+    /// <summary>
+    /// Call this whenever a furniture gets changed or removed that might effect the reachability of an object.
+    /// </summary>
+    public void ReevaluateReachability()
+    {
+        // TODO: Should this be an event on the furniture object?
+        DebugLog(" - Reevaluate reachability of {0} jobs", unreachableJobs.Count);
+        Queue<Job> jobsToReevaluate = unreachableJobs;
+        unreachableJobs = new Queue<Job>();
+
+        foreach (Job job in jobsToReevaluate)
+        {
+            job.ClearCharCantReach();
+            Enqueue(job);
+        }
+    }
+
+    /// <summary>
+    /// Returns true if the character is already in the list of characters unable to reach the job.
+    /// </summary>
+    /// <param name="job"></param>
+    /// <param name="character"></param>
+    /// <returns></returns>
+    public bool CharacterCantReachHelper(Job job, Character character)
+    {
+        if (job.CharsCantReach != null)
+        {
+            foreach (Character charTemp in job.CharsCantReach)
+            {
+                if (charTemp == character)
+                {
+                    return true;
+                }
+            }   
+        }
+
+        return false;
+    }
+
     private void ReevaluateWaitingQueue(Inventory inv)
     {
         DebugLog("ReevaluateWaitingQueue() new resource: {0}, count: {1}", inv.Type, inv.StackSize);
@@ -206,21 +263,16 @@ public class JobQueue
         }
     }
 
-    private void ReevaluateReachability()
+    private void ReInsertHelper(Job job)
     {
-        DebugLog(" - Reevaluate reachability of {0} jobs", unreachableJobs.Count);
-        Queue<Job> jobsToReevaluate = unreachableJobs;
-        unreachableJobs = new Queue<Job>();
-
-        foreach (Job job in jobsToReevaluate)
-        {
-            Enqueue(job);
-        }
+        jobQueue.Reverse();
+        Enqueue(job);
+        jobQueue.Reverse();
     }
 
     [System.Diagnostics.Conditional("FSM_DEBUG_LOG")]
     private void DebugLog(string message, params object[] par)
     {
-        Debug.ULogChannel("FSM", message, par);
+        UnityDebugger.Debugger.LogFormat("FSM", message, par);
     }
 }

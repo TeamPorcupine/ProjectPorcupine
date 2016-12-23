@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ConsoleCommands>
+  <!-- List of console command prototypes -->
+  <!--Title is mandatory and should be unique-->
+  <!--FunctionName is for LUA and is the function name of the LUA Script that runs when the command is called-->
+  <!--Description is a short description of what this command does-->
+  <!--HelpFunctionName is for LUA and is the function name of the LUA Script that runs on Title?-->
+  <!--You set parameters to the format Type VariableName,...-->
+  <!--E.g. UnityEngine.Vector3 MyVector, Int32 MyPrimitiveInt, Single MyPrimitiveFloat -->
+  <!--Note: You can chooes not to include the namespace if its a system namespace (like primitives i.e. Int32, Boolean...)-->
+  <ConsoleCommand Title="SetFontSize" FunctionName="SetFontSize" Description="Sets the font size, must be between 10 and 20 (inclusive)" HelpFunctionName="" Parameters="Int32 size" Tags="Console, UI" DefaultValue="14"></ConsoleCommand>
+  <ConsoleCommand Title="SetTimeStamp" FunctionName="SetTimeStamp" Description="Sets the time stamp" Parameters="Boolean on" Tags="Console, UI" DefaultValue=""></ConsoleCommand>
+  <ConsoleCommand Title="CameraPos" FunctionName="ChangeCameraPosition" Description="Changes the camera position to the one provided" Parameters="UnityEngine.Vector3 NewPos" Tags="Camera" DefaultValue="'Center'"></ConsoleCommand>
+  <ConsoleCommand Title="Run_LUA" FunctionName="Run_LUA" Description="Runs the string as LUA" Parameters="String luaText" Tags="LUA, Modding, Compile" DefaultValue=""></ConsoleCommand>
+  <ConsoleCommand Title="SetText" FunctionName="SetText" Description="Sets the console text" Parameters="String text" Tags="Console, UI" DefaultValue=""></ConsoleCommand>
+  <ConsoleCommand Title="SetCharacterHealth" FunctionName="SetCharacterHealth" Description="Sets the character's health to the value provided" Parameters="String name, Single health" Tags="Character, Health"></ConsoleCommand>
+  <ConsoleCommand Title="DamageCharacter" FunctionName="DamageCharacter" Description="Damages the character by the amount provided" Parameters="String name, Single amount" Tags="Character, Health"></ConsoleCommand>
+  <ConsoleCommand Title="CharacterHealthSystemSet" FunctionName="CharacterHealthSystemSet" Description="Sets the character's health system" Parameters="String name, Single hp, Boolean overheal, Boolean healable, Boolean invincible, Boolean revivable" Tags="Character, Health"></ConsoleCommand>
+  <ConsoleCommand Title="CharacterClearStateQueue" FunctionName="CharacterClearStateQueue" Description="Clears the characters state queue" Parameters="String name" Tags="Character, State"></ConsoleCommand>
+  <ConsoleCommand Title="ClearAllStateQueues" FunctionName="AllCharactersClearStateQueue" Description="Clears all character's state queues" Parameters="" Tags="Character, State" DefaultValue=""></ConsoleCommand>
+  <ConsoleCommand Title="AddCurrency" FunctionName="AddCurrency" Description="Adds the specified amount of currency" Parameters="String currencyName, Single amount" Tags="Currency" DefaultValue=""></ConsoleCommand>
+  <ConsoleCommand Title="AddCurrency" FunctionName="AddCurrency" Description="Adds the specified amount of currency" Parameters="String currencyName, Single amount" Tags="Currency" DefaultValue=""></ConsoleCommand>
+  <ConsoleCommand Title="ConsumeInventory" FunctionName="ConsumeInventory" Description="Consumes the inventory at the position" Parameters="UnityEngine.Vector3 pos, Int32 amount" Tags="Inventory" DefaultValue=""></ConsoleCommand>
+  <ConsoleCommand Title="PlaceInventory" FunctionName="PlaceInventory" Description="Places an inventory item at the position provided" Parameters="UnityEngine.Vector3 pos, String type, UnityEngine.Vector2 stackSizeRange" Tags="Inventory, Build" DefaultValue=""></ConsoleCommand>
+  <ConsoleCommand Title="PlaceInventoryAtCharacter" FunctionName="PlaceInventoryAmount" Description="Places inventory " Parameters="String characterName, Int32 amount, String type, UnityEngine.Vector2 stackSizeRange" Tags="Character, Inventory, Build" DefaultValue=""></ConsoleCommand>
+  <ConsoleCommand Title="RemoveInventory" FunctionName="RemoveInventoryOfType" Description="Removes inventory" Parameters="string type, Int32 amount, Boolean onlyFromStockpiles" Tags="Inventory" DefaultValue=""></ConsoleCommand>
+  <ConsoleCommand Title="PlaceFurniture" FunctionName="PlaceFurniture" Description="Places furniture" Parameters="string type, UnityEngine.Vector3 pos, Single rotation" Tags="Furniture, Build" DefaultValue=""></ConsoleCommand>
+  <ConsoleCommand Title="IsWorkSpotClear" FunctionName="IsWorkSpotClear" Description="Is the work spot clear?" Parameters="string type, UnityEngine.Vector3 pos" Tags="Work, Check" DefaultValue=""></ConsoleCommand>
+  <ConsoleCommand Title="IsPlacementValid" FunctionName="IsPlacementValid" Description="Is the placement spot valid" Parameters="string type, UnityEngine.Vector3 pos, Single rotation" Tags="Check, Build" DefaultValue=""></ConsoleCommand>
+  <ConsoleCommand Title="GetTemperature" FunctionName="GetTemperature" Description="Gets the temperature at the position" Parameters=" UnityEngine.Vector3 pos" Tags="Temperature" DefaultValue="'Center'"></ConsoleCommand>
+  <ConsoleCommand Title="GetThermalDiffusivity" FunctionName="GetThermalDiffusivity" Description="Gets the thermal diffusivity at the position" Parameters="UnityEngine.Vector3 pos" Tags="Temperature" DefaultValue="{Center}"></ConsoleCommand>
+  <ConsoleCommand Title="FloodFillRoom" FunctionName="FloodFillRoomAt" Description="Floods fills the room at the position provided" Parameters="UnityEngine.Vector3 pos" Tags="Room" DefaultValue="'Center'"></ConsoleCommand>
+  <ConsoleCommand Title="GetAllRoomIDs" FunctionName="GetAllRoomIDs" Description="Logs all the room ids" Parameters="" Tags="Room" DefaultValue=""></ConsoleCommand>
+  <ConsoleCommand Title="Exit" FunctionName="Exit" Description="Exits the console" Parameters="" Tags="System" DefaultValue=""></ConsoleCommand>
+  <ConsoleCommand Title="DevMode" FunctionName="DevMode" Description="Floods fills the room at the position provided" Parameters="Boolean isOn" Tags="Developer" DefaultValue="true"></ConsoleCommand>
+  <ConsoleCommand Title="Status" FunctionName="Status" Description="Returns current status of game" Parameters="" Tags="System" DefaultValue=""></ConsoleCommand>
+  <ConsoleCommand Title="NewCharacter" FunctionName="NewCharacter" Description="Creates a new character at the position provided" Parameters="UnityEngine.Vector3 pos, string name" Tags="Character" DefaultValue="{Center}, &quot;&quot;"></ConsoleCommand>
+  <ConsoleCommand Title="DoBuild" FunctionName="DoBuild" HelpFunctionName="DoBuildHelp" Description="Builds the object provided" Parameters="Int32 buildMode, string type, UnityEngine.Vector3 pos" Tags="Build" DefaultValue=""></ConsoleCommand>
+  <ConsoleCommand Title="InvalidateTileGraph" FunctionName="InvalidateTileGraph" Description="Invalidates the tile graph" Parameters="" Tags="Check" DefaultValue=""></ConsoleCommand>
+  <ConsoleCommand Title="GetCharacterNames" FunctionName="GetCharacterNames" Description="Logs all the character's names" Parameters="" Tags="Character" DefaultValue=""></ConsoleCommand>
+  <ConsoleCommand Title="SetRoomGas" FunctionName="SetRoomGas" Description="Sets the gas in the room" Parameters="Int32 roomID, string gasName, Single pressure" Tags="Room, Gas" DefaultValue=""></ConsoleCommand>
+  <ConsoleCommand Title="SetAllRoomGas" FunctionName="SetAllRoomGas" Description="Sets the gas in all rooms" Parameters="string gasName, Single pressure" Tags="Room, Gas" DefaultValue=""></ConsoleCommand>
+  <ConsoleCommand Title="FillRoomWithAir" FunctionName="FillRoomWithAir" Description="Set's the room's gasses to standard atmosphere (20/80 O2/N2 mix)" Parameters="Int32 roomID" Tags="Room, Gas" DefaultValue=""></ConsoleCommand>
+  <ConsoleCommand Title="FillAllRoomsWithAir" FunctionName="FillAllRoomsWithAir" Description="Set's all rooms' gasses to standard atmosphere (20/80 O2/N2 mix)&quot;" Parameters="" Tags="Room, Gas" DefaultValue=""></ConsoleCommand>
+  <ConsoleCommand Title="EmptyRoom" FunctionName="EmptyRoom" Description="Empties the room's atmosphere" Parameters="Int32 roomID" Tags="Room, Gas" DefaultValue=""></ConsoleCommand>
+  <ConsoleCommand Title="EmptyAllRooms" FunctionName="EmptyAllRooms" Description="Empties all rooms' atmosphere" Parameters="" Tags="Room, Gas" DefaultValue=""></ConsoleCommand>
+</ConsoleCommands>

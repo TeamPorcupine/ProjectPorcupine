@@ -6,7 +6,6 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -15,16 +14,15 @@ using UnityEngine;
 /// </summary>
 public class CharacterNameManager
 {
-    private static Queue<string> unusedNames;
-    private static Queue<string> usedNames;
+    private static string[] characterNames;
+    private static int ptr;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CharacterNameManager"/> class.
     /// </summary>
     public CharacterNameManager()
     {
-        unusedNames = new Queue<string>();
-        usedNames = new Queue<string>();
+        characterNames = new string[0];
     }
 
     /// <summary>
@@ -34,13 +32,8 @@ public class CharacterNameManager
     public static void LoadNames(string[] nameStrings)
     {
         // Randomize the given strings
-        List<string> namesList = nameStrings.OrderBy(c => Random.Range(0f, 1f)).ToList();
-
         // Add all the names to the unused queue in the random order
-        foreach (string name in namesList)
-        {
-            unusedNames.Enqueue(name);
-        }
+        characterNames = characterNames.Concat(nameStrings.OrderBy(c => Random.value)).ToArray();
     }
 
     /// <summary>
@@ -49,16 +42,20 @@ public class CharacterNameManager
     /// <returns>A randomly chosen name.</returns>
     public static string GetNewName()
     {
-        string name = unusedNames.Dequeue();
-        usedNames.Enqueue(name);
-
-        // We run out of used names, lets start using the used ones
-        if (unusedNames.Count == 0)
+        // If character names doesn't exist then just return null
+        if (characterNames.Length == 0)
         {
-            unusedNames = new Queue<string>(usedNames);
-            usedNames = new Queue<string>();
+            return null;
         }
 
+        // Re-Loop Pointer
+        if (ptr >= characterNames.Length)
+        {
+            ptr = 0;
+        }
+
+        // Assign name then iterate pointer
+        string name = characterNames[ptr++];
         return name;
     }
 }
