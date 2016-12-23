@@ -32,7 +32,8 @@ public class OverlayDescriptor : IPrototypable
     public enum ColorMapOption
     {
         Jet,
-        Random
+        Random,
+        Palette
     }
 
     /// <summary>
