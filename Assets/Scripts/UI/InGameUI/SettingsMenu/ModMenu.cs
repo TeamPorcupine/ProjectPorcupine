@@ -170,4 +170,13 @@ public static class ModMenu {
 
         writer.Flush();
     }
+    public static void DisableAll()
+    {
+        activeModDirs = new List<string>();
+        foreach (string mod in activeMods.Keys)
+        {
+            activeMods[mod] = false;
+        }
+        reset();
+    }
 }

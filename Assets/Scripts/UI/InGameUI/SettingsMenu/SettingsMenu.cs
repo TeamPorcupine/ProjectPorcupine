@@ -148,6 +148,10 @@ public class SettingsMenu : MonoBehaviour
         {
             changesTracker[i].ApplySetting();
         }
+        if (currentCategory == "Mods")
+        {
+            ModMenu.commit();
+        }
     }
 
     public void Save()
@@ -156,7 +160,7 @@ public class SettingsMenu : MonoBehaviour
 
         Settings.SaveSettings();
         changesTracker.Clear();
-
+        ModMenu.Save();
         GameController.Instance.IsModal = false;
         GameController.Instance.soundController.OnButtonSFX();
         mainRoot.SetActive(false);
@@ -201,6 +205,7 @@ public class SettingsMenu : MonoBehaviour
                         {
                             changesTracker[i].CancelSetting();
                         }
+                        ModMenu.reset();
 
                         GameController.Instance.IsModal = false;
                         GameController.Instance.soundController.OnButtonSFX();
@@ -229,7 +234,10 @@ public class SettingsMenu : MonoBehaviour
                 }
             }
         }
-
+        if (currentCategory == "Mods")
+        {
+            ModMenu.DisableAll();
+        }
         changesTracker.Clear();
 
         DisplayCategory(currentCategory);
@@ -255,7 +263,7 @@ public class SettingsMenu : MonoBehaviour
         }
 
         changesTracker.Clear();
-
+        ModMenu.DisableAll();
         DisplayCategory(currentCategory);
     }
 
