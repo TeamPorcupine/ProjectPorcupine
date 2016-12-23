@@ -14,10 +14,12 @@ public static class ModMenu {
     static Dictionary<string, bool> activeModsWaiting;
     static List<string> activeModDirsWaiting;
     static List<string> nonSaving;
+    static Transform UIParent;
 
     public static void Load()
     {
         modDirs = new Dictionary<string, string>();
+        revModDirs = new Dictionary<string, string>();
         JArray active;
         nonSaving = new List<string>();
         if (File.Exists(Path.Combine(Application.persistentDataPath, "ModSettings.json")))
@@ -30,6 +32,7 @@ public static class ModMenu {
             active = new JArray();
         }
         activeModDirs = new List<string>();
+        activeMods = new Dictionary<string, bool>();
         foreach (DirectoryInfo mod in ModsManager.GetModsFiles())
         {
             string modPath = Path.Combine(mod.FullName, "mod.json");
@@ -61,7 +64,12 @@ public static class ModMenu {
 	}
     public static void DisplaySettings(Transform parent)
     {
-        Load();
+        while (parent.childCount > 0)
+        {
+            Transform c = parent.GetChild(0);
+            c.parent = null;
+            Object.Destroy(c.gameObject);
+        }
         GameObject prefab = (GameObject)Resources.Load("Prefab/DialogBoxPrefabs/Mod");
         foreach (string mod in activeModDirsWaiting)
         {
@@ -78,6 +86,7 @@ public static class ModMenu {
             m.transform.FindChild("Title").GetComponent<Text>().text = name;
             m.transform.FindChild("Description").GetComponent<Text>().text = desc;
             m.transform.FindChild("Toggle").GetComponent<Toggle>().isOn = true;
+            m.name = name;
         }
         foreach (string mod in modDirs.Values)
         {
@@ -98,10 +107,16 @@ public static class ModMenu {
             m.transform.FindChild("Title").GetComponent<Text>().text = name;
             m.transform.FindChild("Description").GetComponent<Text>().text = desc;
             m.transform.FindChild("Toggle").GetComponent<Toggle>().isOn = false;
+            m.name = name;
         }
+        UIParent = parent;
     }
     public static void setEnabled(string mod,bool enabled)
     {
+        if (string.IsNullOrEmpty(mod))
+        {
+            return;
+        }
         activeMods[mod] = enabled;
         if (enabled)
         {
@@ -111,9 +126,14 @@ public static class ModMenu {
         {
             activeModDirs.Remove(modDirs[mod]);
         }
+        DisplaySettings(UIParent);
     }
     public static void reorderMod(string mod,int up)
     {
+        if (string.IsNullOrEmpty(mod))
+        {
+            return;
+        }
         if (activeModDirsWaiting.Contains(modDirs[mod]) == false)
         {
             setEnabled(mod, true);
@@ -133,6 +153,7 @@ public static class ModMenu {
         i -= up;
         i = Mathf.Clamp(i, 0, activeModDirs.Count-1);
         activeModDirsWaiting.Insert(i, modDirs[mod]);
+        DisplaySettings(UIParent);
     }
     public static void commit()
     {
