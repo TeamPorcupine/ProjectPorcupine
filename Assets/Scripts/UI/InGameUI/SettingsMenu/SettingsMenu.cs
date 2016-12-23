@@ -133,7 +133,15 @@ public class SettingsMenu : MonoBehaviour
         }
         if (category == "Mods")
         {
-            ModMenu.Load();
+            GameObject go = new GameObject();
+            RectTransform rect = go.AddComponent<RectTransform>();
+            rect.parent = gameObject.transform.GetChild(0).GetChild(2).GetChild(2).GetChild(0);
+            rect.anchoredPosition = new Vector2(0, 0);
+            rect.localScale = new Vector2(rect.parent.localScale.x, rect.parent.localScale.y);
+            VerticalLayoutGroup vlg = go.AddComponent<VerticalLayoutGroup>();
+            AutomaticVerticalSize avs = go.AddComponent<AutomaticVerticalSize>();
+            avs.childHeight = 105;
+            ModMenu.DisplaySettings(go.transform);
         }
     }
 
