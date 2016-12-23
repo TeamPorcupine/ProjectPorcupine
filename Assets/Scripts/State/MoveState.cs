@@ -8,6 +8,7 @@
 #endregion
 
 using System.Collections.Generic;
+using System.Linq;
 using ProjectPorcupine.Pathfinding;
 using UnityEngine;
 
@@ -146,6 +147,20 @@ namespace ProjectPorcupine.State
             character.IsWalking = false;
 
             VisualPath.Instance.RemoveVisualPoints(character.name);
+        }
+
+        public override void Interrupt()
+        {
+            if (path != null)
+            {
+                Tile goal = path.Last();
+                if (goal.Inventory != null)
+                {
+                    goal.Inventory.ReleaseClaim(character);
+                }
+            }
+
+            base.Interrupt();
         }
 
         private void AdvanceNextTile()
