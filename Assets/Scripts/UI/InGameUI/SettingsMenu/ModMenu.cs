@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 public static class ModMenu {
     public static Dictionary<string,string> modDirs { get; private set; }
     public static Dictionary<string, string> revModDirs { get; private set; }
+    public static bool loaded { get; private set; }
     public static List<string> activeModDirs;
     static List<string> activeModDirsWaiting;
     static List<string> nonSaving;
@@ -61,8 +62,15 @@ public static class ModMenu {
         }
         activeModDirsWaiting = activeModDirs;
 	}
+
+    public static void DisplaySettings()
+    {
+        DisplaySettings(UIParent);
+    }
+
     public static void DisplaySettings(Transform parent)
     {
+        loaded = false;
         while (parent.childCount > 0)
         {
             Transform c = parent.GetChild(0);
@@ -113,6 +121,7 @@ public static class ModMenu {
         parent.parent.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
         parent.parent.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
         UIParent = parent;
+        loaded = true;
     }
     public static void setEnabled(string mod,bool enabled)
     {
@@ -124,15 +133,14 @@ public static class ModMenu {
         {
             return;
         }
-        if (enabled)
+        if (enabled && (activeModDirs.Contains(modDirs[mod]) == false))
         {
             activeModDirs.Add(modDirs[mod]);
         }
-        else
+        else if (activeModDirs.Contains(modDirs[mod]))
         {
             activeModDirs.Remove(modDirs[mod]);
         }
-        DisplaySettings(UIParent);
     }
     public static void reorderMod(string mod,int up)
     {

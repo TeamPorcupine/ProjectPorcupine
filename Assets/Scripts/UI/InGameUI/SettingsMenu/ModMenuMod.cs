@@ -12,7 +12,11 @@ public class ModMenuMod : MonoBehaviour {
     // Update is called once per frame
     public void Toggle (bool tg)
     {
-        ModMenu.setEnabled(modName, tg);
+        if (ModMenu.loaded)
+        {
+            ModMenu.setEnabled(modName, tg);
+            ModMenu.DisplaySettings();
+        }
     }
     public void Move(bool up)
     {

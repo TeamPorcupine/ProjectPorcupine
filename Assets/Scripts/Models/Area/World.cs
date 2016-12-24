@@ -19,7 +19,6 @@ using UnityEngine;
 [MoonSharpUserData]
 public class World
 {
-    public static bool ReadyToStart;
     // TODO: Should this be also saved with the world data?
     // If so - beginner task!
     public readonly string GameVersion = "Someone_will_come_up_with_a_proper_naming_scheme_later";
@@ -407,9 +406,8 @@ public class World
         }
     }
     
-    public static void CheckMods(string filename)
+    public static void CheckMods(string filename, DialogBoxLoadGame dblg)
     {
-        ReadyToStart = false;
         if (File.Exists(filename) == false)
         {
             SceneController.Instance.LoadMainMenu();
@@ -418,10 +416,11 @@ public class World
         StreamReader file = File.OpenText(filename);
         JObject worldFile = (JObject)JToken.ReadFrom(new JsonTextReader(file));
         JArray modsNeeded = (JArray)worldFile["ActiveMods"];
+        file.Close();
         if (modsNeeded == null)
         {
-            ReadyToStart = true;
-            WorldController.Instance.Enable();
+            dblg.LoadWorld(filename);
+            return;
         }
         for (int i = 0; i < modsNeeded.Count; i++)
         {
@@ -429,13 +428,20 @@ public class World
             if (ModMenu.activeModDirs.Contains(ModMenu.modDirs[(string)mod]) == false)
             {
                 //Activate inactive mods prompt
-                Debug.Log("inactive mods");
-                AudioManager.LoadAudioFiles(Path.Combine(Application.streamingAssetsPath, "Shared/Audio/Sound"));
                 DialogBoxPromptOrInfo check;
-                GameObject DialogBoxGO = GameObject.Find("Dialog Boxes");
-                GameObject tempGoObj = (GameObject)GameObject.Instantiate(Resources.Load("UI/DialogBoxes/DB_PromptOrInfo"), DialogBoxGO.transform.position, DialogBoxGO.transform.rotation, DialogBoxGO.transform);
-                tempGoObj.name = "Prompt or Info";
-                check = tempGoObj.GetComponent<DialogBoxPromptOrInfo>();
+
+                if (WorldController.Instance != null)
+                {
+                    check = WorldController.Instance.dialogBoxManager.dialogBoxPromptOrInfo;
+                }
+                else if (MainMenuController.Instance != null)
+                {
+                    check = MainMenuController.Instance.dialogBoxManager.dialogBoxPromptOrInfo;
+                }
+                else
+                {
+                    return;
+                }
                 check.SetPrompt("This world was saved with mods that are not loaded. Load mods?");
                 check.SetButtons(new DialogBoxResult[] { DialogBoxResult.Yes, DialogBoxResult.No, DialogBoxResult.Cancel });
                 check.Closed =
@@ -451,30 +457,25 @@ public class World
                                 }
                                 ModMenu.reset();
                                 GameController.Instance.soundController.OnButtonSFX();
+                                dblg.LoadWorld(filename);
                                 break;
                             case DialogBoxResult.No:
+                                dblg.LoadWorld(filename);
                                 GameController.Instance.soundController.OnButtonSFX();
                                 break;
                             case DialogBoxResult.Cancel:
                                 GameController.Instance.soundController.OnButtonSFX();
                                 break;
                         }
-                        ReadyToStart = true;
-                        WorldController.Instance.Enable();
-                        UnityEngine.Object.Destroy(tempGoObj);
-                        WorldController.Instance.Startup();
-                        WorldController.Instance.GetComponentInChildren<OverlayMap>().Startup();
-
+                        
                     };
                 check.ShowDialog();
                 GameController.Instance.IsModal = true;
-                ReadyToStart = false;
                 return;
             }
         }
-        ReadyToStart = true;
-        WorldController.Instance.Enable();
         Debug.Log("ModCheck sucessful");
+        dblg.LoadWorld(filename);
     }
     
     private void SetupWorld(int width, int height, int depth)

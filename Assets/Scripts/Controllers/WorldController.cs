@@ -67,8 +67,9 @@ public class WorldController : MonoBehaviour
 
         if (SceneController.loadWorldFromFileName != null)
         {
-            World.CheckMods(SceneController.loadWorldFromFileName);
-            return;
+            modsManager = new ModsManager();
+            CreateWorldFromSaveFile(SceneController.loadWorldFromFileName);
+            SceneController.loadWorldFromFileName = null;
         }
         else
         {
@@ -78,16 +79,8 @@ public class WorldController : MonoBehaviour
 
         soundController = new SoundController(World);
     }
-    
-    public void Enable()
-    {
-        modsManager = new ModsManager();
-        CreateWorldFromSaveFile(SceneController.loadWorldFromFileName);
-        SceneController.loadWorldFromFileName = null;
-        soundController = new SoundController(World);
-    }
 
-    public void Startup()
+    public void Start()
     {
         // Create GameObject so we can have access to a transform which has a position of "Vector3.zero".
         new GameObject("VisualPath", typeof(VisualPath));
@@ -217,14 +210,6 @@ public class WorldController : MonoBehaviour
         t.Start();
 
         return t;
-    }
-
-    private void Start()
-    {
-        if(World.ReadyToStart)
-        {
-            Startup();
-        }
     }
 
     /// <summary>

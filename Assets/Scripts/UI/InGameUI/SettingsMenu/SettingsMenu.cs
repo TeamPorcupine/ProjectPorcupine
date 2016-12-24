@@ -144,7 +144,7 @@ public class SettingsMenu : MonoBehaviour
             AutomaticVerticalSize avs = go.AddComponent<AutomaticVerticalSize>();
             avs.childHeight = 105;
             LayoutElement le = go.AddComponent<LayoutElement>();
-            ModMenu.DisplaySettings(go.transform);
+            ModMenu.DisplaySettings(rect);
         }
         else
         {

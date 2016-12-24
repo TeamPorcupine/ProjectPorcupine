@@ -83,6 +83,12 @@ public class AudioManager
 
         string audioNameAndCategory = categoryName + "/" + audioName;
 
+        if (audioClips == null)
+        {
+            UnityDebugger.Debugger.LogWarning("AudioManager", "Failed to load audio clip '" + audioNameAndCategory + "' - audioClips == null");
+            return null;
+        }
+
         if (audioClips.ContainsKey(audioNameAndCategory))
         {
             clip = audioClips[audioNameAndCategory];
@@ -91,7 +97,7 @@ public class AudioManager
         {
             try
             {
-                UnityDebugger.Debugger.LogWarning("No audio available called: " + audioNameAndCategory);
+                UnityDebugger.Debugger.LogWarning("AudioManager", "No audio available called: " + audioNameAndCategory);
                 clip = audioClips["Sound/Error"];
             }
             catch
