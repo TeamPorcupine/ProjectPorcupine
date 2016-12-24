@@ -180,7 +180,7 @@ We have standardized the Types of Furniture and Inventory to match `type_materia
 
 * Pull Requests represent final code. Please ensure they are:
      * Well tested by the author. It is the author's job to ensure their code works as expected.
-     * Be free of unnecessary log calls. Logging is great for debugging, but when a PR is made, log calls should only be present when there is an actual error or to warn of an unimplemented feature. [Please use UberLogger as shown here](https://github.com/TeamPorcupine/ProjectPorcupine/wiki/UberLogger) instead of Unity's `Debug.Log()`.
+     * Be free of unnecessary log calls. Logging is great for debugging, but when a PR is made, log calls should only be present when there is an actual error or to warn of an unimplemented feature. Please use `UnityDebugger.Debugger` instead of Unity's `Debug.Log()`.
 
    If your code is untested, log heavy, or incomplete, prefix your PR with "[WIP]", so others know it is still being tested and shouldn't be considered for merging yet.
 

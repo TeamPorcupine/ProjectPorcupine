@@ -68,7 +68,7 @@ Please check the [CONTRIBUTING.md](CONTRIBUTING.md) file for contribution instru
 
 For further information, such as Roadmaps, explanations of systems and features, Standards and Conventions, and all your Git needs and troubleshooting see the [Wiki](https://github.com/TeamPorcupine/ProjectPorcupine/wiki)
 
-Make sure that you are using Unity 5.4.2 [Windows] (https://unity3d.com/get-unity/download?thank-you=update&download_nid=43049&os=Win) | [Mac] (https://unity3d.com/get-unity/download?thank-you=update&download_nid=43049&os=Mac) but we are currently migrating towards Unity 5.5 [Windows] (https://unity3d.com/get-unity/download?thank-you=update&download_nid=44093&os=Win) | [Mac] (https://unity3d.com/get-unity/download?thank-you=update&download_nid=44093&os=Mac)
+Make sure that you are using Unity 5.4.2 [Windows] (https://unity3d.com/get-unity/download?thank-you=update&download_nid=43049&os=Win) | [Mac] (https://unity3d.com/get-unity/download?thank-you=update&download_nid=43049&os=Mac)
 
 ## Vote on Proposed Features
 

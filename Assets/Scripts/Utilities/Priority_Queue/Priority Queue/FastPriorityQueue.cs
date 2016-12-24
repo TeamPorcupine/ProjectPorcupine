@@ -234,7 +234,7 @@ namespace Priority_Queue
         private bool HasHigherPriority(T higher, T lower)
         {
             return (higher.Priority < lower.Priority ||
-                (higher.Priority == lower.Priority && higher.InsertionIndex < lower.InsertionIndex));
+                (higher.Priority == lower.Priority && higher.InsertionIndex > lower.InsertionIndex));
         }
 
         /// <summary>
