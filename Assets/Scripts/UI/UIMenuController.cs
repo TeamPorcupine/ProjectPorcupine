@@ -15,17 +15,17 @@ public class UIMenuController : MonoBehaviour
     private Transform parent;
 
     //// Use this for initialization.
-    //private void Awake()
-    //{
+    ////private void Awake()
+    ////{
     //    // Set the parent for all menu to uses.
     //    parent = this.gameObject.transform;
 
-    //    // Add the menus.
+    ////    // Add the menus.
     //    AddMenu("MenuTop");
     //    AddMenu("GameMenu");
     //    AddMenu("MenuLeft");
     //    AddMenu("Headlines");
-    //}
+    ////}
     
     public void Start()
     {
@@ -37,6 +37,7 @@ public class UIMenuController : MonoBehaviour
         AddMenu("GameMenu");
         AddMenu("MenuLeft");
         AddMenu("Headlines");
+
         // Add the Right Menu because of the mouse controller needed do it here.
         AddMenu("MenuRight");
     }

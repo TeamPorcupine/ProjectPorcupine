@@ -1,25 +1,37 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using UnityEngine;
+using UnityEngine.UI;
 
-public static class ModMenu {
-    public static Dictionary<string,string> modDirs { get; private set; }
-    public static Dictionary<string, string> revModDirs { get; private set; }
-    public static bool loaded { get; private set; }
-    public static List<string> activeModDirs;
-    static List<string> activeModDirsWaiting;
-    static List<string> nonSaving;
-    static Transform UIParent;
+public static class ModMenu
+{
     public static List<string> loadedMods;
+    public static List<string> activeModDirs;
+    private static List<string> activeModDirsWaiting;
+    private static List<string> nonSaving;
+    private static Transform uiParent;
+
+    public static Dictionary<string, string> ModDirs { get; private set; }
+
+    public static Dictionary<string, string> RevModDirs { get; private set; }
+
+    public static bool Loaded { get; private set; }
 
     public static void Load()
     {
-        modDirs = new Dictionary<string, string>();
-        revModDirs = new Dictionary<string, string>();
+        ModDirs = new Dictionary<string, string>();
+        RevModDirs = new Dictionary<string, string>();
         JArray active;
         nonSaving = new List<string>();
         if (File.Exists(Path.Combine(Application.persistentDataPath, "ModSettings.json")))
@@ -33,6 +45,7 @@ public static class ModMenu {
         {
             active = new JArray();
         }
+        
         activeModDirs = new List<string>();
         foreach (DirectoryInfo mod in ModsManager.GetModsFiles())
         {
@@ -49,39 +62,43 @@ public static class ModMenu {
                     nonSaving.Add(mod.FullName);
                 }
             }
-            modDirs.Add(name,mod.FullName);
-            revModDirs.Add(mod.FullName, name);
+
+            ModDirs.Add(name, mod.FullName);
+            RevModDirs.Add(mod.FullName, name);
         }
+
         for (int i = 0; i < active.Count; i++)
         {
             JToken activeMod = active[i];
-            if (modDirs.ContainsKey((string)activeMod))
+            if (ModDirs.ContainsKey((string)activeMod))
             {
-                activeModDirs.Add(modDirs[(string)activeMod]);
+                activeModDirs.Add(ModDirs[(string)activeMod]);
             }
         }
+
         activeModDirsWaiting = activeModDirs;
-	}
+    }
 
     public static void DisplaySettings()
     {
-        DisplaySettings(UIParent);
+        DisplaySettings(uiParent);
     }
 
     public static void DisplaySettings(Transform parent)
     {
-        loaded = false;
+        Loaded = false;
         while (parent.childCount > 0)
         {
             Transform c = parent.GetChild(0);
             c.SetParent(null);
-            Object.Destroy(c.gameObject);
+            UnityEngine.Object.Destroy(c.gameObject);
         }
+
         GameObject prefab = (GameObject)Resources.Load("Prefab/DialogBoxPrefabs/Mod");
         foreach (string mod in activeModDirsWaiting)
         {
             string[] y = mod.Split('\\');
-            string name = y[y.Length-1];
+            string name = y[y.Length - 1];
             string desc = string.Empty;
             if (File.Exists(Path.Combine(mod, "mod.json")))
             {
@@ -89,20 +106,23 @@ public static class ModMenu {
                 name = (string)modData["name"];
                 desc = (string)modData["desc"] ?? string.Empty;
             }
-            GameObject m = (GameObject)Object.Instantiate(prefab, parent);
+
+            GameObject m = (GameObject)GameObject.Instantiate(prefab, parent);
             m.transform.FindChild("Title").GetComponent<Text>().text = name;
             m.transform.FindChild("Description").GetComponent<Text>().text = desc;
             m.transform.FindChild("Toggle").GetComponent<Toggle>().isOn = true;
             m.name = name;
         }
-        foreach (string mod in modDirs.Values)
+
+        foreach (string mod in ModDirs.Values)
         {
             if (activeModDirsWaiting.Contains(mod))
             {
                 continue;
             }
+
             string[] y = mod.Split('\\');
-            string name = y[y.Length-1];
+            string name = y[y.Length - 1];
             string desc = string.Empty;
             if (File.Exists(Path.Combine(mod, "mod.json")))
             {
@@ -110,73 +130,86 @@ public static class ModMenu {
                 name = (string)modData["name"];
                 desc = (string)modData["desc"] ?? string.Empty;
             }
-            GameObject m = (GameObject)Object.Instantiate(prefab, parent);
+
+            GameObject m = (GameObject)GameObject.Instantiate(prefab, parent);
             m.transform.FindChild("Title").GetComponent<Text>().text = name;
             m.transform.FindChild("Description").GetComponent<Text>().text = desc;
             m.transform.FindChild("Toggle").GetComponent<Toggle>().isOn = false;
             m.name = name;
         }
+
         parent.GetComponent<AutomaticVerticalSize>().AdjustSize();
         parent.parent.GetComponent<RectTransform>().sizeDelta = parent.GetComponent<RectTransform>().sizeDelta;
         parent.parent.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
         parent.parent.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
-        UIParent = parent;
-        loaded = true;
+        uiParent = parent;
+        Loaded = true;
     }
-    public static void setEnabled(string mod,bool enabled)
+
+    public static void SetEnabled(string mod, bool enabled)
     {
         if (string.IsNullOrEmpty(mod))
         {
             return;
         }
-        if (modDirs.ContainsKey(mod) == false)
+
+        if (ModDirs.ContainsKey(mod) == false)
         {
             return;
         }
-        if (enabled && (activeModDirs.Contains(modDirs[mod]) == false))
+
+        if (enabled && (activeModDirs.Contains(ModDirs[mod]) == false))
         {
-            activeModDirs.Add(modDirs[mod]);
+            activeModDirs.Add(ModDirs[mod]);
         }
-        else if (activeModDirs.Contains(modDirs[mod]))
+        else if (activeModDirs.Contains(ModDirs[mod]))
         {
-            activeModDirs.Remove(modDirs[mod]);
+            activeModDirs.Remove(ModDirs[mod]);
         }
     }
-    public static void reorderMod(string mod,int up)
+
+    public static void ReorderMod(string mod, int up)
     {
         if (string.IsNullOrEmpty(mod))
         {
             return;
         }
-        if (activeModDirsWaiting.Contains(modDirs[mod]) == false)
+
+        if (activeModDirsWaiting.Contains(ModDirs[mod]) == false)
         {
-            setEnabled(mod, true);
+            SetEnabled(mod, true);
             return;
         }
-        int i = activeModDirsWaiting.IndexOf(modDirs[mod]);
-        if (i == activeModDirsWaiting.Count-1 && up < 0)
+
+        int i = activeModDirsWaiting.IndexOf(ModDirs[mod]);
+        if (i == activeModDirsWaiting.Count - 1 && up < 0)
         {
-            setEnabled(mod, false);
+            SetEnabled(mod, false);
             return;
         }
+
         if ((i == 0 && up > 0) || up == 0)
         {
             return;
         }
-        activeModDirsWaiting.Remove(modDirs[mod]);
+
+        activeModDirsWaiting.Remove(ModDirs[mod]);
         i -= up;
         i = Mathf.Clamp(i, 0, activeModDirs.Count);
-        activeModDirsWaiting.Insert(i, modDirs[mod]);
-        DisplaySettings(UIParent);
+        activeModDirsWaiting.Insert(i, ModDirs[mod]);
+        DisplaySettings(uiParent);
     }
-    public static void commit()
+
+    public static void Commit()
     {
         activeModDirs = activeModDirsWaiting;
     }
-    public static void reset()
+
+    public static void Reset()
     {
         activeModDirsWaiting = activeModDirs;
     }
+
     public static JArray WriteJSON(bool forSave)
     {
         JArray output = new JArray();
@@ -184,10 +217,11 @@ public static class ModMenu {
         {
             foreach (string mod in loadedMods)
             {
-                if(nonSaving.Contains(mod))
+                if (nonSaving.Contains(mod))
                 {
                     continue;
                 }
+
                 output.Add(mod);
             }
         }
@@ -195,16 +229,18 @@ public static class ModMenu {
         {
             foreach (string mod in activeModDirs)
             {
-                output.Add(revModDirs[mod]);
+                output.Add(RevModDirs[mod]);
             }
         }
+
         return output;
     }
+
     public static void Save()
     {
-        JObject ModJson = new JObject();
-        ModJson.Add("activeMods", WriteJSON(false));
-        string jsonData = JsonConvert.SerializeObject(ModJson, Formatting.Indented);
+        JObject modJson = new JObject();
+        modJson.Add("activeMods", WriteJSON(false));
+        string jsonData = JsonConvert.SerializeObject(modJson, Formatting.Indented);
 
         // Save the document.
         try
@@ -220,17 +256,19 @@ public static class ModMenu {
             UnityDebugger.Debugger.LogWarning("Settings", e.Message);
         }
     }
+
     public static void DisableAll()
     {
         activeModDirs = new List<string>();
-        reset();
+        Reset();
     }
-    public static void reportModsLoaded()
+
+    public static void ReportModsLoaded()
     {
         loadedMods = new List<string>();
         foreach (string mod in activeModDirs)
         {
-            loadedMods.Add(revModDirs[mod]);
+            loadedMods.Add(RevModDirs[mod]);
         }
     }
 }
