@@ -5,6 +5,9 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+using UnityEngine;
+
+
 #endregion
 using System.Collections.Generic;
 using System.Xml;
@@ -102,11 +105,10 @@ public class EventActions
     {
         if (!actionsList.ContainsKey(actionName) || actionsList[actionName] == null)
         {
-            return;
         }
         else
         {
-            FunctionsManager.Get(target.GetType().Name).CallWithInstance(actionsList[actionName].ToArray(), target, parameters);
+            FunctionsManager.Get(target.GetType().Name).CallWithInstance(actionsList[actionName], target, parameters);
         }
     }
 

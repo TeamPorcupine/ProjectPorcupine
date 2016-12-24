@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using System;
 using System.Collections.Generic;
 using MoonSharp.Interpreter;
@@ -16,7 +17,7 @@ public class Functions
 
     public Functions()
     {
-        FunctionsSets = new HashSet<IFunctions>();
+        FunctionsSets = new List<IFunctions>();
     }
 
     public enum Type
@@ -25,7 +26,7 @@ public class Functions
         CSharp
     }
 
-    public HashSet<IFunctions> FunctionsSets { get; private set; }
+    public List<IFunctions> FunctionsSets { get; private set; }
 
     public bool HasFunction(string name)
     {
@@ -86,22 +87,23 @@ public class Functions
         }
     }
 
-    public void CallWithInstance(string[] functionNames, object instance, params object[] parameters)
+    public void CallWithInstance(List<string> functionNames, object instance, params object[] parameters)
     {
-        foreach (string fn in functionNames)
+        DynValue result;
+        object[] instanceAndParams;
+        instanceAndParams = new object[parameters.Length + 1];
+        instanceAndParams[0] = instance;
+        parameters.CopyTo(instanceAndParams, 1);
+
+        for (int i = 0; i < functionNames.Count; i++)
         {
-            if (fn == null)
+            if (functionNames[i] == null)
             {
-                UnityDebugger.Debugger.LogError(ModFunctionsLogChannel, "'" + fn + "'  is not a LUA nor CSharp function!");
-                return;
+                UnityDebugger.Debugger.LogError(ModFunctionsLogChannel, "'" + functionNames[i] + "'  is not a LUA nor CSharp function!");
+                continue;;
             }
 
-            DynValue result;
-            object[] instanceAndParams = new object[parameters.Length + 1];
-            instanceAndParams[0] = instance;
-            parameters.CopyTo(instanceAndParams, 1);
-
-            result = Call(fn, instanceAndParams);
+            result = Call(functionNames[i], instanceAndParams);
 
             if (result != null && result.Type == DataType.String)
             {
@@ -140,11 +142,11 @@ public class Functions
 
     private IFunctions GetFunctions(string name)
     {
-        foreach (IFunctions functionsSet in FunctionsSets)
+        for (int i = 0; i < FunctionsSets.Count; i++)
         {
-            if (functionsSet.HasFunction(name))
+            if (FunctionsSets[i].HasFunction(name))
             {
-                return functionsSet;
+                return FunctionsSets[i];
             }
         }
 
