@@ -100,7 +100,7 @@ public class Functions
             if (functionNames[i] == null)
             {
                 UnityDebugger.Debugger.LogError(ModFunctionsLogChannel, "'" + functionNames[i] + "'  is not a LUA nor CSharp function!");
-                continue;;
+                continue;
             }
 
             result = Call(functionNames[i], instanceAndParams);

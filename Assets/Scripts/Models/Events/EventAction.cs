@@ -5,10 +5,8 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-using UnityEngine;
-
-
 #endregion
+
 using System.Collections.Generic;
 using System.Xml;
 using MoonSharp.Interpreter;
