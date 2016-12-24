@@ -64,7 +64,7 @@ public class WorldController : MonoBehaviour
             new ScheduledEvent(
                 "ping_log",
                 (evt) => UnityDebugger.Debugger.LogFormat("Scheduler", "Event {0} fired", evt.Name)));
-        
+
         modsManager = new ModsManager();
 
         if (SceneController.loadWorldFromFileName != null)
