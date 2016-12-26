@@ -215,6 +215,8 @@ public class FurnitureManager : IEnumerable<Furniture>
         if (timePos >= accumulatedTime.Length)
         {
             timePos = 0;
+            invisibleFurnitureProgress = 0;
+            furnitureProgress = 0;
         }
         Profiler.EndSample();
     }
