@@ -208,7 +208,7 @@ public class TimeManager
 
         for (int i = slowUpdatableProgress; i < slowUpdatableProgress + slowToProcess && i < slowUpdatables.Count; i++)
         {
-            updatablesCopy[i].EveryFrameUpdate(accumulatedDeltaTime);
+            updatablesCopy[i].FixedFrequencyUpdate(accumulatedDeltaTime);
         }
 
         slowUpdatableProgress += slowToProcess;
@@ -219,7 +219,7 @@ public class TimeManager
 
         for (int i = invisibleUpdatableProgress; i < invisibleUpdatableProgress + invisibleToProcess && i < invisibleUpdatables.Count; i++)
         {
-            updatablesCopy[i].FixedFrequencyUpdate(accumulatedDeltaTime);
+            updatablesCopy[i].EveryFrameUpdate(accumulatedDeltaTime);
         }
 
         invisibleUpdatableProgress += invisibleToProcess;
@@ -352,6 +352,7 @@ public class TimeManager
         if (!fastUpdatables.ContainsKey(updatable))
         {
             fastUpdatables.Add(updatable, true);
+            visibleUpdatables.Add(updatable);
         }
     }
 
