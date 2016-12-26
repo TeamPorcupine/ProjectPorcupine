@@ -26,6 +26,12 @@ public class TimeManager
     private Dictionary<IUpdatable, bool> fastUpdatables = new Dictionary<IUpdatable, bool>();
     private Dictionary<IUpdatable, bool> slowUpdatables = new Dictionary<IUpdatable, bool>();
 
+    // A temporary list of all visible furniture. Gets updated when camera moves.
+    private HashSet<IUpdatable> visibleUpdatables;
+
+    // A temporary list of all invisible furniture. Gets updated when camera moves.
+    private HashSet<IUpdatable> invisibleUpdatables;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="TimeManager"/> class.
     /// </summary>
@@ -36,6 +42,9 @@ public class TimeManager
         TotalDeltaTime = 0f;
         TimeScalePosition = 2;
         IsPaused = false;
+
+        visibleUpdatables = new HashSet<IUpdatable>();
+        invisibleUpdatables = new HashSet<IUpdatable>();
 
         KeyboardManager.Instance.RegisterInputAction("SetSpeed1", KeyboardMappedInputType.KeyUp, () => SetTimeScalePosition(2));
         KeyboardManager.Instance.RegisterInputAction("SetSpeed2", KeyboardMappedInputType.KeyUp, () => SetTimeScalePosition(3));
@@ -172,7 +181,8 @@ public class TimeManager
         TotalDeltaTime += deltaTime;
     }
 
-    private int updatableProgress = 0;
+    private int slowUpdatableProgress = 0;
+    private int invisibleUpdatableProgress = 0;
     private float[] accumulatedTime = new float[10];
     private int timePos = 0;
 
@@ -180,9 +190,9 @@ public class TimeManager
     {
         Profiler.BeginSample("ProcessUpdatables");
         Profiler.BeginSample("fastUpdatables");
-        IUpdatable[] updatablesCopy = new IUpdatable[fastUpdatables.Count];
-        fastUpdatables.Keys.CopyTo(updatablesCopy, 0);
-        for (int i = 0; i < fastUpdatables.Count; i++)
+        IUpdatable[] updatablesCopy = new IUpdatable[visibleUpdatables.Count];
+        visibleUpdatables.CopyTo(updatablesCopy, 0);
+        for (int i = 0; i < visibleUpdatables.Count; i++)
         {
             updatablesCopy[i].EveryFrameUpdate(deltaTime);
         }
@@ -192,16 +202,27 @@ public class TimeManager
         accumulatedTime[timePos] = deltaTime;
         float accumulatedDeltaTime = accumulatedTime.Sum();
 
-        int numToProcess = Mathf.CeilToInt((float)slowUpdatables.Count / 10);
+        int slowToProcess = Mathf.CeilToInt((float)slowUpdatables.Count / 10);
         updatablesCopy = new IUpdatable[slowUpdatables.Count];
         slowUpdatables.Keys.CopyTo(updatablesCopy, 0);
 
-        for (int i = updatableProgress; i < updatableProgress + numToProcess && i < slowUpdatables.Count; i++)
+        for (int i = slowUpdatableProgress; i < slowUpdatableProgress + slowToProcess && i < slowUpdatables.Count; i++)
         {
             updatablesCopy[i].EveryFrameUpdate(accumulatedDeltaTime);
         }
 
-        updatableProgress += numToProcess;
+        slowUpdatableProgress += slowToProcess;
+
+        int invisibleToProcess = Mathf.CeilToInt((float)invisibleUpdatables.Count / 10);
+        updatablesCopy = new IUpdatable[invisibleUpdatables.Count];
+        invisibleUpdatables.CopyTo(updatablesCopy, 0);
+
+        for (int i = invisibleUpdatableProgress; i < invisibleUpdatableProgress + invisibleToProcess && i < invisibleUpdatables.Count; i++)
+        {
+            updatablesCopy[i].FixedFrequencyUpdate(accumulatedDeltaTime);
+        }
+
+        invisibleUpdatableProgress += invisibleToProcess;
 
         timePos++;
         if (timePos >= accumulatedTime.Length)
@@ -211,6 +232,39 @@ public class TimeManager
         updatablesCopy = null;
         Profiler.EndSample();
         Profiler.EndSample();
+    }
+
+    /// <summary>
+    /// Notify world that the camera moved, so we can check which entities are visible to the camera.
+    /// The invisible enities can be updated less frequent for better performance.
+    /// </summary>
+    public void OnCameraMoved(Bounds cameraBounds)
+    {
+        // Expand bounds to include tiles on the edge where the centre isn't inside the bounds
+        cameraBounds.Expand(1);
+
+        foreach (IUpdatable updatable in fastUpdatables.Keys)
+        {
+            // Multitile furniture base tile is bottom left - so add width and height 
+            Bounds updatableBounds = updatable.Bounds;
+
+            if (cameraBounds.Intersects(updatableBounds))
+            {
+                if (invisibleUpdatables.Contains(updatable))
+                {
+                    invisibleUpdatables.Remove(updatable);
+                    visibleUpdatables.Add(updatable);
+                }
+            }
+            else
+            {
+                if (visibleUpdatables.Contains(updatable))
+                {
+                    visibleUpdatables.Remove(updatable);
+                    invisibleUpdatables.Add(updatable);
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -306,6 +360,16 @@ public class TimeManager
         if (fastUpdatables.ContainsKey(updatable))
         {
             fastUpdatables.Remove(updatable);
+        }
+
+        if(visibleUpdatables.Contains(updatable))
+        {
+            visibleUpdatables.Remove(updatable);
+        }
+
+        if(invisibleUpdatables.Contains(updatable))
+        {
+            invisibleUpdatables.Remove(updatable);
         }
     }
 

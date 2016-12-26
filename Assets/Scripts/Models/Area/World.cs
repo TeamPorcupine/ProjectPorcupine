@@ -173,7 +173,7 @@ public class World
     /// </summary>
     public void OnCameraMoved(Bounds cameraBounds)
     {
-        FurnitureManager.OnCameraMoved(cameraBounds);
+        TimeManager.Instance.OnCameraMoved(cameraBounds);
     }
 
     /// <summary>

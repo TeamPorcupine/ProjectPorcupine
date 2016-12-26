@@ -161,6 +161,15 @@ public class Character : ISelectable, IContextActionProvider, IUpdatable
         }
     }
 
+    public Bounds Bounds {
+        get
+        {
+            return new Bounds(
+                new Vector3(X - 1, Y - 1 , 0),
+                new Vector3(1, 1));
+        }
+    }
+
     /// <summary>
     /// The tile the Character is considered to still be standing in.
     /// </summary>

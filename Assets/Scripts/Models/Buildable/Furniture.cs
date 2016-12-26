@@ -216,6 +216,15 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// <value>The event actions that is called on update.</value>
     public EventActions EventActions { get; private set; }
 
+    public Bounds Bounds {
+        get
+        {
+            return new Bounds(
+                new Vector3(Tile.X - 0.5f + (Width / 2), Tile.Y - 0.5f + (Height / 2), 0),
+                new Vector3(Width, Height));
+        }
+    }
+
     /// <summary>
     /// Gets a value indicating whether the furniture is operating or not.
     /// </summary>

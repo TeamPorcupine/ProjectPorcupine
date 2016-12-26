@@ -6,9 +6,10 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using UnityEngine;
 
 public interface IUpdatable {
-
+    Bounds Bounds{get;}
     void EveryFrameUpdate(float deltaTime);
     void FixedFrequencyUpdate(float deltaTime);
 }
