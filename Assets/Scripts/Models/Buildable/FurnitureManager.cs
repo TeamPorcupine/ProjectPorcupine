@@ -83,7 +83,11 @@ public class FurnitureManager : IEnumerable<Furniture>
 
         furnitures.Add(furniture);
         furnituresVisible.Add(furniture);
-        TimeManager.Instance.RegisterFastUpdate(furniture);
+        if ((furniture.EventActions != null && furniture.EventActions.HasEvent("OnFastUpdate")) || furniture.HasComponents)
+        {
+            TimeManager.Instance.RegisterFastUpdate(furniture);
+        }
+
         TimeManager.Instance.RegisterSlowUpdate(furniture);
 
         // Do we need to recalculate our rooms/reachability for other jobs?

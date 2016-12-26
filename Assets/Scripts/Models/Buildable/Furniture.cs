@@ -387,6 +387,18 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     public bool IsBeingDestroyed { get; protected set; }
 
     /// <summary>
+    /// Gets a value indicating whether this instance has components.
+    /// </summary>
+    /// <value><c>true</c> if this instance has components; otherwise, <c>false</c>.</value>
+    public bool HasComponents
+    {
+        get
+        {
+            return components != null || components.Count != 0;
+        }
+    }
+
+    /// <summary>
     /// Flag with furniture requirements (used for showing icon overlay, e.g. No power, ... ).
     /// </summary>
     public BuildableComponent.Requirements Requirements { get; protected set; }
