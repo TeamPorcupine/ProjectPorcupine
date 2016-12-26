@@ -83,7 +83,7 @@ public class FurnitureManager : IEnumerable<Furniture>
 
         furnitures.Add(furniture);
         furnituresVisible.Add(furniture);
-        if (!furniture.HasTypeTag("Wall") || (furniture.EventActions != null && furniture.EventActions.HasEvent("OnFastUpdate")) || furniture.HasComponents)
+        if (!furniture.HasTypeTag("Wall") && (furniture.EventActions != null && furniture.EventActions.HasEvent("OnFastUpdate")) || furniture.HasComponents)
         {
             TimeManager.Instance.RegisterFastUpdate(furniture);
         }
