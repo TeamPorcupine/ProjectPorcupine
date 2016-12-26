@@ -228,6 +228,8 @@ public class TimeManager
         if (timePos >= accumulatedTime.Length)
         {
             timePos = 0;
+            invisibleUpdatableProgress = 0;
+            slowUpdatableProgress = 0;
         }
         updatablesCopy = null;
         Profiler.EndSample();
