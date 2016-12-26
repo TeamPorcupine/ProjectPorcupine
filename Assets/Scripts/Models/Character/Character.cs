@@ -30,7 +30,7 @@ public enum Facing
 /// sub-classes or interfaces) to support friendly workers, enemies, etc...
 /// </summary>
 [MoonSharpUserData]
-public class Character : ISelectable, IContextActionProvider
+public class Character : ISelectable, IContextActionProvider, IUpdatable
 {
     /// Name of the Character.
     public string name;
@@ -313,8 +313,10 @@ public class Character : ISelectable, IContextActionProvider
     #endregion
 
     /// Runs every "frame" while the simulation is not paused
-    public void Update(float deltaTime)
+    public void EveryFrameUpdate(float deltaTime)
     {
+
+        Profiler.BeginSample("CharacterFastUpdate");
         // Run all the global states first so that they can interrupt or queue up new states
         foreach (State globalState in globalStates)
         {
@@ -351,6 +353,12 @@ public class Character : ISelectable, IContextActionProvider
         {
             OnCharacterChanged(this);
         }
+
+        Profiler.EndSample();
+    }
+
+    public void FixedFrequencyUpdate(float deltaTime) {
+        
     }
 
     public object ToJSon()

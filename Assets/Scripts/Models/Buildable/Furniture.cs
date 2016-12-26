@@ -25,7 +25,7 @@ using UnityEngine;
 /// InstalledObjects are things like walls, doors, and furniture (e.g. a sofa).
 /// </summary>
 [MoonSharpUserData]
-public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBuildable
+public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBuildable, IUpdatable
 {
     #region Private Variables
     private string isEnterableAction;
@@ -481,15 +481,22 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// <param name="deltaTime">The time since the last update was called.</param>
     public void EveryFrameUpdate(float deltaTime)
     {
+        Profiler.BeginSample("FurnitureFastUpdate");
+        Profiler.BeginSample("EventActions");
         if (EventActions != null)
         {
             EventActions.Trigger("OnFastUpdate", this, deltaTime);
         }
 
+        Profiler.EndSample();
+        Profiler.BeginSample("Components");
         foreach (BuildableComponent component in components)
         {
             component.EveryFrameUpdate(deltaTime);
         }
+
+        Profiler.EndSample();
+        Profiler.EndSample();
     }
 
     /// <summary>

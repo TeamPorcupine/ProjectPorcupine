@@ -509,8 +509,8 @@ public class World
     /// <param name="deltaTime">Delta time.</param>
     private void TickEveryFrame(float deltaTime)
     {
-        CharacterManager.Update(deltaTime);
-        FurnitureManager.TickEveryFrame(deltaTime);
+//        CharacterManager.Update(deltaTime);
+//        FurnitureManager.TickEveryFrame(deltaTime);
         GameEventManager.Update(deltaTime);
         ShipManager.Update(deltaTime);
     }
@@ -521,7 +521,7 @@ public class World
     /// <param name="deltaTime">Delta time.</param>
     private void TickFixedFrequency(float deltaTime)
     {
-        FurnitureManager.TickFixedFrequency(deltaTime);
+//        FurnitureManager.TickFixedFrequency(deltaTime);
 
         // Progress temperature modelling
         temperature.Update();

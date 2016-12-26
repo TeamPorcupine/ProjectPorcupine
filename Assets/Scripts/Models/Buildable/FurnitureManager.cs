@@ -83,6 +83,8 @@ public class FurnitureManager : IEnumerable<Furniture>
 
         furnitures.Add(furniture);
         furnituresVisible.Add(furniture);
+        TimeManager.Instance.RegisterFastUpdate(furniture);
+        TimeManager.Instance.RegisterSlowUpdate(furniture);
 
         // Do we need to recalculate our rooms/reachability for other jobs?
         if (doRoomFloodFill && furniture.RoomEnclosure)
@@ -177,40 +179,40 @@ public class FurnitureManager : IEnumerable<Furniture>
     /// The list needs to be copied temporarily in case furnitures are added or removed during the update.
     /// </summary>
     /// <param name="deltaTime">Delta time.</param>
-    public void TickEveryFrame(float deltaTime)
-    {
-        List<Furniture> tempFurnituresVisible = new List<Furniture>(furnituresVisible);
-        foreach (Furniture furniture in tempFurnituresVisible)
-        {
-            furniture.EveryFrameUpdate(deltaTime);
-        }
-    }
-
-    /// <summary>
-    /// Calls the furnitures update function on a fixed frequency.
-    /// The list needs to be copied temporarily in case furnitures are added or removed during the update.
-    /// </summary>
-    /// <param name="deltaTime">Delta time.</param>
-    public void TickFixedFrequency(float deltaTime)
-    {
-        // TODO: Further optimization could divide eventFurnitures in multiple lists
-        //       and update one of the lists each frame.
-        //       FixedFrequencyUpdate on invisible furniture could also be even slower.
-
-        // Update furniture outside of the camera view
-        List<Furniture> tempFurnituresInvisible = new List<Furniture>(furnituresInvisible);
-        foreach (Furniture furniture in tempFurnituresInvisible)
-        {
-            furniture.EveryFrameUpdate(deltaTime);
-        }
-
-        // Update all furniture with EventActions
-        List<Furniture> tempFurnitures = new List<Furniture>(furnitures);
-        foreach (Furniture furniture in tempFurnitures)
-        {
-            furniture.FixedFrequencyUpdate(deltaTime);
-        }
-    }
+//    public void TickEveryFrame(float deltaTime)
+//    {
+//        List<Furniture> tempFurnituresVisible = new List<Furniture>(furnituresVisible);
+//        foreach (Furniture furniture in tempFurnituresVisible)
+//        {
+//            furniture.EveryFrameUpdate(deltaTime);
+//        }
+//    }
+//
+//    /// <summary>
+//    /// Calls the furnitures update function on a fixed frequency.
+//    /// The list needs to be copied temporarily in case furnitures are added or removed during the update.
+//    /// </summary>
+//    /// <param name="deltaTime">Delta time.</param>
+//    public void TickFixedFrequency(float deltaTime)
+//    {
+//        // TODO: Further optimization could divide eventFurnitures in multiple lists
+//        //       and update one of the lists each frame.
+//        //       FixedFrequencyUpdate on invisible furniture could also be even slower.
+//
+//        // Update furniture outside of the camera view
+//        List<Furniture> tempFurnituresInvisible = new List<Furniture>(furnituresInvisible);
+//        foreach (Furniture furniture in tempFurnituresInvisible)
+//        {
+//            furniture.EveryFrameUpdate(deltaTime);
+//        }
+//
+//        // Update all furniture with EventActions
+//        List<Furniture> tempFurnitures = new List<Furniture>(furnitures);
+//        foreach (Furniture furniture in tempFurnitures)
+//        {
+//            furniture.FixedFrequencyUpdate(deltaTime);
+//        }
+//    }
 
     /// <summary>
     /// Gets the furnitures enumerator.
@@ -312,6 +314,8 @@ public class FurnitureManager : IEnumerable<Furniture>
             furnituresVisible.Remove(furniture);
         }
 
+        TimeManager.Instance.UnregisterFastUpdate(furniture);
+        TimeManager.Instance.UnregisterSlowUpdate(furniture);
         // Movement to jobs might have been opened, let's move jobs back into the queue to be re-evaluated.
         World.Current.jobQueue.ReevaluateReachability();
     }

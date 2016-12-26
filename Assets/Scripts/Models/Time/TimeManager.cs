@@ -5,6 +5,10 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+using System.Collections.Generic;
+using System.Linq;
+
+
 #endregion
 using System;
 using System.Collections;
@@ -18,6 +22,9 @@ public class TimeManager
 
     // An array of possible time multipliers.
     private float[] possibleTimeScales = new float[6] { 0.1f, 0.5f, 1f, 2f, 4f, 8f };
+
+    private Dictionary<IUpdatable, bool> fastUpdatables = new Dictionary<IUpdatable, bool>();
+    private Dictionary<IUpdatable, bool> slowUpdatables = new Dictionary<IUpdatable, bool>();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TimeManager"/> class.
@@ -125,6 +132,11 @@ public class TimeManager
     /// <param name="time">Time since last frame.</param>
     public void Update(float time)
     {
+//        if (Time.frameCount % 30 == 0)
+//        {
+//            System.GC.Collect();
+//        }
+        
         float deltaTime = time * TimeScale;
 
         // Systems that update every frame.
@@ -140,6 +152,7 @@ public class TimeManager
         if (GameController.Instance.IsPaused == false)
         {
             InvokeEvent(EveryFrameUnpaused, deltaTime);
+            ProcessUpdatables(deltaTime);
         }
 
         // Systems that update at fixed frequency.
@@ -158,6 +171,89 @@ public class TimeManager
 
         TotalDeltaTime += deltaTime;
     }
+
+    private int updatableProgress = 0;
+    private float[] accumulatedTime = new float[10];
+    private int timePos = 0;
+
+    public void ProcessUpdatables(float deltaTime)
+    {
+        Profiler.BeginSample("ProcessUpdatables");
+        Profiler.BeginSample("fastUpdatables");
+        IUpdatable[] updatablesCopy = new IUpdatable[fastUpdatables.Count];
+        fastUpdatables.Keys.CopyTo(updatablesCopy, 0);
+        for (int i = 0; i < fastUpdatables.Count; i++)
+        {
+            updatablesCopy[i].EveryFrameUpdate(deltaTime);
+        }
+        Profiler.EndSample();
+        Profiler.BeginSample("slowUpdatables");
+
+        accumulatedTime[timePos] = deltaTime;
+        float accumulatedDeltaTime = accumulatedTime.Sum();
+
+        int numToProcess = Mathf.CeilToInt((float)slowUpdatables.Count / 10);
+        updatablesCopy = new IUpdatable[slowUpdatables.Count];
+        slowUpdatables.Keys.CopyTo(updatablesCopy, 0);
+
+        for (int i = updatableProgress; i < updatableProgress + numToProcess && i < slowUpdatables.Count; i++)
+        {
+            updatablesCopy[i].EveryFrameUpdate(accumulatedDeltaTime);
+        }
+
+        updatableProgress += numToProcess;
+
+        timePos++;
+        if (timePos >= accumulatedTime.Length)
+        {
+            timePos = 0;
+        }
+        updatablesCopy = null;
+        Profiler.EndSample();
+        Profiler.EndSample();
+    }
+
+    /// <summary>
+    /// Calls the furnitures update function on every frame.
+    /// The list needs to be copied temporarily in case furnitures are added or removed during the update.
+    /// </summary>
+    /// <param name="deltaTime">Delta time.</param>
+//    public void TickEveryFrame(float deltaTime)
+//    {
+//        Profiler.BeginSample("TEF");
+//        List<Furniture> tempFurnituresVisible = new List<Furniture>(furnituresVisible);
+//        foreach (Furniture furniture in tempFurnituresVisible)
+//        {
+//            furniture.EveryFrameUpdate(deltaTime);
+//        }
+//
+//
+//
+//        // Update furniture outside of the camera view
+//        List<Furniture> tempFurnituresInvisible = new List<Furniture>(furnituresInvisible);
+//        //        int totalFurnCount = tempFurnituresInvisible.Count;
+//
+//        for (int i = invisibleFurnitureProgress; i < invisibleFurnitureProgress + invFurnToProcess && i < tempFurnituresInvisible.Count; i++)
+//        {
+//            tempFurnituresInvisible[i].EveryFrameUpdate(accumulatedDeltaTime);
+//        }
+//        invisibleFurnitureProgress += invFurnToProcess;
+//
+//        List<Furniture> tempFurnitures = new List<Furniture>(furnitures);
+//        int furnToProcess = Mathf.CeilToInt((float)tempFurnitures.Count / 10);
+//        for (int i = furnitureProgress; i < furnitureProgress + furnToProcess && i < tempFurnitures.Count; i++)
+//        {
+//            tempFurnitures[i].FixedFrequencyUpdate(accumulatedDeltaTime);
+//        }
+//        furnitureProgress += furnToProcess;
+//
+//        timePos++;
+//        if (timePos >= accumulatedTime.Length)
+//        {
+//            timePos = 0;
+//        }
+//        Profiler.EndSample();
+//    }
 
     /// <summary>
     /// Sets the speed of the game. Greater time scale position equals greater speed.
@@ -195,6 +291,38 @@ public class TimeManager
     public void Destroy()
     {
         instance = null;
+    }
+
+    public void RegisterFastUpdate(IUpdatable updatable)
+    {
+        if (!fastUpdatables.ContainsKey(updatable))
+        {
+            fastUpdatables.Add(updatable, true);
+        }
+    }
+
+    public void UnregisterFastUpdate(IUpdatable updatable)
+    {
+        if (fastUpdatables.ContainsKey(updatable))
+        {
+            fastUpdatables.Remove(updatable);
+        }
+    }
+
+    public void RegisterSlowUpdate(IUpdatable updatable)
+    {
+        if (!slowUpdatables.ContainsKey(updatable))
+        {
+            slowUpdatables.Add(updatable, true);
+        }
+    }
+
+    public void UnregisterSlowUpdate(IUpdatable updatable)
+    {
+        if (slowUpdatables.ContainsKey(updatable))
+        {
+            slowUpdatables.Remove(updatable);
+        }
     }
 
     /// <summary>
