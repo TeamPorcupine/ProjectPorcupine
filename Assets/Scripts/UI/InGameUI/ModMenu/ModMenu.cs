@@ -17,7 +17,8 @@ using UnityEngine.UI;
 public static class ModMenu
 {
     public static List<string> loadedMods;
-    public static List<string> activeModDirs;
+    private static List<string> activeModDirs;
+    private static List<string> activeModDirsRev;
     private static List<string> activeModDirsWaiting;
     private static List<string> nonSaving;
     private static Transform uiParent;
@@ -27,6 +28,29 @@ public static class ModMenu
     public static Dictionary<string, string> RevModDirs { get; private set; }
 
     public static bool Loaded { get; private set; }
+
+    public static List<string> ActiveModDirs
+    {
+        get
+        {
+            return activeModDirs;
+        }
+
+        set
+        {
+            activeModDirs = value;
+            activeModDirsRev = value;
+            activeModDirsRev.Reverse();
+        }
+    }
+
+    public static List<string> ActiveModDirsRev
+    {
+        get
+        {
+            return activeModDirsRev;
+        }
+    }
 
     public static void Load()
     {
@@ -46,7 +70,7 @@ public static class ModMenu
             active = new JArray();
         }
         
-        activeModDirs = new List<string>();
+        ActiveModDirs = new List<string>();
         foreach (DirectoryInfo mod in ModsManager.GetModsFiles())
         {
             string modPath = Path.Combine(mod.FullName, "mod.json");
@@ -72,11 +96,11 @@ public static class ModMenu
             JToken activeMod = active[i];
             if (ModDirs.ContainsKey((string)activeMod))
             {
-                activeModDirs.Add(ModDirs[(string)activeMod]);
+                ActiveModDirs.Add(ModDirs[(string)activeMod]);
             }
         }
 
-        activeModDirsWaiting = activeModDirs;
+        activeModDirsWaiting = ActiveModDirs;
     }
 
     public static void DisplaySettings()
@@ -158,13 +182,13 @@ public static class ModMenu
             return;
         }
 
-        if (enabled && (activeModDirs.Contains(ModDirs[mod]) == false))
+        if (enabled && (ActiveModDirs.Contains(ModDirs[mod]) == false))
         {
-            activeModDirs.Add(ModDirs[mod]);
+            ActiveModDirs.Add(ModDirs[mod]);
         }
-        else if (activeModDirs.Contains(ModDirs[mod]))
+        else if (ActiveModDirs.Contains(ModDirs[mod]))
         {
-            activeModDirs.Remove(ModDirs[mod]);
+            ActiveModDirs.Remove(ModDirs[mod]);
         }
     }
 
@@ -195,14 +219,14 @@ public static class ModMenu
 
         activeModDirsWaiting.Remove(ModDirs[mod]);
         i -= up;
-        i = Mathf.Clamp(i, 0, activeModDirs.Count);
+        i = Mathf.Clamp(i, 0, ActiveModDirs.Count);
         activeModDirsWaiting.Insert(i, ModDirs[mod]);
         DisplaySettings(uiParent);
     }
 
     public static void Commit(bool save = false)
     {
-        activeModDirs = activeModDirsWaiting;
+        ActiveModDirs = activeModDirsWaiting;
         if (save)
         {
             SceneController.Instance.LoadMainMenu();
@@ -211,7 +235,7 @@ public static class ModMenu
 
     public static void Reset()
     {
-        activeModDirsWaiting = activeModDirs;
+        activeModDirsWaiting = ActiveModDirs;
     }
 
     public static JArray WriteJSON(bool forSave)
@@ -231,7 +255,7 @@ public static class ModMenu
         }
         else
         {
-            foreach (string mod in activeModDirs)
+            foreach (string mod in ActiveModDirs)
             {
                 output.Add(RevModDirs[mod]);
             }
@@ -259,12 +283,13 @@ public static class ModMenu
             UnityDebugger.Debugger.LogWarning("Settings", "Settings could not be saved to " + Path.Combine(Application.persistentDataPath, "ModSettings.json"));
             UnityDebugger.Debugger.LogWarning("Settings", e.Message);
         }
+
         SceneController.Instance.LoadMainMenu();
     }
 
     public static void DisableAll()
     {
-        activeModDirs = new List<string>();
+        ActiveModDirs = new List<string>();
         Reset();
         DisplaySettings();
     }
@@ -272,7 +297,7 @@ public static class ModMenu
     public static void ReportModsLoaded()
     {
         loadedMods = new List<string>();
-        foreach (string mod in activeModDirs)
+        foreach (string mod in ActiveModDirs)
         {
             loadedMods.Add(RevModDirs[mod]);
         }
@@ -289,9 +314,10 @@ public static class ModMenu
             SceneController.Instance.LoadWorld(worldFile);
             return;
         }
+
         for (int i = 0; i < active.Count; i++)
         {
-            if (activeModDirs.Contains(ModDirs[(string) active[i]]) == false)
+            if (ActiveModDirs.Contains(ModDirs[(string)active[i]]) == false)
             {
                 DialogBoxPromptOrInfo check;
 
@@ -319,8 +345,9 @@ public static class ModMenu
                             case DialogBoxResult.Yes:
                                 for (int y = 0; y < active.Count; y++)
                                 {
-                                    SetEnabled((string) active[y], true);
+                                    SetEnabled((string)active[y], true);
                                 }
+
                                 GameController.Instance.soundController.OnButtonSFX();
                                 dblg.LoadWorld(worldFile);
                                 break;
