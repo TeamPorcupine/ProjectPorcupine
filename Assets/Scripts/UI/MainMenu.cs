@@ -49,6 +49,15 @@ public class MainMenu : MonoBehaviour
             }
         });
 
+        GameObject modsButton = CreateButtonGO(buttonPrefab, "Mods", "menu_mods");
+        modsButton.GetComponent<Button>().onClick.AddListener(delegate
+        {
+            if (!GameController.Instance.IsModal)
+            {
+                ModMenuController.Instance.SetActive(true);
+            }
+        });
+
         GameObject quitButton = CreateButtonGO(buttonPrefab, "Quit", "menu_quit");
         quitButton.GetComponent<Button>().onClick.AddListener(delegate
         {

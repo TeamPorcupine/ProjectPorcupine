@@ -60,6 +60,17 @@ public class MainMenuController : MonoBehaviour
             settingsMenu.SetActive(true);
         }
 
+        // Load the Mod Menu
+        GameObject modMenu = (GameObject)Instantiate(Resources.Load("UI/ModMenu/ModMenu"));
+
+        if (modMenu != null)
+        {
+            modMenu.name = "Mod Menu";
+            modMenu.transform.SetParent(canvas.transform, false);
+            ModMenuController.Instance = modMenu;
+            modMenu.SetActive(false);
+        }
+
         // Create dialogBoxes.
         GameObject dialogBoxes = new GameObject("Dialog Boxes");
         dialogBoxes.transform.SetParent(canvas.transform, false);
