@@ -13,7 +13,7 @@ using UnityEngine.UI;
 public class CurrencyDisplay : MonoBehaviour
 {
     public Text text;
-    string[] currencies;
+    private string[] currencies;
 
     private void Start()
     {
@@ -32,8 +32,7 @@ public class CurrencyDisplay : MonoBehaviour
             content.Append(World.Current.Wallet[currency].Balance);
             content.AppendLine();
         }
-
-        // Don't question it ok.
+        
         text.text = content.ToString();
     }
 }
