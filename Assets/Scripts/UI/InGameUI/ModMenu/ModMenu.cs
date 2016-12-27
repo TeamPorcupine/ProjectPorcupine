@@ -58,6 +58,7 @@ public static class ModMenu
         {
             return;
         }
+
         ModDirs = new Dictionary<string, string>();
         RevModDirs = new Dictionary<string, string>();
         JArray active;
