@@ -14,13 +14,13 @@ using UnityEngine;
 
 public class FurnitureSpriteController : BaseSpriteController<Furniture>
 {
+    private const float IndicatorOffset = 0.25f;
+    private const float IndicatorScale = 0.5f;
+
     private Dictionary<Furniture, FurnitureChildObjects> childObjectMap;
 
     private Dictionary<BuildableComponent.Requirements, Vector3> statusIndicatorOffsets;
-
-    const float IndicatorOffset = 0.25f;
-    const float IndicatorScale = 0.5f;
-
+    
     // Use this for initialization
     public FurnitureSpriteController(World world) : base(world, "Furniture")
     {
