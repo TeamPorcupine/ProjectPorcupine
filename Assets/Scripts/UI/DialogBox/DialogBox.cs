@@ -35,6 +35,7 @@ public class DialogBox : MonoBehaviour
 
     public virtual void CloseDialog()
     {
+        gameObject.SetActive(false);
         InvokeClosed();
         
         Closed = null;        
@@ -45,9 +46,7 @@ public class DialogBox : MonoBehaviour
             GameController.Instance.IsModal = false;
         }
 
-        GameController.Instance.soundController.OnButtonSFX();
-        
-        gameObject.SetActive(false);
+        GameController.Instance.soundController.OnButtonSFX()
     }
 
     public void SetClosedAction(string funcName)
