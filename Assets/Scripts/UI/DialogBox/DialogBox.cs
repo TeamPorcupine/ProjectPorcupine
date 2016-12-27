@@ -46,7 +46,7 @@ public class DialogBox : MonoBehaviour
             GameController.Instance.IsModal = false;
         }
 
-        GameController.Instance.soundController.OnButtonSFX()
+        GameController.Instance.soundController.OnButtonSFX();
     }
 
     public void SetClosedAction(string funcName)
