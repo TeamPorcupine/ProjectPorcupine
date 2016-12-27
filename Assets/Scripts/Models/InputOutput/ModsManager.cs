@@ -201,9 +201,9 @@ public class ModsManager
             readText(filePath);
         }
 
-        foreach (DirectoryInfo mod in mods)
+        foreach (string mod in ModMenu.ActiveModDirsRev)
         {
-            filePath = Path.Combine(mod.FullName, fileName);
+            filePath = Path.Combine(mod, fileName);
             if (File.Exists(filePath))
             {
                 readText(filePath);

@@ -57,6 +57,7 @@ public class GameController : MonoBehaviour
 
         soundController = new SoundController();
         ModMenu.Load();
+
         // Load Keyboard Mapping.
         KeyboardManager = KeyboardManager.Instance;
 
