@@ -42,7 +42,10 @@ public class PerformanceHUDManager : MonoBehaviour
         // Clear
         foreach (Transform child in rootObject.transform)
         {
-            Destroy(child.gameObject);
+            if (child.tag == "PerformanceUI")
+            {
+                Destroy(child.gameObject);
+            }
         }
 
         // Draw
