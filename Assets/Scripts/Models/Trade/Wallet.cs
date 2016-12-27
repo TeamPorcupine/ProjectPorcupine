@@ -7,8 +7,8 @@
 // ====================================================
 #endregion
 
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 
 public class Wallet
@@ -40,10 +40,11 @@ public class Wallet
         }
     }
 
-    public string[] GetCurrencyNames ()
+    public string[] GetCurrencyNames()
     {
         return currencies.Keys.ToArray();
     }
+
     /// <summary>
     /// Adds a currency with the given name and balance.
     /// </summary>
