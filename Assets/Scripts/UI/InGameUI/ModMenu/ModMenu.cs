@@ -54,6 +54,10 @@ public static class ModMenu
 
     public static void Load()
     {
+        if (ModDirs != null)
+        {
+            return;
+        }
         ModDirs = new Dictionary<string, string>();
         RevModDirs = new Dictionary<string, string>();
         JArray active;
@@ -190,6 +194,8 @@ public static class ModMenu
         {
             ActiveModDirs.Remove(ModDirs[mod]);
         }
+
+        UnityDebugger.Debugger.Log((enabled ? "Enabled" : "Disabled") + " mod " + mod);
     }
 
     public static void ReorderMod(string mod, int up)
@@ -311,7 +317,7 @@ public static class ModMenu
         s.Close();
         if (active == null)
         {
-            SceneController.Instance.LoadWorld(worldFile);
+            dblg.LoadWorld(worldFile);
             return;
         }
 
@@ -362,7 +368,10 @@ public static class ModMenu
                     };
 
                 check.ShowDialog();
+                return;
             }
         }
+
+        dblg.LoadWorld(worldFile);
     }
 }
