@@ -266,6 +266,7 @@ public static class ModMenu
     {
         activeModDirs = new List<string>();
         Reset();
+        DisplaySettings();
     }
 
     public static void ReportModsLoaded()
@@ -308,7 +309,7 @@ public static class ModMenu
                     return;
                 }
 
-                check.SetPrompt("Are you sure you want to close the menu and cancel all settings?");
+                check.SetPrompt("prompt_load_mods");
                 check.SetButtons(new DialogBoxResult[] { DialogBoxResult.Yes, DialogBoxResult.No, DialogBoxResult.Cancel });
                 check.Closed =
                     () =>
