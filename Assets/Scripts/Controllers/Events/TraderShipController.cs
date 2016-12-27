@@ -22,6 +22,7 @@ public class TraderShipController : MonoBehaviour
     public SpritenameAnimation AnimationIdle;
     public SpritenameAnimation AnimationFlying;
     public SpriteRenderer Renderer;
+    public Furniture LandingPad;
 
     public void FixedUpdate()
     {
@@ -69,7 +70,6 @@ public class TraderShipController : MonoBehaviour
             }
             else
             {
-                WorldController.Instance.TradeController.ShowTradeDialogBox(this);
                 AnimationIdle.Update(Time.fixedDeltaTime);
                 ShowSprite(AnimationIdle.CurrentFrameName);
             }

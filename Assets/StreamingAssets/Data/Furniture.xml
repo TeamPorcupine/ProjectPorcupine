@@ -719,6 +719,10 @@
                            LocalizationKey="call_trade_ship_test"
                            RequireCharacterSelected="false"
                            DevModeOnly="true"/>
+      
+        <ContextMenuAction FunctionName="LandingPad_TradeWithTrader"
+                           LocalizationKey="trade_with_trader"
+                           RequireCharacterSelected="true"/>
 
         <LocalizationCode>furn_small_landing_pad</LocalizationCode>
         <UnlocalizedDescription>furn_small_landing_pad_desc</UnlocalizedDescription>

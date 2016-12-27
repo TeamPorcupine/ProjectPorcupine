@@ -196,8 +196,8 @@ function Stockpile_UpdateAction( furniture, deltaTime )
 
   	-- TODO: In the future, stockpiles -- rather than being a bunch of individual
   	-- 1x1 tiles -- should manifest themselves as single, large objects.  This
-  	-- would respresent our first and probably only VARIABLE sized "furniture" --
-  	-- at what happenes if there's a "hole" in our stockpile because we have an
+  	-- would represent our first and probably only VARIABLE sized "furniture" --
+  	-- at what happens if there's a "hole" in our stockpile because we have an
   	-- actual piece of furniture (like a cooking stating) installed in the middle
   	-- of our stockpile?
   	-- In any case, once we implement "mega stockpiles", then the job-creation system
@@ -423,6 +423,10 @@ end
 
 function LandingPad_Test_CallTradeShip(furniture, character)
    WorldController.Instance.TradeController.CallTradeShipTest(furniture)
+end
+
+function LandingPad_TradeWithTrader(furniture, character)
+	WorldController.Instance.TradeController.CreateTradeJob(furniture, character)
 end
 
 -- This function gets called once, when the furniture is installed

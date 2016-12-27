@@ -106,13 +106,13 @@ public class Inventory : ISelectable, IContextActionProvider
         int availableInventory = this.stackSize - validClaims.Sum(claim => claim.amount);
         if (availableInventory >= amount)
         {
-            UnityDebugger.Debugger.LogWarning(availableInventory.ToString() + " Available, claiming some");
+            // UnityDebugger.Debugger.LogWarning(availableInventory.ToString() + " Available, claiming some");
             validClaims.Add(new InventoryClaim(requestTime, character, amount));
         }
 
         // Set claims to validClaims to keep claims from filling up with old claims
         claims = validClaims;
-        UnityDebugger.Debugger.LogWarning(AvailableInventory + " Still Available.");
+        // UnityDebugger.Debugger.LogWarning(AvailableInventory + " Still Available.");
     }
 
     public void ReleaseClaim(Character character)

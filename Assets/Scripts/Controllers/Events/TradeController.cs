@@ -22,6 +22,11 @@ public class TradeController
 
     private readonly ScheduledEvent traderVisitEvaluationEvent;
 
+    List<Furniture> landingPads;
+
+    List<Furniture> reservedLandingPads;
+
+
     /// <summary>
     /// Instanciate a new TradeController
     /// This will also schedull and event every 5 minutes for the trade controller to evaluate
@@ -30,6 +35,7 @@ public class TradeController
     public TradeController()
     {
         TradeShips = new List<TraderShipController>();
+        reservedLandingPads = new List<Furniture>();
 
         traderVisitEvaluationEvent = new ScheduledEvent(
             "EvaluateTraderVisit",
@@ -46,6 +52,9 @@ public class TradeController
     /// <param name="landingPad"></param>
     public void CallTradeShipTest(Furniture landingPad)
     {
+        // Reserve the landing pad
+        reservedLandingPads.Add(landingPad);
+
         // Currently not using any logic to select a trader
         TraderPrototype prototype = PrototypeManager.Trader[Random.Range(0, PrototypeManager.Trader.Count - 1)];
         Trader trader = prototype.CreateTrader();
@@ -59,6 +68,7 @@ public class TradeController
         go.transform.position = new Vector3(-10, 50, 0);
         controller.LandingCoordinates = new Vector3(landingPad.Tile.X + 1, landingPad.Tile.Y + 1, 0);
         controller.LeavingCoordinates = new Vector3(100, 50, 0);
+        controller.LandingPad = landingPad;
         go.transform.localScale = new Vector3(1, 1, 1);
         SpriteRenderer spriteRenderer = go.AddComponent<SpriteRenderer>();
         spriteRenderer.sprite = SpriteManager.GetSprite("Trader", prototype.AnimationIdle.CurrentFrameName);
@@ -68,6 +78,18 @@ public class TradeController
         controller.Renderer = spriteRenderer;
     }
 
+
+    private void ShowTradeDialogBox(Job job)
+    {
+        TraderShipController[] traders = TradeShips.Where(x => x.LandingPad == job.tile.Furniture).ToArray();
+        if (traders.Length != 1)
+        {
+            // PANIC!!!
+            return;
+        }
+
+        ShowTradeDialogBox(traders[0]);
+    }
     /// <summary>
     /// Display the TradeDialogBox and allow the user to trade.
     /// </summary>
@@ -83,11 +105,13 @@ public class TradeController
         {
             tradeShip.TradeCompleted = true;
             TradeShips.Remove(tradeShip);
+            reservedLandingPads.Remove(tradeShip.LandingPad);
         };
         dbm.dialogBoxTrade.TradeCompleted = () =>
         {
             tradeShip.TradeCompleted = true;
             TrasfertTradedItems(trade, tradeShip.LandingCoordinates);
+            reservedLandingPads.Remove(tradeShip.LandingPad);
             TradeShips.Remove(tradeShip);
         };
         dbm.dialogBoxTrade.ShowDialog();
@@ -139,7 +163,7 @@ public class TradeController
     /// <returns></returns>
     private Furniture FindRandomLandingPadWithouTrader()
     {
-        List<Furniture> landingPads = World.Current.FurnitureManager.Find(f => f.HasTypeTag("LandingPad"));
+        landingPads = World.Current.FurnitureManager.Find(f => f.HasTypeTag("LandingPad")).Except(reservedLandingPads).ToList();
 
         if (landingPads.Any())
         {
@@ -147,5 +171,21 @@ public class TradeController
         }
 
         return null;
+    }
+
+    public void CreateTradeJob (Furniture landingPad, Character playerBroker)
+    {
+        // First check if there's even a ship on the landing pad.
+        TraderShipController[] traders = TradeShips.Where(x => x.LandingPad == landingPad && x.DestinationReached).ToArray();
+        if (traders.Length != 1)
+        {
+            Debug.LogError("No trade ship on the landing pad");
+            return;
+        }
+
+        if (!traders[0].DestinationReached)
+            return;
+
+        playerBroker.PrioritizeJob(new Job(landingPad.Tile, TileType.Floor, ShowTradeDialogBox, 2.5f, null, Job.JobPriority.High));
     }
 }
