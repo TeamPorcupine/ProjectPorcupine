@@ -13,22 +13,27 @@ using UnityEngine.UI;
 public class CurrencyDisplay : MonoBehaviour
 {
     public Text text;
-    
+    string[] currencies;
+
+    private void Start()
+    {
+        currencies = World.Current.Wallet.GetCurrencyNames();
+    }
+
     // Update is called once per frame
     private void Update()
-    {
-        string[] currencies = World.Current.Wallet.GetCurrencyNames();
-        StringBuilder text = new StringBuilder();
+    {    
+        StringBuilder content = new StringBuilder();
 
         // Populate the text box
         foreach (string currency in currencies)
         {
-            text.Append(currency + ":");
-            text.Append(World.Current.Wallet[currency].Balance);
-            text.AppendLine();
+            content.Append(currency + ":");
+            content.Append(World.Current.Wallet[currency].Balance);
+            content.AppendLine();
         }
 
         // Don't question it ok.
-        this.text.text = text.ToString();
+        text.text = content.ToString();
     }
 }
