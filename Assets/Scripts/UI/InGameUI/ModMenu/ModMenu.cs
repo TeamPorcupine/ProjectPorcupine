@@ -94,7 +94,7 @@ public static class ModMenu
             UnityEngine.Object.Destroy(c.gameObject);
         }
 
-        GameObject prefab = (GameObject)Resources.Load("Prefab/DialogBoxPrefabs/Mod");
+        GameObject prefab = (GameObject)Resources.Load("UI/ModMenu/Mod");
         foreach (string mod in activeModDirsWaiting)
         {
             string[] y = mod.Split('\\');
@@ -200,9 +200,13 @@ public static class ModMenu
         DisplaySettings(uiParent);
     }
 
-    public static void Commit()
+    public static void Commit(bool save = false)
     {
         activeModDirs = activeModDirsWaiting;
+        if (save)
+        {
+            SceneController.Instance.LoadMainMenu();
+        }
     }
 
     public static void Reset()
@@ -255,6 +259,7 @@ public static class ModMenu
             UnityDebugger.Debugger.LogWarning("Settings", "Settings could not be saved to " + Path.Combine(Application.persistentDataPath, "ModSettings.json"));
             UnityDebugger.Debugger.LogWarning("Settings", e.Message);
         }
+        SceneController.Instance.LoadMainMenu();
     }
 
     public static void DisableAll()
@@ -269,6 +274,67 @@ public static class ModMenu
         foreach (string mod in activeModDirs)
         {
             loadedMods.Add(RevModDirs[mod]);
+        }
+    }
+
+    public static void CheckMods(string worldFile, DialogBoxLoadGame dblg)
+    {
+        StreamReader s = File.OpenText(worldFile);
+        JObject modSettings = (JObject)JToken.ReadFrom(new JsonTextReader(s));
+        JArray active = (JArray)modSettings["ActiveMods"];
+        s.Close();
+        if (active == null)
+        {
+            SceneController.Instance.LoadWorld(worldFile);
+            return;
+        }
+        for (int i = 0; i < active.Count; i++)
+        {
+            if (activeModDirs.Contains(ModDirs[(string) active[i]]) == false)
+            {
+                DialogBoxPromptOrInfo check;
+
+                if (WorldController.Instance != null)
+                {
+                    check = WorldController.Instance.dialogBoxManager.dialogBoxPromptOrInfo;
+                }
+                else if (MainMenuController.Instance != null)
+                {
+                    check = MainMenuController.Instance.dialogBoxManager.dialogBoxPromptOrInfo;
+                }
+                else
+                {
+                    dblg.LoadWorld(worldFile);
+                    return;
+                }
+
+                check.SetPrompt("Are you sure you want to close the menu and cancel all settings?");
+                check.SetButtons(new DialogBoxResult[] { DialogBoxResult.Yes, DialogBoxResult.No, DialogBoxResult.Cancel });
+                check.Closed =
+                    () =>
+                    {
+                        switch (check.Result)
+                        {
+                            case DialogBoxResult.Yes:
+                                for (int y = 0; y < active.Count; y++)
+                                {
+                                    SetEnabled((string) active[y], true);
+                                }
+                                GameController.Instance.soundController.OnButtonSFX();
+                                dblg.LoadWorld(worldFile);
+                                break;
+                            case DialogBoxResult.No:
+                                GameController.Instance.soundController.OnButtonSFX();
+                                dblg.LoadWorld(worldFile);
+                                break;
+                            case DialogBoxResult.Cancel:
+                                GameController.Instance.soundController.OnButtonSFX();
+                                break;
+                        }
+                    };
+
+                check.ShowDialog();
+            }
         }
     }
 }
