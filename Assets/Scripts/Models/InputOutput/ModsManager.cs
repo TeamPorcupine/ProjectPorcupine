@@ -224,9 +224,9 @@ public class ModsManager
             readDirectory(directoryPath);
         }
 
-        foreach (DirectoryInfo mod in mods)
+        foreach (string mod in ModMenu.ActiveModDirsRev)
         {
-            directoryPath = Path.Combine(mod.FullName, directoryName);
+            directoryPath = Path.Combine(mod, directoryName);
             if (Directory.Exists(directoryPath))
             {
                 readDirectory(directoryPath);
