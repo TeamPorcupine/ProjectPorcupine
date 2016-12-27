@@ -111,8 +111,8 @@ public class Inventory : ISelectable, IContextActionProvider
         }
 
         // Set claims to validClaims to keep claims from filling up with old claims
-        claims = validClaims;
         // UnityDebugger.Debugger.LogWarning(AvailableInventory + " Still Available.");
+        claims = validClaims;
     }
 
     public void ReleaseClaim(Character character)

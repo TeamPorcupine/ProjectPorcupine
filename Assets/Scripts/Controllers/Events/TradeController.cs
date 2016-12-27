@@ -22,10 +22,9 @@ public class TradeController
 
     private readonly ScheduledEvent traderVisitEvaluationEvent;
 
-    List<Furniture> landingPads;
+    private List<Furniture> landingPads;
 
-    List<Furniture> reservedLandingPads;
-
+    private List<Furniture> reservedLandingPads;
 
     /// <summary>
     /// Instanciate a new TradeController
@@ -78,18 +77,6 @@ public class TradeController
         controller.Renderer = spriteRenderer;
     }
 
-
-    private void ShowTradeDialogBox(Job job)
-    {
-        TraderShipController[] traders = TradeShips.Where(x => x.LandingPad == job.tile.Furniture).ToArray();
-        if (traders.Length != 1)
-        {
-            // PANIC!!!
-            return;
-        }
-
-        ShowTradeDialogBox(traders[0]);
-    }
     /// <summary>
     /// Display the TradeDialogBox and allow the user to trade.
     /// </summary>
@@ -115,6 +102,24 @@ public class TradeController
             TradeShips.Remove(tradeShip);
         };
         dbm.dialogBoxTrade.ShowDialog();
+    }
+
+    public void CreateTradeJob(Furniture landingPad, Character playerBroker)
+    {
+        // First check if there's even a ship on the landing pad.
+        TraderShipController[] traders = TradeShips.Where(x => x.LandingPad == landingPad && x.DestinationReached).ToArray();
+        if (traders.Length != 1)
+        {
+            Debug.LogError("No trade ship on the landing pad");
+            return;
+        }
+
+        if (!traders[0].DestinationReached)
+        {
+            return;
+        }
+
+        playerBroker.PrioritizeJob(new Job(landingPad.Tile, TileType.Floor, ShowTradeDialogBox, 2.5f, null, Job.JobPriority.High));
     }
 
     /// <summary>
@@ -173,19 +178,15 @@ public class TradeController
         return null;
     }
 
-    public void CreateTradeJob (Furniture landingPad, Character playerBroker)
+    private void ShowTradeDialogBox(Job job)
     {
-        // First check if there's even a ship on the landing pad.
-        TraderShipController[] traders = TradeShips.Where(x => x.LandingPad == landingPad && x.DestinationReached).ToArray();
+        TraderShipController[] traders = TradeShips.Where(x => x.LandingPad == job.tile.Furniture).ToArray();
         if (traders.Length != 1)
         {
-            Debug.LogError("No trade ship on the landing pad");
+            // PANIC!!!
             return;
         }
 
-        if (!traders[0].DestinationReached)
-            return;
-
-        playerBroker.PrioritizeJob(new Job(landingPad.Tile, TileType.Floor, ShowTradeDialogBox, 2.5f, null, Job.JobPriority.High));
+        ShowTradeDialogBox(traders[0]);
     }
 }
