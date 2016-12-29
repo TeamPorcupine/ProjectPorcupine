@@ -52,6 +52,18 @@ public static class ModMenu
         }
     }
 
+    public static string ListToString(List<string> l) // TODO: Find a better place for this
+    {
+        string s = string.Empty;
+        foreach (string st in l)
+        {
+            s = s + ", " + st;
+        }
+        
+        s = s.TrimStart(' ', ',');
+        return s;
+    }
+
     public static void Load()
     {
         if (ModDirs != null)
@@ -316,6 +328,7 @@ public static class ModMenu
         JObject modSettings = (JObject)JToken.ReadFrom(new JsonTextReader(s));
         JArray active = (JArray)modSettings["ActiveMods"];
         s.Close();
+        List<string> inactive = new List<string>();
         if (active == null)
         {
             dblg.LoadWorld(worldFile);
@@ -326,53 +339,57 @@ public static class ModMenu
         {
             if (ActiveModDirs.Contains(ModDirs[(string)active[i]]) == false)
             {
-                DialogBoxPromptOrInfo check;
-
-                if (WorldController.Instance != null)
-                {
-                    check = WorldController.Instance.dialogBoxManager.dialogBoxPromptOrInfo;
-                }
-                else if (MainMenuController.Instance != null)
-                {
-                    check = MainMenuController.Instance.dialogBoxManager.dialogBoxPromptOrInfo;
-                }
-                else
-                {
-                    dblg.LoadWorld(worldFile);
-                    return;
-                }
-
-                check.SetPrompt("prompt_load_mods");
-                check.SetButtons(new DialogBoxResult[] { DialogBoxResult.Yes, DialogBoxResult.No, DialogBoxResult.Cancel });
-                check.Closed =
-                    () =>
-                    {
-                        switch (check.Result)
-                        {
-                            case DialogBoxResult.Yes:
-                                for (int y = 0; y < active.Count; y++)
-                                {
-                                    SetEnabled((string)active[y], true);
-                                }
-
-                                GameController.Instance.soundController.OnButtonSFX();
-                                dblg.LoadWorld(worldFile);
-                                break;
-                            case DialogBoxResult.No:
-                                GameController.Instance.soundController.OnButtonSFX();
-                                dblg.LoadWorld(worldFile);
-                                break;
-                            case DialogBoxResult.Cancel:
-                                GameController.Instance.soundController.OnButtonSFX();
-                                break;
-                        }
-                    };
-
-                check.ShowDialog();
-                return;
+                inactive.Add((string)active[i]);
             }
         }
 
+        if (inactive.Count > 0)
+        {
+            DialogBoxPromptOrInfo check;
+
+            if (WorldController.Instance != null)
+            {
+                check = WorldController.Instance.dialogBoxManager.dialogBoxPromptOrInfo;
+            }
+            else if (MainMenuController.Instance != null)
+            {
+                check = MainMenuController.Instance.dialogBoxManager.dialogBoxPromptOrInfo;
+            }
+            else
+            {
+                dblg.LoadWorld(worldFile);
+                return;
+            }
+
+            check.SetPrompt("prompt_load_mods", ListToString(inactive));
+            check.SetButtons(new DialogBoxResult[] { DialogBoxResult.Yes, DialogBoxResult.No, DialogBoxResult.Cancel });
+            check.Closed =
+                () =>
+                {
+                    switch (check.Result)
+                    {
+                        case DialogBoxResult.Yes:
+                            for (int y = 0; y < active.Count; y++)
+                            {
+                                SetEnabled((string)active[y], true);
+                            }
+
+                            GameController.Instance.soundController.OnButtonSFX();
+                            dblg.LoadWorld(worldFile);
+                            break;
+                        case DialogBoxResult.No:
+                            GameController.Instance.soundController.OnButtonSFX();
+                            dblg.LoadWorld(worldFile);
+                            break;
+                        case DialogBoxResult.Cancel:
+                            GameController.Instance.soundController.OnButtonSFX();
+                            break;
+                    }
+                };
+
+            check.ShowDialog();
+            return;
+        }
         dblg.LoadWorld(worldFile);
     }
 }
