@@ -24,6 +24,7 @@ public class ModsManager
         {
             LoadMainSceneFiles();
         }
+        ModMenu.ReportModsLoaded();
     }
 
     /// <summary>
