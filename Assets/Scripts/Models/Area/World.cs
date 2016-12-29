@@ -524,7 +524,7 @@ public class World
         FurnitureManager.TickFixedFrequency(deltaTime);
 
         // Progress temperature modelling
-        temperature.Update();
+        temperature.Update(deltaTime);
         PowerNetwork.Update(deltaTime);
         FluidNetwork.Update(deltaTime);
     }

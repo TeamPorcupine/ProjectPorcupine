@@ -88,16 +88,9 @@ public class Temperature
     /// <summary>
     /// If needed, progress physics.
     /// </summary>
-    public void Update()
+    public void Update(float deltaTime)
     {
-        // Progress physical time (should me linked to TIme.dt at some point)
-        elapsed += updateInterval;
-
-        if (elapsed >= updateInterval)
-        {
-            ProgressTemperature(updateInterval);
-            elapsed = elapsed - updateInterval;
-        }
+        ProgressTemperature(deltaTime);
     }
 
     public void RegisterSinkOrSource(Furniture provider)
@@ -258,7 +251,7 @@ public class Temperature
     /// </summary>
     private void ProgressTemperature(float deltaT)
     {
-        Thread thread = new Thread(ForwardTemp);
+        Thread thread = new Thread(() => ForwardTemp(deltaT));
         thread.Start();
 
         // TODO: Compute temperature sources.
@@ -274,7 +267,7 @@ public class Temperature
     /// <summary>
     /// Update temperature using a forward method.
     /// </summary>
-    private void ForwardTemp()
+    private void ForwardTemp(float deltaTime)
     {
         // Store references.
         float[] temp_curr = temperature[1 - offset];
@@ -284,7 +277,7 @@ public class Temperature
         // delta.Time * magic_coefficient * 0.5 (avg for thermalDiffusivity).
         // Make sure c is always between 0 and 0.5*0.25 (not included) or things will blow up
         // in your face.
-        float c = 0.23f * 0.5f;
+        float c = deltaTime * 0.23f * 0.5f;
 
         // Calculates for all tiles.
         for (int z = 0; z < sizeZ; z++)
@@ -362,7 +355,7 @@ public class Temperature
                     float value = temp_curr[index];
 
                     // FINE tune the below number. ".005" has a huge effect.
-                    value += 0.065f * value;
+                    value += value;
 
                     float[] list =
                     {
