@@ -44,9 +44,9 @@ public class Temperature
     /// <summary>
     /// Size of map.
     /// </summary>
-    private int sizeX = World.Current.Width;
-    private int sizeY = World.Current.Height;
-    private int sizeZ = World.Current.Depth;
+    private int sizeX;
+    private int sizeY;
+    private int sizeZ;
 
     /// <summary>
     /// Time since last update.
@@ -63,6 +63,10 @@ public class Temperature
     /// </summary>
     public Temperature()
     {
+        sizeX = World.Current.Width;
+        sizeY = World.Current.Height;
+        sizeZ = World.Current.Depth;
+
         temperature = new float[2][]
         {
             new float[sizeX * sizeY * sizeZ],
@@ -269,6 +273,9 @@ public class Temperature
     /// </summary>
     private void ForwardTemp(float deltaTime)
     {
+        Debug.LogWarning("###" + sizeX);
+        Debug.LogWarning("###" + sizeY);
+        Debug.LogWarning("###" + sizeZ);
         // Store references.
         float[] temp_curr = temperature[1 - offset];
         float[] temp_old = temperature[offset];
@@ -282,6 +289,7 @@ public class Temperature
         // Calculates for all tiles.
         for (int z = 0; z < sizeZ; z++)
         {
+            Debug.LogWarning(z + "$$$");
             for (int y = 0; y < sizeY; y++)
             {
                 for (int x = 0; x < sizeX; x++)

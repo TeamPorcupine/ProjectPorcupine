@@ -272,14 +272,19 @@ public class OverlayMap : MonoBehaviour
             }
 
             bool loggedOnce = false;
-            valueAt = (x, y, z) =>
-            {
+            valueAt = (x, y, z) => {
                 if (WorldController.Instance == null)
                 {
                     return 0;
                 }
 
+
                 Tile tile = WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, z));
+//                if (tile == null)
+//                {
+//                    return 0;
+//                }
+
                 DynValue result = FunctionsManager.Overlay.Call(descr.LuaFunctionName, new object[] { tile, World.Current });
                 double? value = result.CastToNumber();
                 if (value == null)
