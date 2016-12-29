@@ -145,3 +145,4 @@ generate_asteroids=loc_Generate Asteroids
 -max_autosaves=loc_Max Autosaves
 -master_volume=loc_Master Volume
 -music_volume=loc_Music Volume
+confirm_settings_menu_close=Are you sure you want to close the menu and cancel all settings?

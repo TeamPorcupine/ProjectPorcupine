@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using ProjectPorcupine.Localization;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -177,7 +178,7 @@ public class SettingsMenu : MonoBehaviour
             return;
         }
 
-        check.SetPrompt("Are you sure you want to close the menu and cancel all settings?");
+        check.SetPrompt(LocalizationTable.GetLocalization("confirm_settings_menu_close"));
         check.SetButtons(new DialogBoxResult[] { DialogBoxResult.Yes, DialogBoxResult.No });
         check.Closed =
             () =>
