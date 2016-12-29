@@ -282,6 +282,7 @@ public class World
     public JObject ToJson()
     {
         JObject worldJson = new JObject();
+        worldJson.Add("ActiveMods", ModMenu.WriteJSON(true));
         worldJson.Add("Width", Width.ToString());
         worldJson.Add("Height", Height.ToString());
         worldJson.Add("Depth", Depth.ToString());
