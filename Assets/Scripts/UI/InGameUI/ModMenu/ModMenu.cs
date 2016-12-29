@@ -390,6 +390,7 @@ public static class ModMenu
             check.ShowDialog();
             return;
         }
+
         dblg.LoadWorld(worldFile);
     }
 }
