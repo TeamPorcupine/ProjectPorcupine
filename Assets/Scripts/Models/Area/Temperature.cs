@@ -6,8 +6,10 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using MoonSharp.Interpreter;
 using UnityEngine;
@@ -238,6 +240,33 @@ public class Temperature
         }
     }
 
+    public void Resize()
+    {
+
+        sizeX = World.Current.Width;
+        sizeY = World.Current.Height;
+        sizeZ = World.Current.Depth;
+
+        temperature = new float[2][]
+            {
+                new float[sizeX * sizeY * sizeZ],
+                new float[sizeX * sizeY * sizeZ],
+            };
+        thermalDiffusivity = new float[sizeX * sizeY * sizeZ];
+        for (int z = 0; z < sizeZ; z++)
+        {
+            for (int y = 0; y < sizeY; y++)
+            {
+                for (int x = 0; x < sizeX; x++)
+                {
+                    int index = GetIndex(x, y, z);
+                    temperature[0][index] = 0f;
+                    thermalDiffusivity[index] = 1f;
+                }
+            }
+        }
+    }
+
     /// <summary>
     /// Internal indexing of array.
     /// </summary>
@@ -273,9 +302,6 @@ public class Temperature
     /// </summary>
     private void ForwardTemp(float deltaTime)
     {
-        Debug.LogWarning("###" + sizeX);
-        Debug.LogWarning("###" + sizeY);
-        Debug.LogWarning("###" + sizeZ);
         // Store references.
         float[] temp_curr = temperature[1 - offset];
         float[] temp_old = temperature[offset];
@@ -289,7 +315,6 @@ public class Temperature
         // Calculates for all tiles.
         for (int z = 0; z < sizeZ; z++)
         {
-            Debug.LogWarning(z + "$$$");
             for (int y = 0; y < sizeY; y++)
             {
                 for (int x = 0; x < sizeX; x++)
@@ -321,11 +346,14 @@ public class Temperature
                         continue;
                     }
 
+                    List<float> adjacentOldTemps = new List<float>();
+
                     if (x > 0)
                     {
                         temp_curr[index] +=
                             c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_W]) *
                             (temp_old[index_W] - temp_old[index]);
+                        adjacentOldTemps.Add(temp_old[index_W]);
                     }
 
                     if (y > 0)
@@ -333,6 +361,7 @@ public class Temperature
                         temp_curr[index] +=
                             c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_S]) *
                             (temp_old[index_S] - temp_old[index]);
+                        adjacentOldTemps.Add(temp_old[index_S]);
                     }
 
                     if (x < sizeX - 1)
@@ -340,6 +369,7 @@ public class Temperature
                         temp_curr[index] +=
                             c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_E]) *
                             (temp_old[index_E] - temp_old[index]);
+                        adjacentOldTemps.Add(temp_old[index_E]);
                     }
 
                     if (y < sizeY - 1)
@@ -347,36 +377,29 @@ public class Temperature
                         temp_curr[index] +=
                             c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_N]) *
                             (temp_old[index_N] - temp_old[index]);
+                        adjacentOldTemps.Add(temp_old[index_N]);
                     }
 
                     if (z > 0)
                     {
                         temp_curr[index] += c * 0.5f * (temp_old[index_below] - temp_old[index]);
+                        adjacentOldTemps.Add(temp_old[index_below]);
                     }
 
                     if (z < sizeZ - 1)
                     {
                         temp_curr[index] += c * 0.5f * (temp_old[index_above] - temp_old[index]);
+                        adjacentOldTemps.Add(temp_old[index_above]);
                     }
 
                     // Add a little bit more flow to the temperature.
                     float value = temp_curr[index];
 
                     // FINE tune the below number. ".005" has a huge effect.
-                    value += value;
-
-                    float[] list =
-                    {
-                        temp_old[index_N],
-                        temp_old[index_S],
-                        temp_old[index_E],
-                        temp_old[index_W]
-                    };
-
-                    Array.Sort(list);
+                    value += 0.065f * value;
 
                     // Because of the added flow just above, we need to make sure we don't overshoot the tempertures surrounding this tile.
-                    if (value < list[3])
+                    if (value < adjacentOldTemps.Max())
                     {
                         temp_curr[index] = value;
                     }
