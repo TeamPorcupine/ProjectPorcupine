@@ -166,16 +166,7 @@ public class World
         TimeManager.Instance.EveryFrameUnpaused += TickEveryFrame;
         TimeManager.Instance.FixedFrequencyUnpaused += TickFixedFrequency;
     }
-
-    /// <summary>
-    /// Notify world that the camera moved, so we can check which entities are visible to the camera.
-    /// The invisible enities can be updated less frequent for better performance.
-    /// </summary>
-    public void OnCameraMoved(Bounds cameraBounds)
-    {
-        FurnitureManager.OnCameraMoved(cameraBounds);
-    }
-
+    
     /// <summary>
     /// Gets the tile data at x and y.
     /// </summary>

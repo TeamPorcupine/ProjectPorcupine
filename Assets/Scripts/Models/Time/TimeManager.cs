@@ -14,9 +14,11 @@ using UnityEngine;
 
 public class TimeManager
 {
+    private bool running;
+
     private static TimeManager instance;
 
-    private float gameTickPerSecond = 5;
+    private long gameTickPerSecond = 60;
 
     private List<Action> nextFrameActions = new List<Action>();
 
@@ -122,6 +124,40 @@ public class TimeManager
     {
         return possibleTimeScales;
     }
+    
+    public IEnumerator Run()
+    {
+        running = true;
+
+        DateTime end = DateTime.Now.AddSeconds(10);
+        
+        long currTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond);
+        long elapsedTime = 0;
+        float sleepTime = 0;
+
+        while (running == true)
+        {
+            long time = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+            elapsedTime = time - currTime;
+            currTime = time;
+            
+            Update(elapsedTime / 1000);
+
+            float targetTime = 1000f / gameTickPerSecond;
+            sleepTime = targetTime - elapsedTime + sleepTime;
+
+            //Debug.Log("Updated! Elapsed time: " + elapsedTime + "ms, TargetTime: " + targetTime + "ms, SleepTime: " + sleepTime + "ms");
+            
+            if (sleepTime > 0)
+            {
+                yield return new WaitForSeconds(sleepTime / 1000f);
+            }
+            else
+            {
+                sleepTime = 0;
+            }
+        }
+    }
 
     /// <summary>
     /// Update the total time and invoke the required events.
@@ -208,6 +244,7 @@ public class TimeManager
     /// </summary>
     public void Destroy()
     {
+        running = false;
         instance = null;
     }
 
