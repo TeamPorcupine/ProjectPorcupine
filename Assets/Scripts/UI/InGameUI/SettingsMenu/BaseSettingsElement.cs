@@ -6,8 +6,8 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using ProjectPorcupine.Localization;
 using System.Linq;
+using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
 

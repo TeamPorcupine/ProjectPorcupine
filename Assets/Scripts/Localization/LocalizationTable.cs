@@ -76,7 +76,7 @@ namespace ProjectPorcupine.Localization
         /// </summary>
         public static string GetLocalization(string key, FallbackMode fallbackMode, string language, params object[] additionalValues)
         {
-            //for debug
+            // for debug
             fallbackMode = FallbackMode.test;
 
             string value;
@@ -105,7 +105,7 @@ namespace ProjectPorcupine.Localization
                 case FallbackMode.ReturnDefaultLanguage:
                     return GetLocalization(key, FallbackMode.ReturnKey, DefaultLanguage, additionalValues);
                 default:
-                    return "IM LOCALIZED";// string.Empty;
+                    return "IM LOCALIZED"; // string.Empty;
             }
         }
 
