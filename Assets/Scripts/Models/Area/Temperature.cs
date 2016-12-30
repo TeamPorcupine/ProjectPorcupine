@@ -101,12 +101,10 @@ public class Temperature
 
     public void RegisterSinkOrSource(Furniture provider)
     {
-        
         // TODO: This need to be implemented.
         sinksAndSources[provider] = (float deltaTime) =>
         {
                 UpdateTemperature(provider, deltaTime);
-//                provider.EventActions.Trigger("OnUpdateTemperature", provider, deltaTime);
         };
     }
 
@@ -135,11 +133,11 @@ public class Temperature
         return GetTemperature(x, y, z) - 273.15f;
     }
 
-    // 1.8
     public float GetTemperatureInF(int x, int y, int z)
     {
-        return GetTemperature(x, y, z) * 1.8f - 459.67f;
+        return (GetTemperature(x, y, z) * 1.8f) - 459.67f;
     }
+
     /// <summary>
     /// Public interface to setting temperature, set temperature at (x,y) to temp.
     /// </summary>
@@ -254,7 +252,6 @@ public class Temperature
 
     public void Resize()
     {
-
         sizeX = World.Current.Width;
         sizeY = World.Current.Height;
         sizeZ = World.Current.Depth;
@@ -302,17 +299,10 @@ public class Temperature
         // TODO: Compute temperature sources.
         if (sinksAndSources != null)
         {
-            Debug.LogWarning("----------------");
             foreach (Action<float> act in sinksAndSources.Values)
             {
                 act(deltaT);
             }
-
-//            Furniture[] sinksAndSourcesArray = sinksAndSources.Keys.ToArray();
-//            for (int i = 0; i < sinksAndSourcesArray.Length; i++)
-//            {
-//                UpdateTemperature(sinksAndSourcesArray[i], deltaT);
-//            }
         }
     }
 
@@ -430,13 +420,12 @@ public class Temperature
         offset = 1 - offset;
     }
 
-    private void UpdateTemperature(Furniture furniture, float deltaTime )
+    private void UpdateTemperature(Furniture furniture, float deltaTime)
     {
         if (furniture.Tile.Room.IsOutsideRoom() == true)
         {
             return;
         }
-
 
         Tile tile = furniture.Tile;
         float pressure = tile.Room.GetTotalGasPressure();
@@ -452,6 +441,5 @@ public class Temperature
         temperatureChange = temperatureChange * 10;
 
         World.Current.temperature.SetTemperature(tile.X, tile.Y, tile.Z, temperatureChange);
-//                --ModUtils.ULogChannel("Temperature", "Heat change: " .. temperatureChangePerSecond .. " => " .. World.current.temperature.GetTemperature(tile.X, tile.Y))}
     }
 }
