@@ -18,7 +18,7 @@ public class TimeManager
 
     private static TimeManager instance;
 
-    private float gameTickPerSecond = 30;
+    private float gameTickPerSecond = 15;
 
     private float fastUpdatesPerSecond = 60;
 
@@ -145,11 +145,13 @@ public class TimeManager
 
             float targetTime = 1000f / fastUpdatesPerSecond;
             sleepTime = targetTime - elapsedTime + sleepTime;
+
             /*
             Debug.Log("Updated! Elapsed time: " + elapsedTime + "ms, TargetTime: " + targetTime + "ms, SleepTime: " + sleepTime + "ms" +
                 (EveryFrame != null ? ", EveryFrame: " +  EveryFrame.GetInvocationList().Length : "") +
                 (FixedFrequency != null ? ", FixedFrequency: " + FixedFrequency.GetInvocationList().Length : ""));
             */
+
             if (sleepTime > 0)
             {
                 yield return new WaitForSeconds(sleepTime / 1000f);
