@@ -323,7 +323,7 @@ public class SettingsMenu : MonoBehaviour
             ColorButton button = Instantiate(categoryPrefab).GetComponent<ColorButton>();
             button.transform.SetParent(categoryRoot.transform);
             button.name = currentName;
-            button.SetText(currentName);
+            button.SetText(LocalizationTable.GetLocalization(currentName));
             options.Add(currentName, new Dictionary<string, BaseSettingsElement[]>());
 
             // This is quite optimised (despite being a forloop on a dictionary), and is only done during start
