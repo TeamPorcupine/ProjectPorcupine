@@ -101,10 +101,12 @@ public class Temperature
 
     public void RegisterSinkOrSource(Furniture provider)
     {
+        
         // TODO: This need to be implemented.
         sinksAndSources[provider] = (float deltaTime) =>
         {
-            provider.EventActions.Trigger("OnUpdateTemperature", provider, deltaTime);
+                UpdateTemperature(provider, deltaTime);
+//                provider.EventActions.Trigger("OnUpdateTemperature", provider, deltaTime);
         };
     }
 
@@ -128,6 +130,16 @@ public class Temperature
         return temperature[offset][GetIndex(x, y, z)];
     }
 
+    public float GetTemperatureInC(int x, int y, int z)
+    {
+        return GetTemperature(x, y, z) - 273.15f;
+    }
+
+    // 1.8
+    public float GetTemperatureInF(int x, int y, int z)
+    {
+        return GetTemperature(x, y, z) * 1.8f - 459.67f;
+    }
     /// <summary>
     /// Public interface to setting temperature, set temperature at (x,y) to temp.
     /// </summary>
@@ -290,10 +302,17 @@ public class Temperature
         // TODO: Compute temperature sources.
         if (sinksAndSources != null)
         {
+            Debug.LogWarning("----------------");
             foreach (Action<float> act in sinksAndSources.Values)
             {
                 act(deltaT);
             }
+
+//            Furniture[] sinksAndSourcesArray = sinksAndSources.Keys.ToArray();
+//            for (int i = 0; i < sinksAndSourcesArray.Length; i++)
+//            {
+//                UpdateTemperature(sinksAndSourcesArray[i], deltaT);
+//            }
         }
     }
 
@@ -396,18 +415,43 @@ public class Temperature
                     float value = temp_curr[index];
 
                     // FINE tune the below number. ".005" has a huge effect.
-                    value += 0.065f * value;
+//                    value +=  value;
 
                     // Because of the added flow just above, we need to make sure we don't overshoot the tempertures surrounding this tile.
-                    if (value < adjacentOldTemps.Max())
-                    {
-                        temp_curr[index] = value;
-                    }
+//                    if (value < adjacentOldTemps.Max())
+//                    {
+//                        temp_curr[index] = value;
+//                    }
                 }
             }
         }
 
         // Swap variable order
         offset = 1 - offset;
+    }
+
+    private void UpdateTemperature(Furniture furniture, float deltaTime )
+    {
+        if (furniture.Tile.Room.IsOutsideRoom() == true)
+        {
+            return;
+        }
+
+
+        Tile tile = furniture.Tile;
+        float pressure = tile.Room.GetTotalGasPressure();
+        float efficiency = ModUtils.Clamp01(pressure / furniture.Parameters["pressure_threshold"].ToFloat());
+        float temperatureChangePerSecond = furniture.Parameters["base_heating"].ToFloat() * efficiency;
+        float temperatureChange = temperatureChangePerSecond * deltaTime;
+
+        // This is all wrong, temperature shouldn't be set to the temperature change
+        // But as this entire system does not work well, and creates more unrealistic temperatures,
+        // I'll leave it as is.
+
+        // Multiply by this just to make the game make sense.
+        temperatureChange = temperatureChange * 10;
+
+        World.Current.temperature.SetTemperature(tile.X, tile.Y, tile.Z, temperatureChange);
+//                --ModUtils.ULogChannel("Temperature", "Heat change: " .. temperatureChangePerSecond .. " => " .. World.current.temperature.GetTemperature(tile.X, tile.Y))}
     }
 }
