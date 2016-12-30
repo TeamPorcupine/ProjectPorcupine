@@ -212,7 +212,7 @@ public class TimeManager
     }
 
     /// <summary>
-    /// Runs the next frame before any updates are ran.
+    /// Runs the action in the next frame before any updates are ran.
     /// </summary>
     /// <param name="action">Action with no parameters.</param>
     public void RunNextFrame(Action action)
