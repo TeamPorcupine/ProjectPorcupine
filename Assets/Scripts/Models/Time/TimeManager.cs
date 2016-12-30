@@ -211,6 +211,10 @@ public class TimeManager
         instance = null;
     }
 
+    /// <summary>
+    /// Runs the next frame before any updates are ran.
+    /// </summary>
+    /// <param name="action">Action with no parameters.</param>
     public void RunNextFrame(Action action)
     {
         nextFrameActions.Add(action);
