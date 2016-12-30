@@ -100,7 +100,7 @@ public static class ModMenu
                 bool noSave = (bool)(modData["doNotSave"] ?? false);
                 if (noSave)
                 {
-                    nonSaving.Add(mod.FullName);
+                    nonSaving.Add(name);
                 }
             }
 
