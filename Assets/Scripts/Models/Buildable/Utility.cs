@@ -644,6 +644,7 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
         }
 
         gridUpdatedThisFrame = true;
+        TimeManager.Instance.RunNextFrame(() => gridUpdatedThisFrame = false);
         Grid oldGrid = utilityToUpdate.Grid;
 
         World.Current.PowerNetwork.RemoveGrid(utilityToUpdate.Grid);

@@ -6,8 +6,10 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class TimeManager
@@ -15,6 +17,8 @@ public class TimeManager
     private static TimeManager instance;
 
     private float gameTickPerSecond = 5;
+
+    private List<Action> nextFrameActions = new List<Action>();
 
     // An array of possible time multipliers.
     private float[] possibleTimeScales = new float[6] { 0.1f, 0.5f, 1f, 2f, 4f, 8f };
@@ -130,6 +134,16 @@ public class TimeManager
         // Systems that update every frame.
         InvokeEvent(EveryFrame, time);
 
+        if (nextFrameActions.Count > 0)
+        {
+            for (int i = 0; i < nextFrameActions.Count; i++)
+            {
+                nextFrameActions[i].Invoke();
+            }
+
+            nextFrameActions.Clear();
+        }
+
         // Systems that update every frame not in Modal.
         if (GameController.Instance.IsModal == false)
         {
@@ -195,6 +209,15 @@ public class TimeManager
     public void Destroy()
     {
         instance = null;
+    }
+
+    /// <summary>
+    /// Runs the action in the next frame before any updates are ran.
+    /// </summary>
+    /// <param name="action">Action with no parameters.</param>
+    public void RunNextFrame(Action action)
+    {
+        nextFrameActions.Add(action);
     }
 
     /// <summary>
