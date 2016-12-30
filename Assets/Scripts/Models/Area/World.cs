@@ -390,7 +390,7 @@ public class World
         roomGraph = null;
 
         // Reset temperature, so it properly sizes arrays to the new world size
-        temperature = new Temperature();
+        temperature.Resize();
 
         for (int x = 0; x < oldWidth; x++)
         {
@@ -524,7 +524,7 @@ public class World
         FurnitureManager.TickFixedFrequency(deltaTime);
 
         // Progress temperature modelling
-        temperature.Update();
+        temperature.Update(deltaTime);
         PowerNetwork.Update(deltaTime);
         FluidNetwork.Update(deltaTime);
     }
