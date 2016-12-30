@@ -147,7 +147,7 @@ public class WorldController : MonoBehaviour
             DeveloperConsole.DevConsole.Close();
         }
 
-        StartCoroutine("UpdateTime");
+        StartCoroutine(UpdateTime());
     }
     
     private IEnumerator UpdateTime()

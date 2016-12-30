@@ -18,6 +18,10 @@ using UnityEngine;
 public class FurnitureManager : IEnumerable<Furniture>
 {
     private List<Furniture> furnitures;
+
+    private List<Furniture> updateEveryFrameFurniture;
+
+    private List<Furniture> fixedFrequencyUpdateFurniture;
     
     /// <summary>
     /// Initializes a new instance of the <see cref="FurnitureManager"/> class.
@@ -25,6 +29,8 @@ public class FurnitureManager : IEnumerable<Furniture>
     public FurnitureManager()
     {
         furnitures = new List<Furniture>();
+        updateEveryFrameFurniture = new List<Furniture>();
+        fixedFrequencyUpdateFurniture = new List<Furniture>();
     }
 
     /// <summary>
@@ -74,6 +80,16 @@ public class FurnitureManager : IEnumerable<Furniture>
         furniture.Removed += OnRemoved;
 
         furnitures.Add(furniture);
+
+        if (furniture.UpdateEveryFrame)
+        {
+            updateEveryFrameFurniture.Add(furniture);
+        }
+
+        if (furniture.UpdateFixedFrequency)
+        {
+            fixedFrequencyUpdateFurniture.Add(furniture);
+        }
 
         // Do we need to recalculate our rooms/reachability for other jobs?
         if (doRoomFloodFill && furniture.RoomEnclosure)
@@ -170,9 +186,9 @@ public class FurnitureManager : IEnumerable<Furniture>
     /// <param name="deltaTime">Delta time.</param>
     public void TickEveryFrame(float deltaTime)
     {
-        foreach (Furniture furniture in (IEnumerable)furnitures)
+        for (int i = 0; i < updateEveryFrameFurniture.Count; i++)
         {
-            furniture.EveryFrameUpdate(deltaTime);
+            updateEveryFrameFurniture[i].EveryFrameUpdate(deltaTime);
         }
     }
 
@@ -183,15 +199,9 @@ public class FurnitureManager : IEnumerable<Furniture>
     /// <param name="deltaTime">Delta time.</param>
     public void TickFixedFrequency(float deltaTime)
     {
-        foreach (Furniture furniture in (IEnumerable)furnitures)
+        for (int i = 0; i < fixedFrequencyUpdateFurniture.Count; i++)
         {
-            furniture.EveryFrameUpdate(deltaTime);
-        }
-
-        // Update all furniture with EventActions
-        foreach (Furniture furniture in (IEnumerable)furnitures)
-        {
-            furniture.FixedFrequencyUpdate(deltaTime);
+            fixedFrequencyUpdateFurniture[i].FixedFrequencyUpdate(deltaTime);
         }
     }
 
@@ -250,7 +260,17 @@ public class FurnitureManager : IEnumerable<Furniture>
     private void OnRemoved(Furniture furniture)
     {
         furnitures.Remove(furniture);
-        
+
+        if (updateEveryFrameFurniture.Contains(furniture))
+        {
+            updateEveryFrameFurniture.Remove(furniture);
+        }
+
+        if (fixedFrequencyUpdateFurniture.Contains(furniture))
+        {
+            fixedFrequencyUpdateFurniture.Remove(furniture);
+        }
+
         // Movement to jobs might have been opened, let's move jobs back into the queue to be re-evaluated.
         World.Current.jobQueue.ReevaluateReachability();
     }

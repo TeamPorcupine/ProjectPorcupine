@@ -77,20 +77,8 @@ public class GameController : MonoBehaviour
         this.gameObject.AddComponent<LocalizationLoader>();
 
         SceneManager = SceneController.Instance;
-
-        StartCoroutine("UpdateTime");
     }
     
-    private IEnumerator UpdateTime()
-    {
-        yield return TimeManager.Instance.Run();
-    }
-
-    private void Update()
-    {
-        //TimeManager.Instance.Update(Time.deltaTime);
-    }
-
     // Game Controller will persist between scenes. 
     private void EnableDontDestroyOnLoad()
     {
