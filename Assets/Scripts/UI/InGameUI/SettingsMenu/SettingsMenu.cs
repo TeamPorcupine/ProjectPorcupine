@@ -88,7 +88,7 @@ public class SettingsMenu : MonoBehaviour
             }
         }
 
-        instance.categoryHeading.text = category;
+        instance.categoryHeading.text = LocalizationTable.GetLocalization(category);
         instance.currentCategory = category;
 
         // Clear root
