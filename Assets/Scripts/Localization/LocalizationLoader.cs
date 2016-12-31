@@ -91,5 +91,11 @@ namespace ProjectPorcupine.Localization
             // show on start, I don't really know why.
             UpdateLocalizationTable();
         }
+
+        private void Start()
+        {
+            // UpdateLocalizationTable needs to run after everything with TextLocalizer components have set their callbacks, so we run in start.
+            UpdateLocalizationTable();
+        }
     }
 }
