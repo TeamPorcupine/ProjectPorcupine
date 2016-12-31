@@ -59,6 +59,14 @@ namespace ProjectPorcupine.Buildable.Components
             return new Visuals(this);
         }
 
+        public override bool RequiresSlowUpdate
+        {
+            get
+            {
+                return Initialized && (UsedAnimations != null && ParentFurniture.Animation != null && UsedAnimations.Count > 0);
+            }
+        }
+
         public override void FixedFrequencyUpdate(float deltaTime)
         {
             if (UsedAnimations != null && ParentFurniture.Animation != null && UsedAnimations.Count > 0)

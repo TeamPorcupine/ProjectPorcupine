@@ -157,6 +157,10 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
 
         tileTypeBuildPermissions = new HashSet<string>(other.tileTypeBuildPermissions);
 
+        RequiresSlowUpdate = EventActions.HasEvent("OnUpdate") || components.Any(c => c.RequiresSlowUpdate);
+
+        RequiresFastUpdate = EventActions.HasEvent("OnFastUpdate") || components.Any(c => c.RequiresFastUpdate);
+
         LocalizationCode = other.LocalizationCode;
         UnlocalizedDescription = other.UnlocalizedDescription;
 
@@ -397,6 +401,11 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
             return components != null || components.Count != 0;
         }
     }
+
+    public bool RequiresFastUpdate { get; set; }
+
+    public bool RequiresSlowUpdate { get; set; }
+
 
     /// <summary>
     /// Flag with furniture requirements (used for showing icon overlay, e.g. No power, ... ).

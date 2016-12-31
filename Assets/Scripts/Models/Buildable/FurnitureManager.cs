@@ -74,12 +74,12 @@ public class FurnitureManager : IEnumerable<Furniture>
         furniture.Removed += OnRemoved;
 
         furnitures.Add(furniture);
-        if (!furniture.HasTypeTag("Wall") && ((furniture.EventActions != null && furniture.EventActions.HasEvent("OnFastUpdate")) || furniture.HasComponents))
+        if (furniture.RequiresFastUpdate)
         {
             TimeManager.Instance.RegisterFastUpdate(furniture);
         }
 
-        if (!furniture.HasTypeTag("Wall"))
+        if (furniture.RequiresSlowUpdate)
         {
             TimeManager.Instance.RegisterSlowUpdate(furniture);
         }

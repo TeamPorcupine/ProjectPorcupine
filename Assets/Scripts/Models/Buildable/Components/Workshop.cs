@@ -115,6 +115,14 @@ namespace ProjectPorcupine.Buildable.Components
             return canWork;
         }
 
+        public override bool RequiresSlowUpdate
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         public override void FixedFrequencyUpdate(float deltaTime)
         {
             // if there is enough input, do the processing and store item to output

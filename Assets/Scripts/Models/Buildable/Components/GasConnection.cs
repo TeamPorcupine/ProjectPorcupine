@@ -65,6 +65,14 @@ namespace ProjectPorcupine.Buildable.Components
             return canFunction;
         }
 
+        public override bool RequiresSlowUpdate
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         public override void FixedFrequencyUpdate(float deltaTime)
         {
             if (Provides != null && Provides.Count > 0)
