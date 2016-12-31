@@ -77,6 +77,14 @@ namespace ProjectPorcupine.Buildable.Components
             get { return ParentFurniture.Parameters; }
         }
 
+        private bool initialized = false;
+
+        public bool Initialized { get { return initialized; } }
+
+        public virtual bool RequiresSlowUpdate { get { return false; } }
+
+        public virtual bool RequiresFastUpdate { get { return false; } }
+
         public static BuildableComponent Deserialize(XmlReader xmlReader)
         {
             if (componentTypes == null)
@@ -142,6 +150,7 @@ namespace ProjectPorcupine.Buildable.Components
         {
             ParentFurniture = parentFurniture;
             Initialize();
+            initialized = true;
         }
 
         public virtual bool CanFunction()
