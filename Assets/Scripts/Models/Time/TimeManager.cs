@@ -5,32 +5,29 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-using System.Collections.Generic;
-using System.Linq;
-
-
 #endregion
+
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class TimeManager
 {
     private static TimeManager instance;
 
-    private float gameTickPerSecond = 5;
+    private const float gameTickPerSecond = 5;
+
+    private List<Action> nextFrameActions = new List<Action>();
 
     // An array of possible time multipliers.
     private float[] possibleTimeScales = new float[6] { 0.1f, 0.5f, 1f, 2f, 4f, 8f };
 
-    private Dictionary<IUpdatable, bool> fastUpdatables = new Dictionary<IUpdatable, bool>();
-    private Dictionary<IUpdatable, bool> slowUpdatables = new Dictionary<IUpdatable, bool>();
+    private const int framesInSlowUpdateCycle = 10;
+    private List<IUpdatable> fastUpdatables = new List<IUpdatable>();
 
-    // A temporary list of all visible furniture. Gets updated when camera moves.
-    private HashSet<IUpdatable> visibleUpdatables;
-
-    // A temporary list of all invisible furniture. Gets updated when camera moves.
-    private HashSet<IUpdatable> invisibleUpdatables;
+    private List<IUpdatable>[] slowUpdatablesLists = new List<IUpdatable>[framesInSlowUpdateCycle];
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TimeManager"/> class.
@@ -43,8 +40,10 @@ public class TimeManager
         TimeScalePosition = 2;
         IsPaused = false;
 
-        visibleUpdatables = new HashSet<IUpdatable>();
-        invisibleUpdatables = new HashSet<IUpdatable>();
+        for (int i = 0; i < slowUpdatablesLists.Length; i++)
+        {
+            slowUpdatablesLists[i] = new List<IUpdatable>();
+        }
 
         KeyboardManager.Instance.RegisterInputAction("SetSpeed1", KeyboardMappedInputType.KeyUp, () => SetTimeScalePosition(2));
         KeyboardManager.Instance.RegisterInputAction("SetSpeed2", KeyboardMappedInputType.KeyUp, () => SetTimeScalePosition(3));
@@ -52,6 +51,13 @@ public class TimeManager
         KeyboardManager.Instance.RegisterInputAction("DecreaseSpeed", KeyboardMappedInputType.KeyUp, DecreaseTimeScale);
         KeyboardManager.Instance.RegisterInputAction("IncreaseSpeed", KeyboardMappedInputType.KeyUp, IncreaseTimeScale);
     }
+
+    /// <summary>
+    /// Gets the game time.
+    /// </summary>
+    /// <value>The game time.</value>
+    // TODO: Implement saving and loading game time, so time is persistent across loads.
+    public float GameTime { get; private set;}
 
     /// <summary>
     /// Systems that update every frame.
@@ -140,16 +146,21 @@ public class TimeManager
     /// </summary>
     /// <param name="time">Time since last frame.</param>
     public void Update(float time)
-    {
-//        if (Time.frameCount % 30 == 0)
-//        {
-//            System.GC.Collect();
-//        }
-        
+    {   
         float deltaTime = time * TimeScale;
 
         // Systems that update every frame.
         InvokeEvent(EveryFrame, time);
+
+        if (nextFrameActions.Count > 0)
+        {
+            for (int i = 0; i < nextFrameActions.Count; i++)
+            {
+                nextFrameActions[i].Invoke();
+            }
+
+            nextFrameActions.Clear();
+        }
 
         // Systems that update every frame not in Modal.
         if (GameController.Instance.IsModal == false)
@@ -160,6 +171,7 @@ public class TimeManager
         // Systems that update every frame while unpaused.
         if (GameController.Instance.IsPaused == false)
         {
+            GameTime += deltaTime;
             InvokeEvent(EveryFrameUnpaused, deltaTime);
             ProcessUpdatables(deltaTime);
         }
@@ -181,135 +193,44 @@ public class TimeManager
         TotalDeltaTime += deltaTime;
     }
 
-    private int slowUpdatableProgress = 0;
-    private int invisibleUpdatableProgress = 0;
-    private float[] accumulatedTime = new float[10];
+    private float[] accumulatedTime = new float[framesInSlowUpdateCycle];
     private int timePos = 0;
 
     public void ProcessUpdatables(float deltaTime)
     {
         Profiler.BeginSample("ProcessUpdatables");
         Profiler.BeginSample("fastUpdatables");
-        IUpdatable[] updatablesCopy = new IUpdatable[visibleUpdatables.Count];
-        visibleUpdatables.CopyTo(updatablesCopy, 0);
-        for (int i = 0; i < visibleUpdatables.Count; i++)
+        IUpdatable[] updatablesCopy = new IUpdatable[fastUpdatables.Count];
+        fastUpdatables.CopyTo(updatablesCopy, 0);
+        for (int i = 0; i < fastUpdatables.Count; i++)
         {
             updatablesCopy[i].EveryFrameUpdate(deltaTime);
         }
+
         Profiler.EndSample();
         Profiler.BeginSample("slowUpdatables");
 
         accumulatedTime[timePos] = deltaTime;
         float accumulatedDeltaTime = accumulatedTime.Sum();
 
-        int slowToProcess = Mathf.CeilToInt((float)slowUpdatables.Count / 10);
-        updatablesCopy = new IUpdatable[slowUpdatables.Count];
-        slowUpdatables.Keys.CopyTo(updatablesCopy, 0);
+        updatablesCopy = new IUpdatable[slowUpdatablesLists[timePos].Count];
+        slowUpdatablesLists[timePos].CopyTo(updatablesCopy, 0);
 
-        for (int i = slowUpdatableProgress; i < slowUpdatableProgress + slowToProcess && i < slowUpdatables.Count; i++)
+        for (int i = 0; i < updatablesCopy.Length; i++)
         {
             updatablesCopy[i].FixedFrequencyUpdate(accumulatedDeltaTime);
         }
-
-        slowUpdatableProgress += slowToProcess;
-
-        int invisibleToProcess = Mathf.CeilToInt((float)invisibleUpdatables.Count / 10);
-        updatablesCopy = new IUpdatable[invisibleUpdatables.Count];
-        invisibleUpdatables.CopyTo(updatablesCopy, 0);
-
-        for (int i = invisibleUpdatableProgress; i < invisibleUpdatableProgress + invisibleToProcess && i < invisibleUpdatables.Count; i++)
-        {
-            updatablesCopy[i].EveryFrameUpdate(accumulatedDeltaTime);
-        }
-
-        invisibleUpdatableProgress += invisibleToProcess;
 
         timePos++;
         if (timePos >= accumulatedTime.Length)
         {
             timePos = 0;
-            invisibleUpdatableProgress = 0;
-            slowUpdatableProgress = 0;
         }
+
         updatablesCopy = null;
         Profiler.EndSample();
         Profiler.EndSample();
     }
-
-    /// <summary>
-    /// Notify world that the camera moved, so we can check which entities are visible to the camera.
-    /// The invisible enities can be updated less frequent for better performance.
-    /// </summary>
-    public void OnCameraMoved(Bounds cameraBounds)
-    {
-        // Expand bounds to include tiles on the edge where the centre isn't inside the bounds
-        cameraBounds.Expand(1);
-
-        foreach (IUpdatable updatable in fastUpdatables.Keys)
-        {
-            // Multitile furniture base tile is bottom left - so add width and height 
-            Bounds updatableBounds = updatable.Bounds;
-
-            if (cameraBounds.Intersects(updatableBounds))
-            {
-                if (invisibleUpdatables.Contains(updatable))
-                {
-                    invisibleUpdatables.Remove(updatable);
-                    visibleUpdatables.Add(updatable);
-                }
-            }
-            else
-            {
-                if (visibleUpdatables.Contains(updatable))
-                {
-                    visibleUpdatables.Remove(updatable);
-                    invisibleUpdatables.Add(updatable);
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// Calls the furnitures update function on every frame.
-    /// The list needs to be copied temporarily in case furnitures are added or removed during the update.
-    /// </summary>
-    /// <param name="deltaTime">Delta time.</param>
-//    public void TickEveryFrame(float deltaTime)
-//    {
-//        Profiler.BeginSample("TEF");
-//        List<Furniture> tempFurnituresVisible = new List<Furniture>(furnituresVisible);
-//        foreach (Furniture furniture in tempFurnituresVisible)
-//        {
-//            furniture.EveryFrameUpdate(deltaTime);
-//        }
-//
-//
-//
-//        // Update furniture outside of the camera view
-//        List<Furniture> tempFurnituresInvisible = new List<Furniture>(furnituresInvisible);
-//        //        int totalFurnCount = tempFurnituresInvisible.Count;
-//
-//        for (int i = invisibleFurnitureProgress; i < invisibleFurnitureProgress + invFurnToProcess && i < tempFurnituresInvisible.Count; i++)
-//        {
-//            tempFurnituresInvisible[i].EveryFrameUpdate(accumulatedDeltaTime);
-//        }
-//        invisibleFurnitureProgress += invFurnToProcess;
-//
-//        List<Furniture> tempFurnitures = new List<Furniture>(furnitures);
-//        int furnToProcess = Mathf.CeilToInt((float)tempFurnitures.Count / 10);
-//        for (int i = furnitureProgress; i < furnitureProgress + furnToProcess && i < tempFurnitures.Count; i++)
-//        {
-//            tempFurnitures[i].FixedFrequencyUpdate(accumulatedDeltaTime);
-//        }
-//        furnitureProgress += furnToProcess;
-//
-//        timePos++;
-//        if (timePos >= accumulatedTime.Length)
-//        {
-//            timePos = 0;
-//        }
-//        Profiler.EndSample();
-//    }
 
     /// <summary>
     /// Sets the speed of the game. Greater time scale position equals greater speed.
@@ -351,45 +272,45 @@ public class TimeManager
 
     public void RegisterFastUpdate(IUpdatable updatable)
     {
-        if (!fastUpdatables.ContainsKey(updatable))
+        if (!fastUpdatables.Contains(updatable))
         {
-            fastUpdatables.Add(updatable, true);
-            visibleUpdatables.Add(updatable);
+            fastUpdatables.Add(updatable);
         }
     }
 
     public void UnregisterFastUpdate(IUpdatable updatable)
     {
-        if (fastUpdatables.ContainsKey(updatable))
+        if (fastUpdatables.Contains(updatable))
         {
             fastUpdatables.Remove(updatable);
-        }
-
-        if(visibleUpdatables.Contains(updatable))
-        {
-            visibleUpdatables.Remove(updatable);
-        }
-
-        if(invisibleUpdatables.Contains(updatable))
-        {
-            invisibleUpdatables.Remove(updatable);
         }
     }
 
     public void RegisterSlowUpdate(IUpdatable updatable)
     {
-        if (!slowUpdatables.ContainsKey(updatable))
+        if (!slowUpdatablesLists.Any(list => list.Contains(updatable)))
         {
-            slowUpdatables.Add(updatable, true);
+            slowUpdatablesLists.OrderBy(list => list.Count).First().Add(updatable);
         }
     }
 
     public void UnregisterSlowUpdate(IUpdatable updatable)
     {
-        if (slowUpdatables.ContainsKey(updatable))
+
+        if (slowUpdatablesLists.Any(list => list.Contains(updatable)))
         {
-            slowUpdatables.Remove(updatable);
+            // This should only ever return one list, as if statement guarantees it has at least one, and register method ensures no more than one
+            slowUpdatablesLists.Single(list => list.Contains(updatable)).Remove(updatable);
         }
+    }
+
+    /// <summary>
+    /// Runs the action in the next frame before any updates are ran.
+    /// </summary>
+    /// <param name="action">Action with no parameters.</param>
+    public void RunNextFrame(Action action)
+    {
+        nextFrameActions.Add(action);
     }
 
     /// <summary>

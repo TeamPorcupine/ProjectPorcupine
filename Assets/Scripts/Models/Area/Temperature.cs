@@ -6,8 +6,10 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using MoonSharp.Interpreter;
 using UnityEngine;
@@ -44,9 +46,9 @@ public class Temperature
     /// <summary>
     /// Size of map.
     /// </summary>
-    private int sizeX = World.Current.Width;
-    private int sizeY = World.Current.Height;
-    private int sizeZ = World.Current.Depth;
+    private int sizeX;
+    private int sizeY;
+    private int sizeZ;
 
     /// <summary>
     /// Time since last update.
@@ -63,6 +65,10 @@ public class Temperature
     /// </summary>
     public Temperature()
     {
+        sizeX = World.Current.Width;
+        sizeY = World.Current.Height;
+        sizeZ = World.Current.Depth;
+
         temperature = new float[2][]
         {
             new float[sizeX * sizeY * sizeZ],
@@ -88,16 +94,9 @@ public class Temperature
     /// <summary>
     /// If needed, progress physics.
     /// </summary>
-    public void Update()
+    public void Update(float deltaTime)
     {
-        // Progress physical time (should me linked to TIme.dt at some point)
-        elapsed += updateInterval;
-
-        if (elapsed >= updateInterval)
-        {
-            ProgressTemperature(updateInterval);
-            elapsed = elapsed - updateInterval;
-        }
+        ProgressTemperature(deltaTime);
     }
 
     public void RegisterSinkOrSource(Furniture provider)
@@ -105,7 +104,7 @@ public class Temperature
         // TODO: This need to be implemented.
         sinksAndSources[provider] = (float deltaTime) =>
         {
-            provider.EventActions.Trigger("OnUpdateTemperature", provider, deltaTime);
+                UpdateTemperature(provider, deltaTime);
         };
     }
 
@@ -127,6 +126,16 @@ public class Temperature
     public float GetTemperature(int x, int y, int z)
     {
         return temperature[offset][GetIndex(x, y, z)];
+    }
+
+    public float GetTemperatureInC(int x, int y, int z)
+    {
+        return GetTemperature(x, y, z) - 273.15f;
+    }
+
+    public float GetTemperatureInF(int x, int y, int z)
+    {
+        return (GetTemperature(x, y, z) * 1.8f) - 459.67f;
     }
 
     /// <summary>
@@ -241,6 +250,32 @@ public class Temperature
         }
     }
 
+    public void Resize()
+    {
+        sizeX = World.Current.Width;
+        sizeY = World.Current.Height;
+        sizeZ = World.Current.Depth;
+
+        temperature = new float[2][]
+            {
+                new float[sizeX * sizeY * sizeZ],
+                new float[sizeX * sizeY * sizeZ],
+            };
+        thermalDiffusivity = new float[sizeX * sizeY * sizeZ];
+        for (int z = 0; z < sizeZ; z++)
+        {
+            for (int y = 0; y < sizeY; y++)
+            {
+                for (int x = 0; x < sizeX; x++)
+                {
+                    int index = GetIndex(x, y, z);
+                    temperature[0][index] = 0f;
+                    thermalDiffusivity[index] = 1f;
+                }
+            }
+        }
+    }
+
     /// <summary>
     /// Internal indexing of array.
     /// </summary>
@@ -258,7 +293,7 @@ public class Temperature
     /// </summary>
     private void ProgressTemperature(float deltaT)
     {
-        Thread thread = new Thread(ForwardTemp);
+        Thread thread = new Thread(() => ForwardTemp(deltaT));
         thread.Start();
 
         // TODO: Compute temperature sources.
@@ -274,7 +309,7 @@ public class Temperature
     /// <summary>
     /// Update temperature using a forward method.
     /// </summary>
-    private void ForwardTemp()
+    private void ForwardTemp(float deltaTime)
     {
         // Store references.
         float[] temp_curr = temperature[1 - offset];
@@ -284,7 +319,7 @@ public class Temperature
         // delta.Time * magic_coefficient * 0.5 (avg for thermalDiffusivity).
         // Make sure c is always between 0 and 0.5*0.25 (not included) or things will blow up
         // in your face.
-        float c = 0.23f * 0.5f;
+        float c = deltaTime * 0.23f * 0.5f;
 
         // Calculates for all tiles.
         for (int z = 0; z < sizeZ; z++)
@@ -320,11 +355,14 @@ public class Temperature
                         continue;
                     }
 
+                    List<float> adjacentOldTemps = new List<float>();
+
                     if (x > 0)
                     {
                         temp_curr[index] +=
                             c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_W]) *
                             (temp_old[index_W] - temp_old[index]);
+                        adjacentOldTemps.Add(temp_old[index_W]);
                     }
 
                     if (y > 0)
@@ -332,6 +370,7 @@ public class Temperature
                         temp_curr[index] +=
                             c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_S]) *
                             (temp_old[index_S] - temp_old[index]);
+                        adjacentOldTemps.Add(temp_old[index_S]);
                     }
 
                     if (x < sizeX - 1)
@@ -339,6 +378,7 @@ public class Temperature
                         temp_curr[index] +=
                             c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_E]) *
                             (temp_old[index_E] - temp_old[index]);
+                        adjacentOldTemps.Add(temp_old[index_E]);
                     }
 
                     if (y < sizeY - 1)
@@ -346,44 +386,60 @@ public class Temperature
                         temp_curr[index] +=
                             c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_N]) *
                             (temp_old[index_N] - temp_old[index]);
+                        adjacentOldTemps.Add(temp_old[index_N]);
                     }
 
                     if (z > 0)
                     {
                         temp_curr[index] += c * 0.5f * (temp_old[index_below] - temp_old[index]);
+                        adjacentOldTemps.Add(temp_old[index_below]);
                     }
 
                     if (z < sizeZ - 1)
                     {
                         temp_curr[index] += c * 0.5f * (temp_old[index_above] - temp_old[index]);
+                        adjacentOldTemps.Add(temp_old[index_above]);
                     }
 
                     // Add a little bit more flow to the temperature.
                     float value = temp_curr[index];
 
                     // FINE tune the below number. ".005" has a huge effect.
-                    value += 0.065f * value;
-
-                    float[] list =
-                    {
-                        temp_old[index_N],
-                        temp_old[index_S],
-                        temp_old[index_E],
-                        temp_old[index_W]
-                    };
-
-                    Array.Sort(list);
+//                    value +=  value;
 
                     // Because of the added flow just above, we need to make sure we don't overshoot the tempertures surrounding this tile.
-                    if (value < list[3])
-                    {
-                        temp_curr[index] = value;
-                    }
+//                    if (value < adjacentOldTemps.Max())
+//                    {
+//                        temp_curr[index] = value;
+//                    }
                 }
             }
         }
 
         // Swap variable order
         offset = 1 - offset;
+    }
+
+    private void UpdateTemperature(Furniture furniture, float deltaTime)
+    {
+        if (furniture.Tile.Room.IsOutsideRoom() == true)
+        {
+            return;
+        }
+
+        Tile tile = furniture.Tile;
+        float pressure = tile.Room.GetTotalGasPressure();
+        float efficiency = ModUtils.Clamp01(pressure / furniture.Parameters["pressure_threshold"].ToFloat());
+        float temperatureChangePerSecond = furniture.Parameters["base_heating"].ToFloat() * efficiency;
+        float temperatureChange = temperatureChangePerSecond * deltaTime;
+
+        // This is all wrong, temperature shouldn't be set to the temperature change
+        // But as this entire system does not work well, and creates more unrealistic temperatures,
+        // I'll leave it as is.
+
+        // Multiply by this just to make the game make sense.
+        temperatureChange = temperatureChange * 10;
+
+        World.Current.temperature.SetTemperature(tile.X, tile.Y, tile.Z, temperatureChange);
     }
 }

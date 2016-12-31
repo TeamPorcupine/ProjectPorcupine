@@ -272,7 +272,7 @@ public class OverlayMap : MonoBehaviour
             }
 
             bool loggedOnce = false;
-            valueAt = (x, y, z) =>
+            valueAt = (x, y, z) => 
             {
                 if (WorldController.Instance == null)
                 {
@@ -280,6 +280,7 @@ public class OverlayMap : MonoBehaviour
                 }
 
                 Tile tile = WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, z));
+
                 DynValue result = FunctionsManager.Overlay.Call(descr.LuaFunctionName, new object[] { tile, World.Current });
                 double? value = result.CastToNumber();
                 if (value == null)

@@ -56,7 +56,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     private HashSet<string> tileTypeBuildPermissions;
 
     private bool isOperating;
-
+    
     // Need to hold the health value.
     private HealthSystem health;
     
@@ -529,7 +529,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     {
         // requirements from components (gas, ...)
         bool canFunction = true;
-        Requirements = BuildableComponent.Requirements.None;
+        BuildableComponent.Requirements newRequirements = BuildableComponent.Requirements.None;
         foreach (BuildableComponent component in components)
         {
             bool componentCanFunction = component.CanFunction();
@@ -538,10 +538,17 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
             // if it can't function, collect all stuff it needs (power, gas, ...) for icon signalization
             if (!componentCanFunction)
             {
-                Requirements |= component.Needs;
+                newRequirements |= component.Needs;
             }
         }
 
+        // requirements were changed, force update of status icons
+        if (Requirements != newRequirements)
+        {
+            Requirements = newRequirements;
+            OnIsOperatingChanged(this);
+        }
+        
         IsOperating = canFunction;
 
         if (canFunction == false)
@@ -1106,6 +1113,18 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         }
 
         return null;
+    }
+
+    public BuildableComponent.Requirements GetPossibleRequirements()
+    {
+        BuildableComponent.Requirements requires = BuildableComponent.Requirements.None;
+
+        foreach (BuildableComponent component in components)
+        {
+            requires |= component.Needs;
+        }
+
+        return requires;
     }
 
     public T GetOrderAction<T>() where T : OrderAction
