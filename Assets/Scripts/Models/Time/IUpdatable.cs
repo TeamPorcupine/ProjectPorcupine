@@ -8,8 +8,11 @@
 #endregion
 using UnityEngine;
 
-public interface IUpdatable {
-    Bounds Bounds{get;}
+public interface IUpdatable 
+{
+    Bounds Bounds { get; }
+
     void EveryFrameUpdate(float deltaTime);
+
     void FixedFrequencyUpdate(float deltaTime);
 }

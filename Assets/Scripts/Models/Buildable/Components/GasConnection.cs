@@ -38,6 +38,14 @@ namespace ProjectPorcupine.Buildable.Components
         [JsonProperty("Requires")]
         public List<GasInfo> Requires { get; set; }
 
+        public override bool RequiresSlowUpdate
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         public override BuildableComponent Clone()
         {
             return new GasConnection(this);
@@ -63,14 +71,6 @@ namespace ProjectPorcupine.Buildable.Components
             }
 
             return canFunction;
-        }
-
-        public override bool RequiresSlowUpdate
-        {
-            get
-            {
-                return true;
-            }
         }
 
         public override void FixedFrequencyUpdate(float deltaTime)

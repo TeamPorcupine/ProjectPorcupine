@@ -155,6 +155,14 @@ namespace ProjectPorcupine.Buildable.Components
             get { return IsStorage ? Provides.Capacity : 0f; }
         }
 
+        public override bool RequiresSlowUpdate
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         public override BuildableComponent Clone()
         {
             return new FluidConnection(this);
@@ -169,14 +177,6 @@ namespace ProjectPorcupine.Buildable.Components
             }
 
             return hasPower;
-        }
-
-        public override bool RequiresSlowUpdate
-        {
-            get
-            {
-                return true;
-            }
         }
 
         public override void FixedFrequencyUpdate(float deltaTime)

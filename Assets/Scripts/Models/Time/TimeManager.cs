@@ -15,19 +15,23 @@ using UnityEngine;
 
 public class TimeManager
 {
-    private static TimeManager instance;
+    private const int FramesInSlowUpdateCycle = 10;
 
-    private const float gameTickPerSecond = 5;
+    private const float GameTickPerSecond = 5;
+
+    private static TimeManager instance;
 
     private List<Action> nextFrameActions = new List<Action>();
 
     // An array of possible time multipliers.
     private float[] possibleTimeScales = new float[6] { 0.1f, 0.5f, 1f, 2f, 4f, 8f };
 
-    private const int framesInSlowUpdateCycle = 10;
     private List<IUpdatable> fastUpdatables = new List<IUpdatable>();
 
-    private List<IUpdatable>[] slowUpdatablesLists = new List<IUpdatable>[framesInSlowUpdateCycle];
+    private List<IUpdatable>[] slowUpdatablesLists = new List<IUpdatable>[FramesInSlowUpdateCycle];
+
+    private float[] accumulatedTime = new float[FramesInSlowUpdateCycle];
+    private int timePos = 0;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TimeManager"/> class.
@@ -51,13 +55,6 @@ public class TimeManager
         KeyboardManager.Instance.RegisterInputAction("DecreaseSpeed", KeyboardMappedInputType.KeyUp, DecreaseTimeScale);
         KeyboardManager.Instance.RegisterInputAction("IncreaseSpeed", KeyboardMappedInputType.KeyUp, IncreaseTimeScale);
     }
-
-    /// <summary>
-    /// Gets the game time.
-    /// </summary>
-    /// <value>The game time.</value>
-    // TODO: Implement saving and loading game time, so time is persistent across loads.
-    public float GameTime { get; private set;}
 
     /// <summary>
     /// Systems that update every frame.
@@ -101,6 +98,12 @@ public class TimeManager
         }
     }
 
+    /// <summary>
+    /// Gets the game time.
+    /// </summary>
+    /// <value>The game time.</value>
+    public float GameTime { get; private set; } // TODO: Implement saving and loading game time, so time is persistent across loads.
+
     // Current position in that array.
     // Public so TimeScaleUpdater can easily get a position appropriate to an image.
     public int TimeScalePosition { get; private set; }
@@ -111,7 +114,7 @@ public class TimeManager
     /// <value>The game time tick delay.</value>
     public float GameTickDelay
     {
-        get { return 1f / gameTickPerSecond; }
+        get { return 1f / GameTickPerSecond; }
     }
 
     /// <summary>
@@ -193,22 +196,14 @@ public class TimeManager
         TotalDeltaTime += deltaTime;
     }
 
-    private float[] accumulatedTime = new float[framesInSlowUpdateCycle];
-    private int timePos = 0;
-
     public void ProcessUpdatables(float deltaTime)
     {
-        Profiler.BeginSample("ProcessUpdatables");
-        Profiler.BeginSample("fastUpdatables");
         IUpdatable[] updatablesCopy = new IUpdatable[fastUpdatables.Count];
         fastUpdatables.CopyTo(updatablesCopy, 0);
         for (int i = 0; i < fastUpdatables.Count; i++)
         {
             updatablesCopy[i].EveryFrameUpdate(deltaTime);
         }
-
-        Profiler.EndSample();
-        Profiler.BeginSample("slowUpdatables");
 
         accumulatedTime[timePos] = deltaTime;
         float accumulatedDeltaTime = accumulatedTime.Sum();
@@ -228,8 +223,6 @@ public class TimeManager
         }
 
         updatablesCopy = null;
-        Profiler.EndSample();
-        Profiler.EndSample();
     }
 
     /// <summary>
@@ -296,7 +289,6 @@ public class TimeManager
 
     public void UnregisterSlowUpdate(IUpdatable updatable)
     {
-
         if (slowUpdatablesLists.Any(list => list.Contains(updatable)))
         {
             // This should only ever return one list, as if statement guarantees it has at least one, and register method ensures no more than one

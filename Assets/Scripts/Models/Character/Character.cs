@@ -161,11 +161,12 @@ public class Character : ISelectable, IContextActionProvider, IUpdatable
         }
     }
 
-    public Bounds Bounds {
+    public Bounds Bounds 
+    {
         get
         {
             return new Bounds(
-                new Vector3(X - 1, Y - 1 , 0),
+                new Vector3(X - 1, Y - 1, 0),
                 new Vector3(1, 1));
         }
     }
@@ -324,8 +325,6 @@ public class Character : ISelectable, IContextActionProvider, IUpdatable
     /// Runs every "frame" while the simulation is not paused
     public void EveryFrameUpdate(float deltaTime)
     {
-
-        Profiler.BeginSample("CharacterFastUpdate");
         // Run all the global states first so that they can interrupt or queue up new states
         foreach (State globalState in globalStates)
         {
@@ -362,12 +361,11 @@ public class Character : ISelectable, IContextActionProvider, IUpdatable
         {
             OnCharacterChanged(this);
         }
-
-        Profiler.EndSample();
     }
 
-    public void FixedFrequencyUpdate(float deltaTime) {
-        
+    public void FixedFrequencyUpdate(float deltaTime)
+    {
+        throw new NotImplementedException();
     }
 
     public object ToJSon()

@@ -220,7 +220,8 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// <value>The event actions that is called on update.</value>
     public EventActions EventActions { get; private set; }
 
-    public Bounds Bounds {
+    public Bounds Bounds 
+    {
         get
         {
             return new Bounds(
@@ -406,7 +407,6 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
 
     public bool RequiresSlowUpdate { get; set; }
 
-
     /// <summary>
     /// Flag with furniture requirements (used for showing icon overlay, e.g. No power, ... ).
     /// </summary>
@@ -511,22 +511,15 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// <param name="deltaTime">The time since the last update was called.</param>
     public void EveryFrameUpdate(float deltaTime)
     {
-        Profiler.BeginSample("FurnitureFastUpdate");
-        Profiler.BeginSample("EventActions");
         if (EventActions != null)
         {
             EventActions.Trigger("OnFastUpdate", this, deltaTime);
         }
 
-        Profiler.EndSample();
-        Profiler.BeginSample("Components");
         foreach (BuildableComponent component in components)
         {
             component.EveryFrameUpdate(deltaTime);
         }
-
-        Profiler.EndSample();
-        Profiler.EndSample();
     }
 
     /// <summary>

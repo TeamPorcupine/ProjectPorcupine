@@ -84,19 +84,6 @@ public class CharacterManager : IEnumerable<Character>
         return null;
     }
 
-//    /// <summary>
-//    /// Calls the update function of each character with the given delta time.
-//    /// </summary>
-//    /// <param name="deltaTime">Delta time.</param>
-//    public void Update(float deltaTime)
-//    {
-//        // Change from a foreach due to the collection being modified while its being looped through
-//        for (int i = characters.Count - 1; i >= 0; i--)
-//        {
-//            characters[i].Update(deltaTime);
-//        }
-//    }
-
     /// <summary>
     /// Gets the characters enumerator.
     /// </summary>
