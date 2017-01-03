@@ -455,7 +455,7 @@ public class MouseController
         if (bmc.buildMode == BuildMode.UTILITY && Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false))
         {
             Tile firstTile = World.Current.GetTileAt(dragParams.RawStartX, dragParams.RawStartY, WorldController.Instance.cameraController.CurrentLayer);
-            Utility utility = firstTile.Utilities[PrototypeManager.Utility.Get(bmc.buildModeType).Name];
+            Utility utility = firstTile.Utilities[PrototypeManager.Utility.Get(bmc.buildModeType).Type];
             utility.UpdateGrid(utility);
         }
     }

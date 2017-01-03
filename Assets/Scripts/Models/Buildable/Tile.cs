@@ -237,7 +237,7 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
             return false;
         }
 
-        Utilities.Remove(utility.Name);
+        Utilities.Remove(utility.Type);
 
         return true;
     }
@@ -255,7 +255,7 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
             return false;
         }
 
-        Utilities.Add(objInstance.Name, objInstance);
+        Utilities.Add(objInstance.Type, objInstance);
 
         return true;
     }
