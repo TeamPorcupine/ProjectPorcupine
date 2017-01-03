@@ -54,7 +54,7 @@ public class TileSpriteController : BaseSpriteController<Tile>
         // Add a Sprite Renderer
         // Add a default sprite for empty tiles.
         SpriteRenderer sr = tile_go.AddComponent<SpriteRenderer>();
-        sr.sprite = SpriteManager.GetSprite("Tile", "Empty");
+        sr.sprite = SpriteManager.GetSprite("Tile", "empty");
         sr.sortingLayerName = "Tiles";
 
         OnChanged(tile);
