@@ -34,7 +34,7 @@ public class TileType : IPrototypable, IEquatable<TileType>
     /// <value>The empty tile type.</value>
     public static TileType Empty
     {
-        get { return PrototypeManager.TileType.Get("Empty"); }
+        get { return PrototypeManager.TileType.Get("empty"); }
     }
 
     /// <summary>
@@ -43,7 +43,7 @@ public class TileType : IPrototypable, IEquatable<TileType>
     /// <value>The floor tile type.</value>
     public static TileType Floor
     {
-        get { return PrototypeManager.TileType.Get("Floor"); }
+        get { return PrototypeManager.TileType.Get("floor"); }
     }
 
     /// <summary>
