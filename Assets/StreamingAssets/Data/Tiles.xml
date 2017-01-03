@@ -1,33 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Tiles>
     <!-- TODO: DeconstructionJob -->
-    <Tile type="Empty">
-        <Name>Empty</Name>
-        <Description>This is a empty tile.</Description>
+    <Tile type="empty">
         <BaseMovementCost>1</BaseMovementCost>
         <LinksToNeighbours>false</LinksToNeighbours>
 
         <BuildingJob jobTime="0"></BuildingJob>
 
-        <LocalizationCode>tile_Empty</LocalizationCode>
-        <UnlocalizedDescription>tile_Empty_desc</UnlocalizedDescription>
+        <LocalizationCode>tile_empty</LocalizationCode>
+        <UnlocalizedDescription>tile_empty_desc</UnlocalizedDescription>
     </Tile>
 
-    <Tile type="Floor">
-        <Name>Floor</Name>
-        <Description>This is a floor tile.</Description>
+    <Tile type="floor">
         <BaseMovementCost>1</BaseMovementCost>
         <LinksToNeighbours>false</LinksToNeighbours>
 
         <BuildingJob jobTime="0.1"></BuildingJob>
 
-        <LocalizationCode>tile_Floor</LocalizationCode>
-        <UnlocalizedDescription>tile_Floor_desc</UnlocalizedDescription>
+        <LocalizationCode>tile_floor</LocalizationCode>
+        <UnlocalizedDescription>tile_floor_desc</UnlocalizedDescription>
     </Tile>
 
-    <Tile type="Ladder">
-        <Name>Ladder</Name>
-        <Description>This is a ladder tile.</Description>
+    <Tile type="ladder">
         <BaseMovementCost>1.5</BaseMovementCost>
         <LinksToNeighbours>false</LinksToNeighbours>
 
@@ -37,7 +31,7 @@
             <Inventory type="Steel Plate" amount="1" />
         </BuildingJob>
 
-        <LocalizationCode>tile_Ladder</LocalizationCode>
-        <UnlocalizedDescription>tile_Ladder_desc</UnlocalizedDescription>
+        <LocalizationCode>tile_ladder</LocalizationCode>
+        <UnlocalizedDescription>tile_ladder_desc</UnlocalizedDescription>
     </Tile>
 </Tiles>

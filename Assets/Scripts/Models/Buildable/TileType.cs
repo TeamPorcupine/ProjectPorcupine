@@ -53,18 +53,6 @@ public class TileType : IPrototypable, IEquatable<TileType>
     public string Type { get; private set; }
 
     /// <summary>
-    /// Gets the name of the type of tile.
-    /// </summary>
-    /// <value>The tile type name.</value>
-    public string Name { get; private set; }
-
-    /// <summary>
-    /// Gets the description of the type of tile.
-    /// </summary>
-    /// <value>The tile type description.</value>
-    public string Description { get; private set; }
-
-    /// <summary>
     /// Gets the base movement cost.
     /// </summary>
     /// <value>The base movement cost.</value>
@@ -180,14 +168,6 @@ public class TileType : IPrototypable, IEquatable<TileType>
         {
             switch (reader.Name)
             {
-                case "Name":
-                    reader.Read();
-                    Name = reader.ReadContentAsString();
-                    break;
-                case "Description":
-                    reader.Read();
-                    Description = reader.ReadContentAsString();
-                    break;
                 case "BaseMovementCost":
                     reader.Read();
                     BaseMovementCost = reader.ReadContentAsFloat();

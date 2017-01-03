@@ -599,12 +599,12 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
 
     public string GetName()
     {
-        return "tile_" + type.ToString();
+        return type.LocalizationCode;
     }
 
     public string GetDescription()
     {
-        return "tile_" + type.ToString() + "_desc";
+        return type.UnlocalizedDescription;
     }
 
     public string GetJobDescription()
