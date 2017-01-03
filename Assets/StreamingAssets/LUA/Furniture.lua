@@ -669,7 +669,7 @@ function OreMine_OreMined(job)
 end
 
 function OreMine_GetSpriteName(furniture)
-    if ( furniture.Parameters["ore_type"].ToString() == "Raw Iron-") then
+    if ( furniture.Parameters["ore_type"].ToString() == "raw_iron-") then
         return "astro_wall_" .. furniture.Parameters["ore_type"].ToString()
     end
 
