@@ -30,13 +30,13 @@
       <Option Name="V-Sync" Key="video_general_vsync" DefaultValue="0" ClassName="VSyncComboBox" />
     </OptionHeading>
     <OptionHeading Name="Advanced">
-      <Option Name="Particles" Key="video_advanced_particles" DefaultValue="0" ClassName="ParticlesComboBox" />
-      <Ge Name="Shadows" Key="video_advanced_shadows" DefaultValue="0" ClassName="ShadowsComboBox" />
-      <Option Name="Buffering" Key="video_advanced_buffering" DefaultValue="0" ClassName="BufferingComboBox" />
+      <Option Name="Soft Particles" Key="video_advanced_particles" DefaultValue="true" ClassName="SoftParticlesToggle" />
+      <Option Name="Shadows" Key="video_advanced_shadows" DefaultValue="0" ClassName="ShadowComboBox" />
+      <Option Name="AnistropicFiltering" Key="video_advanced_anistropicFiltering" DefaultValue="2" ClassName="AnistropicFilteringComboBox" />
       <Option Name="AA" Key="video_advanced_aa" DefaultValue="0" ClassName="AAComboBox" />
     </OptionHeading>
     <OptionHeading Name="Window">
-      <Option Name="Mode" Key="video_window_mode" DefaultValue="0" ClassName="FullscreenComboBox" />
+      <Option Name="Fullscreen" Key="video_window_mode" DefaultValue="true" ClassName="FullScreenToggle" />
       <Option Name="Resolution" Key="video_window_resoultion" DefaultValue="0" ClassName="ResolutionComboBox" />
     </OptionHeading>
   </Category>

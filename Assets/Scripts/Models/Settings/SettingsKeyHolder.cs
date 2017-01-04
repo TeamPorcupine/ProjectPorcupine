@@ -259,11 +259,11 @@ public static partial class SettingsKeyHolder
         }
     }
 
-    public static int Particles
+    public static bool SoftParticles
     {
         get
         {
-            return Settings.GetSetting("video_advanced_particles", 0);
+            return Settings.GetSetting("video_advanced_particles", true);
         }
 
         set
@@ -285,16 +285,16 @@ public static partial class SettingsKeyHolder
         }
     }
 
-    public static int Buffering
+    public static int AnistropicFiltering
     {
         get
         {
-            return Settings.GetSetting("video_advanced_buffering", 0);
+            return Settings.GetSetting("video_advanced_anistropicFiltering", 2);
         }
 
         set
         {
-            Settings.SetSetting("video_advanced_buffering", value);
+            Settings.SetSetting("video_advanced_anistropicFiltering", value);
         }
     }
 
@@ -311,11 +311,11 @@ public static partial class SettingsKeyHolder
         }
     }
 
-    public static int Mode
+    public static bool Fullscreen
     {
         get
         {
-            return Settings.GetSetting("video_window_mode", 0);
+            return Settings.GetSetting("video_window_mode", true);
         }
 
         set

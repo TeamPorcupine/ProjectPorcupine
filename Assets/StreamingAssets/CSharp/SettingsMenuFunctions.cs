@@ -651,7 +651,7 @@ public class ResolutionComboBox : GenericComboBox
     public override void CancelSetting()
     {
         Resolution resolution = ((ResolutionOption)dropdownElement.options[selectedValue]).Resolution;
-        Screen.SetResolution(resolution.width, resolution.height, SettingsKeyHolder.mode == 0, resolution.refreshRate);
+        Screen.SetResolution(resolution.width, resolution.height, SettingsKeyHolder.Fullscreen, resolution.refreshRate);
     }
 
     public override void ApplySetting()
@@ -659,7 +659,7 @@ public class ResolutionComboBox : GenericComboBox
         Settings.SetSetting(option.key, selectedValue);
 
         Resolution resolution = selectedOption.Resolution;
-        Screen.SetResolution(resolution.width, resolution.height, SettingsKeyHolder.mode == 0, resolution.refreshRate);
+        Screen.SetResolution(resolution.width, resolution.height, SettingsKeyHolder.Fullscreen, resolution.refreshRate);
     }
 }
 
@@ -819,7 +819,6 @@ public class AutosaveIntervalNumberField : AutosaveNumberField
     }
 }
 
-// This seems to be a placeholder (so I'll just make it a place holder)
 public class UISkinComboBox : GenericComboBox
 {
     public override GameObject InitializeElement()
@@ -851,6 +850,175 @@ public class UISkinComboBox : GenericComboBox
         base.CancelSetting();
 
         // Undo Skin
+    }
+}
+
+public class AnistropicFilteringComboBox : GenericComboBox
+{
+    public override GameObject InitializeElement()
+    {
+        GameObject go = DropdownHelperFromText(new string[] { "Disable", "Enable", "Force Enable" }, getValue());
+
+        dropdownElement.onValueChanged.AddListener(
+        (int v) =>
+        {
+            if (v != selectedValue)
+            {
+                valueChanged = true;
+                selectedValue = v;
+            }
+        });
+
+        return go;
+    }
+
+    public override void ApplySetting()
+    {
+        base.ApplySetting();
+
+        ApplyAFSeting(selectedValue);
+    }
+
+    public void ApplyAFSeting(int value)
+    {
+        switch (value)
+        {
+            case 0:
+                QualitySettings.anistropicFiltering = AnistropicFiltering.Disable;
+                break;
+            case 1:
+                QualitySettings.anistropicFiltering = AnistropicFiltering.Enable;
+                break;
+            case 2:
+                QualitySettings.anistropicFiltering = AnistropicFiltering.ForceEnable;
+                break;
+        }
+    }
+
+    public override void CancelSetting()
+    {
+        base.CancelSetting();
+
+        ApplyAFSeting(getValue());
+    }
+}
+
+public class AAComboBox : GenericComboBox
+{
+    public override GameObject InitializeElement()
+    {
+        GameObject go = DropdownHelperFromText(new string[] { "Disabled", "2x Multi-Sampling", "4x Multi-Sampling", "8x Multi-Sampling" }, getValue());
+
+        dropdownElement.onValueChanged.AddListener(
+        (int v) =>
+        {
+            if (v != selectedValue)
+            {
+                valueChanged = true;
+                selectedValue = v;
+            }
+        });
+
+        return go;
+    }
+
+    public override void ApplySetting()
+    {
+        base.ApplySetting();
+
+        // 0 = 0 => 2^0 != 0
+        // 1 = 2 => 2^1 = 2
+        // 2 = 4 => 2^2 = 4
+        // 3 = 8 => 2^3 = 8
+        // Checks for edge case 0 else just does the power trick
+        QualitySettings.antiAliasing = selectedValue == 0 ? 0 : Math.Pow(2, selectedValue);
+    }
+
+    public override void CancelSetting()
+    {
+        base.CancelSetting();
+
+        // 0 = 0 => 2^0 != 0
+        // 1 = 2 => 2^1 = 2
+        // 2 = 4 => 2^2 = 4
+        // 3 = 8 => 2^3 = 8
+        // Checks for edge case 0 else just does the power trick
+        QualitySettings.antiAliasing = getValue() == 0 ? 0 : Math.Pow(2, getValue());
+    }
+}
+
+public class ShadowComboBox : GenericComboBox
+{
+    public override GameObject InitializeElement()
+    {
+        GameObject go = DropdownHelperFromText(new string[] { "Very High", "High", "Medium", "Low", "Disabled" }, getValue());
+
+        dropdownElement.onValueChanged.AddListener(
+        (int v) =>
+        {
+            if (v != selectedValue)
+            {
+                valueChanged = true;
+                selectedValue = v;
+            }
+        });
+
+        return go;
+    }
+
+    public override void ApplySetting()
+    {
+        base.ApplySetting();
+
+        ApplyShadowSetting(selectedValue);
+    }
+
+    public void ApplyShadowSetting(int value)
+    {
+        switch (value)
+        {
+            case 0:
+                QualitySettings.shadowResolution = ShadowResolution.VeryHigh;
+                QualitySettings.shadows = ShadowQuality.All;
+                break;
+            case 1:
+                QualitySettings.shadowResolution = ShadowResolution.High;
+                QualitySettings.shadows = ShadowQuality.All;
+                break;
+            case 2:
+                QualitySettings.shadowResolution = ShadowResolution.Medium;
+                QualitySettings.shadows = ShadowQuality.All;
+                break;
+            case 3:
+                QualitySettings.shadowResolution = ShadowResolution.Low;
+                QualitySettings.shadows = ShadowQuality.HardOnly;
+                break;
+            case 4:
+                QualitySettings.shadowResolution = ShadowResolution.Low;
+                QualitySettings.shadows = ShadowQuality.Disable;
+                break;
+        }
+    }
+
+    public override void CancelSetting()
+    {
+        base.CancelSetting();
+        ApplyShadowSetting(getValue());
+    }
+}
+
+public class SoftParticlesToggle : GenericToggle
+{
+    public override void ApplySetting()
+    {
+        base.ApplySetting();
+        QualitySettings.softParticles = isOn;
+    }
+
+    public override void CancelSetting()
+    {
+        base.CancelSetting();
+        QualitySettings.softParticles = getValue();
     }
 }
 
