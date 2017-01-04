@@ -32,7 +32,7 @@
     <OptionHeading Name="Advanced">
       <Option Name="Soft Particles" Key="video_advanced_particles" DefaultValue="true" ClassName="SoftParticlesToggle" />
       <Option Name="Shadows" Key="video_advanced_shadows" DefaultValue="0" ClassName="ShadowComboBox" />
-      <Option Name="AnistropicFiltering" Key="video_advanced_anistropicFiltering" DefaultValue="2" ClassName="AnistropicFilteringComboBox" />
+      <Option Name="AnisotropicFiltering" Key="video_advanced_anisotropicFiltering" DefaultValue="2" ClassName="AnistropicFilteringComboBox" />
       <Option Name="AA" Key="video_advanced_aa" DefaultValue="0" ClassName="AAComboBox" />
     </OptionHeading>
     <OptionHeading Name="Window">

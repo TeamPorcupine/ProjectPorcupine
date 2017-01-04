@@ -285,16 +285,16 @@ public static partial class SettingsKeyHolder
         }
     }
 
-    public static int AnistropicFiltering
+    public static int AnisotropicFiltering
     {
         get
         {
-            return Settings.GetSetting("video_advanced_anistropicFiltering", 2);
+            return Settings.GetSetting("video_advanced_anisotropicFiltering", 2);
         }
 
         set
         {
-            Settings.SetSetting("video_advanced_anistropicFiltering", value);
+            Settings.SetSetting("video_advanced_anisotropicFiltering", value);
         }
     }
 

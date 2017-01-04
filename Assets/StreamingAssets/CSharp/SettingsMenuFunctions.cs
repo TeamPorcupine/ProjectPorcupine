@@ -98,6 +98,26 @@ public static class SettingsMenuFunctions
     {
         return new DeveloperModeToggle();
     }
+
+    public static SoftParticlesToggle GetSoftParticlesToggle()
+    {
+        return new SoftParticlesToggle();
+    }
+
+    public static AnisotropicFilteringComboBox GetAnisotropicFilteringComboBox()
+    {
+        return new AnisotropicFilteringComboBox();
+    }
+
+    public static ShadowComboBox GetShadowComboBox()
+    {
+        return new ShadowComboBox();
+    }
+
+    public static AAComboBox GetAAComboBox()
+    {
+        return new AAComboBox();
+    }
 }
 
 public class GenericSwitch : BaseSettingsElement
@@ -384,7 +404,7 @@ public class GenericSlider : BaseSettingsElement
     public override GameObject InitializeElement()
     {
         // Note this is just from playing around and finding a nice value
-        GameObject element = GetVerticalBaseElement("Slider", 200, 30, TextAnchor.MiddleLeft, 0);
+        GameObject element = GetVerticalBaseElement("Slider", 200, 20, TextAnchor.MiddleLeft, 0, 40);
 
         format = option.name + " ({0:00}): ";
 
@@ -853,7 +873,7 @@ public class UISkinComboBox : GenericComboBox
     }
 }
 
-public class AnistropicFilteringComboBox : GenericComboBox
+public class AnisotropicFilteringComboBox : GenericComboBox
 {
     public override GameObject InitializeElement()
     {
@@ -884,13 +904,13 @@ public class AnistropicFilteringComboBox : GenericComboBox
         switch (value)
         {
             case 0:
-                QualitySettings.anistropicFiltering = AnistropicFiltering.Disable;
+                QualitySettings.anisotropicFiltering = AnisotropicFiltering.Disable;
                 break;
             case 1:
-                QualitySettings.anistropicFiltering = AnistropicFiltering.Enable;
+                QualitySettings.anisotropicFiltering = AnisotropicFiltering.Enable;
                 break;
             case 2:
-                QualitySettings.anistropicFiltering = AnistropicFiltering.ForceEnable;
+                QualitySettings.anisotropicFiltering = AnisotropicFiltering.ForceEnable;
                 break;
         }
     }
@@ -926,24 +946,35 @@ public class AAComboBox : GenericComboBox
     {
         base.ApplySetting();
 
-        // 0 = 0 => 2^0 != 0
-        // 1 = 2 => 2^1 = 2
-        // 2 = 4 => 2^2 = 4
-        // 3 = 8 => 2^3 = 8
-        // Checks for edge case 0 else just does the power trick
-        QualitySettings.antiAliasing = selectedValue == 0 ? 0 : Math.Pow(2, selectedValue);
+        ApplyAA(selectedValue);
+    }
+
+    // I was going to do a power trick (2^x, with edge case 0), but C# reflection doesn't allow imported types (for some reason)
+    // So this is a good comprimise
+    public void ApplyAA(int value)
+    {
+        switch (value)
+        {
+            case 0:
+                QualitySettings.antiAliasing = 0;
+                break;
+            case 1:
+                QualitySettings.antiAliasing = 2;
+                break;
+            case 2:
+                QualitySettings.antiAliasing = 4;
+                break;
+            case 3:
+                QualitySettings.antiAliasing = 8;
+                break;
+        }
     }
 
     public override void CancelSetting()
     {
         base.CancelSetting();
 
-        // 0 = 0 => 2^0 != 0
-        // 1 = 2 => 2^1 = 2
-        // 2 = 4 => 2^2 = 4
-        // 3 = 8 => 2^3 = 8
-        // Checks for edge case 0 else just does the power trick
-        QualitySettings.antiAliasing = getValue() == 0 ? 0 : Math.Pow(2, getValue());
+        ApplyAA(getValue());
     }
 }
 
@@ -973,29 +1004,26 @@ public class ShadowComboBox : GenericComboBox
         ApplyShadowSetting(selectedValue);
     }
 
+    // When update to 5.5+ add shadows = ShadowQuality (with 0, 1 being all, 2 and 3 being hardOnly, and 4 being disabled)
+    // That's why there is repetition
     public void ApplyShadowSetting(int value)
     {
         switch (value)
         {
             case 0:
                 QualitySettings.shadowResolution = ShadowResolution.VeryHigh;
-                QualitySettings.shadows = ShadowQuality.All;
                 break;
             case 1:
                 QualitySettings.shadowResolution = ShadowResolution.High;
-                QualitySettings.shadows = ShadowQuality.All;
                 break;
             case 2:
                 QualitySettings.shadowResolution = ShadowResolution.Medium;
-                QualitySettings.shadows = ShadowQuality.All;
                 break;
             case 3:
                 QualitySettings.shadowResolution = ShadowResolution.Low;
-                QualitySettings.shadows = ShadowQuality.HardOnly;
                 break;
             case 4:
                 QualitySettings.shadowResolution = ShadowResolution.Low;
-                QualitySettings.shadows = ShadowQuality.Disable;
                 break;
         }
     }
@@ -1007,18 +1035,19 @@ public class ShadowComboBox : GenericComboBox
     }
 }
 
+// Enable at 5.5+, since the option doesn't exist earlier
 public class SoftParticlesToggle : GenericToggle
 {
     public override void ApplySetting()
     {
         base.ApplySetting();
-        QualitySettings.softParticles = isOn;
+        // QualitySettings.softParticles = isOn;
     }
 
     public override void CancelSetting()
     {
         base.CancelSetting();
-        QualitySettings.softParticles = getValue();
+        // QualitySettings.softParticles = getValue();
     }
 }
 
