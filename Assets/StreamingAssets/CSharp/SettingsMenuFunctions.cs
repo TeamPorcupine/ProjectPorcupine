@@ -618,6 +618,7 @@ public class ResolutionComboBox : GenericComboBox
     /// <summary>
     /// Create the differents option for the resolution dropdown.
     /// </summary>
+    // SettingsMenu TODO: Change to handle all options
     private Dropdown.OptionData[] CreateResolutionDropdown()
     {
         Dropdown.OptionData[] options = new Dropdown.OptionData[Screen.resolutions.Length + 1];
@@ -650,7 +651,7 @@ public class ResolutionComboBox : GenericComboBox
     public override void CancelSetting()
     {
         Resolution resolution = ((ResolutionOption)dropdownElement.options[selectedValue]).Resolution;
-        Screen.SetResolution(resolution.width, resolution.height, Settings.GetSetting("fullScreenToggle", true), resolution.refreshRate);
+        Screen.SetResolution(resolution.width, resolution.height, SettingsKeyHolder.mode == 0, resolution.refreshRate);
     }
 
     public override void ApplySetting()
@@ -658,7 +659,7 @@ public class ResolutionComboBox : GenericComboBox
         Settings.SetSetting(option.key, selectedValue);
 
         Resolution resolution = selectedOption.Resolution;
-        Screen.SetResolution(resolution.width, resolution.height, Settings.GetSetting("fullScreenToggle", true), resolution.refreshRate);
+        Screen.SetResolution(resolution.width, resolution.height, SettingsKeyHolder.mode == 0, resolution.refreshRate);
     }
 }
 

@@ -142,7 +142,7 @@ namespace DeveloperConsole
                 return;
             }
 
-            if (CommandSettings.DeveloperConsoleToggle == false)
+            if (SettingsKeyHolder.Enable == false)
             {
                 Close();
                 return;
@@ -238,7 +238,7 @@ namespace DeveloperConsole
                 return;
             }
 
-            instance.textArea.text += text + (CommandSettings.ShowTimeStamp ? "\t[" + System.DateTime.Now.ToShortTimeString() + "]" : string.Empty) + "\n";
+            instance.textArea.text += text + (SettingsKeyHolder.TimeStamps ? "\t[" + System.DateTime.Now.ToShortTimeString() + "]" : string.Empty) + "\n";
 
             // Clear if limit exceeded
             if (instance.textArea.cachedTextGenerator.characterCount >= AutoclearThreshold || instance.textArea.cachedTextGenerator.vertexCount > 55000)
@@ -566,8 +566,8 @@ namespace DeveloperConsole
                 return;
             }
 
-            instance.textArea.fontSize = CommandSettings.FontSize;
-            instance.scrollRect.scrollSensitivity = CommandSettings.ScrollingSensitivity;
+            instance.textArea.fontSize = SettingsKeyHolder.FontSize;
+            instance.scrollRect.scrollSensitivity = SettingsKeyHolder.ScrollSensitivity;
         }
 
         /// <summary>
@@ -732,7 +732,7 @@ namespace DeveloperConsole
                 KeyboardManager.Instance.RegisterInputAction("DevConsole", KeyboardMappedInputType.KeyUp, ToggleConsole);
             }
 
-            if (CommandSettings.DeveloperConsoleToggle == false || closed)
+            if (SettingsKeyHolder.Enable == false || closed)
             {
                 Close();
             }
@@ -752,7 +752,7 @@ namespace DeveloperConsole
                 UnityDebugger.Debugger.LogError("DevConsole", "Missing gameobjects, look at the serializable fields");
             }
 
-            textArea.fontSize = CommandSettings.FontSize;
+            textArea.fontSize = SettingsKeyHolder.FontSize;
             textArea.text = "\n";
 
             // Load all the commands

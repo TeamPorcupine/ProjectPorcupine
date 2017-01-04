@@ -130,7 +130,7 @@ public class MouseController
         UpdateCameraMovement();
         UpdateSelection();
 
-        if (Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false))
+        if (SettingsKeyHolder.DeveloperMode)
         {
             UpdateSpawnClicking();
         }
@@ -452,7 +452,7 @@ public class MouseController
         }
 
         // In devmode, utilities don't build their network, and one of the utilities built needs UpdateGrid called explicitly after all are built.
-        if (bmc.buildMode == BuildMode.UTILITY && Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false))
+        if (bmc.buildMode == BuildMode.UTILITY && SettingsKeyHolder.DeveloperMode)
         {
             Tile firstTile = World.Current.GetTileAt(dragParams.RawStartX, dragParams.RawStartY, WorldController.Instance.cameraController.CurrentLayer);
             Utility utility = firstTile.Utilities[PrototypeManager.Utility.Get(bmc.buildModeType).Name];

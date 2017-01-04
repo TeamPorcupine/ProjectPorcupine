@@ -106,7 +106,7 @@ public class WorldController : MonoBehaviour
         KeyboardManager.Instance.RegisterInputAction("DevMode", KeyboardMappedInputType.KeyDown, ChangeDevMode);
 
         // Hiding Dev Mode spawn inventory controller if devmode is off.
-        spawnInventoryController.SetUIVisibility(Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false));
+        spawnInventoryController.SetUIVisibility(SettingsKeyHolder.DeveloperMode);
 
         cameraController.Initialize();
         cameraController.Moved += this.World.OnCameraMoved;
@@ -175,9 +175,9 @@ public class WorldController : MonoBehaviour
     /// </summary>
     public void ChangeDevMode()
     {
-        bool developerMode = !Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false);
-        Settings.SetSetting("DialogBoxSettingsDevConsole_developerModeToggle", developerMode);
-        spawnInventoryController.SetUIVisibility(developerMode);
+        bool mode = !SettingsKeyHolder.DeveloperMode;
+        SettingsKeyHolder.DeveloperMode = mode;
+        spawnInventoryController.SetUIVisibility(mode);
         ///FurnitureBuildMenu.instance.RebuildMenuButtons(developerMode);
     }
 

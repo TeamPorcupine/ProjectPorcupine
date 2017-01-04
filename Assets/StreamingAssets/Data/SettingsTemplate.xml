@@ -7,7 +7,7 @@
     </OptionHeading>
     <OptionHeading Name="Localization">
       <Option Name="Language" Key="general_localization_language" DefaultValue="en_US" ClassName="LocalizationComboBox" />
-      <Option Name="Auto-Update" Key="general_localization_autoUpdate" DefaultValue="en_US" ClassName="GenericToggle" />
+      <Option Name="Auto-Update" Key="general_localization_autoUpdate" DefaultValue="true" ClassName="GenericToggle" />
     </OptionHeading>
   </Category>
   <Category Name="Sound">
@@ -31,7 +31,7 @@
     </OptionHeading>
     <OptionHeading Name="Advanced">
       <Option Name="Particles" Key="video_advanced_particles" DefaultValue="0" ClassName="ParticlesComboBox" />
-      <Option Name="Shadows" Key="video_advanced_shadows" DefaultValue="0" ClassName="ShadowsComboBox" />
+      <Ge Name="Shadows" Key="video_advanced_shadows" DefaultValue="0" ClassName="ShadowsComboBox" />
       <Option Name="Buffering" Key="video_advanced_buffering" DefaultValue="0" ClassName="BufferingComboBox" />
       <Option Name="AA" Key="video_advanced_aa" DefaultValue="0" ClassName="AAComboBox" />
     </OptionHeading>
