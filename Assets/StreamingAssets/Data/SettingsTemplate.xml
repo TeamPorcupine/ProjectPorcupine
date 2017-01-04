@@ -2,42 +2,57 @@
 <Categories>
   <Category Name="General">
     <OptionHeading Name="Autosave">
-      <Option Name="Autosave Every" Key="AutosaveInterval" DefaultValue="10" ClassName="AutosaveIntervalNumberField" />
-      <Option Name="Max Autosaves" Key="AutosaveFiles" DefaultValue="5" ClassName="AutosaveNumberField" />
+      <Option Name="Interval (s)" Key="general_autosave_interval" DefaultValue="10" ClassName="AutosaveIntervalNumberField" />
+      <Option Name="Max Files" Key="general_autosave_maxFiles" DefaultValue="5" ClassName="AutosaveNumberField" />
     </OptionHeading>
     <OptionHeading Name="Localization">
-      <Option Name="Language" Key="localization" DefaultValue="en_US" ClassName="LocalizationComboBox" />
+      <Option Name="Language" Key="general_localization_language" DefaultValue="en_US" ClassName="LocalizationComboBox" />
+      <Option Name="Auto-Update" Key="general_localization_autoUpdate" DefaultValue="en_US" ClassName="GenericToggle" />
     </OptionHeading>
   </Category>
   <Category Name="Sound">
     <OptionHeading Name="Volume">
-      <Option Name="Master Volume" Key="masterVolume" DefaultValue="1" ClassName="SoundSlider" />
-      <Option Name="Music Volume" Key="DialogBoxSettings_musicVolume" DefaultValue="1" ClassName="SoundSlider" />
+      <Option Name="Master" Key="sound_volume_master" DefaultValue="1" ClassName="SoundSlider" />
+      <Option Name="Music" Key="sound_volume_music" DefaultValue="1" ClassName="SoundSlider" />
+      <Option Name="Game" Key="sound_volume_game" DefaultValue="1" ClassName="SoundSlider" />
+      <Option Name="Alerts" Key="sound_volume_alerts" DefaultValue="1" ClassName="SoundSlider" />
+      <Option Name="UI" Key="sound_volume_ui" DefaultValue="1" ClassName="SoundSlider" />
+    </OptionHeading>
+    <OptionHeading Name="Advanced">
+      <Option Name="Device" Key="sound_advanced_device" DefaultValue="0" ClassName="SoundDeviceComboBox" />
+      <Option Name="Locational" Key="sound_advanced_locational" DefaultValue="true" ClassName="GenericToggle" />
     </OptionHeading>
   </Category>
   <Category Name="Video">
-    <OptionHeading Name="Quality Settings">
-      <Option Name="UI Skin" Key="UISkin" DefaultValue="0" ClassName="UISkinComboBox" />
-      <Option Name="Quality" Key="DialogBoxSettings_qualityDropdown" DefaultValue="2" ClassName="QualityComboBox" />
-      <Option Name="V-Sync" Key="DialogBoxSettings_vSyncDropdown" DefaultValue="0" ClassName="VSyncComboBox" />
+    <OptionHeading Name="General">
+      <Option Name="UI Skin" Key="video_general_uiSkin" DefaultValue="0" ClassName="UISkinComboBox" />
+      <Option Name="Quality" Key="video_general_quality" DefaultValue="2" ClassName="QualityComboBox" />
+      <Option Name="V-Sync" Key="video_general_vsync" DefaultValue="0" ClassName="VSyncComboBox" />
     </OptionHeading>
-    <OptionHeading Name="Window Settings">
-      <Option Name="Full Screen" Key="DialogBoxSettings_fullScreenToggle" DefaultValue="true" ClassName="FullScreenToggle" />
-      <Option Name="Resolution" Key="DialogBoxSettings_resolutionDropdown" DefaultValue="0" ClassName="ResolutionComboBox" />
+    <OptionHeading Name="Advanced">
+      <Option Name="Particles" Key="video_advanced_particles" DefaultValue="0" ClassName="ParticlesComboBox" />
+      <Option Name="Shadows" Key="video_advanced_shadows" DefaultValue="0" ClassName="ShadowsComboBox" />
+      <Option Name="Buffering" Key="video_advanced_buffering" DefaultValue="0" ClassName="BufferingComboBox" />
+      <Option Name="AA" Key="video_advanced_aa" DefaultValue="0" ClassName="AAComboBox" />
+    </OptionHeading>
+    <OptionHeading Name="Window">
+      <Option Name="Mode" Key="video_window_mode" DefaultValue="0" ClassName="FullscreenComboBox" />
+      <Option Name="Resolution" Key="video_window_resoultion" DefaultValue="0" ClassName="ResolutionComboBox" />
     </OptionHeading>
   </Category>
   <Category Name="Developer">
-    <OptionHeading Name="Developer Console Settings">
-      <Option Name="Console Scroll Sensitivity" Key="DialogBoxSettingsDevConsole_scrollSensitivity" DefaultValue="6" ClassName="ScrollSensitivitySlider" />
-      <Option Name="Console Time Stamps" Key="DialogBoxSettingsDevConsole_timeStampToggle" DefaultValue="false" ClassName="TimeStampToggle" />
-      <Option Name="Developer Console" Key="DialogBoxSettingsDevConsole_devConsoleToggle" DefaultValue="true" ClassName="DeveloperConsoleToggle" />
-      <Option Name="Console Font Size" Key="DialogBoxSettingsDevConsole_consoleFontSize" DefaultValue="15" ClassName="FontSizeSlider"></Option>
+    <OptionHeading Name="General">
+      <Option Name="Developer Mode" Key="developer_general_developerMode" DefaultValue="false" ClassName="DeveloperModeToggle" />
+      <Option Name="Logging Level" Key="developer_general_loggingLevel" DefaultValue="0" ClassName="LoggingLevelComboBox" />
+    </OptionHeading>
+    <OptionHeading Name="Console">
+      <Option Name="Scroll Sensitivity" Key="developer_console_scrollSensitivity" DefaultValue="6" ClassName="ScrollSensitivitySlider" />
+      <Option Name="Time Stamps" Key="developer_console_timeStamp" DefaultValue="false" ClassName="TimeStampToggle" />
+      <Option Name="Enable" Key="developer_console_enableDevConsole" DefaultValue="true" ClassName="DeveloperConsoleToggle" />
+      <Option Name="Font Size" Key="developer_console_fontSize" DefaultValue="15" ClassName="FontSizeSlider"></Option>
     </OptionHeading>
     <OptionHeading Name="Utilities">
-      <Option Name="Performance HUD" Key="DialogBoxSettingsDevConsole_performanceGroup" DefaultValue="1" ClassName="PerformanceHUDComboBox" />
-    </OptionHeading>
-    <OptionHeading Name="God Mode Settings">
-      <Option Name="Developer Mode" Key="DialogBoxSettingsDevConsole_developerModeToggle" DefaultValue="false" ClassName="DeveloperModeToggle" />
+      <Option Name="Performance HUD" Key="developer_utilities_performanceHUD" DefaultValue="1" ClassName="PerformanceHUDComboBox" />
     </OptionHeading>
   </Category>
 </Categories>
