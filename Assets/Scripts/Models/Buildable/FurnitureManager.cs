@@ -172,6 +172,10 @@ public class FurnitureManager : IEnumerable<Furniture>
         return furnitures.Where(filterFunc).ToList();
     }
 
+    private int invisibleFurnitureProgress = 0;
+    private int furnitureProgress = 0;
+    private float[] accumulatedTime = new float[10];
+    private int timePos = 0;
     /// <summary>
     /// Calls the furnitures update function on every frame.
     /// The list needs to be copied temporarily in case furnitures are added or removed during the update.
@@ -179,11 +183,42 @@ public class FurnitureManager : IEnumerable<Furniture>
     /// <param name="deltaTime">Delta time.</param>
     public void TickEveryFrame(float deltaTime)
     {
+        Profiler.BeginSample("TEF");
         List<Furniture> tempFurnituresVisible = new List<Furniture>(furnituresVisible);
         foreach (Furniture furniture in tempFurnituresVisible)
         {
             furniture.EveryFrameUpdate(deltaTime);
         }
+
+        accumulatedTime[timePos] = deltaTime;
+        float accumulatedDeltaTime = accumulatedTime.Sum();
+
+        // Update furniture outside of the camera view
+        List<Furniture> tempFurnituresInvisible = new List<Furniture>(furnituresInvisible);
+        //        int totalFurnCount = tempFurnituresInvisible.Count;
+        int invFurnToProcess = Mathf.CeilToInt((float)tempFurnituresInvisible.Count / 10);
+        for (int i = invisibleFurnitureProgress; i < invisibleFurnitureProgress + invFurnToProcess && i < tempFurnituresInvisible.Count; i++)
+        {
+            tempFurnituresInvisible[i].EveryFrameUpdate(accumulatedDeltaTime);
+        }
+        invisibleFurnitureProgress += invFurnToProcess;
+
+        List<Furniture> tempFurnitures = new List<Furniture>(furnitures);
+        int furnToProcess = Mathf.CeilToInt((float)tempFurnitures.Count / 10);
+        for (int i = furnitureProgress; i < furnitureProgress + furnToProcess && i < tempFurnitures.Count; i++)
+        {
+            tempFurnitures[i].FixedFrequencyUpdate(accumulatedDeltaTime);
+        }
+        furnitureProgress += furnToProcess;
+
+        timePos++;
+        if (timePos >= accumulatedTime.Length)
+        {
+            timePos = 0;
+            invisibleFurnitureProgress = 0;
+            furnitureProgress = 0;
+        }
+        Profiler.EndSample();
     }
 
     /// <summary>
@@ -197,19 +232,13 @@ public class FurnitureManager : IEnumerable<Furniture>
         //       and update one of the lists each frame.
         //       FixedFrequencyUpdate on invisible furniture could also be even slower.
 
-        // Update furniture outside of the camera view
-        List<Furniture> tempFurnituresInvisible = new List<Furniture>(furnituresInvisible);
-        foreach (Furniture furniture in tempFurnituresInvisible)
-        {
-            furniture.EveryFrameUpdate(deltaTime);
-        }
 
         // Update all furniture with EventActions
-        List<Furniture> tempFurnitures = new List<Furniture>(furnitures);
-        foreach (Furniture furniture in tempFurnitures)
-        {
-            furniture.FixedFrequencyUpdate(deltaTime);
-        }
+        //        List<Furniture> tempFurnitures = new List<Furniture>(furnitures);
+        //        foreach (Furniture furniture in tempFurnitures)
+        //        {
+        //            furniture.FixedFrequencyUpdate(deltaTime);
+        //        }
     }
 
     /// <summary>
