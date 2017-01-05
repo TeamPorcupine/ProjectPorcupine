@@ -52,10 +52,10 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     private HashSet<string> tileTypeBuildPermissions;
 
     private bool isOperating;
-    
+
     // Need to hold the health value.
     private HealthSystem health;
-    
+
     // Did we have power in the last update?
     private bool prevUpdatePowerOn;
     #endregion
@@ -124,7 +124,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         {
             orderActions.Add(orderAction.Key, orderAction.Value.Clone());
         }
-        
+
         if (other.Animation != null)
         {
             Animation = other.Animation.Clone();
@@ -150,7 +150,11 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         getProgressInfoNameAction = other.getProgressInfoNameAction;
 
         tileTypeBuildPermissions = new HashSet<string>(other.tileTypeBuildPermissions);
+        
+        UpdateFixedFrequency = EventActions.HasEvent("OnUpdate") || components.Any(c => c.RequiresFixedUpdate);
 
+        UpdateEveryFrame = EventActions.HasEvent("OnFastUpdate") || components.Any(c => c.RequiresFrameUpdate);
+        
         LocalizationCode = other.LocalizationCode;
         UnlocalizedDescription = other.UnlocalizedDescription;
 
@@ -355,6 +359,18 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     public bool IsBeingDestroyed { get; protected set; }
 
     /// <summary>
+    /// Gets a value indicating whether this instance has components.
+    /// </summary>
+    /// <value><c>true</c> if this instance has components; otherwise, <c>false</c>.</value>
+    public bool HasComponents
+    {
+        get
+        {
+            return components != null || components.Count != 0;
+        }
+    }
+
+    /// <summary>
     /// Flag with furniture requirements (used for showing icon overlay, e.g. No power, ... ).
     /// </summary>
     public BuildableComponent.Requirements Requirements { get; protected set; }
@@ -374,6 +390,10 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
             return health;
         }
     }
+
+    public bool UpdateEveryFrame { get; set; }
+
+    public bool UpdateFixedFrequency { get; set; }
 
     #endregion
 
@@ -497,7 +517,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
             Requirements = newRequirements;
             OnIsOperatingChanged(this);
         }
-        
+
         IsOperating = canFunction;
 
         if (canFunction == false)
@@ -697,7 +717,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                 case "DragType":
                     reader.Read();
                     DragType = reader.ReadContentAsString();
-                    break;               
+                    break;
                 case "CanBeBuiltOn":
                     tileTypeBuildPermissions.Add(reader.GetAttribute("tileType"));
                     break;
@@ -773,7 +793,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     public void ReadXmlParams(XmlReader reader)
     {
         Parameters = Parameter.ReadXml(reader);
-    }    
+    }
     #endregion
 
     public object ToJSon()
@@ -851,7 +871,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
             Job job = deconstructOrder.CreateJob(Tile, Type);
             job.OnJobCompleted += (inJob) => Deconstruct();
             World.Current.jobQueue.Enqueue(job);
-        }        
+        }
     }
 
     /// <summary>
@@ -889,7 +909,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         {
             foreach (OrderAction.InventoryInfo inv in deconstructOrder.Inventory)
             {
-                World.Current.InventoryManager.PlaceInventoryAround(Tile, new Inventory(inv.Type, inv.Amount));               
+                World.Current.InventoryManager.PlaceInventoryAround(Tile, new Inventory(inv.Type, inv.Amount));
             }
         }
 
@@ -1080,7 +1100,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
             return null;
         }
     }
-    
+
     #endregion
 
     #region Context Menu

@@ -63,9 +63,7 @@ public class CameraController
         positionTarget = Camera.main.transform.position;
         TimeManager.Instance.EveryFrameNotModal += (time) => Update();
     }
-
-    public event Action<Bounds> Moved;
-
+    
     public int CurrentLayer
     {
         get
@@ -117,12 +115,7 @@ public class CameraController
             Camera.main.transform.Translate(pushedAmount);
             positionTarget = Camera.main.transform.position;
         }
-
-        if (prevPositionTarget != positionTarget && Moved != null)
-        {
-            Moved(GetCameraBounds());
-        }
-
+        
         prevPositionTarget = positionTarget;
 
         WorldController.Instance.soundController.SetListenerPosition(Camera.main.transform.position.x, Camera.main.transform.position.y, (float)CurrentLayer);

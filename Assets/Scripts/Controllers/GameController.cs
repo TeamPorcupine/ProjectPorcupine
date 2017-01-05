@@ -9,6 +9,7 @@
 
 using ProjectPorcupine.Localization;
 using UnityEngine;
+using System.Collections;
 
 public class GameController : MonoBehaviour
 {
@@ -77,12 +78,7 @@ public class GameController : MonoBehaviour
 
         SceneManager = SceneController.Instance;
     }
-
-    private void Update()
-    {
-        TimeManager.Instance.Update(Time.deltaTime);
-    }
-
+    
     // Game Controller will persist between scenes. 
     private void EnableDontDestroyOnLoad()
     {

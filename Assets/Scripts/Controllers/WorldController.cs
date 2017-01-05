@@ -14,6 +14,7 @@ using Newtonsoft.Json.Linq;
 using Scheduler;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using System.Collections;
 
 [MoonSharpUserData]
 public class WorldController : MonoBehaviour
@@ -109,7 +110,6 @@ public class WorldController : MonoBehaviour
         spawnInventoryController.SetUIVisibility(Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false));
 
         cameraController.Initialize();
-        cameraController.Moved += this.World.OnCameraMoved;
 
         // Initialising controllers.
         GameObject canvas = GameObject.Find("Canvas");
@@ -146,6 +146,13 @@ public class WorldController : MonoBehaviour
             devConsole.SetActive(true);
             DeveloperConsole.DevConsole.Close();
         }
+
+        StartCoroutine(UpdateTime());
+    }
+    
+    private IEnumerator UpdateTime()
+    {
+        yield return TimeManager.Instance.Run();
     }
 
     /// <summary>

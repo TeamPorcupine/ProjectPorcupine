@@ -171,6 +171,14 @@ namespace ProjectPorcupine.Buildable.Components
             return hasPower;
         }
 
+        public override bool RequiresFixedUpdate
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         public override void FixedFrequencyUpdate(float deltaTime)
         {
             bool areAllParamReqsFulfilled = true;

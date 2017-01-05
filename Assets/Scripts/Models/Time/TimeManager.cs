@@ -14,9 +14,13 @@ using UnityEngine;
 
 public class TimeManager
 {
+    private bool running;
+
     private static TimeManager instance;
 
-    private float gameTickPerSecond = 5;
+    private float gameTickPerSecond = 15;
+
+    private float fastUpdatesPerSecond = 60;
 
     private List<Action> nextFrameActions = new List<Action>();
 
@@ -122,6 +126,42 @@ public class TimeManager
     {
         return possibleTimeScales;
     }
+    
+    public IEnumerator Run()
+    {
+        running = true;
+        
+        long currTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond);
+        long elapsedTime = 0;
+        float sleepTime = 0;
+
+        while (running == true)
+        {
+            long time = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+            elapsedTime = time - currTime;
+            currTime = time;
+            
+            Update(elapsedTime / 1000f);
+
+            float targetTime = 1000f / fastUpdatesPerSecond;
+            sleepTime = targetTime - elapsedTime + sleepTime;
+
+            /*
+            Debug.Log("Updated! Elapsed time: " + elapsedTime + "ms, TargetTime: " + targetTime + "ms, SleepTime: " + sleepTime + "ms" +
+                (EveryFrame != null ? ", EveryFrame: " +  EveryFrame.GetInvocationList().Length : "") +
+                (FixedFrequency != null ? ", FixedFrequency: " + FixedFrequency.GetInvocationList().Length : ""));
+            */
+
+            if (sleepTime > 0)
+            {
+                yield return new WaitForSeconds(sleepTime / 1000f);
+            }
+            else
+            {
+                sleepTime = 0;
+            }
+        }
+    }
 
     /// <summary>
     /// Update the total time and invoke the required events.
@@ -208,6 +248,7 @@ public class TimeManager
     /// </summary>
     public void Destroy()
     {
+        running = false;
         instance = null;
     }
 
