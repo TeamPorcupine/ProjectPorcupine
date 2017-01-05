@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Utilities>
     <Utility type="power_cable">
-        <Name>Power Cables</Name>
-        <Description>This is a power cable.</Description>
         <TypeTag>Power</TypeTag>
 
         <OrderAction type="Build">
@@ -23,8 +21,6 @@
     </Utility>
     
     <Utility type="fluid_pipe">
-        <Name>Fluid Pipe</Name>
-        <Description>This is a fluid pipe.</Description>
         <TypeTag>Fluid</TypeTag>
 
         <OrderAction type="Build">

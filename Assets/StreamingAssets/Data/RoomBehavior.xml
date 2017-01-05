@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RoomBehaviors>
   <RoomBehavior type="airlock">
-    <Name>Airlock</Name>
-    <Description>This is an airlock.</Description>
-    
     <!-- Required furniture will be avaliable for control by the roomBehavior -->
     <Requirements>
         <Furniture typeTag="Pressure Door" count="2" />

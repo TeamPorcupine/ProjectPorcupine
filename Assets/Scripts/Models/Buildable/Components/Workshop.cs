@@ -221,7 +221,7 @@ namespace ProjectPorcupine.Buildable.Components
                 }
                 else
                 {
-                    UnityDebugger.Debugger.LogWarningFormat(ComponentLogChannel, "Furniture {0} is marked as factory, but has no production chain", ParentFurniture.Name);
+                    UnityDebugger.Debugger.LogWarningFormat(ComponentLogChannel, "Furniture {0} is marked as factory, but has no production chain", ParentFurniture.Type);
                 }
             }
 
@@ -364,7 +364,7 @@ namespace ProjectPorcupine.Buildable.Components
                                      false,
                                      false);
                         
-                        job.Description = string.Format("Hauling '{0}' to '{1}'", desiredInv, ParentFurniture.Name);
+                        job.Description = string.Format("Hauling '{0}' to '{1}'", desiredInv, ParentFurniture.GetName());
                         job.OnJobWorked += PlaceInventoryToWorkshopInput;
                         ParentFurniture.Jobs.Add(job);
                     }
