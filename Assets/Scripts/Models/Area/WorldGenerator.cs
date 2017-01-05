@@ -75,7 +75,7 @@ public class WorldGenerator
 
                             world.FurnitureManager.PlaceFurniture("astro_wall", tile, false);
 
-                            if (Random.value <= asteroidInfo.ResourceChance && tile.Furniture.Name == "Rock Wall")
+                            if (Random.value <= asteroidInfo.ResourceChance && tile.Furniture.Type == "astro_wall")
                             {
                                 if (asteroidInfo.Resources.Count > 0)
                                 {

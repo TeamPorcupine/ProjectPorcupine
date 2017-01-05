@@ -49,10 +49,6 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     // This is the generic type of object this is, allowing things to interact with it based on it's generic type
     private HashSet<string> typeTags;
 
-    private string name = null;
-
-    private string description = string.Empty;
-
     private HashSet<string> tileTypeBuildPermissions;
 
     private bool isOperating;
@@ -99,9 +95,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     private Furniture(Furniture other)
     {
         Type = other.Type;
-        Name = other.Name;
         typeTags = new HashSet<string>(other.typeTags);
-        description = other.description;
         MovementCost = other.MovementCost;
         PathfindingModifier = other.PathfindingModifier;
         PathfindingWeight = other.PathfindingWeight;
@@ -260,23 +254,6 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     public string Type { get; private set; }
 
     /// <summary>
-    /// Gets the name of the furniture. The name is the object type by default.
-    /// </summary>
-    /// <value>The name of the furniture.</value>
-    public string Name
-    {
-        get
-        {
-            return string.IsNullOrEmpty(name) ? Type : name;
-        }
-
-        private set
-        {
-            name = value;
-        }
-    }
-
-    /// <summary>
     /// Gets a list of furniture Type this furniture can be replaced with.
     /// This should most likely not be a list of strings.
     /// </summary>
@@ -410,7 +387,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     {
         if (proto.IsValidPosition(tile) == false)
         {
-            UnityDebugger.Debugger.LogWarning("Furniture", "PlaceInstance :: Position Validity Function returned FALSE. " + proto.Name + " " + tile.X + ", " + tile.Y + ", " + tile.Z);
+            UnityDebugger.Debugger.LogWarning("Furniture", "PlaceInstance :: Position Validity Function returned FALSE. " + proto.Type + " " + tile.X + ", " + tile.Y + ", " + tile.Z);
             return null;
         }
 
@@ -674,17 +651,9 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         {
             switch (reader.Name)
             {
-                case "Name":
-                    reader.Read();
-                    Name = reader.ReadContentAsString();
-                    break;
                 case "TypeTag":
                     reader.Read();
                     typeTags.Add(reader.ReadContentAsString());
-                    break;
-                case "Description":
-                    reader.Read();
-                    description = reader.ReadContentAsString();
                     break;
                 case "MovementCost":
                     reader.Read();

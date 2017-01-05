@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Furnitures>
     <Furniture type="steel_wall">
-        <Name>Steel Wall</Name>
-        <Description>This is a steel wall.</Description>
         <TypeTag>Wall</TypeTag>
         <MovementCost>0</MovementCost>
         <Width>1</Width>
@@ -41,8 +39,6 @@
     </Furniture>
 
     <Furniture type="door">
-        <Name>Door</Name>
-        <Description>A door that characters can walk through.</Description>
         <TypeTag>Door</TypeTag>
         <MovementCost>1</MovementCost>
         <!-- PathfindingModifer is additive, so a PathfindingModifier of 1 will basically respond to Pathfinding as though it takes 1 extra tile of movement -->
@@ -111,8 +107,6 @@
     </Furniture>
 
     <Furniture type="airlock_door">
-        <Name>Airlock Door</Name>
-        <Description>An Airlock prevents air from leaving the base</Description>
         <TypeTag>Door</TypeTag>
         <TypeTag>Pressure Door</TypeTag>
         <MovementCost>1</MovementCost>
@@ -181,8 +175,6 @@
     </Furniture>
 
     <Furniture type="stockpile">
-        <Name>Stockpile</Name>
-        <Description>Characters will brings inventory here for storage.</Description>
         <TypeTag>Storage</TypeTag>
         <MovementCost>1</MovementCost>
         <LinksToNeighbours>stockpile</LinksToNeighbours>
@@ -205,8 +197,6 @@
     </Furniture>
 
     <Furniture type="oxygen_generator">
-        <Name>Oxygen Generator</Name>
-        <Description>Create O2 in the room in which it is built.</Description>
         <TypeTag>Generator</TypeTag>
         <MovementCost>2</MovementCost>
         <PathfindingModifier>0</PathfindingModifier>
@@ -280,8 +270,6 @@
     </Furniture>
 
     <Furniture type="mining_drone_station">
-        <Name>Mining Drone Station</Name>
-        <Description>Creates raw materials when worked by a character.</Description>
         <TypeTag>Workstation</TypeTag>
         <MovementCost>1</MovementCost>
         <PathfindingModifier>0</PathfindingModifier>
@@ -320,7 +308,6 @@
     </Furniture>
 
     <Furniture type="fission_reactor">
-        <Name>Fission Reactor</Name>
         <TypeTag>Generator</TypeTag>
         <MovementCost>2</MovementCost>
         <PathfindingModifier>0</PathfindingModifier>
@@ -391,7 +378,6 @@
     </Furniture>
 
     <Furniture type="water_generator">
-        <Name>Water Generator</Name>
         <TypeTag>Generator</TypeTag>
         <MovementCost>2</MovementCost>
         <PathfindingModifier>0</PathfindingModifier>
@@ -441,8 +427,6 @@
     </Furniture>
 
     <Furniture type="water_tank">
-        <Name>Water Tank</Name>
-        <Description>Water Tank</Description>
         <MovementCost>2</MovementCost>
         <PathfindingModifier>0</PathfindingModifier>
         <PathfindingWeight>2</PathfindingWeight>
@@ -474,8 +458,6 @@
     </Furniture>
 
     <Furniture type="cloning_pod">
-        <Name>Cloning Pod</Name>
-        <Description>Creates an additional worker, then is destroyed.</Description>
         <MovementCost>2</MovementCost>
         <PathfindingModifier>0</PathfindingModifier>
         <PathfindingWeight>2</PathfindingWeight>
@@ -521,8 +503,6 @@
     </Furniture>
 
     <Furniture type="metal_smelter">
-        <Name>Metal Smelter</Name>
-        <Description>Smelts your raw ores into metal.</Description>
         <TypeTag>Processor</TypeTag>
         <MovementCost>1</MovementCost>
         <PathfindingModifier>1.5</PathfindingModifier>
@@ -606,8 +586,6 @@
     </Furniture>
 
     <Furniture type="heater">
-        <Name>Heater</Name>
-        <Description>Raises temperature in the room.</Description>
         <BaseType>Temperature</BaseType>
         <MovementCost>2</MovementCost>
         <PathfindingModifier>0</PathfindingModifier>
@@ -645,8 +623,6 @@
     </Furniture>
 
     <Furniture type="power_cell_press">
-        <Name>Power Cell Press</Name>
-        <Description>A press that converts steel plate and something into power cells.</Description>
         <MovementCost>1</MovementCost>
         <PathfindingModifier>1.5</PathfindingModifier>
         <PathfindingWeight>2</PathfindingWeight>
@@ -692,8 +668,6 @@
     </Furniture>
 
     <Furniture type="small_landing_pad">
-        <Name>Small Landing Pad</Name>
-        <Description>A landing pad for small spaceboats to land.</Description>
         <TypeTag>OutdoorOnly</TypeTag>
         <TypeTag>LandingPad</TypeTag>
         <MovementCost>2</MovementCost>
@@ -725,8 +699,6 @@
     </Furniture>
 
     <Furniture type="oxygen_compressor">
-        <Name>Oxygen Compressor</Name>
-        <Description>Stores and releases oxygen as needed</Description>
         <MovementCost>2</MovementCost>
         <PathfindingModifier>0</PathfindingModifier>
         <PathfindingWeight>2</PathfindingWeight>
@@ -775,7 +747,6 @@
     </Furniture>
 
     <Furniture type="solar_panel">
-        <Name>Solar Panel</Name>
         <TypeTag>Generator</TypeTag>
         <TypeTag>OutdoorOnly</TypeTag>
         <MovementCost>2</MovementCost>
@@ -813,7 +784,6 @@
     </Furniture>
 
     <Furniture type="air_pump">
-        <Name>Air Pump</Name>
         <MovementCost>0</MovementCost>
         <Width>1</Width>
         <Height>1</Height>
@@ -858,7 +828,6 @@
     </Furniture>
 
     <Furniture type="vent">
-        <Name>Vent</Name>
         <MovementCost>0</MovementCost>
         <Width>1</Width>
         <Height>1</Height>
@@ -905,8 +874,6 @@
     </Furniture>
 
     <Furniture type="simple_bed">
-        <Name>Simple Bed</Name>
-        <Description>A simple bed</Description>
         <TypeTag>Bed</TypeTag>
         <MovementCost>2</MovementCost>
         <Width>1</Width>
@@ -933,8 +900,6 @@
     </Furniture>
 
     <Furniture type="accumulator">
-        <Name>Accumulator</Name>
-        <Description>Accumulator</Description>
         <MovementCost>2</MovementCost>
         <PathfindingModifier>0</PathfindingModifier>
         <PathfindingWeight>2</PathfindingWeight>
@@ -980,8 +945,6 @@
     </Furniture>
 
     <Furniture type="mine">
-        <Name>A Mining Spot</Name>
-        <Description>A spot for mining ore</Description>
         <TypeTag>Ore</TypeTag>
         <TypeTag>Non-buildable</TypeTag>
         <TypeTag>Non-deconstructible</TypeTag>
@@ -1006,7 +969,6 @@
     </Furniture>
     
     <Furniture type="berth">
-        <Name>Ship Berth</Name>
         <MovementCost>1</MovementCost>
         <PathfindingModifier>1</PathfindingModifier>
         <PathfindingWeight>0</PathfindingWeight>
@@ -1034,8 +996,6 @@
     </Furniture>
 
     <Furniture type="rtg">
-        <Name>RTG</Name>
-        <Description>Radioisotope thermoelectric generator provides electricity and heat</Description>
         <TypeTag>Temperature</TypeTag>
         <MovementCost>2</MovementCost>
         <PathfindingModifier>0</PathfindingModifier>
@@ -1074,8 +1034,6 @@
     </Furniture>
 
     <Furniture type="astro_wall">
-        <Name>Rock Wall</Name>
-        <Description>This is a wall of rock!</Description>
         <TypeTag>Wall</TypeTag>
         <TypeTag>Non-buildable</TypeTag>
         <TypeTag>Non-deconstructible</TypeTag>
