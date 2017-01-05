@@ -130,7 +130,7 @@ public class MouseController
         UpdateCameraMovement();
         UpdateSelection();
 
-        if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
+        if (Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false))
         {
             UpdateSpawnClicking();
         }
@@ -153,7 +153,7 @@ public class MouseController
     public void ClearMouseMode(bool changeMode = false)
     {
         isDragging = false;
-        if (changeMode) 
+        if (changeMode)
         {
             currentMode = MouseMode.SELECT;
         }
@@ -217,13 +217,12 @@ public class MouseController
             && (PrototypeManager.Furniture.Get(bmc.buildModeType).Width > 1
             || PrototypeManager.Furniture.Get(bmc.buildModeType).Height > 1))
         {
-            Furniture proto = PrototypeManager.Furniture.Get(bmc.buildModeType);
+            Furniture furnitureToBuild = PrototypeManager.Furniture.Get(bmc.buildModeType).Clone();
+            furnitureToBuild.SetRotation(bmc.CurrentPreviewRotation);
+            Sprite sprite = fsc.GetSpriteForFurniture(furnitureToBuild.Type);
 
             // Use the center of the Furniture.
-            currPlacingPosition = new Vector3(
-                currFramePosition.x - ((proto.Width - 1f) / 2f),
-                currFramePosition.y - ((proto.Height - 1f) / 2f),
-                WorldController.Instance.cameraController.CurrentLayer);
+            currPlacingPosition = currFramePosition - ImageUtils.SpritePivotOffset(sprite, bmc.CurrentPreviewRotation);
         }
         else
         {
@@ -416,19 +415,22 @@ public class MouseController
 
             for (int y = begin; y != stop; y += increment)
             {
-                Tile t = WorldController.Instance.World.GetTileAt(x, y, WorldController.Instance.cameraController.CurrentLayer);
+                Tile tile = WorldController.Instance.World.GetTileAt(x, y, WorldController.Instance.cameraController.CurrentLayer);
+                if (tile == null)
+                {
+                    // Trying to build off the map, bail out of this cycle.
+                    continue;
+                }
+
                 if (bmc.buildMode == BuildMode.FURNITURE)
                 {
                     // Check for furniture dragType.
                     Furniture proto = PrototypeManager.Furniture.Get(bmc.buildModeType);
 
-                    if (IsPartOfDrag(t, dragParams, proto.DragType))
+                    if (IsPartOfDrag(tile, dragParams, proto.DragType))
                     {
-                        if (t != null)
-                        {
-                            // Call BuildModeController::DoBuild().
-                            bmc.DoBuild(t);
-                        }
+                        // Call BuildModeController::DoBuild().
+                        bmc.DoBuild(tile);
                     }
                 }
                 else if (bmc.buildMode == BuildMode.UTILITY)
@@ -436,20 +438,25 @@ public class MouseController
                     // Check for furniture dragType.
                     Utility proto = PrototypeManager.Utility.Get(bmc.buildModeType);
 
-                    if (IsPartOfDrag(t, dragParams, proto.DragType))
+                    if (IsPartOfDrag(tile, dragParams, proto.DragType))
                     {
-                        if (t != null)
-                        {
-                            // Call BuildModeController::DoBuild().
-                            bmc.DoBuild(t);
-                        }
+                        // Call BuildModeController::DoBuild().
+                        bmc.DoBuild(tile);
                     }
                 }
                 else
                 {
-                    bmc.DoBuild(t);
+                    bmc.DoBuild(tile);
                 }
             }
+        }
+
+        // In devmode, utilities don't build their network, and one of the utilities built needs UpdateGrid called explicitly after all are built.
+        if (bmc.buildMode == BuildMode.UTILITY && Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false))
+        {
+            Tile firstTile = World.Current.GetTileAt(dragParams.RawStartX, dragParams.RawStartY, WorldController.Instance.cameraController.CurrentLayer);
+            Utility utility = firstTile.Utilities[PrototypeManager.Utility.Get(bmc.buildModeType).Name];
+            utility.UpdateGrid(utility);
         }
     }
 
@@ -533,7 +540,7 @@ public class MouseController
 
         // If we're over a UI element or the settings/options menu is open, then bail out from this.
         if (EventSystem.current.IsPointerOverGameObject()
-            || WorldController.Instance.IsModal)
+            || GameController.Instance.IsModal)
         {
             return;
         }
@@ -542,7 +549,7 @@ public class MouseController
         {
             WorldController.Instance.cameraController.ChangeZoom(Input.GetAxis("Mouse ScrollWheel"));
         }
-        
+
         UpdateCameraBounds();
     }
 
@@ -569,9 +576,9 @@ public class MouseController
         sr.sortingLayerName = "Jobs";
         sr.sprite = fsc.GetSpriteForFurniture(furnitureType);
 
-        if (World.Current.FurnitureManager.IsPlacementValid(furnitureType, tile) &&
-            World.Current.FurnitureManager.IsWorkSpotClear(furnitureType, tile) && 
-            bmc.DoesBuildJobOverlapExistingBuildJob(tile, furnitureType) == false)
+        if (World.Current.FurnitureManager.IsPlacementValid(furnitureType, tile, bmc.CurrentPreviewRotation) &&
+            World.Current.FurnitureManager.IsWorkSpotClear(furnitureType, tile) &&
+            bmc.DoesFurnitureBuildJobOverlapExistingBuildJob(tile, furnitureType, bmc.CurrentPreviewRotation) == false)
         {
             sr.color = new Color(0.5f, 1f, 0.5f, 0.25f);
         }
@@ -581,7 +588,8 @@ public class MouseController
         }
 
         go.name = furnitureType + "_p_" + tile.X + "_" + tile.Y + "_" + tile.Z;
-        go.transform.position = tile.Vector3 + ImageUtils.SpritePivotOffset(sr.sprite);
+        go.transform.position = tile.Vector3 + ImageUtils.SpritePivotOffset(sr.sprite, bmc.CurrentPreviewRotation);
+        go.transform.Rotate(0, 0, bmc.CurrentPreviewRotation);
     }
 
     private void ShowWorkSpotSpriteAtTile(string furnitureType, Tile tile)
@@ -603,8 +611,8 @@ public class MouseController
         sr.sprite = SpriteManager.GetSprite("UI", "WorkSpotIndicator");
 
         if (World.Current.FurnitureManager.IsPlacementValid(furnitureType, tile) &&
-            World.Current.FurnitureManager.IsWorkSpotClear(furnitureType, tile) && 
-            bmc.DoesBuildJobOverlapExistingBuildJob(tile, furnitureType) == false)
+            World.Current.FurnitureManager.IsWorkSpotClear(furnitureType, tile) &&
+            bmc.DoesFurnitureBuildJobOverlapExistingBuildJob(tile, furnitureType) == false)
         {
             sr.color = new Color(0.5f, 1f, 0.5f, 0.25f);
         }
@@ -616,7 +624,7 @@ public class MouseController
         go.transform.position = new Vector3(tile.X + proto.Jobs.WorkSpotOffset.x, tile.Y + proto.Jobs.WorkSpotOffset.y, WorldController.Instance.cameraController.CurrentLayer);
     }
 
-    private void ShowUtilitySpriteAtTile(string furnitureType, Tile tile)
+    private void ShowUtilitySpriteAtTile(string type, Tile tile)
     {
         GameObject go = new GameObject();
         go.transform.SetParent(furnitureParent.transform, true);
@@ -624,10 +632,11 @@ public class MouseController
 
         SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
         sr.sortingLayerName = "Jobs";
-        sr.sprite = usc.GetSpriteForUtility(furnitureType);
+        sr.sprite = usc.GetSpriteForUtility(type);
 
-        // TODO: reimplement this for utilities: bmc.DoesBuildJobOverlapExistingBuildJob(t, furnitureType) == false)
-        if (World.Current.UtilityManager.IsPlacementValid(furnitureType, tile)) 
+        if (World.Current.UtilityManager.IsPlacementValid(type, tile) &&
+            bmc.DoesSameUtilityTypeAlreadyExist(type, tile) &&
+            bmc.DoesUtilityBuildJobOverlapExistingBuildJob(type, tile) == false)
         {
             sr.color = new Color(0.5f, 1f, 0.5f, 0.25f);
         }

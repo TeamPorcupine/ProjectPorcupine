@@ -6,7 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System;
+
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -115,7 +115,7 @@ namespace Animation
                 }
             }
 
-            currentAnimation.Update(deltaTime);
+            currentAnimation.Update(deltaTime * character.MovementSpeed);
 
             if (prevFrameIndex != currentAnimation.CurrentFrame)
             {

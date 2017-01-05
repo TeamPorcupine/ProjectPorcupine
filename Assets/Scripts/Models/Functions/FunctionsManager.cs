@@ -10,99 +10,130 @@ using System.Collections.Generic;
 
 public class FunctionsManager
 {
-    private static Dictionary<string, LuaFunctions> actions;
+    private static Dictionary<string, Functions> actions;
 
     public FunctionsManager()
     {
-        actions = new Dictionary<string, LuaFunctions>();
+        actions = new Dictionary<string, Functions>();
 
-        actions.Add("Furniture", new LuaFunctions());
-        actions.Add("Utility", new LuaFunctions());
-        actions.Add("Need", new LuaFunctions());
-        actions.Add("GameEvent", new LuaFunctions());
-        actions.Add("TileType", new LuaFunctions());
-        actions.Add("Quest", new LuaFunctions());
-        actions.Add("ScheduledEvent", new LuaFunctions());
-        actions.Add("Overlay", new LuaFunctions());
+        actions.Add("Furniture", new Functions());
+        actions.Add("Utility", new Functions());
+        actions.Add("RoomBehavior", new Functions());
+        actions.Add("Need", new Functions());
+        actions.Add("GameEvent", new Functions());
+        actions.Add("TileType", new Functions());
+        actions.Add("Quest", new Functions());
+        actions.Add("ScheduledEvent", new Functions());
+        actions.Add("Overlay", new Functions());
+        actions.Add("DevConsole", new Functions());
+        actions.Add("ModDialogBox", new Functions());
+        actions.Add("SettingsMenu", new Functions());
     }
 
     /// <summary>
-    /// Gets the furniture Lua Functions.
+    /// Gets the furniture Functions.
     /// </summary>
-    /// <value>The furniture Lua Functions.</value>
-    public static LuaFunctions Furniture
+    /// <value>The furniture Functions.</value>
+    public static Functions Furniture
     {
         get { return Get("Furniture"); }
     }
 
     /// <summary>
-    /// Gets the utility Lua Functions.
+    /// Gets the utility Functions.
     /// </summary>
-    /// <value>The utility Lua Functions.</value>
-    public static LuaFunctions Utility
+    /// <value>The utility Functions.</value>
+    public static Functions Utility
     {
         get { return Get("Utility"); }
     }
 
     /// <summary>
-    /// Gets the need Lua Functions.
+    /// Gets the RoomBehavior Functions.
+    /// </summary>
+    /// <value>The RoomBehavior Functions.</value>
+    public static Functions RoomBehavior
+    {
+        get { return Get("RoomBehavior"); }
+    }
+
+    /// <summary>
+    /// Gets the need Functions.
     /// </summary>
     /// <value>The need actions.</value>
-    public static LuaFunctions Need
+    public static Functions Need
     {
         get { return Get("Need"); }
     }
 
     /// <summary>
-    /// Gets the game event Lua Functions.
+    /// Gets the game event Functions.
     /// </summary>
-    /// <value>The game event Lua Functions.</value>
-    public static LuaFunctions GameEvent
+    /// <value>The game event Functions.</value>
+    public static Functions GameEvent
     {
         get { return Get("GameEvent"); }
     }
 
     /// <summary>
-    /// Gets the tile type Lua Functions.
+    /// Gets the tile type Functions.
     /// </summary>
-    /// <value>The tile type Lua Functions.</value>
-    public static LuaFunctions TileType
+    /// <value>The tile type Functions.</value>
+    public static Functions TileType
     {
         get { return Get("TileType"); }
     }
 
     /// <summary>
-    /// Gets the quest Lua Functions.
+    /// Gets the quest Functions.
     /// </summary>
-    /// <value>The quest Lua Functions.</value>
-    public static LuaFunctions Quest
+    /// <value>The quest Functions.</value>
+    public static Functions Quest
     {
         get { return Get("Quest"); }
     }
 
     /// <summary>
-    /// Gets the scheduled event Lua Functions.
+    /// Gets the scheduled event Functions.
     /// </summary>
-    /// <value>The scheduled event Lua Functions.</value>
-    public static LuaFunctions ScheduledEvent
+    /// <value>The scheduled event Functions.</value>
+    public static Functions ScheduledEvent
     {
         get { return Get("ScheduledEvent"); }
     }
 
     /// <summary>
-    /// Gets the overlay Lua Functions.
+    /// Gets the overlay Functions.
     /// </summary>
-    /// <value>The overlay Lua Functions.</value>
-    public static LuaFunctions Overlay
+    /// <value>The overlay Functions.</value>
+    public static Functions Overlay
     {
         get { return Get("Overlay"); }
     }
 
     /// <summary>
-    /// Get the Lua Functions for the specified name.
+    /// Gets the DevConsole Functions.
+    /// </summary>
+    /// <value>The DevConsole Functions.</value>
+    public static Functions DevConsole
+    {
+        get { return Get("DevConsole"); }
+    }
+
+    /// <summary>
+    /// Gets the Settings Functions.
+    /// </summary>
+    /// <value>The Settings Functions.</value>
+    public static Functions SettingsMenu
+    {
+        get { return Get("SettingsMenu"); }
+    }
+
+    /// <summary>
+    /// Get the Functions for the specified name.
     /// </summary>
     /// <param name="name">The functions key.</param>
-    public static LuaFunctions Get(string name)
+    public static Functions Get(string name)
     {
         if (actions == null)
         {

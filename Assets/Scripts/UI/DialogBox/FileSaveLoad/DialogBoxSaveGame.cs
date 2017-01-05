@@ -6,9 +6,10 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using System.Collections;
 using System.IO;
-using System.Xml.Serialization;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -56,7 +57,7 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
         //    C:\Users\Quill18\ApplicationData\MyCompanyName\MyGameName\Saves\SaveGameName123.sav
 
         // Application.persistentDataPath == C:\Users\<username>\ApplicationData\MyCompanyName\MyGameName\
-        string filePath = System.IO.Path.Combine(WorldController.Instance.FileSaveBasePath(), fileName + ".sav");
+        string filePath = System.IO.Path.Combine(GameController.Instance.FileSaveBasePath(), fileName + ".sav");
 
         // At this point, filePath should look very much like
         ////     C:\Users\Quill18\ApplicationData\MyCompanyName\MyGameName\Saves\SaveGameName123.sav
@@ -83,7 +84,7 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
                 while (dbm.dialogBoxPromptOrInfo.gameObject.activeSelf)
                 {
                     yield return null;
-                } 
+                }
             }
         }
 
@@ -92,9 +93,16 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
             dbm.dialogBoxPromptOrInfo.SetPrompt("message_saving_game");
             dbm.dialogBoxPromptOrInfo.ShowDialog();
 
-            yield return new WaitForSecondsRealtime(.05f);
+            // Skip a frame so that user will see pop-up
+            yield return null;
 
-            SaveWorld(filePath);
+            Thread t = WorldController.Instance.SaveWorld(filePath);
+
+            // Wait for data to be saved to HDD.
+            while (t.IsAlive)
+            {
+                yield return null;
+            }
 
             dbm.dialogBoxPromptOrInfo.CloseDialog();
 
@@ -108,38 +116,5 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
                 yield return null;
             }
         }
-    }
-
-    public void SaveWorld(string filePath)
-    {
-        // This function gets called when the user confirms a filename
-        // from the save dialog box.
-
-        // Get the file name from the save file dialog box.
-        Debug.ULogChannel("DialogBoxSaveGame", "SaveWorld button was clicked.");
-
-        XmlSerializer serializer = new XmlSerializer(typeof(World));
-        TextWriter writer = new StringWriter();
-        serializer.Serialize(writer, WorldController.Instance.World);
-        writer.Close();
-
-        // Leaving this unchanged as UberLogger doesn't handle multi-line messages well.
-        Debug.Log(writer.ToString());
-
-        // PlayerPrefs.SetString("SaveGame00", writer.ToString());
-
-        // Create/overwrite the save file with the xml text.
-
-        // Make sure the save folder exists.
-        if (Directory.Exists(WorldController.Instance.FileSaveBasePath()) == false)
-        {
-            // NOTE: This can throw an exception if we can't create the folder,
-            // but why would this ever happen? We should, by definition, have the ability
-            // to write to our persistent data folder unless something is REALLY broken
-            // with the computer/device we're running on.
-            Directory.CreateDirectory(WorldController.Instance.FileSaveBasePath());
-        }
-
-        File.WriteAllText(filePath, writer.ToString());
     }
 }

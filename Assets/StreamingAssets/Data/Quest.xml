@@ -5,7 +5,7 @@
         <Goals>
             <Goal Description="Build 2 Mining Drone Station" IsCompletedLuaFunction="Quest_Have_Furniture_Built">
                 <Params>
-                    <Param name="type" value="Mining Drone Station"/>
+                    <Param name="type" value="mining_drone_station"/>
                     <Param name="amount" value="2"/>
                 </Params>
             </Goal>
@@ -28,7 +28,7 @@
         <Goals>
             <Goal Description="Build 1 Metal Smelter Station" IsCompletedLuaFunction="Quest_Have_Furniture_Built">
                 <Params>
-                    <Param name="type" value="Metal Smelter"/>
+                    <Param name="type" value="metal_smelter"/>
                     <Param name="amount" value="1"/>
                 </Params>
             </Goal>
@@ -48,13 +48,13 @@
         <Goals>
             <Goal Description="Build 2 Power Generator" IsCompletedLuaFunction="Quest_Have_Furniture_Built">
                 <Params>
-                    <Param name="type" value="Power Generator"/>
+                    <Param name="type" value="fission_reactor"/>
                     <Param name="amount" value="2"/>
                 </Params>
             </Goal>
             <Goal Description="Build 2 Oxygen Generator" IsCompletedLuaFunction="Quest_Have_Furniture_Built">
                 <Params>
-                    <Param name="type" value="Oxygen Generator"/>
+                    <Param name="type" value="oxygen_generator"/>
                     <Param name="amount" value="2"/>
                 </Params>
             </Goal>
@@ -77,7 +77,7 @@
         <Goals>
             <Goal Description="Build 1 Heater" IsCompletedLuaFunction="Quest_Have_Furniture_Built">
                 <Params>
-                    <Param name="type" value="Heater"/>
+                    <Param name="type" value="heater"/>
                     <Param name="amount" value="1"/>
                 </Params>
             </Goal>

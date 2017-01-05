@@ -7,123 +7,32 @@
 // ====================================================
 #endregion
 using System.Collections.Generic;
-using System.IO;
 using System.Xml;
-using UnityEngine;
 
-public class GameEventManager : MonoBehaviour
+public class GameEventManager
 {
-    public static GameEventManager current;
+    private List<GameEvent> currentEvents;
 
-    private Dictionary<string, GameEvent> gameEvents;
-
-    private void OnEnable()
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GameEventManager"/> class.
+    /// </summary>
+    public GameEventManager()
     {
-        current = this;
-        LoadEvents();
+        currentEvents = new List<GameEvent>();
+
+        GameEvent initialEvent = PrototypeManager.GameEvent[0].Clone();
+        currentEvents.Add(initialEvent);
     }
 
     /// <summary>
-    /// Needs to be moved to world.
+    /// Update the current game events.
     /// </summary>
-    private void Update()
+    /// <param name="deltaTIme">Delta time.</param>
+    public void Update(float deltaTime)
     {
-        foreach (GameEvent gameEvent in gameEvents.Values)
+        foreach (GameEvent gameEvent in currentEvents)
         {
-            gameEvent.Update(Time.deltaTime);
+            gameEvent.Update(deltaTime);
         }
-    }
-
-    private void LoadEvents()
-    {
-        gameEvents = new Dictionary<string, GameEvent>();
-
-        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "GameEvents");
-
-        LoadEventsFromDirectory(filePath);
-    }
-
-    private void LoadEventsFromDirectory(string filePath)
-    {
-        string[] subDirs = Directory.GetDirectories(filePath);
-        foreach (string sd in subDirs)
-        {
-            LoadEventsFromDirectory(sd);
-        }
-
-        string[] filesInDir = Directory.GetFiles(filePath);
-        foreach (string fn in filesInDir)
-        {
-            LoadEvent(fn);
-        }
-    }
-
-    private void LoadEvent(string filePath)
-    {
-        if (!filePath.Contains(".xml") || filePath.Contains(".meta"))
-        {
-            return;
-        }
-
-        string xmlText = System.IO.File.ReadAllText(filePath);
-        XmlTextReader reader = new XmlTextReader(new StringReader(xmlText));
-
-        if (reader.ReadToDescendant("Events") && reader.ReadToDescendant("Event"))
-        {
-            do
-            {
-                ReadEventFromXml(reader);
-            }
-            while (reader.ReadToNextSibling("Event"));
-        }
-        else
-        {
-            Debug.ULogErrorChannel("GameEventManager", "Could not read the event file: " + filePath);
-            return;
-        }
-    }
-
-    private void ReadEventFromXml(XmlReader reader)
-    {
-        string name = reader.GetAttribute("Name");
-        bool repeat = false;
-        int maxRepeats = 0;
-
-        List<string> preconditionNames = new List<string>();
-        List<string> executeNames = new List<string>();
-
-        while (reader.Read())
-        {
-            switch (reader.Name)
-            {
-                case "Repeats":
-                    maxRepeats = int.Parse(reader.GetAttribute("MaxRepeats"));
-                    repeat = true;
-                    break;
-                case "Precondition":
-                    string preconditionName = reader.GetAttribute("FunctionName");
-                    preconditionNames.Add(preconditionName);
-
-                    break;
-                case "OnExecute":
-                    string executeName = reader.GetAttribute("FunctionName");
-                    executeNames.Add(executeName);
-
-                    break;
-            }
-        }
-
-        if (name.Length >= 1)
-        {
-            CreateEvent(name, repeat, maxRepeats, preconditionNames.ToArray(), executeNames.ToArray());
-        }
-    }
-
-    private void CreateEvent(string eventName, bool repeat, int maxRepeats, string[] preconditionNames, string[] executeNames)
-    {
-        GameEvent gameEvent = new GameEvent(eventName, repeat, maxRepeats);
-        gameEvent.RegisterPreconditions(preconditionNames);
-        gameEvent.RegisterExecutionActions(executeNames);
-        gameEvents[eventName] = gameEvent;
     }
 }

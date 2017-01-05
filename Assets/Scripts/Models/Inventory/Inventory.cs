@@ -6,23 +6,27 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
+using System.Linq;
 using MoonSharp.Interpreter;
+using Newtonsoft.Json.Linq;
 
 // Inventory are things that are lying on the floor/stockpile, like a bunch of metal bars
 // or potentially a non-installed copy of furniture (e.g. a cabinet still in the box from Ikea).
 [MoonSharpUserData]
-public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
+[System.Diagnostics.DebuggerDisplay("Inventory {ObjectType} {StackSize}/{MaxStackSize}")]
+public class Inventory : ISelectable, IContextActionProvider
 {
+    private const int ClaimDuration = 120; // in Seconds
+
     private int stackSize = 1;
+    private List<InventoryClaim> claims;
 
     public Inventory()
     {
+        claims = new List<InventoryClaim>();
     }
 
     public Inventory(string type, int stackSize, int maxStackSize = 50)
@@ -30,6 +34,7 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
         Type = type;
         ImportPrototypeSettings(maxStackSize, 1f, "inv_cat_none");
         StackSize = stackSize;
+        claims = new List<InventoryClaim>();
     }
 
     private Inventory(Inventory other)
@@ -40,6 +45,7 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
         Category = other.Category;
         StackSize = other.StackSize;
         Locked = other.Locked;
+        claims = new List<InventoryClaim>();
     }
 
     public event Action<Inventory> StackSizeChanged;
@@ -76,11 +82,56 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
         }
     }
 
+    public int AvailableInventory
+    {
+        get
+        {
+            DateTime requestTime = DateTime.Now;
+            return this.stackSize - claims.Where(claim => (requestTime - claim.time).TotalSeconds < ClaimDuration).Sum(claim => claim.amount);
+        }
+    }
+
     public bool IsSelected { get; set; }
 
     public Inventory Clone()
     {
         return new Inventory(this);
+    }
+
+    public void Claim(Character character, int amount)
+    {
+        // FIXME: The various Claim related functions should most likely track claim time in an in game time increment.
+        DateTime requestTime = DateTime.Now;
+        List<InventoryClaim> validClaims = claims.Where(claim => (requestTime - claim.time).TotalSeconds < ClaimDuration).ToList();
+        int availableInventory = this.stackSize - validClaims.Sum(claim => claim.amount);
+        if (availableInventory >= amount)
+        {
+            validClaims.Add(new InventoryClaim(requestTime, character, amount));
+        }
+
+        // Set claims to validClaims to keep claims from filling up with old claims
+        claims = validClaims;
+    }
+
+    public void ReleaseClaim(Character character)
+    {
+        bool noneAvailable = AvailableInventory == 0;
+        claims.RemoveAll(claim => claim.character == character);
+        if (noneAvailable && AvailableInventory > 0)
+        {
+            World.Current.jobQueue.ReevaluateWaitingQueue(this);
+        }
+    }
+
+    public bool CanClaim()
+    {
+        DateTime requestTime = DateTime.Now;
+        List<InventoryClaim> validClaims = claims.Where(claim => (requestTime - claim.time).TotalSeconds < ClaimDuration).ToList();
+        int availableInventory = this.stackSize - validClaims.Sum(claim => claim.amount);
+
+        // Set claims to validClaims to keep claims from filling up with old claims
+        claims = validClaims;
+        return availableInventory > 0;
     }
 
     public string GetName()
@@ -92,7 +143,7 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
     {
         return string.Format("StackSize: {0}\nCategory: {1}\nBasePrice: {2:N2}", StackSize, Category, BasePrice);
     }
-    
+
     public string GetJobDescription()
     {
         return string.Empty;
@@ -107,57 +158,65 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
     {
         // Does inventory have hitpoints? How does it get destroyed? Maybe it's just a percentage chance based on damage.
         yield return string.Format("StackSize: {0}", stackSize);
+        yield return string.Format("Available Amount: {0}", AvailableInventory);
         yield return string.Format("Category: {0}", BasePrice);
         yield return string.Format("BasePrice: {0:N2}", BasePrice);
     }
 
-    public XmlSchema GetSchema()
+    public object ToJSon()
     {
-        return null;
-    }
-
-    public void WriteXml(XmlWriter writer)
-    {
-        // If we reach this point through inventories we definitely have a tile
-        // If we don't have a tile, that means we're writing a character's inventory
+        JObject inventoryJson = new JObject();
         if (Tile != null)
         {
-            writer.WriteAttributeString("X", Tile.X.ToString());
-            writer.WriteAttributeString("Y", Tile.Y.ToString());
-            writer.WriteAttributeString("Z", Tile.Z.ToString());
+            inventoryJson.Add("X", Tile.X);
+            inventoryJson.Add("Y", Tile.Y);
+            inventoryJson.Add("Z", Tile.Z);
         }
 
-        writer.WriteAttributeString("type", Type);
-        writer.WriteAttributeString("maxStackSize", MaxStackSize.ToString());
-        writer.WriteAttributeString("stackSize", StackSize.ToString());
-        writer.WriteAttributeString("basePrice", BasePrice.ToString(CultureInfo.InvariantCulture));
-        writer.WriteAttributeString("category", Category);
-        writer.WriteAttributeString("locked", Locked.ToString());
+        inventoryJson.Add("Type", Type);
+        inventoryJson.Add("MaxStackSize", MaxStackSize);
+        inventoryJson.Add("StackSize", StackSize);
+        inventoryJson.Add("BasePrice", BasePrice);
+        inventoryJson.Add("Category", Category);
+        inventoryJson.Add("Locked", Locked);
+
+        return inventoryJson;
     }
 
-    public void ReadXml(XmlReader reader)
+    public void FromJson(JToken inventoryToken)
     {
+        Type = (string)inventoryToken["Type"];
+        MaxStackSize = (int)inventoryToken["MaxStackSize"];
+        StackSize = (int)inventoryToken["StackSize"];
+        BasePrice = (float)inventoryToken["BasePrice"];
+        Category = (string)inventoryToken["Category"];
+        Locked = (bool)inventoryToken["Locked"];
     }
 
     public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
     {
         yield return new ContextMenuAction
         {
-            Text = "Sample Item Context action",
+            LocalizationKey = "Sample Item Context action",
             RequireCharacterSelected = true,
-            Action = (cm, c) => Debug.ULogChannel("Inventory", "Sample menu action")
+            Action = (cm, c) => UnityDebugger.Debugger.Log("Inventory", "Sample menu action")
         };
     }
 
     public bool CanBePickedUp(bool canTakeFromStockpile)
     {
         // You can't pick up stuff that isn't on a tile or if it's locked
-        if (Tile == null || Locked)
+        if (Tile == null || Locked || !CanClaim())
         {
             return false;
         }
 
         return Tile.Furniture == null || canTakeFromStockpile == true || Tile.Furniture.HasTypeTag("Storage") == false;
+    }
+
+    public override string ToString()
+    {
+        return string.Format("{0} [{1}/{2}]", Type, StackSize, MaxStackSize);
     }
 
     private void ImportPrototypeSettings(int defaulMaxStackSize, float defaultBasePrice, string defaultCategory)
@@ -183,6 +242,20 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
         if (handler != null)
         {
             handler(inventory);
+        }
+    }
+
+    public struct InventoryClaim
+    {
+        public DateTime time;
+        public Character character;
+        public int amount;
+
+        public InventoryClaim(DateTime time, Character character, int amount)
+        {
+            this.time = time;
+            this.character = character;
+            this.amount = amount;
         }
     }
 }

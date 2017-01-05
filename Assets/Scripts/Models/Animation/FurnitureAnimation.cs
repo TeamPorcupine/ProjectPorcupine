@@ -6,7 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System;
+
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -72,6 +72,12 @@ namespace Animation
         public void SetProgressValue(float percent)
         {
             currentAnimation.SetProgressValue(percent);
+            CheckFrameChange();
+        }
+
+        public void SetFrameIndex(int frameIndex)
+        {
+            currentAnimation.SetFrame(frameIndex);
             CheckFrameChange();
         }
 

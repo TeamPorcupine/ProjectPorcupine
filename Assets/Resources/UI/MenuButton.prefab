@@ -163,7 +163,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: menu_quests
+  m_Text: 
 --- !u!222 &222000011116568556
 CanvasRenderer:
   m_ObjectHideFlags: 1

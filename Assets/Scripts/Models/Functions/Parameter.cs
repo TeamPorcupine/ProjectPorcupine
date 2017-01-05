@@ -6,12 +6,11 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using MoonSharp.Interpreter;
-using UnityEngine;
+using Newtonsoft.Json.Linq;
 
 [MoonSharpUserData]
 public class Parameter
@@ -25,7 +24,7 @@ public class Parameter
     // If this Parameter contains other Parameters, contents will contain the actual parameters
     private Dictionary<string, Parameter> contents;
 
-    public Parameter(string name, string value) 
+    public Parameter(string name, string value)
     {
         this.name = name;
         this.value = value;
@@ -34,7 +33,7 @@ public class Parameter
 
     // Constructor with object parameter allows it to easily create a Parameter with any object that has a string representation (primarily for use if that string
     //  representation can be converted back to the original value, such as with a float. Not suitable for holding a Parameter object.
-    public Parameter(string name, object value) 
+    public Parameter(string name, object value)
     {
         this.name = name;
         this.value = value.ToString();
@@ -42,14 +41,14 @@ public class Parameter
     }
 
     // Parameter with no value assumes it is being used for Parameter with contents, and initialized the dictionary
-    public Parameter(string name) 
+    public Parameter(string name)
     {
         this.name = name;
         contents = new Dictionary<string, Parameter>();
     }
 
     // Constructor for top-level Parameter (e.g. furnParameters in Furniture.css
-    public Parameter() 
+    public Parameter()
     {
         contents = new Dictionary<string, Parameter>();
     }
@@ -70,9 +69,9 @@ public class Parameter
         this.value = other.ToString();
     }
 
-    public string Value 
+    public string Value
     {
-        get { return value; } 
+        get { return value; }
     }
 
     // Iterator to simplify usage, this works properly in Lua
@@ -82,8 +81,6 @@ public class Parameter
         {
             if (contents.ContainsKey(key) == false)
             {
-                Debug.ULogWarningChannel("Parameter", "Trying to access non-existent key: '" + key + "'. Probably a Lua problem.");
-
                 // Add a new blank key to contents, that will then be returned.
                 contents.Add(key, new Parameter(key));
             }
@@ -145,12 +142,12 @@ public class Parameter
         return paramGroup;
     }
 
-    public override string ToString() 
+    public override string ToString()
     {
         return value;
     }
 
-    public string ToString(string defaultValue) 
+    public string ToString(string defaultValue)
     {
         if (value == null)
         {
@@ -160,12 +157,12 @@ public class Parameter
         return ToString();
     }
 
-    public float ToFloat() 
+    public float ToFloat()
     {
         float returnValue = 0;
         float.TryParse(value, out returnValue);
         return returnValue;
-    } 
+    }
 
     public int ToInt()
     {
@@ -175,7 +172,19 @@ public class Parameter
         return returnValue;
     }
 
-    public float ToFloat(float defaultValue) 
+    public bool ToBool()
+    {
+        if (string.Equals(value, "true", System.StringComparison.OrdinalIgnoreCase) || ToFloat().AreEqual(1))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public float ToFloat(float defaultValue)
     {
         if (value == null)
         {
@@ -185,7 +194,7 @@ public class Parameter
         return ToFloat();
     }
 
-    public void SetValue(string value) 
+    public void SetValue(string value)
     {
         this.value = value;
     }
@@ -225,56 +234,45 @@ public class Parameter
     }
 
     // Primary method to differentiate an unknown Parameter between a singular Parameter and Group Parameter
-    public bool HasContents() 
+    public bool HasContents()
     {
         return contents.Count > 0;
     }
 
-    public void WriteXmlParamGroup(XmlWriter writer)
-    {
-        if (string.IsNullOrEmpty(name))
-        {
-            writer.WriteStartElement("Params");
-        }
-        else
-        {
-            writer.WriteStartElement("Param");
-            writer.WriteAttributeString("name", name);
-        }
-
-        if (value != null)
-        {
-            writer.WriteAttributeString("value", value);
-        }
-
-        foreach (string k in contents.Keys)
-        {
-            this[k].WriteXml(writer);
-        }
-
-        writer.WriteEndElement();
-    }
-
-    public void WriteXmlParam(XmlWriter writer)
-    {
-        if (string.IsNullOrEmpty(name) == false)
-        {
-            writer.WriteStartElement("Param");
-            writer.WriteAttributeString("name", name);
-            writer.WriteAttributeString("value", value);
-            writer.WriteEndElement();
-        }
-    }
-
-    public void WriteXml(XmlWriter writer)
+    public JToken ToJson()
     {
         if (HasContents())
         {
-            WriteXmlParamGroup(writer);
+            JObject contentsJson = new JObject();
+            foreach (string key in contents.Keys)
+            {
+                contentsJson.Add(key, contents[key].ToJson());
+                return contentsJson;
+            }
         }
-        else
+
+        return value;
+    }
+
+    public void FromJson(JToken parameterToken)
+    {
+        JObject parameterJObject = (JObject)parameterToken;
+        foreach (JProperty parameterProperty in parameterJObject.Properties())
         {
-            WriteXmlParam(writer);
+            string key = parameterProperty.Name;
+            Parameter parameter = new Parameter(key);
+            JToken valueToken = parameterProperty.Value;
+
+            if (valueToken.Children().Count() > 1)
+            {
+                parameter.FromJson(valueToken);
+            }
+            else
+            {
+                parameter.SetValue((string)valueToken);
+            }
+
+            AddParameter(parameter);
         }
     }
 
@@ -282,7 +280,7 @@ public class Parameter
     private Dictionary<string, Parameter> DeepCloneDictionary()
     {
         return contents.ToDictionary(
-            entry => entry.Key, 
+            entry => entry.Key,
             entry => new Parameter((Parameter)entry.Value));
     }
 }

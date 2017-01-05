@@ -6,10 +6,9 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using MoonSharp.Interpreter;
 using ProjectPorcupine.Localization;
 using UnityEngine;
@@ -64,6 +63,8 @@ public class OverlayMap : MonoBehaviour
     public Dictionary<string, Dictionary<int, Color>> overlayColorMapLookup;
 
     private static List<Color32> randomColors;
+
+    private static List<Color32> paletteColors;
 
     private int currentLayer = 0;
 
@@ -202,6 +203,13 @@ public class OverlayMap : MonoBehaviour
                     return randomColors[v];
                 };
                 break;
+            case OverlayDescriptor.ColorMapOption.Palette:
+                GeneratePaletteColors();
+                map = (int v) =>
+                {
+                    return paletteColors[v % paletteColors.Count];
+                };
+                break;
         }
 
         for (int i = 0; i < size; i++)
@@ -257,14 +265,14 @@ public class OverlayMap : MonoBehaviour
             currentOverlay = name;
             OverlayDescriptor descr = PrototypeManager.Overlay.Get(name);
 
-            if (FunctionsManager.Overlay.HasGlobal(descr.LuaFunctionName) == false)
+            if (FunctionsManager.Overlay.HasFunction(descr.LuaFunctionName) == false)
             {
-                Debug.ULogErrorChannel("OverlayMap", string.Format("Couldn't find a function named '{0}' in '{1}'", descr.LuaFunctionName));
+                UnityDebugger.Debugger.LogError("OverlayMap", string.Format("Couldn't find a function named '{0}' in Overlay functions", descr.LuaFunctionName));
                 return;
             }
 
             bool loggedOnce = false;
-            valueAt = (x, y, z) =>
+            valueAt = (x, y, z) => 
             {
                 if (WorldController.Instance == null)
                 {
@@ -272,13 +280,14 @@ public class OverlayMap : MonoBehaviour
                 }
 
                 Tile tile = WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, z));
+
                 DynValue result = FunctionsManager.Overlay.Call(descr.LuaFunctionName, new object[] { tile, World.Current });
                 double? value = result.CastToNumber();
                 if (value == null)
                 {
                     if (loggedOnce == false)
                     {
-                        Debug.ULogErrorChannel("OverlayMap", string.Format("The return value from the function named '{0}' was null for tile at ({1}, {2}, {3})", descr.LuaFunctionName, x, y, z));
+                        UnityDebugger.Debugger.LogError("OverlayMap", string.Format("The return value from the function named '{0}' was null for tile at ({1}, {2}, {3})", descr.LuaFunctionName, x, y, z));
                         loggedOnce = true;
                     }
                     
@@ -294,7 +303,7 @@ public class OverlayMap : MonoBehaviour
         }
         else
         {
-            Debug.ULogWarningChannel("OverlayMap", string.Format("Overlay with name {0} not found in prototypes", name));
+            UnityDebugger.Debugger.LogWarning("OverlayMap", string.Format("Overlay with name {0} not found in prototypes", name));
         }
     }
 
@@ -309,6 +318,31 @@ public class OverlayMap : MonoBehaviour
         {
             randomColors.Add(UnityEngine.Random.ColorHSV());
         }
+    }
+
+    private static void GeneratePaletteColors()
+    {
+        if (paletteColors == null)
+        {
+            paletteColors = new List<Color32>();
+        }
+
+        // basic colors
+        paletteColors.Add(new Color32(255, 255, 255, 255));
+        paletteColors.Add(new Color32(255, 0, 0, 255));
+        paletteColors.Add(new Color32(0, 255, 0, 255));
+        paletteColors.Add(new Color32(0, 0, 255, 255));
+        paletteColors.Add(new Color32(255, 255, 0, 255));
+        paletteColors.Add(new Color32(0, 255, 255, 255));
+        paletteColors.Add(new Color32(255, 0, 255, 255));
+        paletteColors.Add(new Color32(192, 192, 192, 255));
+        paletteColors.Add(new Color32(128, 128, 128, 255));
+        paletteColors.Add(new Color32(128, 0, 0, 255));
+        paletteColors.Add(new Color32(128, 128, 0, 255));
+        paletteColors.Add(new Color32(0, 128, 0, 255));
+        paletteColors.Add(new Color32(128, 0, 128, 255));
+        paletteColors.Add(new Color32(0, 128, 128, 255));
+        paletteColors.Add(new Color32(0, 0, 128, 255));
     }
 
     /// <summary>
@@ -379,7 +413,7 @@ public class OverlayMap : MonoBehaviour
         meshRenderer.material = mat;
         if (mat == null || meshRenderer == null)
         {
-            Debug.ULogErrorChannel("OverlayMap", "Material or renderer is null. Failing.");
+            UnityDebugger.Debugger.LogError("OverlayMap", "Material or renderer is null. Failing.");
         }
 
         initialized = true;
@@ -431,7 +465,7 @@ public class OverlayMap : MonoBehaviour
     {
         if (colorMapTexture == null)
         {
-            Debug.ULogErrorChannel("OverlayMap", "No color map texture setted!");
+            UnityDebugger.Debugger.LogError("OverlayMap", "No color map texture setted!");
         }
         
         if (!overlayColorMapLookup.ContainsKey(currentOverlay))
@@ -535,7 +569,7 @@ public class OverlayMap : MonoBehaviour
         UnityEngine.UI.Dropdown dropdown = parentPanel.GetComponentInChildren<UnityEngine.UI.Dropdown>();
         if (dropdown == null)
         {
-            Debug.ULogWarningChannel("OverlayMap", "No parent panel was selected!");
+            UnityDebugger.Debugger.LogWarning("OverlayMap", "No parent panel was selected!");
             return;
         }
 
