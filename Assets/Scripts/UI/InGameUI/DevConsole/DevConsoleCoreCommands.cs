@@ -228,7 +228,8 @@ namespace DeveloperConsole
 
             if (ModUtils.GetCurrentWorld(out world))
             {
-                DevConsole.Log("Thermal Diffusivity: " + world.temperature.GetThermalDiffusivity((int)pos.x, (int)pos.y, (int)pos.z), "green");
+                //TODO Make this properly display, if only for walls
+                DevConsole.Log("Thermal Diffusivity: " + 0, "green");
             }
         }
 
