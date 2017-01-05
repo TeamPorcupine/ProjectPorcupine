@@ -31,79 +31,7 @@ public sealed class InventorySpriteController : BaseSpriteController<Inventory>
         }
     }
 
-    public override void RemoveAll()
-    {
-        world.InventoryManager.InventoryCreated -= OnCreated;
-        foreach (Inventory inventory in world.InventoryManager.Inventories.SelectMany(pair => pair.Value))
-        {
-            inventory.StackSizeChanged -= OnChanged;
-        }
-
-        base.RemoveAll();
-    }
-
-    protected override void OnCreated(Inventory inventory)
-    {
-        // This creates a new GameObject and adds it to our scene.
-        GameObject inventoryGameObject = new GameObject();
-
-        // Add our tile/GO pair to the dictionary.
-        objectGameObjectMap.Add(inventory, inventoryGameObject);
-
-        inventoryGameObject.name = inventory.Type;
-
-        // Only create a Game Object if inventory was created on tile, anything else will handle its own game object
-        if (inventory.Tile != null)
-        {
-            inventoryGameObject.transform.position = new Vector3(inventory.Tile.X, inventory.Tile.Y, inventory.Tile.Z);
-        }
-
-        inventoryGameObject.transform.SetParent(objectParent.transform, true);
-
-//        SpriteRenderer sr = inventoryGameObject.AddComponent<SpriteRenderer>();
-//        sr.sprite = GetSpriteFor(inventory);
-        SpriteRenderer sr = SetSprite(inventoryGameObject, inventory);
-
-        if (inventory.MaxStackSize > 1)
-        {
-            // This is a stackable object, so let's add a InventoryUI component
-            // (Which is text that shows the current stackSize.)
-            GameObject uiGameObject = GameObject.Instantiate(inventoryUIPrefab);
-            uiGameObject.transform.SetParent(inventoryGameObject.transform);
-            uiGameObject.transform.localPosition = Vector3.zero;
-            uiGameObject.GetComponentInChildren<Text>().text = inventory.StackSize.ToString();
-        }
-
-        // Register our callback so that our GameObject gets updated whenever
-        // the object's into changes.
-        // FIXME: Add on changed callbacks
-        inventory.StackSizeChanged += OnChanged;
-    }
-//
-//    static public Sprite GetSpriteFor(Inventory inventory)
-//    {
-//        Sprite sprite;
-//        if (inventory.Category != "crated_furniture")
-//        {
-//            sprite = SpriteManager.GetSprite("Inventory", inventory.Type);
-//            if (sprite == null)
-//            {
-//                UnityDebugger.Debugger.LogError("InventorySpriteController", "No sprite for: " + inventory.Type);
-//            }
-//        }
-//        else
-//        {
-//            sprite = SpriteManager.GetSprite("Inventory", "crate");
-//            if (sprite == null)
-//            {
-//                UnityDebugger.Debugger.LogError("InventorySpriteController", "No sprite for: Crate");
-//            }
-//        }
-//
-//        return sprite;
-//    }
-
-    static public SpriteRenderer SetSprite(GameObject inventoryGO, Inventory inventory, string sortingLayerName = "Inventory")
+    public static SpriteRenderer SetSprite(GameObject inventoryGO, Inventory inventory, string sortingLayerName = "Inventory")
     {
         SpriteRenderer sr = inventoryGO.GetComponent<SpriteRenderer>();
         if (sr == null)
@@ -152,6 +80,53 @@ public sealed class InventorySpriteController : BaseSpriteController<Inventory>
         }
 
         return sr;
+    }
+
+    public override void RemoveAll()
+    {
+        world.InventoryManager.InventoryCreated -= OnCreated;
+        foreach (Inventory inventory in world.InventoryManager.Inventories.SelectMany(pair => pair.Value))
+        {
+            inventory.StackSizeChanged -= OnChanged;
+        }
+
+        base.RemoveAll();
+    }
+
+    protected override void OnCreated(Inventory inventory)
+    {
+        // This creates a new GameObject and adds it to our scene.
+        GameObject inventoryGameObject = new GameObject();
+
+        // Add our tile/GO pair to the dictionary.
+        objectGameObjectMap.Add(inventory, inventoryGameObject);
+
+        inventoryGameObject.name = inventory.Type;
+
+        // Only create a Game Object if inventory was created on tile, anything else will handle its own game object
+        if (inventory.Tile != null)
+        {
+            inventoryGameObject.transform.position = new Vector3(inventory.Tile.X, inventory.Tile.Y, inventory.Tile.Z);
+        }
+
+        inventoryGameObject.transform.SetParent(objectParent.transform, true);
+
+        SpriteRenderer sr = SetSprite(inventoryGameObject, inventory);
+
+        if (inventory.MaxStackSize > 1)
+        {
+            // This is a stackable object, so let's add a InventoryUI component
+            // (Which is text that shows the current stackSize.)
+            GameObject uiGameObject = GameObject.Instantiate(inventoryUIPrefab);
+            uiGameObject.transform.SetParent(inventoryGameObject.transform);
+            uiGameObject.transform.localPosition = Vector3.zero;
+            uiGameObject.GetComponentInChildren<Text>().text = inventory.StackSize.ToString();
+        }
+
+        // Register our callback so that our GameObject gets updated whenever
+        // the object's into changes.
+        // FIXME: Add on changed callbacks
+        inventory.StackSizeChanged += OnChanged;
     }
 
     protected override void OnChanged(Inventory inventory)

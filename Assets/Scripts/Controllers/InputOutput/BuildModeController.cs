@@ -29,7 +29,7 @@ public class BuildModeController
     private MouseController mouseController;
     private TileType buildModeTile = TileType.Floor;
 
-    bool useCratedObject;
+    private bool useCratedObject;
 
     public BuildModeController()
     {

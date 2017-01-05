@@ -874,12 +874,6 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
             return;
         }
 
-//        if (IsBeingDestroyed)
-//        {
-//            return; // Already being destroyed, don't do anything more
-//        }
-
-//        IsBeingDestroyed = true;
         Jobs.CancelAll();
 
         Uninstall uninstallOrder = GetOrderAction<Uninstall>();

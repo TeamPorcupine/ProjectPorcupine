@@ -106,7 +106,7 @@ public class CharacterSpriteController : BaseSpriteController<Character>
     protected override void OnChanged(Character character)
     {
         // Make sure the furniture's graphics are correct.
-        GameObject inventoryGo =  objectGameObjectMap[character].transform.GetChild(0).gameObject;
+        GameObject inventoryGo = objectGameObjectMap[character].transform.GetChild(0).gameObject;
         SpriteRenderer inventorySR = inventoryGo.GetComponent<SpriteRenderer>();
 
         // Important to set the characters SortOrder first.
@@ -123,12 +123,7 @@ public class CharacterSpriteController : BaseSpriteController<Character>
             {
                 // Inventory should only ever have one child to destroy.
                 GameObject.Destroy(inventoryGo.transform.GetChild(0).gameObject);
-//                for (int i = inventoryGo.transform.childCount -1 ; i >= 0; i--)
-//                {
-//                    GameObject.Destroy(inventoryGo.transform.GetChild(i).gameObject);   
-//                }
             }
-
         }
 
         if (objectGameObjectMap.ContainsKey(character) == false)
