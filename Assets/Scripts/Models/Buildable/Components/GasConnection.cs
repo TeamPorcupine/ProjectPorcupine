@@ -38,6 +38,14 @@ namespace ProjectPorcupine.Buildable.Components
         [JsonProperty("Requires")]
         public List<GasInfo> Requires { get; set; }
 
+        public override bool RequiresSlowUpdate
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         public override BuildableComponent Clone()
         {
             return new GasConnection(this);

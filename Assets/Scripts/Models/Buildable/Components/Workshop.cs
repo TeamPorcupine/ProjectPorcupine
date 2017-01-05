@@ -71,9 +71,17 @@ namespace ProjectPorcupine.Buildable.Components
         [XmlElement("ProductionChain")]
         [JsonProperty("ProductionChain")]
         public List<ProductionChain> PossibleProductions { get; set; }
+
+        public override bool RequiresSlowUpdate
+        {
+            get
+            {
+                return true;
+            }
+        }   
                 
         [XmlIgnore]
-        private List<ComponentContextMenu> WorkshopMenuActions { get; set; }       
+        private List<ComponentContextMenu> WorkshopMenuActions { get; set; }
         
         public override BuildableComponent Clone()
         {

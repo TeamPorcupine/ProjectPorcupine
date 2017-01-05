@@ -27,6 +27,8 @@ namespace ProjectPorcupine.Buildable.Components
 
         private static Dictionary<string, Type> componentTypes;
 
+        private bool initialized = false;
+
         public BuildableComponent()
         {
             // need to set it, for some reason GetHashCode is called during serialization (when Name is still null)
@@ -66,6 +68,30 @@ namespace ProjectPorcupine.Buildable.Components
             {
                 return componentRequirements;
             }
+        }
+
+        public bool Initialized 
+        { 
+            get 
+            { 
+                return initialized; 
+            } 
+        }
+
+        public virtual bool RequiresSlowUpdate 
+        { 
+            get 
+            { 
+                return false; 
+            } 
+        }
+
+        public virtual bool RequiresFastUpdate 
+        { 
+            get 
+            { 
+                return false; 
+            } 
         }
 
         [XmlIgnore]
@@ -142,6 +168,7 @@ namespace ProjectPorcupine.Buildable.Components
         {
             ParentFurniture = parentFurniture;
             Initialize();
+            initialized = true;
         }
 
         public virtual bool CanFunction()
