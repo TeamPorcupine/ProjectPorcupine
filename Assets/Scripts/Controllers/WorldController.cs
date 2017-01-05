@@ -109,12 +109,14 @@ public class WorldController : MonoBehaviour
         spawnInventoryController.SetUIVisibility(Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false));
 
         cameraController.Initialize();
-        cameraController.Moved += this.World.OnCameraMoved;
 
         // Initialising controllers.
         GameObject canvas = GameObject.Find("Canvas");
         go = Instantiate(Resources.Load("UI/ContextMenu"), canvas.transform.position, canvas.transform.rotation, canvas.transform) as GameObject;
         go.name = "ContextMenu";
+
+        GameObject timeScale = Instantiate(Resources.Load("UI/TimeScale"), canvas.transform, false) as GameObject;
+        timeScale.name = "TimeScale";
 
         GameController.Instance.IsModal = false;
 

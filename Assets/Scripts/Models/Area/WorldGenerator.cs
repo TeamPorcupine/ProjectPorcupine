@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,6 +23,8 @@ public class WorldGenerator
     private AsteroidInfo asteroidInfo;
 
     private int sumOfAllWeightedChances;
+
+    private HashSet<Tile> currentAsteroid;
 
     private WorldGenerator()
     {
@@ -59,7 +62,8 @@ public class WorldGenerator
 
         if (SceneController.GenerateAsteroids)
         {
-            for (int asteroid = 0; asteroid < 10; asteroid++)
+            int numAsteroids = (world.Height * world.Width) / Random.Range(800, 1200);
+            for (int asteroid = 0; asteroid < numAsteroids; asteroid++)
             {
                 Vector3 asteroidSeed = new Vector3(Random.Range(0, width), Random.Range(0, height), Random.Range(0, depth));
                 GrowAsteroid(asteroidSeed, world);
@@ -67,27 +71,41 @@ public class WorldGenerator
         }
     }
 
-    HashSet<Tile> CurrentAsteroid;
+    private static void ReadXmlWallet(XmlReader reader, World world)
+    {
+        XmlReader wallet = reader.ReadSubtree();
+
+        while (wallet.Read())
+        {
+            if (wallet.Name == "Currency")
+            {
+                world.Wallet.AddCurrency(
+                    wallet.GetAttribute("name"),
+                    float.Parse(wallet.GetAttribute("startingBalance")));
+            }
+        }
+    }
+
     private void GrowAsteroid(Vector3 location, World world)
     {
-        CurrentAsteroid = new HashSet<Tile>();
+        currentAsteroid = new HashSet<Tile>();
         GrowAsteroid(world.GetTileAt((int)location.x, (int)location.y, (int)location.z));
-        foreach (Tile tile in CurrentAsteroid)
+        foreach (Tile tile in currentAsteroid)
         {
             PlaceAsteroidChunk(tile, world);
         }
     }
 
-    private void GrowAsteroid(Tile tile, int depth = 0)
+    private void GrowAsteroid(Tile tile, float depth = 0)
     {
+        int minSize = 5;
+        int maxSize = 15;
         if (tile != null)
         {
-            //            PlaceAsteroidChunk(tile, world);
-            CurrentAsteroid.Add(tile);
+            currentAsteroid.Add(tile);
             foreach (Tile neighbor in tile.GetNeighbours(false, true))
             {
-
-                if (depth < 20 && !CurrentAsteroid.Contains(neighbor) && Random.value < .75f)
+                if (depth < 20 && !currentAsteroid.Contains(neighbor) && neighbor.Furniture == null && Random.value < (float)minSize / depth)
                 {
                     GrowAsteroid(neighbor, depth + 1);
                 }
@@ -106,7 +124,7 @@ public class WorldGenerator
 
         world.FurnitureManager.PlaceFurniture("astro_wall", tile, false);
 
-        if (Random.value <= asteroidInfo.ResourceChance && tile.Furniture.Name == "Rock Wall")
+        if (Random.value <= asteroidInfo.ResourceChance && tile.Furniture.Type == "astro_wall")
         {
             if (asteroidInfo.Resources.Count > 0)
             {
@@ -128,21 +146,6 @@ public class WorldGenerator
                         break;
                     }
                 }
-            }
-        }
-    }
-
-    private static void ReadXmlWallet(XmlReader reader, World world)
-    {
-        XmlReader wallet = reader.ReadSubtree();
-
-        while (wallet.Read())
-        {
-            if (wallet.Name == "Currency")
-            {
-                world.Wallet.AddCurrency(
-                    wallet.GetAttribute("name"),
-                    float.Parse(wallet.GetAttribute("startingBalance")));
             }
         }
     }

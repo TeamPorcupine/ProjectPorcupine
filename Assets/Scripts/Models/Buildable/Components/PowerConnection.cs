@@ -21,7 +21,7 @@ namespace ProjectPorcupine.Buildable.Components
     [XmlRoot("Component")]
     [BuildableComponentName("PowerConnection")]
     [MoonSharpUserData]
-    public class PowerConnection : BuildableComponent, IPlugable
+    public class PowerConnection : BuildableComponent, IPluggable
     {       
         public PowerConnection()
         {
@@ -81,7 +81,7 @@ namespace ProjectPorcupine.Buildable.Components
         public Info Requires { get; set; }
         
         [XmlIgnore]
-        public float AccumulatedAmount
+        public float StoredAmount
         {
             get
             {
@@ -113,32 +113,60 @@ namespace ProjectPorcupine.Buildable.Components
 
         public bool IsEmpty
         {
-            get { return IsAccumulator && AccumulatedAmount.IsZero(); }
+            get { return IsStorage && StoredAmount.IsZero(); }
+        }
+
+        public string UtilityType 
+        { 
+            get 
+            { 
+                return "Power";
+            }
+        }
+
+        public string SubType
+        {
+            get
+            {
+                return string.Empty;
+            }
+
+            set
+            {
+            }
         }
         
         public bool IsFull
         {
-            get { return IsAccumulator && AccumulatedAmount.AreEqual(Provides.Capacity); }
+            get { return IsStorage && StoredAmount.AreEqual(Provides.Capacity); }
         }
 
         public bool IsProducer
         {
-            get { return Provides != null && IsRunning && Provides.Rate > 0.0f && !IsAccumulator; }
+            get { return Provides != null && IsRunning && Provides.Rate > 0.0f && !IsStorage; }
         }
 
         public bool IsConsumer
         {
-            get { return Requires != null && Requires.Rate > 0.0f && !IsAccumulator; }
+            get { return Requires != null && Requires.Rate > 0.0f && !IsStorage; }
         }
 
-        public bool IsAccumulator
+        public bool IsStorage
         {
             get { return Provides != null && Provides.Capacity > 0.0f; }
         }
 
-        public float AccumulatorCapacity
+        public float StorageCapacity
         {
-            get { return IsAccumulator ? Provides.Capacity : 0f; }
+            get { return IsStorage ? Provides.Capacity : 0f; }
+        }
+
+        public override bool RequiresSlowUpdate
+        {
+            get
+            {
+                return true;
+            }
         }
 
         public override BuildableComponent Clone()
@@ -165,9 +193,9 @@ namespace ProjectPorcupine.Buildable.Components
                 areAllParamReqsFulfilled = AreParameterConditionsFulfilled(Requires.ParamConditions);
             }
 
-            if (IsAccumulator)
+            if (IsStorage)
             {
-                areAllParamReqsFulfilled &= AccumulatedAmount > 0;
+                areAllParamReqsFulfilled &= StoredAmount > 0;
             }
 
             IsRunning = areAllParamReqsFulfilled;
@@ -189,9 +217,9 @@ namespace ProjectPorcupine.Buildable.Components
                 yield return LocalizationTable.GetLocalization("power_output_status", powerColor, Requires.Rate);
             }
 
-            if (IsAccumulator && Provides != null)
+            if (IsStorage && Provides != null)
             {
-                yield return LocalizationTable.GetLocalization("power_accumulated_fraction", AccumulatedAmount, Provides.Capacity);
+                yield return LocalizationTable.GetLocalization("power_accumulated_fraction", StoredAmount, Provides.Capacity);
             }
         }
 

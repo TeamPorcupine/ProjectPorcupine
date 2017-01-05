@@ -129,6 +129,12 @@ public class World
     public PowerNetwork PowerNetwork { get; private set; }
 
     /// <summary>
+    /// Gets the power network.
+    /// </summary>
+    /// <value>The power network.</value>
+    public FluidNetwork FluidNetwork { get; private set; }
+
+    /// <summary>
     /// Gets the room manager.
     /// </summary>
     /// <value>The room manager.</value>
@@ -159,15 +165,6 @@ public class World
     {
         TimeManager.Instance.EveryFrameUnpaused += TickEveryFrame;
         TimeManager.Instance.FixedFrequencyUnpaused += TickFixedFrequency;
-    }
-
-    /// <summary>
-    /// Notify world that the camera moved, so we can check which entities are visible to the camera.
-    /// The invisible enities can be updated less frequent for better performance.
-    /// </summary>
-    public void OnCameraMoved(Bounds cameraBounds)
-    {
-        FurnitureManager.OnCameraMoved(cameraBounds);
     }
 
     /// <summary>
@@ -384,7 +381,7 @@ public class World
         roomGraph = null;
 
         // Reset temperature, so it properly sizes arrays to the new world size
-        temperature = new Temperature();
+        temperature.Resize();
 
         for (int x = 0; x < oldWidth; x++)
         {
@@ -426,6 +423,7 @@ public class World
         jobQueue = new JobQueue();
         GameEventManager = new GameEventManager();
         PowerNetwork = new PowerNetwork();
+        FluidNetwork = new FluidNetwork();
         temperature = new Temperature();
         ShipManager = new ShipManager();
         Wallet = new Wallet();
@@ -502,9 +500,6 @@ public class World
     /// <param name="deltaTime">Delta time.</param>
     private void TickEveryFrame(float deltaTime)
     {
-        CharacterManager.Update(deltaTime);
-        FurnitureManager.TickEveryFrame(deltaTime);
-        UtilityManager.TickEveryFrame(deltaTime);
         GameEventManager.Update(deltaTime);
         ShipManager.Update(deltaTime);
     }
@@ -515,12 +510,10 @@ public class World
     /// <param name="deltaTime">Delta time.</param>
     private void TickFixedFrequency(float deltaTime)
     {
-        FurnitureManager.TickFixedFrequency(deltaTime);
-        UtilityManager.TickFixedFrequency(deltaTime);
-
         // Progress temperature modelling
-        temperature.Update();
+        temperature.Update(deltaTime);
         PowerNetwork.Update(deltaTime);
+        FluidNetwork.Update(deltaTime);
     }
 
     /// <summary>
@@ -535,7 +528,8 @@ public class World
             // by the furniture's movement cost, a furniture movement cost
             // of exactly 1 doesn't impact our pathfinding system, so we can
             // occasionally avoid invalidating pathfinding graphs.
-            // InvalidateTileGraph();    // Reset the pathfinding system
+            // InvalidateTileGraph();    
+            // Reset the pathfinding system
             if (tileGraph != null)
             {
                 tileGraph.RegenerateGraphAtTile(furniture.Tile);

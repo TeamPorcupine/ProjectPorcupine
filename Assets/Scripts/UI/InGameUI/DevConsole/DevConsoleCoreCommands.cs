@@ -32,25 +32,6 @@ namespace DeveloperConsole
             new LuaFunctions().LoadScript(code, "User Script");
         }
 
-        public static void Help()
-        {
-            DevConsole.Log("-- Help --", "green");
-
-            string text = string.Empty;
-
-            CommandBase[] consoleCommands = DevConsole.CommandArray();
-
-            for (int i = 0; i < consoleCommands.Length; i++)
-            {
-                text += "\n<color=orange>" + consoleCommands[i].Title + DevConsole.GetParameters(consoleCommands[i]) + "</color>" + (consoleCommands[i].DescriptiveText == null ? string.Empty : " //" + consoleCommands[i].DescriptiveText);
-            }
-
-            DevConsole.Log(text);
-
-            DevConsole.Log("<color=orange>Note:</color> If the function has no parameters you <color=red> don't</color> need to use the parameter modifier.");
-            DevConsole.Log("<color=orange>Note:</color> You <color=red>don't</color> need to use the trailing parameter modifier either");
-        }
-
         public static void SetFontSize(int size)
         {
             if (size < 10)
@@ -73,129 +54,243 @@ namespace DeveloperConsole
             DevConsole.TextObject().text = "\n" + text;
         }
 
-        /// <summary>
-        /// Clears the text area and history.
-        /// </summary>
-        public static void Clear()
-        {
-            DevConsole.ClearHistory();
-            SetText("\n<color=green>Clear Successful :D</color>");
-        }
-
-        public static World GetCurrentWorld()
-        {
-            return World.Current;
-        }
-
         public static void SetCharacterHealth(string name, float health)
         {
-            GetCurrentWorld().CharacterManager.GetFromName(name).Health.CurrentHealth = health;
+            World world;
+
+            if (ModUtils.GetCurrentWorld(out world))
+            {
+                world.CharacterManager.GetFromName(name).Health.CurrentHealth = health;
+            }
         }
 
         public static void DamageCharacter(string name, float amount)
         {
-            GetCurrentWorld().CharacterManager.GetFromName(name).Health.DamageEntity(amount);
+            World world;
+
+            if (ModUtils.GetCurrentWorld(out world))
+            {
+                world.CharacterManager.GetFromName(name).Health.DamageEntity(amount);
+            }
         }
 
         // Deprecated, but don't remove.  Since later on we may want this so just create a struct to hold variables since too many
         public static void CharacterHealthSystemSet(string name, float hp, bool overheal, bool healable, bool invincible, bool revivable)
         {
-            HealthSystem health = GetCurrentWorld().CharacterManager.GetFromName(name).Health;
-            health.CanOverheal = overheal;
-            health.CurrentHealth = hp;
-            health.IsHealable = healable;
-            health.IsInvincible = invincible;
-            health.IsRevivable = revivable;
+            World world;
+
+            if (ModUtils.GetCurrentWorld(out world))
+            {
+                HealthSystem health = world.CharacterManager.GetFromName(name).Health;
+                health.CanOverheal = overheal;
+                health.CurrentHealth = hp;
+                health.IsHealable = healable;
+                health.IsInvincible = invincible;
+                health.IsRevivable = revivable;
+            }
         }
 
         public static void CharacterClearStateQueue(string name)
         {
-            GetCurrentWorld().CharacterManager.GetFromName(name).ClearStateQueue();
+            World world;
+
+            if (ModUtils.GetCurrentWorld(out world))
+            {
+                world.CharacterManager.GetFromName(name).ClearStateQueue();
+            }
         }
 
         public static void AllCharactersClearStateQueue()
         {
-            foreach (Character character in GetCurrentWorld().CharacterManager)
+            World world;
+
+            if (ModUtils.GetCurrentWorld(out world))
             {
-                character.ClearStateQueue();
+                foreach (Character character in world.CharacterManager)
+                {
+                    character.ClearStateQueue();
+                }
             }
         }
 
         public static void AddCurrency(string name, float amount)
         {
-            GetCurrentWorld().Wallet.AddCurrency(name, amount);
+            World world;
+
+            if (ModUtils.GetCurrentWorld(out world))
+            {
+                world.Wallet.AddCurrency(name, amount);
+            }
         }
 
         public static void ConsumeInventory(Vector3 pos, int amount)
         {
-            GetCurrentWorld().InventoryManager.ConsumeInventory(GetTileAt(pos), amount);
+            World world;
+            Tile t;
+
+            if (ModUtils.GetCurrentWorld(out world) && ModUtils.GetTileAt(pos, out t))
+            {
+                world.InventoryManager.ConsumeInventory(t, amount);
+            }
         }
 
         public static void PlaceInventory(Vector3 pos, string type, Vector2 stackSizeRange)
         {
-            GetCurrentWorld().InventoryManager.PlaceInventory(GetTileAt(pos), new Inventory(type, (int)stackSizeRange.x, (int)stackSizeRange.y));
+            World world;
+            Tile t;
+
+            if (ModUtils.GetCurrentWorld(out world) && ModUtils.GetTileAt(pos, out t))
+            {
+                world.InventoryManager.PlaceInventory(t, new Inventory(type, (int)stackSizeRange.x, (int)stackSizeRange.y));
+            }
         }
 
         public static void PlaceInventory(string name, int amount, string type, Vector2 stackSizeRange)
         {
-            GetCurrentWorld().InventoryManager.PlaceInventory(GetCurrentWorld().CharacterManager.GetFromName(name), new Inventory(type, (int)stackSizeRange.x, (int)stackSizeRange.y), amount);
+            World world;
+
+            if (ModUtils.GetCurrentWorld(out world))
+            {
+                world.InventoryManager.PlaceInventory(world.CharacterManager.GetFromName(name), new Inventory(type, (int)stackSizeRange.x, (int)stackSizeRange.y), amount);
+            }
         }
 
         public static void RemoveInventoryOfType(string type, int amount, bool onlyFromStockpiles)
         {
-            GetCurrentWorld().InventoryManager.RemoveInventoryOfType(type, amount, onlyFromStockpiles);
+            World world;
+
+            if (ModUtils.GetCurrentWorld(out world))
+            {
+                world.InventoryManager.RemoveInventoryOfType(type, amount, onlyFromStockpiles);
+            }
         }
 
         public static void PlaceFurniture(string type, Vector3 pos, float rotation)
         {
-            GetCurrentWorld().FurnitureManager.PlaceFurniture(type, GetTileAt(pos), true, rotation);
+            World world;
+            Tile t;
+
+            if (ModUtils.GetCurrentWorld(out world) && ModUtils.GetTileAt(pos, out t))
+            {
+                world.FurnitureManager.PlaceFurniture(type, t, true, rotation);
+            }
         }
 
         public static void IsWorkSpotClear(string type, Vector3 pos)
         {
-            if (GetCurrentWorld().FurnitureManager.IsWorkSpotClear(type, GetTileAt(pos)))
+            World world;
+            Tile t;
+
+            if (ModUtils.GetCurrentWorld(out world) && ModUtils.GetTileAt(pos, out t))
             {
-                DevConsole.Log("Work spot is clear!", "green");
-            }
-            else
-            {
-                DevConsole.LogWarning("Work spot isn't clear!");
+                if (world.FurnitureManager.IsWorkSpotClear(type, t))
+                {
+                    DevConsole.Log("Work spot is clear!", "green");
+                }
+                else
+                {
+                    DevConsole.LogWarning("Work spot isn't clear!");
+                }
             }
         }
 
         public static void IsPlacementValid(string type, Vector3 pos, float rotation)
         {
-            if (GetCurrentWorld().FurnitureManager.IsPlacementValid(type, GetTileAt(pos), rotation))
+            World world;
+            Tile t;
+
+            if (ModUtils.GetCurrentWorld(out world) && ModUtils.GetTileAt(pos, out t))
             {
-                DevConsole.Log("Spot is valid!", "green");
-            }
-            else
-            {
-                DevConsole.LogWarning("Spot isn't valid!");
+                if (world.FurnitureManager.IsPlacementValid(type, t, rotation))
+                {
+                    DevConsole.Log("Spot is valid!", "green");
+                }
+                else
+                {
+                    DevConsole.LogWarning("Spot isn't valid!");
+                }
             }
         }
 
         public static void GetTemperature(Vector3 pos)
         {
-            DevConsole.Log("Temperature: " + GetCurrentWorld().temperature.GetTemperature((int)pos.x, (int)pos.y, (int)pos.z), "green");
+            World world;
+
+            if (ModUtils.GetCurrentWorld(out world))
+            {
+                DevConsole.Log("Temperature: " + world.temperature.GetTemperature((int)pos.x, (int)pos.y, (int)pos.z), "green");
+            }
         }
 
         public static void GetThermallDiffusivity(Vector3 pos)
         {
-            DevConsole.Log("Thermal Diffusivity: " + GetCurrentWorld().temperature.GetThermalDiffusivity((int)pos.x, (int)pos.y, (int)pos.z), "green");
+            World world;
+
+            if (ModUtils.GetCurrentWorld(out world))
+            {
+                DevConsole.Log("Thermal Diffusivity: " + world.temperature.GetThermalDiffusivity((int)pos.x, (int)pos.y, (int)pos.z), "green");
+            }
         }
 
         public static void FloodFillRoomAt(Vector3 pos)
         {
-            GetCurrentWorld().RoomManager.DoRoomFloodFill(GetTileAt(pos), false, false);
+            World world;
+            Tile t;
+
+            if (ModUtils.GetCurrentWorld(out world) && ModUtils.GetTileAt(pos, out t))
+            {
+                world.RoomManager.DoRoomFloodFill(t, false, false);
+            }
         }
 
         public static void GetAllRoomIDs()
         {
-            DevConsole.Log("Room IDs:");
-            foreach (Room room in GetCurrentWorld().RoomManager)
+            World world;
+
+            if (ModUtils.GetCurrentWorld(out world))
             {
-                DevConsole.Log("Room " + room.ID, "green");
+                DevConsole.Log("Room IDs:");
+                foreach (Room room in world.RoomManager)
+                {
+                    DevConsole.Log("Room " + room.ID, "green");
+                }
+            }
+        }
+
+        public static void Exit()
+        {
+            DevConsole.Close();
+        }
+
+        public static void DevMode(bool isOn)
+        {
+            CommandSettings.DeveloperModeToggle = isOn;
+        }
+
+        public static void Status()
+        {
+            DevConsole.Log("Developer Mode is " + (CommandSettings.DeveloperModeToggle ? "on" : "off"), "yellow");
+            DevConsole.Log("Time is " + (TimeManager.Instance.IsPaused ? "paused" : TimeManager.Instance.TimeScale + "x"), "yellow");
+        }
+
+        public static void NewCharacter(Vector3 pos, string name = "")
+        {
+            World world;
+            Tile t;
+
+            if (ModUtils.GetCurrentWorld(out world) && ModUtils.GetTileAt(pos, out t))
+            {
+                Character character = world.CharacterManager.Create(t);
+
+                if (character != null)
+                {
+                    if (name != string.Empty)
+                    {
+                        character.name = name;
+                    }
+
+                    DevConsole.Log("Say hello to: " + character.GetName());
+                }
             }
         }
 
@@ -205,12 +300,16 @@ namespace DeveloperConsole
         /// <param name="buildMode"> Build mode, with int in this order: FLOOR, ROOMBEHAVIOR, FURNITURE, UTILITY, DECONSTRUCT. </param>
         public static void DoBuild(int buildMode, string type, Vector3 pos)
         {
-            BuildModeController.Instance.buildMode = (BuildMode)buildMode;
-            BuildModeController.Instance.buildModeType = type;
-            BuildModeController.Instance.DoBuild(GetTileAt(pos));
+            Tile t;
+            if (ModUtils.GetTileAt(pos, out t))
+            {
+                BuildModeController.Instance.buildMode = (BuildMode)buildMode;
+                BuildModeController.Instance.buildModeType = type;
+                BuildModeController.Instance.DoBuild(t);
 
-            BuildModeController.Instance.buildModeType = string.Empty;
-            BuildModeController.Instance.buildMode = BuildMode.FLOOR;
+                BuildModeController.Instance.buildModeType = string.Empty;
+                BuildModeController.Instance.buildMode = BuildMode.FLOOR;
+            }
         }
 
         public static void DoBuildHelp()
@@ -221,20 +320,25 @@ namespace DeveloperConsole
 
         public static void InvalidateTileGraph()
         {
-            GetCurrentWorld().InvalidateTileGraph();
+            World world;
+
+            if (ModUtils.GetCurrentWorld(out world))
+            {
+                world.InvalidateTileGraph();
+            }
         }
 
         public static void GetCharacterNames()
         {
-            foreach (Character character in GetCurrentWorld().CharacterManager)
-            {
-                DevConsole.Log("Say hello to " + character.GetName(), "green");
-            }
-        }
+            World world;
 
-        public static Tile GetTileAt(Vector3 pos)
-        {
-            return GetCurrentWorld().GetTileAt((int)pos.x, (int)pos.y, (int)pos.z);
+            if (ModUtils.GetCurrentWorld(out world))
+            {
+                foreach (Character character in world.CharacterManager)
+                {
+                    DevConsole.Log("Say hello to " + character.GetName(), "green");
+                }
+            }
         }
 
         public static void SetRoomGas(int roomID, string gas, float pressure)

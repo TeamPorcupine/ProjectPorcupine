@@ -39,10 +39,6 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
     // This is the generic type of object this is, allowing things to interact with it based on it's generic type
     private HashSet<string> typeTags;
 
-    private string name = null;
-
-    private string description = string.Empty;
-
     private HashSet<string> tileTypeBuildPermissions;
 
     private Dictionary<string, OrderAction> orderActions;
@@ -71,9 +67,7 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
     private Utility(Utility other)
     {
         Type = other.Type;
-        Name = other.Name;
         typeTags = new HashSet<string>(other.typeTags);
-        description = other.description;
         Tint = other.Tint;
 
         // add cloned order actions
@@ -166,23 +160,6 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
     public string Type { get; private set; }
 
     /// <summary>
-    /// Gets the name of the utility. The name is the object type by default.
-    /// </summary>
-    /// <value>The name of the utility.</value>
-    public string Name
-    {
-        get
-        {
-            return string.IsNullOrEmpty(name) ? Type : name;
-        }
-
-        private set
-        {
-            name = value;
-        }
-    }
-
-    /// <summary>
     /// Gets the code used for Localization of the utility.
     /// </summary>
     public string LocalizationCode { get; private set; }
@@ -243,7 +220,7 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
     {
         if (proto.IsValidPosition(tile) == false)
         {
-            UnityDebugger.Debugger.LogError("Utility", "PlaceInstance -- Position Validity Function returned FALSE. " + proto.Name + " " + tile.X + ", " + tile.Y + ", " + tile.Z);
+            UnityDebugger.Debugger.LogError("Utility", "PlaceInstance -- Position Validity Function returned FALSE. " + proto.GetName() + " " + tile.X + ", " + tile.Y + ", " + tile.Z);
             return null;
         }
 
@@ -266,9 +243,9 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
         // buddy.  Just trigger their OnChangedCallback.
         foreach (Tile neighbor in obj.Tile.GetNeighbours())
         {
-            if (neighbor.Utilities != null && neighbor.Utilities.ContainsKey(obj.Name))
+            if (neighbor.Utilities != null && neighbor.Utilities.ContainsKey(obj.Type))
             {
-                Utility utility = neighbor.Utilities[obj.Name];
+                Utility utility = neighbor.Utilities[obj.Type];
                 if (utility.Changed != null)
                 {
                     utility.Changed(utility);
@@ -287,40 +264,21 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
             World.Current.PowerNetwork.RegisterGrid(obj.Grid);
         }
 
-        if (obj.Tile != null && obj.Tile.Furniture != null && obj.Tile.Furniture.GetComponent<PowerConnection>("PowerConnection") != null)
+        // try to reconnect furniture if present and compatible     
+        if (obj.Tile != null && obj.Tile.Furniture != null)
         {
-            // HACK: This will work for now, but needs expanded when we have other types of connections we'll want to plug in
-            obj.Tile.Furniture.GetComponent<PowerConnection>("PowerConnection").Reconnect();
+            IPluggable pluggableComponent = obj.Tile.Furniture.GetPluggable(proto.typeTags);
+            if (pluggableComponent != null)
+            {
+                // plug in
+                pluggableComponent.Reconnect();
+            }
         }
 
         // Call LUA install scripts
         obj.EventActions.Trigger("OnInstall", obj);
 
         return obj;
-    }
-
-    /// <summary>
-    /// This function is called to update the utility. This will also trigger EventsActions.
-    /// This checks if the utility is a PowerConsumer, and if it does not have power it cancels its job.
-    /// </summary>
-    /// <param name="deltaTime">The time since the last update was called.</param>
-    public void EveryFrameUpdate(float deltaTime)
-    {
-        gridUpdatedThisFrame = false;
-    }
-
-    /// <summary>
-    /// This function is called to update the utility. This will also trigger EventsActions.
-    /// This checks if the utility is a PowerConsumer, and if it does not have power it cancels its job.
-    /// </summary>
-    /// <param name="deltaTime">The time since the last update was called.</param>
-    public void FixedFrequencyUpdate(float deltaTime)
-    {
-        if (EventActions != null)
-        {
-            // updateActions(this, deltaTime);
-            EventActions.Trigger("OnUpdate", this, deltaTime);
-        }
     }
 
     /// <summary>
@@ -365,17 +323,9 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
         {
             switch (reader.Name)
             {
-                case "Name":
-                    reader.Read();
-                    Name = reader.ReadContentAsString();
-                    break;
                 case "TypeTag":
                     reader.Read();
                     typeTags.Add(reader.ReadContentAsString());
-                    break;
-                case "Description":
-                    reader.Read();
-                    description = reader.ReadContentAsString();
                     break;
                 case "CanBeBuiltOn":
                     tileTypeBuildPermissions.Add(reader.GetAttribute("tileType"));
@@ -494,9 +444,9 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
         // Just trigger their OnChangedCallback.
         foreach (Tile neighbor in Tile.GetNeighbours())
         {
-            if (neighbor.Utilities != null && neighbor.Utilities.ContainsKey(this.Name))
+            if (neighbor.Utilities != null && neighbor.Utilities.ContainsKey(this.Type))
             {
-                Utility neighborUtility = neighbor.Utilities[this.Name];
+                Utility neighborUtility = neighbor.Utilities[this.Type];
                 if (neighborUtility.Changed != null)
                 {
                     neighborUtility.Changed(neighborUtility);
@@ -576,7 +526,7 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
     {
         yield return new ContextMenuAction
         {
-            LocalizationKey = "Deconstruct " + Name,
+            LocalizationKey = "Deconstruct " + GetName(),
             RequireCharacterSelected = false,
             Action = (contextMenuAction, character) => SetDeconstructJob()
         };
@@ -588,7 +538,7 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
                 {
                     yield return new ContextMenuAction
                     {
-                        LocalizationKey = "Prioritize " + Name,
+                        LocalizationKey = "Prioritize " + GetName(),
                         RequireCharacterSelected = true,
                         Action = (contextMenuAcion, character) => character.PrioritizeJob(Jobs[0])
                     };
@@ -663,6 +613,7 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
         }
 
         gridUpdatedThisFrame = true;
+        TimeManager.Instance.RunNextFrame(() => gridUpdatedThisFrame = false);
         Grid oldGrid = utilityToUpdate.Grid;
 
         World.Current.PowerNetwork.RemoveGrid(utilityToUpdate.Grid);
@@ -671,9 +622,9 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
         {
             foreach (Tile neighborTile in utilityToUpdate.Tile.GetNeighbours())
             {
-                if (neighborTile != null && neighborTile.Utilities != null && neighborTile.Utilities.ContainsKey(this.Name))
+                if (neighborTile != null && neighborTile.Utilities != null && neighborTile.Utilities.ContainsKey(this.Type))
                 {
-                    Utility utility = neighborTile.Utilities[this.Name];
+                    Utility utility = neighborTile.Utilities[this.Type];
 
                     if (utility.Grid != null && utilityToUpdate.Grid == null)
                     {
@@ -708,9 +659,9 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
         {
             if (neighborTile != null && neighborTile.Utilities != null)
             {
-                if (neighborTile != null && neighborTile.Utilities != null && neighborTile.Utilities.ContainsKey(this.Name))
+                if (neighborTile != null && neighborTile.Utilities != null && neighborTile.Utilities.ContainsKey(this.Type))
                 {
-                    Utility utility = neighborTile.Utilities[this.Name];
+                    Utility utility = neighborTile.Utilities[this.Type];
                     utility.UpdateGrid(utility, utilityToUpdate.Grid);
                 }
             }

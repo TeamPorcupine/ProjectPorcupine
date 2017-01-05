@@ -228,7 +228,7 @@ public class JobQueue
         return false;
     }
 
-    private void ReevaluateWaitingQueue(Inventory inv)
+    public void ReevaluateWaitingQueue(Inventory inv)
     {
         DebugLog("ReevaluateWaitingQueue() new resource: {0}, count: {1}", inv.Type, inv.StackSize);
 

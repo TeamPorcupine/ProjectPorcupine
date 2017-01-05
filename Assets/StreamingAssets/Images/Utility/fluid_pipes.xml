@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Sprites>
+	<Sprite name="fluid_pipe_E" x="0" y="0" w="1" h="1" pixelPerUnit="64" pivotX="0.5" pivotY="0.5" />
+	<Sprite name="fluid_pipe_ES" x="0" y="2" w="1" h="1" pixelPerUnit="64" pivotX="0.5" pivotY="0.5" />
+	<Sprite name="fluid_pipe_ESW" x="2" y="3" w="1" h="1" pixelPerUnit="64" pivotX="0.5" pivotY="0.5" />
+	<Sprite name="fluid_pipe_EW" x="1" y="1" w="1" h="1" pixelPerUnit="64" pivotX="0.5" pivotY="0.5" />
+	<Sprite name="fluid_pipe_N" x="1" y="0" w="1" h="1" pixelPerUnit="64" pivotX="0.5" pivotY="0.5" />
+	<Sprite name="fluid_pipe_NE" x="1" y="2" w="1" h="1" pixelPerUnit="64" pivotX="0.5" pivotY="0.5" />
+	<Sprite name="fluid_pipe_NES" x="1" y="3" w="1" h="1" pixelPerUnit="64" pivotX="0.5" pivotY="0.5" />
+	<Sprite name="fluid_pipe_NESW" x="0" y="3" w="1" h="1" pixelPerUnit="64" pivotX="0.5" pivotY="0.5" />
+	<Sprite name="fluid_pipe_NEW" x="0" y="1" w="1" h="1" pixelPerUnit="64" pivotX="0.5" pivotY="0.5" />
+	<Sprite name="fluid_pipe_NS" x="2" y="1" w="1" h="1" pixelPerUnit="64" pivotX="0.5" pivotY="0.5" />
+	<Sprite name="fluid_pipe_NSW" x="3" y="3" w="1" h="1" pixelPerUnit="64" pivotX="0.5" pivotY="0.5" />
+	<Sprite name="fluid_pipe_NW" x="3" y="1" w="1" h="1" pixelPerUnit="64" pivotX="0.5" pivotY="0.5" />
+	<Sprite name="fluid_pipe_S" x="3" y="2" w="1" h="1" pixelPerUnit="64" pivotX="0.5" pivotY="0.5" />
+	<Sprite name="fluid_pipe_SW" x="2" y="2" w="1" h="1" pixelPerUnit="64" pivotX="0.5" pivotY="0.5" />
+	<Sprite name="fluid_pipe_W" x="2" y="0" w="1" h="1" pixelPerUnit="64" pivotX="0.5" pivotY="0.5" />
+	<Sprite name="fluid_pipe_" x="3" y="0" w="1" h="1" pixelPerUnit="64" pivotX="0.5" pivotY="0.5" />
+</Sprites>

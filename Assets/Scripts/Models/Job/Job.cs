@@ -93,7 +93,7 @@ public class Job : ISelectable, IPrototypable
     {
         this.tile = tile;
         this.JobTileType = jobTileType;
-        this.Type = "tile_" + jobTileType.Name;
+        this.Type = jobTileType.LocalizationCode;
         this.OnJobCompleted += jobCompleted;
         this.jobTimeRequired = this.JobTime = jobTime;
         this.jobRepeats = jobRepeats;

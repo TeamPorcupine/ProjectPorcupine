@@ -120,46 +120,66 @@ public class PowerNetworkTest
         Assert.IsTrue(powerNetwork.HasPower(firstPowerConsumer));
     }
 
-    private class MockConnection : IPlugable
+    private class MockConnection : IPluggable
     {
         public event Action Reconnecting;
 
-        public float AccumulatedAmount { get; set; }
+        public float StoredAmount { get; set; }
 
-        public float AccumulatorCapacity { get; set; }
+        public float StorageCapacity { get; set; }
 
         public float InputRate { get; set; }
 
-        public bool IsAccumulator
+        public bool IsStorage
         {
-            get { return AccumulatorCapacity > 0f; }
+            get { return StorageCapacity > 0f; }
         }
 
         public bool IsConsumer
         {
-            get { return InputRate > 0f && !IsAccumulator; }
+            get { return InputRate > 0f && !IsStorage; }
         }
 
         public bool IsEmpty
         {
-            get { return AccumulatedAmount == 0f; }
+            get { return StoredAmount == 0f; }
         }
 
         public bool IsFull
         {
-            get { return AccumulatedAmount.AreEqual(AccumulatorCapacity); }
+            get { return StoredAmount.AreEqual(StorageCapacity); }
+        }
+
+        public string UtilityType 
+        { 
+            get 
+            { 
+                return "Power";
+            }
+        }
+
+        public string SubType 
+        {
+            get 
+            {
+                return string.Empty;
+            }
+
+            set
+            {
+            }
         }
 
         public bool IsProducer
         {
-            get { return OutputRate > 0f && !IsAccumulator; }
+            get { return OutputRate > 0f && !IsStorage; }
         }
 
         public float OutputRate { get; set; }
 
         public void Reconnect()
         {
-            // Not needed to do anything.
+            throw new NotImplementedException();
         }
     }
 }

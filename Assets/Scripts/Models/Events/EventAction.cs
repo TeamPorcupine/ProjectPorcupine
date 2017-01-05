@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using System.Collections.Generic;
 using System.Xml;
 using MoonSharp.Interpreter;
@@ -102,11 +103,10 @@ public class EventActions
     {
         if (!actionsList.ContainsKey(actionName) || actionsList[actionName] == null)
         {
-            return;
         }
         else
         {
-            FunctionsManager.Get(target.GetType().Name).CallWithInstance(actionsList[actionName].ToArray(), target, parameters);
+            FunctionsManager.Get(target.GetType().Name).CallWithInstance(actionsList[actionName], target, parameters);
         }
     }
 

@@ -290,7 +290,7 @@ public class SettingsMenu : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKey(KeyCode.Escape))
+        if (Input.GetKey(KeyCode.Escape) && mainRoot.activeInHierarchy == true)
         {
             Cancel();
         }

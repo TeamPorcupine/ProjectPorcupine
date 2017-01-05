@@ -56,7 +56,8 @@ namespace ProjectPorcupine.State
                     path = World.Current.InventoryManager.GetPathToClosestInventoryOfType(inventoryTypes, character.CurrTile, Job.canTakeFromStockpile);
                     if (path != null && path.Count > 0)
                     {
-                        path.Last().Inventory.Claim();
+                        Inventory inv = path.Last().Inventory;
+                        inv.Claim(character, (inv.AvailableInventory < Job.RequestedItems[inv.Type].AmountDesired()) ? inv.AvailableInventory : Job.RequestedItems[inv.Type].AmountDesired());
                         character.SetState(new MoveState(character, Pathfinder.GoalTileEvaluator(path.Last(), false), path, this));
                     }
                     else if (character.inventory == null)
