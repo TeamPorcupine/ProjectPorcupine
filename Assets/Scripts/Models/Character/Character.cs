@@ -30,7 +30,7 @@ public enum Facing
 /// sub-classes or interfaces) to support friendly workers, enemies, etc...
 /// </summary>
 [MoonSharpUserData]
-public class Character : ISelectable, IContextActionProvider
+public class Character : ISelectable, IContextActionProvider, IUpdatable
 {
     /// Name of the Character.
     public string name;
@@ -158,6 +158,16 @@ public class Character : ISelectable, IContextActionProvider
         get
         {
             return CurrTile.Z + TileOffset.z;
+        }
+    }
+
+    public Bounds Bounds 
+    {
+        get
+        {
+            return new Bounds(
+                new Vector3(X - 1, Y - 1, 0),
+                new Vector3(1, 1));
         }
     }
 
@@ -313,7 +323,7 @@ public class Character : ISelectable, IContextActionProvider
     #endregion
 
     /// Runs every "frame" while the simulation is not paused
-    public void Update(float deltaTime)
+    public void EveryFrameUpdate(float deltaTime)
     {
         // Run all the global states first so that they can interrupt or queue up new states
         foreach (State globalState in globalStates)
@@ -351,6 +361,11 @@ public class Character : ISelectable, IContextActionProvider
         {
             OnCharacterChanged(this);
         }
+    }
+
+    public void FixedFrequencyUpdate(float deltaTime)
+    {
+        throw new NotImplementedException();
     }
 
     public object ToJSon()

@@ -25,7 +25,7 @@ using UnityEngine;
 /// InstalledObjects are things like walls, doors, and furniture (e.g. a sofa).
 /// </summary>
 [MoonSharpUserData]
-public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBuildable
+public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBuildable, IUpdatable
 {
     #region Private Variables
     private string isEnterableAction;
@@ -151,6 +151,10 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
 
         tileTypeBuildPermissions = new HashSet<string>(other.tileTypeBuildPermissions);
 
+        RequiresSlowUpdate = EventActions.HasEvent("OnUpdate") || components.Any(c => c.RequiresSlowUpdate);
+
+        RequiresFastUpdate = EventActions.HasEvent("OnFastUpdate") || components.Any(c => c.RequiresFastUpdate);
+
         LocalizationCode = other.LocalizationCode;
         UnlocalizedDescription = other.UnlocalizedDescription;
 
@@ -209,6 +213,16 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// </summary>
     /// <value>The event actions that is called on update.</value>
     public EventActions EventActions { get; private set; }
+
+    public Bounds Bounds 
+    {
+        get
+        {
+            return new Bounds(
+                new Vector3(Tile.X - 0.5f + (Width / 2), Tile.Y - 0.5f + (Height / 2), 0),
+                new Vector3(Width, Height));
+        }
+    }
 
     /// <summary>
     /// Gets a value indicating whether the furniture is operating or not.
@@ -353,6 +367,22 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// This flag is set if the furniture is tasked to be destroyed.
     /// </summary>
     public bool IsBeingDestroyed { get; protected set; }
+
+    /// <summary>
+    /// Gets a value indicating whether this instance has components.
+    /// </summary>
+    /// <value><c>true</c> if this instance has components; otherwise, <c>false</c>.</value>
+    public bool HasComponents
+    {
+        get
+        {
+            return components != null || components.Count != 0;
+        }
+    }
+
+    public bool RequiresFastUpdate { get; set; }
+
+    public bool RequiresSlowUpdate { get; set; }
 
     /// <summary>
     /// Flag with furniture requirements (used for showing icon overlay, e.g. No power, ... ).

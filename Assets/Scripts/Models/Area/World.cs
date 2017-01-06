@@ -170,15 +170,6 @@ public class World
     }
 
     /// <summary>
-    /// Notify world that the camera moved, so we can check which entities are visible to the camera.
-    /// The invisible enities can be updated less frequent for better performance.
-    /// </summary>
-    public void OnCameraMoved(Bounds cameraBounds)
-    {
-        FurnitureManager.OnCameraMoved(cameraBounds);
-    }
-
-    /// <summary>
     /// Gets the tile data at x and y.
     /// </summary>
     /// <returns>The <see cref="Tile"/> or null if called with invalid arguments.</returns>
@@ -511,8 +502,6 @@ public class World
     /// <param name="deltaTime">Delta time.</param>
     private void TickEveryFrame(float deltaTime)
     {
-        CharacterManager.Update(deltaTime);
-        FurnitureManager.TickEveryFrame(deltaTime);
         GameEventManager.Update(deltaTime);
         ShipManager.Update(deltaTime);
     }
@@ -523,8 +512,6 @@ public class World
     /// <param name="deltaTime">Delta time.</param>
     private void TickFixedFrequency(float deltaTime)
     {
-        FurnitureManager.TickFixedFrequency(deltaTime);
-
         // Progress temperature modelling
         temperature.Update(deltaTime);
         PowerNetwork.Update(deltaTime);

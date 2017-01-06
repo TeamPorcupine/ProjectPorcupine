@@ -10,18 +10,28 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class TimeManager
 {
-    private static TimeManager instance;
+    private const int FramesInSlowUpdateCycle = 10;
 
-    private float gameTickPerSecond = 5;
+    private const float GameTickPerSecond = 5;
+
+    private static TimeManager instance;
 
     private List<Action> nextFrameActions = new List<Action>();
 
     // An array of possible time multipliers.
     private float[] possibleTimeScales = new float[6] { 0.1f, 0.5f, 1f, 2f, 4f, 8f };
+
+    private List<IUpdatable> fastUpdatables = new List<IUpdatable>();
+
+    private List<IUpdatable>[] slowUpdatablesLists = new List<IUpdatable>[FramesInSlowUpdateCycle];
+
+    private float[] accumulatedTime = new float[FramesInSlowUpdateCycle];
+    private int timePos = 0;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TimeManager"/> class.
@@ -33,6 +43,11 @@ public class TimeManager
         TotalDeltaTime = 0f;
         TimeScalePosition = 2;
         IsPaused = false;
+
+        for (int i = 0; i < slowUpdatablesLists.Length; i++)
+        {
+            slowUpdatablesLists[i] = new List<IUpdatable>();
+        }
 
         KeyboardManager.Instance.RegisterInputAction("SetSpeed1", KeyboardMappedInputType.KeyUp, () => SetTimeScalePosition(2));
         KeyboardManager.Instance.RegisterInputAction("SetSpeed2", KeyboardMappedInputType.KeyUp, () => SetTimeScalePosition(3));
@@ -83,6 +98,12 @@ public class TimeManager
         }
     }
 
+    /// <summary>
+    /// Gets the game time.
+    /// </summary>
+    /// <value>The game time.</value>
+    public float GameTime { get; private set; } // TODO: Implement saving and loading game time, so time is persistent across loads.
+
     // Current position in that array.
     // Public so TimeScaleUpdater can easily get a position appropriate to an image.
     public int TimeScalePosition { get; private set; }
@@ -93,7 +114,7 @@ public class TimeManager
     /// <value>The game time tick delay.</value>
     public float GameTickDelay
     {
-        get { return 1f / gameTickPerSecond; }
+        get { return 1f / GameTickPerSecond; }
     }
 
     /// <summary>
@@ -128,7 +149,7 @@ public class TimeManager
     /// </summary>
     /// <param name="time">Time since last frame.</param>
     public void Update(float time)
-    {
+    {   
         float deltaTime = time * TimeScale;
 
         // Systems that update every frame.
@@ -153,7 +174,9 @@ public class TimeManager
         // Systems that update every frame while unpaused.
         if (GameController.Instance.IsPaused == false)
         {
+            GameTime += deltaTime;
             InvokeEvent(EveryFrameUnpaused, deltaTime);
+            ProcessUpdatables(deltaTime);
         }
 
         // Systems that update at fixed frequency.
@@ -171,6 +194,35 @@ public class TimeManager
         }
 
         TotalDeltaTime += deltaTime;
+    }
+
+    public void ProcessUpdatables(float deltaTime)
+    {
+        IUpdatable[] updatablesCopy = new IUpdatable[fastUpdatables.Count];
+        fastUpdatables.CopyTo(updatablesCopy, 0);
+        for (int i = 0; i < fastUpdatables.Count; i++)
+        {
+            updatablesCopy[i].EveryFrameUpdate(deltaTime);
+        }
+
+        accumulatedTime[timePos] = deltaTime;
+        float accumulatedDeltaTime = accumulatedTime.Sum();
+
+        updatablesCopy = new IUpdatable[slowUpdatablesLists[timePos].Count];
+        slowUpdatablesLists[timePos].CopyTo(updatablesCopy, 0);
+
+        for (int i = 0; i < updatablesCopy.Length; i++)
+        {
+            updatablesCopy[i].FixedFrequencyUpdate(accumulatedDeltaTime);
+        }
+
+        timePos++;
+        if (timePos >= accumulatedTime.Length)
+        {
+            timePos = 0;
+        }
+
+        updatablesCopy = null;
     }
 
     /// <summary>
@@ -209,6 +261,39 @@ public class TimeManager
     public void Destroy()
     {
         instance = null;
+    }
+
+    public void RegisterFastUpdate(IUpdatable updatable)
+    {
+        if (!fastUpdatables.Contains(updatable))
+        {
+            fastUpdatables.Add(updatable);
+        }
+    }
+
+    public void UnregisterFastUpdate(IUpdatable updatable)
+    {
+        if (fastUpdatables.Contains(updatable))
+        {
+            fastUpdatables.Remove(updatable);
+        }
+    }
+
+    public void RegisterSlowUpdate(IUpdatable updatable)
+    {
+        if (!slowUpdatablesLists.Any(list => list.Contains(updatable)))
+        {
+            slowUpdatablesLists.OrderBy(list => list.Count).First().Add(updatable);
+        }
+    }
+
+    public void UnregisterSlowUpdate(IUpdatable updatable)
+    {
+        if (slowUpdatablesLists.Any(list => list.Contains(updatable)))
+        {
+            // This should only ever return one list, as if statement guarantees it has at least one, and register method ensures no more than one
+            slowUpdatablesLists.Single(list => list.Contains(updatable)).Remove(updatable);
+        }
     }
 
     /// <summary>

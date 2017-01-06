@@ -19,20 +19,12 @@ public class FurnitureManager : IEnumerable<Furniture>
 {
     private List<Furniture> furnitures;
 
-    // A temporary list of all visible furniture. Gets updated when camera moves.
-    private HashSet<Furniture> furnituresVisible;
-
-    // A temporary list of all invisible furniture. Gets updated when camera moves.
-    private HashSet<Furniture> furnituresInvisible;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="FurnitureManager"/> class.
     /// </summary>
     public FurnitureManager()
     {
         furnitures = new List<Furniture>();
-        furnituresVisible = new HashSet<Furniture>();
-        furnituresInvisible = new HashSet<Furniture>();
     }
 
     /// <summary>
@@ -82,7 +74,15 @@ public class FurnitureManager : IEnumerable<Furniture>
         furniture.Removed += OnRemoved;
 
         furnitures.Add(furniture);
-        furnituresVisible.Add(furniture);
+        if (furniture.RequiresFastUpdate)
+        {
+            TimeManager.Instance.RegisterFastUpdate(furniture);
+        }
+
+        if (furniture.RequiresSlowUpdate)
+        {
+            TimeManager.Instance.RegisterSlowUpdate(furniture);
+        }
 
         // Do we need to recalculate our rooms/reachability for other jobs?
         if (doRoomFloodFill && furniture.RoomEnclosure)
@@ -173,46 +173,6 @@ public class FurnitureManager : IEnumerable<Furniture>
     }
 
     /// <summary>
-    /// Calls the furnitures update function on every frame.
-    /// The list needs to be copied temporarily in case furnitures are added or removed during the update.
-    /// </summary>
-    /// <param name="deltaTime">Delta time.</param>
-    public void TickEveryFrame(float deltaTime)
-    {
-        List<Furniture> tempFurnituresVisible = new List<Furniture>(furnituresVisible);
-        foreach (Furniture furniture in tempFurnituresVisible)
-        {
-            furniture.EveryFrameUpdate(deltaTime);
-        }
-    }
-
-    /// <summary>
-    /// Calls the furnitures update function on a fixed frequency.
-    /// The list needs to be copied temporarily in case furnitures are added or removed during the update.
-    /// </summary>
-    /// <param name="deltaTime">Delta time.</param>
-    public void TickFixedFrequency(float deltaTime)
-    {
-        // TODO: Further optimization could divide eventFurnitures in multiple lists
-        //       and update one of the lists each frame.
-        //       FixedFrequencyUpdate on invisible furniture could also be even slower.
-
-        // Update furniture outside of the camera view
-        List<Furniture> tempFurnituresInvisible = new List<Furniture>(furnituresInvisible);
-        foreach (Furniture furniture in tempFurnituresInvisible)
-        {
-            furniture.EveryFrameUpdate(deltaTime);
-        }
-
-        // Update all furniture with EventActions
-        List<Furniture> tempFurnitures = new List<Furniture>(furnitures);
-        foreach (Furniture furniture in tempFurnitures)
-        {
-            furniture.FixedFrequencyUpdate(deltaTime);
-        }
-    }
-
-    /// <summary>
     /// Gets the furnitures enumerator.
     /// </summary>
     /// <returns>The enumerator.</returns>
@@ -230,41 +190,6 @@ public class FurnitureManager : IEnumerable<Furniture>
         foreach (Furniture furniture in furnitures)
         {
             yield return furniture;
-        }
-    }
-
-    /// <summary>
-    /// Notify world that the camera moved, so we can check which entities are visible to the camera.
-    /// The invisible enities can be updated less frequent for better performance.
-    /// </summary>
-    public void OnCameraMoved(Bounds cameraBounds)
-    {
-        // Expand bounds to include tiles on the edge where the centre isn't inside the bounds
-        cameraBounds.Expand(1);
-
-        foreach (Furniture furn in furnitures)
-        {
-            // Multitile furniture base tile is bottom left - so add width and height 
-            Bounds furnitureBounds = new Bounds(
-                new Vector3(furn.Tile.X - 0.5f + (furn.Width / 2), furn.Tile.Y - 0.5f + (furn.Height / 2), 0),
-                new Vector3(furn.Width, furn.Height));
-
-            if (cameraBounds.Intersects(furnitureBounds))
-            {
-                if (furnituresInvisible.Contains(furn))
-                {
-                    furnituresInvisible.Remove(furn);
-                    furnituresVisible.Add(furn);
-                }
-            }
-            else
-            {
-                if (furnituresVisible.Contains(furn))
-                {
-                    furnituresVisible.Remove(furn);
-                    furnituresInvisible.Add(furn);
-                }
-            }
         }
     }
 
@@ -302,15 +227,8 @@ public class FurnitureManager : IEnumerable<Furniture>
     private void OnRemoved(Furniture furniture)
     {
         furnitures.Remove(furniture);
-
-        if (furnituresInvisible.Contains(furniture))
-        {
-            furnituresInvisible.Remove(furniture);
-        }
-        else if (furnituresVisible.Contains(furniture))
-        {
-            furnituresVisible.Remove(furniture);
-        }
+        TimeManager.Instance.UnregisterFastUpdate(furniture);
+        TimeManager.Instance.UnregisterSlowUpdate(furniture);
 
         // Movement to jobs might have been opened, let's move jobs back into the queue to be re-evaluated.
         World.Current.jobQueue.ReevaluateReachability();
