@@ -25,13 +25,13 @@ public class TemperatureUnit
     public void UpdateTemperature(float newTemp)
     {
         temperatureInKelvin = newTemp;
-        Mathf.Clamp(temperatureInKelvin, 0, temperatureInKelvin);
+        temperatureInKelvin = Mathf.Clamp(temperatureInKelvin, 0, temperatureInKelvin);
     }
 
     public void IncreaseTemperature(float amount)
     {
         temperatureInKelvin += amount;
-        Mathf.Clamp(temperatureInKelvin, 0, temperatureInKelvin);
+        temperatureInKelvin = Mathf.Clamp(temperatureInKelvin, 0, temperatureInKelvin);
     }
 
     public override string ToString()
@@ -58,8 +58,7 @@ public class TemperatureUnit
 public class Temperature
 {
     /// <summary>
-    /// Taken straight from the real world value
-    /// Uses the first one, later could be fine tuned.
+    /// Taken straight from the real world value.  Then fine tuned a little
     /// </summary>
     public const float defaultThermalConductivity = 0.024f;
 
@@ -68,7 +67,7 @@ public class Temperature
     /// <summary>
     /// Our magical constant.
     /// </summary>
-    public static float k = 0.5f;
+    public static float k = 1;
 
     /// <summary>
     /// How often does the system update?
@@ -335,22 +334,37 @@ public class Temperature
     /// <param name="location"> 0 = None, 1 = N, 1.5 = NE, 2 = E, 2.5 = SE, 3 = S, 3.5 = SW, 4 = W, 4.5 = NW </param>
     private void DetermineIfPolygonal(Tile tile, float potentialHeat, float startingHeat, Tile centerLocation)
     {
-        if (tile.Furniture != null && tile.Furniture.ThermalConductivityIndex != defaultThermalConductivity)
+        float thermalValue;
+
+        if (tile == null || tile.Room == null || tile.Room.ID == -1)
+        {
+            thermalValue = 10000000;
+        }
+        else if (tile.Furniture == null)
+        {
+            thermalValue = defaultThermalConductivity;
+        }
+        else
+        {
+            thermalValue = tile.Furniture.ThermalConductivityIndex;
+        }
+
+        tile.ApplyTemperature(potentialHeat, startingHeat);
+
+        if (tile.Furniture != null && thermalValue != defaultThermalConductivity)
         {
             float position = GetLocationFloatFromXY(tile, centerLocation);
 
-            float baseTemperature = (tile.TemperatureUnit.temperatureInKelvin) / (E * Mathf.Abs(Mathf.Log(tile.Furniture.ThermalConductivityIndex)) * k);
+            float baseTemperature;
+
+            baseTemperature = (tile.TemperatureUnit.temperatureInKelvin) / (E * Mathf.Abs(Mathf.Log(thermalValue)) * k);
 
             Tile[] neighbours = GetNeighbours(position, tile);
 
             for (int i = 0; i < neighbours.Length; i++)
             {
-                neighbours[i].ApplyTemperature(-2 * baseTemperature, startingHeat);
+                neighbours[i].ApplyTemperature(-baseTemperature, startingHeat);
             }
-        }
-        else
-        {
-            tile.ApplyTemperature(potentialHeat, startingHeat);
         }
     }
 
