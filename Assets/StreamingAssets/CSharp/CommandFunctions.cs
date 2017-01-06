@@ -218,17 +218,7 @@ public static class CommandFunctions
 
         if (ModUtils.GetCurrentWorld(out world))
         {
-            DevConsole.Log("Temperature: " + world.temperature.GetTemperature((int)pos.x, (int)pos.y, (int)pos.z), "green");
-        }
-    }
-
-    public static void GetThermalDiffusivity(Vector3 pos)
-    {
-        World world;
-
-        if (ModUtils.GetCurrentWorld(out world))
-        {
-            DevConsole.Log("Thermal Diffusivity: " + world.temperature.GetThermalDiffusivity((int)pos.x, (int)pos.y, (int)pos.z), "green");
+            DevConsole.Log("Temperature: " + world.temperature.GetTemperatureUnit((int)pos.x, (int)pos.y, (int)pos.z).ToString(), "green");
         }
     }
 

@@ -45,6 +45,7 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
         Utilities = new Dictionary<string, Utility>();
         ReservedAsWorkSpotBy = new HashSet<Furniture>();
         PendingBuildJobs = new HashSet<Job>();
+        TemperatureUnit = new TemperatureUnit(0);
     }
 
     // The function we callback any time our tile's data changes
@@ -116,6 +117,8 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
     public int Y { get; private set; }
 
     public int Z { get; private set; }
+
+    public TemperatureUnit TemperatureUnit { get; private set; }
 
     public float MovementModifier { get; set; }
 
@@ -298,6 +301,33 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
         inventory.StackSize = 0;
 
         return true;
+    }
+
+    #endregion
+
+    #region Manage 
+
+    public void EqualiseTemperature(float leakFactor)
+    {
+        // TODO: Tell neighbours to equalise temperatures
+    }
+
+    /// <summary>
+    /// Applies a temperature to the tile, that is then furthered mathematically calculated to decrease
+    /// As the temperature increases.
+    /// </summary>
+    /// <param name="deltaTemperature"> The change in temperature/potential temperature. </param>
+    /// <param name="startingTemperature"> The starting temperature from the source. </param>
+    public void ApplyTemperature(float deltaTemperature, float startingTemperature)
+    {
+        if (this.TemperatureUnit.temperatureInKelvin < 5)
+        {
+            this.TemperatureUnit.IncreaseTemperature(deltaTemperature / Mathf.Log(startingTemperature));
+        }
+        else
+        {
+            this.TemperatureUnit.IncreaseTemperature(deltaTemperature / this.TemperatureUnit.temperatureInKelvin);
+        }
     }
 
     #endregion

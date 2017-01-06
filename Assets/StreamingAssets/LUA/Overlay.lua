@@ -54,7 +54,13 @@ function temperatureValueAt(tile, world)
     --if tile == nil then
     --	return -2
     --end
-    return math.max(math.min(world.temperature.GetTemperature(tile.X, tile.Y, tile.Z) / 3, 254), 0)
+	local temp = world.temperature.GetTemperatureUnit(tile.X, tile.Y, tile.Z)
+	
+	if temp ~= nil then
+		return math.max(math.min(temp.temperatureInKelvin / 3, 254), 0)
+	else
+		return 0
+	end
 end
 
 
