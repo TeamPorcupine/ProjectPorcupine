@@ -55,8 +55,6 @@ public class World
         WorldGenerator.Instance.Generate(this, seed);
         UnityDebugger.Debugger.Log("World", "Generated World");
 
-        temperature = new Temperature();
-
         tileGraph = new Path_TileGraph(this);
         roomGraph = new Path_RoomGraph(this);
 

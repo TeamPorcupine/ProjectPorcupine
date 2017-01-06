@@ -199,20 +199,20 @@ public class Temperature
         float diffusivity = wall.Parameters["thermal_diffusivity"].ToFloat(0);
         if(AreTilesInDifferentRooms(source, left))
         {
-            AddDiffusionFromTo(source.Room, left.Room, 0.25f * diffusivity);
-            AddDiffusionFromTo(left.Room, source.Room, 0.25f * diffusivity);
+            AddDiffusionFromTo(source.Room, left.Room, (left.Room.IsOutsideRoom() ? 0.01f : 0.25f) * diffusivity);
+            AddDiffusionFromTo(left.Room, source.Room, (source.Room.IsOutsideRoom() ? 0.01f : 0.25f) * diffusivity);
         }
 
         if(AreTilesInDifferentRooms(source, middle))
         {
-            AddDiffusionFromTo(source.Room, middle.Room, 0.5f * diffusivity);
-            AddDiffusionFromTo(middle.Room, source.Room, 0.5f * diffusivity);
+            AddDiffusionFromTo(source.Room, middle.Room, (middle.Room.IsOutsideRoom() ? 0.02f : 0.5f) * diffusivity);
+            AddDiffusionFromTo(middle.Room, source.Room, (source.Room.IsOutsideRoom() ? 0.02f : 0.5f) * diffusivity);
         }
 
         if(AreTilesInDifferentRooms(source, right))
         {
-            AddDiffusionFromTo(source.Room, right.Room, 0.25f * diffusivity);
-            AddDiffusionFromTo(right.Room, source.Room, 0.25f * diffusivity);
+            AddDiffusionFromTo(source.Room, right.Room, (right.Room.IsOutsideRoom() ? 0.01f : 0.25f) * diffusivity);
+            AddDiffusionFromTo(right.Room, source.Room, (source.Room.IsOutsideRoom() ? 0.01f : 0.25f) * diffusivity);
         }
     }
 
