@@ -22,7 +22,7 @@ using ProjectPorcupine.Rooms;
 [MoonSharpUserData]
 public class Temperature
 {
-    private Dictionary<Room,float> temperature;
+    private Dictionary<Room,float> thermalEnergy;
     private Dictionary<Room, Dictionary<Room,float>> diffusion;
     private List<Furniture> sinksAndSources;
 
@@ -31,11 +31,24 @@ public class Temperature
     /// </summary>
     public Temperature()
     {
-        temperature = new Dictionary<Room,float>();
+        thermalEnergy = new Dictionary<Room,float>();
+        foreach (Room room in World.Current.RoomManager)
+        {
+            thermalEnergy[room] = 0;
+        }
+
         RecomputeDiffusion();
         sinksAndSources = new List<Furniture>();
 
-        World.Current.RoomManager.Added += ((room) => { RecomputeDiffusion(); });
+        World.Current.RoomManager.Added += ((room) =>
+            {
+                if(thermalEnergy.ContainsKey(room) == false)
+                {
+                    thermalEnergy[room] = 0;
+                }
+
+                RecomputeDiffusion();
+            });
     }
 
     /// <summary>
@@ -71,7 +84,23 @@ public class Temperature
     /// <returns>Temperature at x,y,z.</returns>
     public float GetTemperature(int x, int y, int z)
     {
-        return 0;
+        Room room = World.Current.GetTileAt(x,y,z).Room;
+        if(room == null || room.IsOutsideRoom())
+        {
+            return 0;
+        }
+
+        return thermalEnergy[room] / room.TileCount;
+    }
+
+    public float GetTemperature(Room room)
+    {
+        if(room == null || room.IsOutsideRoom())
+        {
+            return 0;
+        }
+
+        return thermalEnergy[room] / room.TileCount;
     }
 
     public float GetTemperatureInC(int x, int y, int z)
@@ -91,7 +120,10 @@ public class Temperature
     /// <param name="y">Y coordinates.</param>
     /// <param name="z">Z coordinates.</param>
     /// <returns>Temperature to set at x,y,z.</returns>
-    public void SetTemperature(int x, int y, int z, float temp) {}
+    public void SetTemperature(Room room, float value)
+    {
+        thermalEnergy[room] = value * room.TileCount;
+    }
 
     /// <summary>
     /// Changes the temperature at (x,y,z) by an amount.
@@ -100,11 +132,21 @@ public class Temperature
     /// <param name="y">Y coordinates.</param>
     /// <param name="z">Z coordinates.</param>
     /// <param name="incr">Temperature to increase at x,y, z.</param>
-    public void ChangeTemperature(int x, int y, int z, float incr) {}
+    public void ChangeEnergy(Room room, float energy)
+    {
+        if(thermalEnergy.ContainsKey(room) == false)
+        {
+            thermalEnergy[room] = energy;
+        }
+        else
+        {
+            thermalEnergy[room] += energy;
+        }
+    }
 
     public void Resize()
     {
-        temperature = new Dictionary<Room,float>();
+        thermalEnergy = new Dictionary<Room,float>();
         RecomputeDiffusion();
         sinksAndSources = new List<Furniture>();
     }
@@ -154,22 +196,23 @@ public class Temperature
 
     private void AddDiffusionFromSource(Furniture wall, Tile source, Tile left, Tile middle, Tile right)
     {
+        float diffusivity = wall.Parameters["thermal_diffusivity"].ToFloat(0);
         if(AreTilesInDifferentRooms(source, left))
         {
-            AddDiffusionFromTo(source.Room, left.Room, 0.25f);
-            AddDiffusionFromTo(left.Room, source.Room, 0.25f);
+            AddDiffusionFromTo(source.Room, left.Room, 0.25f * diffusivity);
+            AddDiffusionFromTo(left.Room, source.Room, 0.25f * diffusivity);
         }
 
         if(AreTilesInDifferentRooms(source, middle))
         {
-            AddDiffusionFromTo(source.Room, middle.Room, 0.5f);
-            AddDiffusionFromTo(middle.Room, source.Room, 0.5f);
+            AddDiffusionFromTo(source.Room, middle.Room, 0.5f * diffusivity);
+            AddDiffusionFromTo(middle.Room, source.Room, 0.5f * diffusivity);
         }
 
         if(AreTilesInDifferentRooms(source, right))
         {
-            AddDiffusionFromTo(source.Room, right.Room, 0.25f);
-            AddDiffusionFromTo(right.Room, source.Room, 0.25f);
+            AddDiffusionFromTo(source.Room, right.Room, 0.25f * diffusivity);
+            AddDiffusionFromTo(right.Room, source.Room, 0.25f * diffusivity);
         }
     }
 
@@ -194,7 +237,24 @@ public class Temperature
 
     private void UpdateTemperature(float deltaTime)
     {
-        
+        foreach (var furn in sinksAndSources)
+        {
+            GenerateHeatFromFurniture(furn, deltaTime);
+        }
+
+        foreach (var r1 in diffusion.Keys)
+        {
+            foreach (var r2 in diffusion[r1].Keys)
+            {
+                float temperatureDifference = GetTemperature(r1) - GetTemperature(r2);
+                if(temperatureDifference > 0)
+                {
+                    float energyTransfer = diffusion[r1][r2] * temperatureDifference * deltaTime;
+                    ChangeEnergy(r1, -energyTransfer);
+                    ChangeEnergy(r2, energyTransfer);
+                }
+            }
+        }
     }
 
     private void GenerateHeatFromFurniture(Furniture furniture, float deltaTime)
@@ -207,9 +267,9 @@ public class Temperature
         Tile tile = furniture.Tile;
         float pressure = tile.Room.GetTotalGasPressure();
         float efficiency = ModUtils.Clamp01(pressure / furniture.Parameters["pressure_threshold"].ToFloat());
-        float temperatureChangePerSecond = furniture.Parameters["base_heating"].ToFloat() * efficiency;
-        float temperatureChange = temperatureChangePerSecond * deltaTime;
+        float energyChangePerSecond = furniture.Parameters["base_heating"].ToFloat() * efficiency;
+        float energyChange = energyChangePerSecond * deltaTime;
 
-        World.Current.temperature.ChangeTemperature(tile.X, tile.Y, tile.Z, temperatureChange);
+        World.Current.temperature.ChangeEnergy(tile.Room, energyChange);
     }
 }

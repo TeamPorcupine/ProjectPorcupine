@@ -228,7 +228,7 @@ public static class CommandFunctions
 
         if (ModUtils.GetCurrentWorld(out world))
         {
-            DevConsole.Log("Thermal Diffusivity: " + world.temperature.GetThermalDiffusivity((int)pos.x, (int)pos.y, (int)pos.z), "green");
+            DevConsole.Log("Thermal Diffusivity: " + 0, "green");
         }
     }
 
