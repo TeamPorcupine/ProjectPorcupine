@@ -45,7 +45,7 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
         Utilities = new Dictionary<string, Utility>();
         ReservedAsWorkSpotBy = new HashSet<Furniture>();
         PendingBuildJobs = new HashSet<Job>();
-        TemperatureUnit = new TemperatureUnit(0);
+        TemperatureUnit = new TemperatureUnit(2.7f);
     }
 
     // The function we callback any time our tile's data changes
@@ -170,6 +170,12 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
         if (newTileType == TileType.Empty)
         {
             splitting = false;
+        }
+
+        // TODO: Remove me later just for testing purposes
+        if (newTileType == TileType.Floor)
+        {
+            this.TemperatureUnit = new TemperatureUnit(273.15f);
         }
 
         if (doRoomFloodFill)
@@ -307,9 +313,24 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
 
     #region Manage 
 
-    public void EqualiseTemperature(float leakFactor)
+    /// <summary>
+    /// Equalising temperature along neighbours in the same room.
+    /// Should result in a generally more equalised room.
+    /// </summary>
+    public void EqualiseTemperature()
     {
-        // TODO: Tell neighbours to equalise temperatures
+        Tile[] neighbours = GetNeighbours(true, true);
+
+        for (int i = neighbours.Length - 1; i >= 0; i--)
+        {
+            if (neighbours[i].TemperatureUnit.temperatureInKelvin + 1 < this.TemperatureUnit.temperatureInKelvin && neighbours[i].Room == this.Room)
+            {
+                // They are less so we should disperse heat into them
+                float value = (this.TemperatureUnit.temperatureInKelvin + neighbours[i].TemperatureUnit.temperatureInKelvin) / 2;
+                neighbours[i].ApplyTemperature(value, 0);
+                this.ApplyTemperature(-value, 0);
+            }
+        }
     }
 
     /// <summary>
@@ -320,13 +341,15 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
     /// <param name="startingTemperature"> The starting temperature from the source. </param>
     public void ApplyTemperature(float deltaTemperature, float startingTemperature)
     {
-        if (this.TemperatureUnit.temperatureInKelvin < 5)
+        if (TemperatureUnit.temperatureInKelvin < 3)
         {
             this.TemperatureUnit.IncreaseTemperature(deltaTemperature / Mathf.Log(startingTemperature));
         }
         else
         {
-            this.TemperatureUnit.IncreaseTemperature(deltaTemperature / this.TemperatureUnit.temperatureInKelvin);
+            float v = deltaTemperature / this.TemperatureUnit.temperatureInKelvin;
+
+            this.TemperatureUnit.IncreaseTemperature(v);
         }
     }
 

@@ -6,7 +6,6 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,79 +13,46 @@ using System.Threading;
 using MoonSharp.Interpreter;
 using UnityEngine;
 
-[MoonSharpUserData]
-public class TemperatureUnit
-{
-    public TemperatureUnit(float kelvin)
-    {
-        this.temperatureInKelvin = kelvin;
-    }
-
-    public void UpdateTemperature(float newTemp)
-    {
-        temperatureInKelvin = newTemp;
-        temperatureInKelvin = Mathf.Clamp(temperatureInKelvin, 0, temperatureInKelvin);
-    }
-
-    public void IncreaseTemperature(float amount)
-    {
-        temperatureInKelvin += amount;
-        temperatureInKelvin = Mathf.Clamp(temperatureInKelvin, 0, temperatureInKelvin);
-    }
-
-    public override string ToString()
-    {
-        return "K: " + temperatureInKelvin + " C: " + temperatureInCelsius + " F: " + temperatureInFarenheit;
-    }
-
-    public float temperatureInKelvin;
-
-    public float temperatureInCelsius { get { return temperatureInKelvin - 273.15f; } }
-
-    public float temperatureInFarenheit { get { return temperatureInKelvin * 1.8f - 459.67f; } }
-}
-
 /// <summary>
 /// A temperature management system
 /// Braedon Wooding's Implementation using a general formula (built by himself)
-/// The formula is: H -= startingEnergy / (e * | log(index) | * k), 
+/// The formula is: H -= startingEnergy / (e * | log(index) | / k), 
 /// where index is the thermal conductivity index in format W/m.K
 /// Note to me: We also take into account a few other things
-/// Needs better description!!
+/// Needs better description!!.
 /// </summary>
 [MoonSharpUserData]
 public class Temperature
 {
     /// <summary>
-    /// Taken straight from the real world value.  Then fine tuned a little
+    /// Taken straight from the real world value.  Then fine tuned a little.
     /// </summary>
-    public const float defaultThermalConductivity = 0.024f;
+    public const float DefaultThermalConductivity = 0.024f;
 
+    /// <summary>
+    /// The value E, but as a float.
+    /// </summary>
     public const float E = (float)Math.E;
 
     /// <summary>
     /// Our magical constant.
     /// </summary>
-    public static float k = 1;
+    public const float K = 1;
 
     /// <summary>
-    /// How often does the system update?
-    /// It uses this with a mixture of delta time
-    /// Can be removed?
+    /// This is a cache of all the data we need.  Its essentially cached maps of heat.
     /// </summary>
-    public float updateInterval = 0.5f;
+    private static Dictionary<float, float[]> temperatureMap = new Dictionary<float, float[]>();
 
     /// <summary>
-    /// The world this system is attached to
+    /// The world this system is attached to.
     /// </summary>
     private World world;
 
     /// <summary>
-    /// The size of the map, just so I don't need to constantly go through world
+    /// The size of the map, just so I don't need to constantly go through world.
     /// </summary>
     private int sizeX, sizeY, sizeZ;
-
-    private Dictionary<float, float[]> temperatureMap = new Dictionary<float, float[]>();
 
     /// <summary>
     /// Create and Initialize arrays with default values.
@@ -96,7 +62,6 @@ public class Temperature
         sizeX = world.Width;
         sizeY = world.Height;
         sizeZ = world.Depth;
-        temperatureMap = new Dictionary<float, float[]>();
     }
 
     /// <summary>
@@ -125,26 +90,7 @@ public class Temperature
         }
         else
         {
-            // string.format not needed with UberLogger.
             UnityDebugger.Debugger.LogWarningFormat("Temperature", "Yep, something is wrong with your temperature: {0}.", temp);
-            return false;
-        }
-    }
-
-    /// <summary>
-    /// Checks wether thermal diffusivity is admissible, if not warns you and returns false.
-    /// </summary>
-    /// <param name="thermal_diff">Wanted thermal diff.</param>
-    /// <returns>True if thermal diff. is ok, false and a formal complaint if it's not ok.</returns>
-    public bool IsWithinThermalDiffusivityBounds(float thermal_diff)
-    {
-        if (thermal_diff >= 0 && thermal_diff <= 1)
-        {
-            return true;
-        }
-        else
-        {
-            UnityDebugger.Debugger.LogWarningFormat("Temperature", "Trying to set a thermal diffusivity that may break the world: {0}.", thermal_diff);
             return false;
         }
     }
@@ -155,6 +101,48 @@ public class Temperature
         sizeX = world.Width;
         sizeY = world.Height;
         sizeZ = world.Depth;
+    }
+
+    /// <summary>
+    /// Produce a temperature spread at the location provided.
+    /// </summary>
+    /// <param name="location"> The location to begin at. </param>
+    /// <param name="value"> The potential heat to disperse. </param>
+    /// <remarks>   
+    /// Uses a majoritively circular sub polygonal generalisation to perform the temperature spread.
+    /// Essentially it presumes that most follow the default thermal conductivity index then if it doesn't it deals with it seperately
+    /// So it looks like a circle generalisation spread (but in reality its more of a polygonal generalisation).
+    /// </remarks>
+    public void ProduceTemperatureAtLocation(Vector3 location, float value, float deltaTime)
+    {
+        ProduceTemperatureAtTile(world.GetTileAt((int)location.x, (int)location.y, (int)location.z), value, deltaTime);
+    }
+
+    /// <summary>
+    /// Produce a temperature spread at the temperature provided.
+    /// </summary>
+    /// <param name="furniture"> The furniture item to begin at. </param>
+    /// <param name="value"> The potential heat dispersed. </param>
+    /// <remarks>   
+    /// Uses a majoritively circular sub polygonal generalisation to perform the temperature spread.
+    /// Essentially it presumes that most follow the default thermal conductivity index then if it doesn't it deals with it seperately
+    /// So it looks like a circle generalisation spread (but in reality its more of a polygonal generalisation).
+    /// </remarks>
+    public void ProduceTemperatureAtFurniture(Furniture furniture, float value, float deltaTime)
+    {
+        ProduceTemperatureAtTile(furniture.Tile, value, deltaTime);
+    }
+
+    public bool HeatGreaterThanLimit(float heat, bool positive)
+    {
+        if (positive)
+        {
+            return heat > 0.1;
+        }
+        else
+        {
+            return heat < -0.1;
+        }
     }
 
     /// <summary>
@@ -178,21 +166,29 @@ public class Temperature
             List<float> premap = new List<float>();
 
             float potentialHeat = value;
-            while (potentialHeat > 0.1)
+
+            // While heat isn't nearing 0.1 / -0.1
+            // Do the logic
+            while (HeatGreaterThanLimit(potentialHeat, value >= 0))
             {
-                potentialHeat -= startingEnergy / (E * Mathf.Abs(Mathf.Log(defaultThermalConductivity)) * k);
                 premap.Add(potentialHeat);
+                potentialHeat -= startingEnergy / (E * Mathf.Abs(Mathf.Log(DefaultThermalConductivity)) * K);
             }
 
             temperatureMap[value] = premap.ToArray();
         }
 
         // Ways to improve:
-        // 1) Iterate max of x (length of the temperature) and max of y (again length of the temperature), indexing based on variable
-        // 2) Do polygonal's slightly differently
+        // 1) Do polygonal's slightly differently so they extend further
         for (int i = temperatureMap[value].Length - 1; i >= 0; i--)
         {
             float potentialHeat = temperatureMap[value][i];
+
+            if (i == 0)
+            {
+                world.GetTileAt(source.X, source.Y, source.Z).ApplyTemperature(potentialHeat * effect * deltaTime, startingEnergy);
+                break;
+            }
 
             for (int x = -i; x <= i; x++)
             {
@@ -224,7 +220,7 @@ public class Temperature
                 }
             }
 
-            if (i / 2 + source.X > sizeX && source.X - i / 2 <= 0 || i / 2 + source.Y > sizeY && source.Y - i / 2 <= 0)
+            if (((i / 2) + source.X > sizeX && source.X - (i / 2) <= 0) || ((i / 2) + source.Y > sizeY && source.Y - (i / 2) <= 0))
             {
                 break;
             }
@@ -233,7 +229,7 @@ public class Temperature
 
     /// <summary>
     /// Returns a mapped float from the supplied x, y and center location.
-    /// 0 = None, 1 = N, 1.5 = NE, 2 = E, 2.5 = SE, 3 = S, 3.5 = SW, 4 = W, 4.5 = NW
+    /// 0 = None, 1 = N, 1.5 = NE, 2 = E, 2.5 = SE, 3 = S, 3.5 = SW, 4 = W, 4.5 = NW.
     /// </summary>
     private float GetLocationFloatFromXY(Tile tile, Tile centerLocation)
     {
@@ -263,11 +259,11 @@ public class Temperature
         }
     }
 
-    private Tile[] GetNeighbours(float posRelativeToSource, Tile tile)
+    private List<Tile> GetRelativeNeighbours(float posRelativeToSource, Tile tile)
     {
         if (posRelativeToSource == 0)
         {
-            return new Tile[0];
+            return new List<Tile>();
         }
 
         List<Tile> locations = new List<Tile>();
@@ -295,7 +291,7 @@ public class Temperature
         locations.Add(GetTileFromRelativeDirection(min, tile));
         locations.Add(GetTileFromRelativeDirection(max, tile));
 
-        return locations.ToArray();
+        return locations;
     }
 
     private Tile GetTileFromRelativeDirection(float posRelativeToSource, Tile tile)
@@ -318,7 +314,6 @@ public class Temperature
         {
             y = posRelativeToSource == 3 ? -1 : 1;
 
-
             if (posRelativeToSource % 2 != 1)
             {
                 x = posRelativeToSource == 3.5 ? -1 : 1;
@@ -329,9 +324,9 @@ public class Temperature
     }
 
     /// <summary>
-    /// If the tile isn't a polygonal then just apply normally else then do a little math on it
+    /// If the tile isn't a polygonal then just apply normally else then do a little math on it.
     /// </summary>
-    /// <param name="location"> 0 = None, 1 = N, 1.5 = NE, 2 = E, 2.5 = SE, 3 = S, 3.5 = SW, 4 = W, 4.5 = NW </param>
+    /// <param name="location"> 0 = None, 1 = N, 1.5 = NE, 2 = E, 2.5 = SE, 3 = S, 3.5 = SW, 4 = W, 4.5 = NW. </param>
     private void DetermineIfPolygonal(Tile tile, float potentialHeat, float startingHeat, Tile centerLocation)
     {
         float thermalValue;
@@ -342,7 +337,7 @@ public class Temperature
         }
         else if (tile.Furniture == null)
         {
-            thermalValue = defaultThermalConductivity;
+            thermalValue = DefaultThermalConductivity;
         }
         else
         {
@@ -351,60 +346,22 @@ public class Temperature
 
         tile.ApplyTemperature(potentialHeat, startingHeat);
 
-        if (tile.Furniture != null && thermalValue != defaultThermalConductivity)
+        float position = GetLocationFloatFromXY(tile, centerLocation);
+        List<Tile> neighbours = GetRelativeNeighbours(position, tile);
+
+        if (tile.Furniture != null && thermalValue != DefaultThermalConductivity)
         {
-            float position = GetLocationFloatFromXY(tile, centerLocation);
+            float baseTemperature = tile.TemperatureUnit.temperatureInKelvin / (E * Mathf.Abs(Mathf.Log(thermalValue)) * K);
 
-            float baseTemperature;
-
-            baseTemperature = (tile.TemperatureUnit.temperatureInKelvin) / (E * Mathf.Abs(Mathf.Log(thermalValue)) * k);
-
-            Tile[] neighbours = GetNeighbours(position, tile);
-
-            for (int i = 0; i < neighbours.Length; i++)
+            if (HeatGreaterThanLimit(baseTemperature, tile.TemperatureUnit.temperatureInKelvin > 0))
             {
-                neighbours[i].ApplyTemperature(-baseTemperature, startingHeat);
+                for (int i = 0; i < neighbours.Count; i++)
+                {
+                    neighbours[i].ApplyTemperature(-baseTemperature, startingHeat);
+                }
             }
         }
-    }
 
-    /// <summary>
-    /// Handle all the tiles that don't match the 'default thermal conductivity index'.
-    /// Essentially the tiles that turn it from a circle to a polygon.
-    /// </summary>
-    /// <param name="polyognalTiles"></param>
-    private void HandlePolygonal(Tile flaggedTile, float potentialHeat, float deltaTime, float effect)
-    {
-
-    }
-
-    /// <summary>
-    /// Produce a temperature spread at the location provided.
-    /// </summary>
-    /// <param name="location"> The location to begin at. </param>
-    /// <param name="value"> The potential heat to disperse. </param>
-    /// <remarks>   
-    /// Uses a majoritively circular sub polygonal generalisation to perform the temperature spread.
-    /// Essentially it presumes that most follow the default thermal conductivity index then if it doesn't it deals with it seperately
-    /// So it looks like a circle generalisation spread (but in reality its more of a polygonal generalisation).
-    /// </remarks>
-    public void ProduceTemperatureAtLocation(Vector3 location, float value, float deltaTime)
-    {
-        ProduceTemperatureAtTile(world.GetTileAt((int)location.x, (int)location.y, (int)location.z), value, deltaTime);
-    }
-
-    /// <summary>
-    /// Produce a temperature spread at the temperature provided.
-    /// </summary>
-    /// <param name="furniture"> The furniture item to begin at. </param>
-    /// <param name="value"> The potential heat dispersed. </param>
-    /// <remarks>   
-    /// Uses a majoritively circular sub polygonal generalisation to perform the temperature spread.
-    /// Essentially it presumes that most follow the default thermal conductivity index then if it doesn't it deals with it seperately
-    /// So it looks like a circle generalisation spread (but in reality its more of a polygonal generalisation).
-    /// </remarks>
-    public void ProduceTemperatureAtFurniture(Furniture furniture, float value, float deltaTime)
-    {
-        ProduceTemperatureAtTile(furniture.Tile, value, deltaTime);
+        tile.EqualiseTemperature();
     }
 }

@@ -26,6 +26,15 @@ namespace ProjectPorcupine.Buildable.Components
     [MoonSharpUserData]
     public class TemperatureComponent : BuildableComponent
     {
+        public TemperatureComponent()
+        {
+        }
+
+        private TemperatureComponent(TemperatureComponent other) : base(other)
+        {
+            Requires = other.Requires;
+        }
+
         [XmlElement("Requires")]
         [JsonProperty("Requires")]
         public TemperatureInfo Requires { get; set; }
@@ -40,33 +49,6 @@ namespace ProjectPorcupine.Buildable.Components
             {
                 return true;
             }
-        }
-
-        public override BuildableComponent Clone()
-        {
-            return new TemperatureComponent(this);
-        }
-
-        protected override void Initialize()
-        {
-            componentRequirements = Requirements.Production;
-
-            if (ParamsDefinitions == null)
-            {
-                // don't need definition for all furniture, just use defaults
-                ParamsDefinitions = new TemperatureConnectionParameterDefinitions();
-            }
-
-            OutputRate = 294;
-        }
-
-        public TemperatureComponent()
-        {
-        }
-
-        private TemperatureComponent(TemperatureComponent other) : base(other)
-        {
-            Requires = other.Requires;
         }
 
         [XmlIgnore]
@@ -92,6 +74,11 @@ namespace ProjectPorcupine.Buildable.Components
             }
         }
 
+        public override BuildableComponent Clone()
+        {
+            return new TemperatureComponent(this);
+        }
+
         public override bool CanFunction()
         {
             bool canFunction = true;
@@ -113,6 +100,17 @@ namespace ProjectPorcupine.Buildable.Components
             if (Outputs)
             {
                 World.Current.temperature.ProduceTemperatureAtFurniture(ParentFurniture, OutputRate, deltaTime);
+            }
+        }
+
+        protected override void Initialize()
+        {
+            componentRequirements = Requirements.Production;
+
+            if (ParamsDefinitions == null)
+            {
+                // don't need definition for all furniture, just use defaults
+                ParamsDefinitions = new TemperatureConnectionParameterDefinitions();
             }
         }
 
