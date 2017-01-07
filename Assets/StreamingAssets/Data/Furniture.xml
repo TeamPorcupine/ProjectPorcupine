@@ -6,6 +6,7 @@
         <Width>1</Width>
         <Height>1</Height>
         <Health>1000</Health>
+        <ThermalConductivityIndex>24</ThermalConductivityIndex>
         <LinksToNeighbours>wall</LinksToNeighbours>
         <EnclosesRooms>true</EnclosesRooms>
         <DragType>path</DragType>
@@ -19,16 +20,6 @@
             <Job time="1" />
             <Inventory type="steel_plate" amount="3" />
         </OrderAction>
-
-        <Params>
-            <!-- Temperature stuff  example -->
-            <!-- Thermal diffusivity (also called alpha) is how much the furniture is "isolating" the tile it is placed on. -->
-            <!-- 0 means *NO* temperature is exchanged between tiles -->
-            <!-- 1 means a regular amout is exchanged -->
-            <!-- Walls will likely have low values, whilst tables and so on will have values close to 1 (if not 1). -->
-            <!-- Leave default value (i.e. nothing) if the furniture does not have any isolation effect. -->
-            <Param name="thermal_diffusivity" value="0.2" />
-        </Params>
         
         <Component type="Visuals">
             <DefaultSpriteName useName="steel_wall_" />
@@ -49,6 +40,7 @@
         <PathfindingWeight>1</PathfindingWeight>
         <Width>1</Width>
         <Height>1</Height>
+        <ThermalConductivityIndex>16.7</ThermalConductivityIndex>
         <Health>500</Health>
         <EnclosesRooms>true</EnclosesRooms>
         <CanReplaceFurniture typeTag="Wall" />
@@ -94,7 +86,6 @@
         <Params>
             <Param name="openness" value="0" />
             <Param name="is_opening" value="0" />
-            <Param name="thermal_diffusivity" value="0.4" />
         </Params>
 
         <Action event="OnFastUpdate" functionName="OnUpdate_Door" />
@@ -114,6 +105,7 @@
         <PathfindingWeight>1</PathfindingWeight>
         <Width>1</Width>
         <Height>1</Height>
+        <ThermalConductivityIndex>43</ThermalConductivityIndex>
         <EnclosesRooms>true</EnclosesRooms>
         <CanReplaceFurniture typeTag="Wall" />
         <CanReplaceFurniture typeTag="Door" />
@@ -159,7 +151,6 @@
         <Params>
             <Param name="openness" value="0" />
             <Param name="is_opening" value="0" />
-            <Param name="thermal_diffusivity" value="0.05" />
             <Param name="pressure_locked" value="0" />
         </Params>
 
@@ -178,6 +169,7 @@
         <TypeTag>Storage</TypeTag>
         <MovementCost>1</MovementCost>
         <LinksToNeighbours>stockpile</LinksToNeighbours>
+        <ThermalConductivityIndex>0.024</ThermalConductivityIndex>
 
         <OrderAction type="Build"/>
                  
@@ -203,6 +195,7 @@
         <PathfindingWeight>2</PathfindingWeight>
         <Width>2</Width>
         <Height>2</Height>
+        <ThermalConductivityIndex>0.05</ThermalConductivityIndex>
 
         <OrderAction type="Build">
             <Job time="2" />
@@ -276,6 +269,7 @@
         <PathfindingWeight>2</PathfindingWeight>
         <Width>3</Width>
         <Height>2</Height>
+        <ThermalConductivityIndex>0.05</ThermalConductivityIndex>
 
         <Component type="PowerConnection">
             <Requires rate="1" />
@@ -314,6 +308,7 @@
         <PathfindingWeight>2</PathfindingWeight>
         <Width>2</Width>
         <Height>2</Height>
+        <ThermalConductivityIndex>10</ThermalConductivityIndex>
 
         <Animations>
             <Animation state="idle" looping="false">
@@ -384,6 +379,7 @@
         <PathfindingWeight>2</PathfindingWeight>
         <Width>1</Width>
         <Height>1</Height>
+        <ThermalConductivityIndex>0.8</ThermalConductivityIndex>
 
 
         <OrderAction type="Build">
@@ -463,6 +459,7 @@
         <PathfindingWeight>2</PathfindingWeight>
         <Width>2</Width>
         <Height>2</Height>
+        <ThermalConductivityIndex>1</ThermalConductivityIndex>
 
         <Component type="PowerConnection">
             <Requires rate="1" />
@@ -509,6 +506,7 @@
         <PathfindingWeight>2</PathfindingWeight>
         <Width>3</Width>
         <Height>3</Height>
+        <ThermalConductivityIndex>0.8</ThermalConductivityIndex>
  
         <OrderAction type="Build">
             <Job time="1" />
@@ -591,8 +589,13 @@
         <PathfindingModifier>0</PathfindingModifier>
         <PathfindingWeight>2</PathfindingWeight>
         <Width>1</Width>
-        <Height>1</Height>
-
+        <Height>1</Height> 
+        <ThermalConductivityIndex>0.05</ThermalConductivityIndex>
+        
+        <Params>
+            <Param name="temperature_outputRate" value="300" />
+        </Params>
+       
         <OrderAction type="Build">
             <Job time="1" />
             <Inventory type="steel_plate" amount="2" />
@@ -603,16 +606,15 @@
             <Inventory type="steel_plate" amount="1" />
         </OrderAction>
 
-        <!-- This method gets called on Install -->
-        <Action event="OnInstall" functionName="Heater_InstallAction"></Action>
-        <!-- This method gets called on Uninstall -->
-        <Action event="OnUninstall" functionName="Heater_UninstallAction"></Action>
-        <Action event="OnUpdateTemperature" functionName="Heater_UpdateTemperature" />
-
         <Params>
-            <Param name="base_heating" value="500" />
-            <Param name="pressure_threshold" value="0.5" />
+            <Param name="temperature_outputRate" value="300" />
         </Params>
+
+        <Component type="TemperatureConnection">
+            <ParameterDefinitions>
+                <OutputRate name="temperature_outputRate" />
+            </ParameterDefinitions>
+        </Component>
 
         <Component type="PowerConnection">
             <Requires rate="4" />
@@ -629,6 +631,7 @@
     <PathfindingWeight>2</PathfindingWeight>
     <Width>1</Width>
     <Height>1</Height>
+        <ThermalConductivityIndex>0.05</ThermalConductivityIndex>
 	
     <Animations>
       <Animation state="running" fps="24" looping="true">
@@ -651,12 +654,12 @@
 	
     <OrderAction type="Build">
       <Job time="1" />
-      <Inventory type="Steel Plate" amount="2" />
+      <Inventory type="steel_plate" amount="2" />
     </OrderAction>
 	
     <OrderAction type="Deconstruct">
       <Job time="1" />
-      <Inventory type="Steel Plate" amount="1" />
+      <Inventory type="steel_plate" amount="1" />
     </OrderAction>
 	
     <Component type="PowerConnection">
@@ -671,7 +674,6 @@
 	
     <LocalizationCode>furn_cooler</LocalizationCode>
     <UnlocalizedDescription>furn_cooler_desc</UnlocalizedDescription>
-    <ThermalConductivityIndex>0.05</ThermalConductivityIndex>
   </Furniture>
 
     <Furniture type="power_cell_press">
@@ -680,6 +682,7 @@
         <PathfindingWeight>2</PathfindingWeight>
         <Width>2</Width>
         <Height>2</Height>
+        <ThermalConductivityIndex>1</ThermalConductivityIndex>
 
         <OrderAction type="Build">
             <Job time="1" />
@@ -727,6 +730,7 @@
         <PathfindingWeight>2</PathfindingWeight>
         <Width>3</Width>
         <Height>3</Height>
+        <ThermalConductivityIndex>0.024</ThermalConductivityIndex>
 
         <OrderAction type="Build">
             <Job time="5" />
@@ -756,6 +760,7 @@
         <PathfindingWeight>2</PathfindingWeight>
         <Width>2</Width>
         <Height>2</Height>
+        <ThermalConductivityIndex>0.05</ThermalConductivityIndex>
 
         <OrderAction type="Build">
             <Job time="2" />
@@ -806,6 +811,7 @@
         <PathfindingWeight>2</PathfindingWeight>
         <Width>2</Width>
         <Height>3</Height>
+        <ThermalConductivityIndex>0.05</ThermalConductivityIndex>
         <CanRotate>true</CanRotate>
         
         <CanBeBuiltOn tileType="Ladder" />
@@ -839,6 +845,7 @@
         <MovementCost>0</MovementCost>
         <Width>1</Width>
         <Height>1</Height>
+        <ThermalConductivityIndex>15</ThermalConductivityIndex>
         <EnclosesRooms>true</EnclosesRooms>
 
         <OrderAction type="Build">
@@ -883,6 +890,7 @@
         <MovementCost>0</MovementCost>
         <Width>1</Width>
         <Height>1</Height>
+        <ThermalConductivityIndex>0.01</ThermalConductivityIndex>
         <EnclosesRooms>true</EnclosesRooms>
 
         <OrderAction type="Build">
@@ -900,7 +908,6 @@
         <Params>
             <Param name="gas_throughput" value="0.5" />
             <Param name="openness" value="1" />
-            <Param name="thermal_diffusivity" value="1"/>
         </Params>
 
         <Action event="OnUpdate" functionName="Vent_OnUpdate" />
@@ -930,6 +937,7 @@
         <MovementCost>2</MovementCost>
         <Width>1</Width>
         <Height>2</Height>
+        <ThermalConductivityIndex>0.024</ThermalConductivityIndex>
         <PathfindingModifier>1</PathfindingModifier>
         <PathfindingWeight>1</PathfindingWeight>
         <CanRotate>true</CanRotate>
@@ -957,6 +965,7 @@
         <PathfindingWeight>2</PathfindingWeight>
         <Width>1</Width>
         <Height>1</Height>
+        <ThermalConductivityIndex>0.05</ThermalConductivityIndex>
 
         <OrderAction type="Build">
             <Job time="2" />
@@ -1005,6 +1014,7 @@
         <PathfindingWeight>2</PathfindingWeight>
         <Width>1</Width>
         <Height>1</Height>
+        <ThermalConductivityIndex>2.5</ThermalConductivityIndex>
 
         <Params>
             <Param name="ore_type" value="raw_iron" />
@@ -1026,6 +1036,7 @@
         <PathfindingWeight>0</PathfindingWeight>
         <Width>3</Width>
         <Height>1</Height>
+        <ThermalConductivityIndex>5</ThermalConductivityIndex>
 
         <OrderAction type="Build">
             <Job time="1" />
@@ -1054,9 +1065,16 @@
         <PathfindingWeight>2</PathfindingWeight>
         <Width>1</Width>
         <Height>1</Height>
+        <ThermalConductivityIndex>8</ThermalConductivityIndex>
 
         <Component type="PowerConnection">
             <Provides rate="2" />
+        </Component>
+	
+        <Component type="TemperatureConnection">
+            <ParameterDefinitions>
+                <OutputRate name="temperature_outputRate" />
+            </ParameterDefinitions>
         </Component>
 
         <OrderAction type="Build">
@@ -1069,16 +1087,9 @@
             <Job time="1" />
             <Inventory type="raw_uranium" amount="1" />
         </OrderAction>
-        
-        <!-- This method gets called on Install -->
-        <Action event="OnInstall" functionName="Rtg_InstallAction"></Action>
-        <!-- This method gets called on Uninstall -->
-        <Action event="OnUninstall" functionName="Rtg_UninstallAction"></Action>
-        <Action event="OnUpdateTemperature" functionName="Rtg_UpdateTemperature" />
 
         <Params>
-            <Param name="base_heating" value="500" />
-            <Param name="pressure_threshold" value="0.2" />
+            <Param name="temperature_outputRate" value="-105" />
         </Params>
 
         <LocalizationCode>furn_rtg</LocalizationCode>
@@ -1093,6 +1104,7 @@
         <MovementCost>0</MovementCost>
         <Width>1</Width>
         <Height>1</Height>
+        <ThermalConductivityIndex>24</ThermalConductivityIndex>
         <LinksToNeighbours>astro_wall</LinksToNeighbours>
         <EnclosesRooms>true</EnclosesRooms>
 
