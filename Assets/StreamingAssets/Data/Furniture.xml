@@ -524,13 +524,27 @@
     <UnlocalizedDescription>furn_heater_desc</UnlocalizedDescription>
     <ThermalConductivityIndex>0.05</ThermalConductivityIndex>
   </Furniture>
-  <Furniture type="cooler">
+  <Furniture type="groundFan">
     <BaseType>Temperature</BaseType>
     <MovementCost>2</MovementCost>
     <PathfindingModifier>0</PathfindingModifier>
     <PathfindingWeight>2</PathfindingWeight>
     <Width>1</Width>
     <Height>1</Height>
+    <Animations>
+      <Animation state="running" fps="24" looping="true">
+        <Frame name="groundFan_2" />
+        <Frame name="groundFan_3" />
+        <Frame name="groundFan_4" />
+        <Frame name="groundFan_5" />
+        <Frame name="groundFan_6"></Frame>
+        <Frame name="groundFan_4"></Frame>
+        <Frame name="groundFan_3"></Frame>
+      </Animation>
+      <Animation state="idle" looping="false">
+        <Frame name="groundFan" />
+      </Animation>
+    </Animations>
     <Params>
       <Param name="temperature_outputRate" value="-105" />
     </Params>

@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Sprites>
+  <Sprite name="groundFan" x="0" y="0" w="1" h="1" pixelPerUnit="64" />
+  <Sprite name="groundFan_2" x="1" y="0" w="1" h="1" pixelPerUnit="64" />
+  <Sprite name="groundFan_3" x="2" y="0" w="1" h="1" pixelPerUnit="64" />
+  <Sprite name="groundFan_4" x="0" y="1" w="1" h="1" pixelPerUnit="64"></Sprite>
+  <Sprite name="groundFan_5" x="1" y="1" w="1" h="1" pixelPerUnit="64"></Sprite>
+  <Sprite name="groundFan_6" x="2" y="1" w="1" h="1" pixelPerUnit="64"></Sprite>
+</Sprites>
