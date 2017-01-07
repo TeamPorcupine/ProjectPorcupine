@@ -5,12 +5,12 @@
 
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Copper Wire" amount="2" />
+            <Inventory type="copper_wire" amount="2" />
         </OrderAction>
 
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Copper Wire" amount="1" />
+            <Inventory type="copper_wire" amount="1" />
         </OrderAction>
         
         <ContextMenuAction FunctionName="UtilityContextTest1" Text="Test Context 1" RequireCharacterSelected="false"/>
@@ -25,12 +25,12 @@
 
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>
 
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
         </OrderAction>
         
         <LocalizationCode>util_fluid_pipe</LocalizationCode>
