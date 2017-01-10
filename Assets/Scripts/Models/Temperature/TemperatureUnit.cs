@@ -6,11 +6,6 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using MoonSharp.Interpreter;
 using UnityEngine;
 
@@ -49,6 +44,11 @@ public class TemperatureUnit
         {
             internalTemperature = value;
             internalTemperature = Mathf.Clamp(internalTemperature, 0, internalTemperature);
+
+            if (float.IsInfinity(internalTemperature) || float.IsNaN(internalTemperature))
+            {
+                internalTemperature = 0;
+            }
         }
     }
 
@@ -109,5 +109,10 @@ public class TemperatureUnit
     public override string ToString()
     {
         return "K: " + TemperatureInKelvin + " C: " + TemperatureInCelsius + " F: " + TemperatureInFarenheit + " R: " + TemperatureInRankine;
+    }
+
+    public string ToFarenheitCelsiusString()
+    {
+        return string.Format("({0:0.00}C)\n({1:0.00}F)\n", TemperatureInCelsius, TemperatureInFarenheit);
     }
 }

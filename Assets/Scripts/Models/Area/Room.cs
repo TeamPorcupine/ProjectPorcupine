@@ -29,6 +29,8 @@ namespace ProjectPorcupine.Rooms
             atmosphericGasses = new Dictionary<string, float>();
             deltaGas = new Dictionary<string, string>();
             RoomBehaviors = new Dictionary<string, RoomBehavior>();
+
+            AverageTemperatureUnit = new TemperatureUnit(0);
             DirtyAverageTemperature();
         }
 
@@ -47,6 +49,11 @@ namespace ProjectPorcupine.Rooms
                 return tiles.Count;
             }
         }
+
+        /// <summary>
+        /// The average temperature of the room.
+        /// </summary>
+        public TemperatureUnit AverageTemperatureUnit { get; private set; }
 
         // RoomBehavior is something like an airlock or office.
         public Dictionary<string, RoomBehavior> RoomBehaviors { get; private set; }
@@ -107,7 +114,6 @@ namespace ProjectPorcupine.Rooms
             }
 
             tiles.Clear();
-            DirtyAverageTemperature();
         }
 
         public bool IsOutsideRoom()
@@ -183,18 +189,13 @@ namespace ProjectPorcupine.Rooms
         }
 
         /// <summary>
-        /// The average temperature of the room.
-        /// </summary>
-        public float AverageTemperature { get; private set; }
-
-        /// <summary>
         /// Update the average temperature.
         /// To reduce load on the dirty command.
         /// </summary>
         /// <param name="tileTemperature"> Temperature difference for a tile. </param>
         public void UpdateAverageTemperature(float temperatureDifference)
         {
-            AverageTemperature += temperatureDifference / TileCount;
+            AverageTemperatureUnit.TemperatureInKelvin += temperatureDifference / TileCount;
         }
 
         /// <summary>
@@ -204,10 +205,10 @@ namespace ProjectPorcupine.Rooms
         {
             for (int i = 0; i < TileCount; i++)
             {
-                AverageTemperature += tiles[i].TemperatureUnit.TemperatureInKelvin;
+                AverageTemperatureUnit.TemperatureInKelvin += tiles[i].TemperatureUnit.TemperatureInKelvin;
             }
 
-            AverageTemperature /= TileCount;
+            AverageTemperatureUnit.TemperatureInKelvin /= TileCount;
         }
 
         // Changes gas by an amount in preasure(in atm) multiplyed by number of tiles, limited to a pressure

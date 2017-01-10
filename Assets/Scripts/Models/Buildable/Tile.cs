@@ -675,8 +675,7 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
 
     public IEnumerable<string> GetAdditionalInfo()
     {
-        // Do tiles have hitpoints? Can flooring be damaged? Obviously "empty" is indestructible.
-        yield break;
+        yield return string.Empty;
     }
 
     #endregion

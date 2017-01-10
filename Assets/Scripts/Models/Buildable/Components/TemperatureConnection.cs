@@ -33,6 +33,8 @@ namespace ProjectPorcupine.Buildable.Components
         private TemperatureComponent(TemperatureComponent other) : base(other)
         {
             Requires = other.Requires;
+            Outputs = other.Outputs;
+            ParamsDefinitions = other.ParamsDefinitions;
         }
 
         [XmlElement("Requires")]
@@ -88,7 +90,21 @@ namespace ProjectPorcupine.Buildable.Components
 
             if (Outputs != null)
             {
-                if ()
+                if (Outputs.MaxLimit != -1)
+                {
+                    if (ParentFurniture.Tile.Room != null && ParentFurniture.Tile.TemperatureUnit.TemperatureInKelvin > Outputs.MaxLimit)
+                    {
+                        return false;
+                    }
+                }
+
+                if (Outputs.MinLimit != -1)
+                {
+                    if (ParentFurniture.Tile.Room != null && ParentFurniture.Tile.TemperatureUnit.TemperatureInKelvin < Outputs.MinLimit)
+                    {
+                        return false;
+                    }
+                }
             }
 
             return canFunction;
@@ -96,7 +112,7 @@ namespace ProjectPorcupine.Buildable.Components
 
         public override void FixedFrequencyUpdate(float deltaTime)
         {
-            if (Outputs != null)
+            if (Outputs != null && OutputRate != 0)
             {
                 World.Current.temperature.ProduceTemperatureAtFurniture(ParentFurniture, OutputRate, deltaTime);
             }
@@ -122,6 +138,12 @@ namespace ProjectPorcupine.Buildable.Components
         [JsonObject(MemberSerialization.OptOut)]
         public class InputInfo
         {
+            public InputInfo()
+            {
+                MinLimit = -1;
+                MaxLimit = -1;
+            }
+
             [XmlAttribute("minLimit")]
             public float MinLimit { get; set; }
 
@@ -154,6 +176,13 @@ namespace ProjectPorcupine.Buildable.Components
         [JsonObject(MemberSerialization.OptOut)]
         public class OutputInfo : InputInfo
         {
+            public OutputInfo()
+            {
+                MinLimit = -1;
+                MaxLimit = -1;
+                InitialOutput = 0;
+            }
+
             [XmlAttribute("initialOutput")]
             public float InitialOutput { get; set; }
         }

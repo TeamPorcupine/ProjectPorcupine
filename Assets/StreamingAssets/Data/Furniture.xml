@@ -510,14 +510,11 @@
       <Job time="1" />
       <Inventory type="steel_plate" amount="1" />
     </OrderAction>
-    <Params>
-      <Param name="temperature_outputRate" value="300" />
-    </Params>
     <Component type="TemperatureConnection">
       <ParameterDefinitions>
         <OutputRate name="temperature_outputRate" />
       </ParameterDefinitions>
-      <Outputs initialOutput="200" minLimit="0" maxLimit="220" />
+      <Outputs initialOutput="200" maxLimit="220" />
     </Component>
     <Component type="PowerConnection">
       <Requires rate="4" />

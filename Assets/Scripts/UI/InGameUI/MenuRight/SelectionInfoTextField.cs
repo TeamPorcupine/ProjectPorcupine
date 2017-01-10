@@ -49,17 +49,17 @@ public class SelectionInfoTextField : MonoBehaviour
         if (actualSelection.GetType() == typeof(Character))
         {
             // TODO: Change the hitpoint stuff.
-            txt.text = 
-                actualSelection.GetName() + "\n" + 
+            txt.text =
+                actualSelection.GetName() + "\n" +
                 actualSelection.GetDescription() + "\n" +
-                LocalizationTable.GetLocalization(actualSelection.GetJobDescription()) + "\n" + 
+                LocalizationTable.GetLocalization(actualSelection.GetJobDescription()) + "\n" +
                 additionalInfoText;
         }
         else
         {
             // TODO: Change the hitpoint stuff.
-            txt.text = 
-                LocalizationTable.GetLocalization(actualSelection.GetName()) + "\n" + 
+            txt.text =
+                LocalizationTable.GetLocalization(actualSelection.GetName()) + "\n" +
                 LocalizationTable.GetLocalization(actualSelection.GetDescription()) + "\n" +
                 additionalInfoText;
         }
