@@ -64,6 +64,12 @@ public class WorldGenerator
         {
             int numAsteroids = (world.Height * world.Width) / Random.Range(800, 1200);
 
+            float averageAsteroidVolume = (4/3) * Mathf.PI * Mathf.Min(asteroidInfo.AsteroidSize, world.Height) * Mathf.Min(asteroidInfo.AsteroidSize, world.Width) * Mathf.Min(asteroidInfo.AsteroidSize, world.Depth);
+            int numAst = (int)((world.Height * world.Width * world.Depth) / averageAsteroidVolume * asteroidInfo.AsteroidDensity);
+            numAst = (int)(numAst * Random.Range(.6f, 1.4f));
+            Debug.LogWarning("Calculated Asteroid Count: " + numAst);
+            numAsteroids = numAst;
+
             List<Vector3> asteroidSeeds = GeneratePoints(numAsteroids, world);
             for (int asteroid = 0; asteroid < asteroidSeeds.Count; asteroid++)
             {
@@ -148,8 +154,9 @@ public class WorldGenerator
 
     private void GrowAsteroid(Tile tile, float depth = 0)
     {
-        int minSize = 5;
-        int maxSize = 15;
+        // This generates a range of sizes around the set size, a larger degre of variance leads to less consistent looking asteroids
+        int minSize = asteroidInfo.AsteroidSize - 5;
+        int maxSize = asteroidInfo.AsteroidSize + 5;
         if (tile != null)
         {
             currentAsteroid.Add(tile);
@@ -298,11 +305,11 @@ public class WorldGenerator
     [XmlRoot("Asteroid")]
     public class AsteroidInfo
     {
-        [XmlElement("NoiseScale")]
-        public float NoiseScale { get; set; }
+        [XmlElement("AsteroidSize")]
+        public int AsteroidSize { get; set; }
 
-        [XmlElement("NoiseThreshhold")]
-        public float NoiseThreshhold { get; set; }
+        [XmlElement("AsteroidDensity")]
+        public float AsteroidDensity { get; set; }
 
         [XmlElement("ResourceChance")]
         public float ResourceChance { get; set; }
