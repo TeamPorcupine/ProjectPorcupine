@@ -51,7 +51,7 @@ public class World
         // Creates an empty world.
         SetupWorld(width, height, depth);
         int seed = UnityEngine.Random.Range(0, int.MaxValue);
-        if (SceneController.NewWorldSize != null)
+        if (SceneController.NewWorldSize != Vector3.zero)
         {
             seed = SceneController.Seed;
         }
