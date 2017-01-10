@@ -311,22 +311,25 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
 
     #endregion
 
-    #region Manage 
+    #region Manage Temperature 
 
     /// <summary>
     /// Equalising temperature along neighbours in the same room.
-    /// Should result in a generally more equalised room.
+    /// It keeps it within a room just so rooms are more equalised.
     /// </summary>
     public void EqualiseTemperature()
     {
+        // Get neighbours (we currently get all neighbours, but could get relative neighbours).
         Tile[] neighbours = GetNeighbours(true, true);
 
+        // Cycle through and apply a value change depending on our average if we have a difference of greater than one
+        // Its greater than one due to float things, it just helps makes things easier and so we don't need to do a - b < epsilon
         for (int i = neighbours.Length - 1; i >= 0; i--)
         {
-            if (neighbours[i].TemperatureUnit.temperatureInKelvin + 1 < this.TemperatureUnit.temperatureInKelvin && neighbours[i].Room == this.Room)
+            if (neighbours[i].TemperatureUnit.TemperatureInKelvin + 1 < this.TemperatureUnit.TemperatureInKelvin && neighbours[i].Room == this.Room)
             {
                 // They are less so we should disperse heat into them
-                float value = (this.TemperatureUnit.temperatureInKelvin + neighbours[i].TemperatureUnit.temperatureInKelvin) / 2;
+                float value = (this.TemperatureUnit.TemperatureInKelvin + neighbours[i].TemperatureUnit.TemperatureInKelvin) / 2;
                 neighbours[i].ApplyTemperature(value, 0);
                 this.ApplyTemperature(-value, 0);
             }
@@ -334,22 +337,23 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
     }
 
     /// <summary>
-    /// Applies a temperature to the tile, that is then furthered mathematically calculated to decrease
-    /// As the temperature increases.
+    /// Applies a temperature to the tile.
+    /// Temperature is divided by current to simulate greater energy to get higher and higher temperatures.
+    /// Though we could later replace this with making the thermal index lower, 
+    /// but that would require more work for the machine.
     /// </summary>
     /// <param name="deltaTemperature"> The change in temperature/potential temperature. </param>
     /// <param name="startingTemperature"> The starting temperature from the source. </param>
     public void ApplyTemperature(float deltaTemperature, float startingTemperature)
     {
-        if (TemperatureUnit.temperatureInKelvin < 3)
+        // We do this because log is very high around such a low value and it helps to get from negative to positive
+        if (Mathf.Abs(TemperatureUnit.TemperatureInKelvin) < 3)
         {
-            this.TemperatureUnit.IncreaseTemperature(deltaTemperature / Mathf.Log(startingTemperature));
+            this.TemperatureUnit.TemperatureInKelvin += deltaTemperature / Mathf.Log(startingTemperature);
         }
         else
         {
-            float v = deltaTemperature / this.TemperatureUnit.temperatureInKelvin;
-
-            this.TemperatureUnit.IncreaseTemperature(v);
+            this.TemperatureUnit.TemperatureInKelvin += deltaTemperature / this.TemperatureUnit.TemperatureInKelvin;
         }
     }
 

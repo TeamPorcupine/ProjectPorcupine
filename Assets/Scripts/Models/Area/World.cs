@@ -381,7 +381,7 @@ public class World
         roomGraph = null;
 
         // Reset the temperature internal sizes
-        temperature.Resize(this);
+        temperature.OnWorldChange(this);
 
         for (int x = 0; x < oldWidth; x++)
         {

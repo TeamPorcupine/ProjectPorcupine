@@ -86,7 +86,7 @@ namespace ProjectPorcupine.Buildable.Components
             // check if all requirements are fullfilled
             if (Requires != null)
             {
-                if (ParentFurniture.Tile.TemperatureUnit.temperatureInKelvin < Requires.MinLimit || ParentFurniture.Tile.TemperatureUnit.temperatureInKelvin > Requires.MaxLimit)
+                if (ParentFurniture.Tile.TemperatureUnit.TemperatureInKelvin < Requires.MinLimit || ParentFurniture.Tile.TemperatureUnit.TemperatureInKelvin > Requires.MaxLimit)
                 {
                     canFunction = false;
                 }

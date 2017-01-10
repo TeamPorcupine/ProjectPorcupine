@@ -14,46 +14,100 @@ using System.Threading;
 using MoonSharp.Interpreter;
 using UnityEngine;
 
+/// <summary>
+/// Holds temperature data in Kelvin but can be accessed in both celsius and farenheit.
+/// </summary>
 [MoonSharpUserData]
 public class TemperatureUnit
 {
-    public TemperatureUnit(float kelvin)
+    /// <summary>
+    /// The internal temperature of the system.
+    /// Its stored in kelvin.
+    /// </summary>
+    private float internalTemperature;
+
+    /// <summary>
+    /// Create from Kelvin units.
+    /// </summary>
+    /// <param name="tempInKelvin"> Temperature in Kelvin. </param>
+    public TemperatureUnit(float tempInKelvin)
     {
-        this.temperatureInKelvin = kelvin;
+        this.internalTemperature = tempInKelvin;
     }
 
-    public void UpdateTemperature(float newTemp)
+    /// <summary>
+    /// The current temperature in Kelvin.
+    /// </summary>
+    public float TemperatureInKelvin
     {
-        temperatureInKelvin = newTemp;
-        temperatureInKelvin = Mathf.Clamp(temperatureInKelvin, 0, temperatureInKelvin);
+        get
+        {
+            return internalTemperature;
+        }
+
+        set
+        {
+            internalTemperature = value;
+            internalTemperature = Mathf.Clamp(internalTemperature, 0, internalTemperature);
+        }
     }
 
-    public void IncreaseTemperature(float amount)
+    /// <summary>
+    /// The current temperature in Celsius.
+    /// </summary>
+    public float TemperatureInCelsius
     {
-        temperatureInKelvin += amount;
-        temperatureInKelvin = Mathf.Clamp(temperatureInKelvin, 0, temperatureInKelvin);
+        get
+        {
+            return internalTemperature - 273.15f;
+        }
+
+        set
+        {
+            internalTemperature = value + 273.15f;
+        }
     }
 
+    /// <summary>
+    /// The current temperature in Farenheit.
+    /// </summary>
+    public float TemperatureInFarenheit
+    {
+        get
+        {
+            return (internalTemperature * 1.8f) - 459.67f;
+        }
+
+        set
+        {
+            // Its 5/9 because that's equal to approx 0.5555... so it's more accurate like this.
+            internalTemperature = (value + 459.67f) * (5 / 9);
+        }
+    }
+
+    /// <summary>
+    /// The current temperature in Rankine.
+    /// </summary>
+    public float TemperatureInRankine
+    {
+        get
+        {
+            return internalTemperature * 1.8f;
+        }
+
+        set
+        {
+            internalTemperature = value * (5 / 9);
+        }
+    }
+
+    /// <summary>
+    /// Returns a string of the current temperature in format: K: x, C: C(x), F: F(x).
+    /// Where C(x) and F(x) mean the celsius/farenheit conversion of x.
+    /// </summary>
+    /// <remarks> Good for debuggging. </remarks>
     public override string ToString()
     {
-        return "K: " + temperatureInKelvin + " C: " + temperatureInCelsius + " F: " + temperatureInFarenheit;
-    }
-
-    public float temperatureInKelvin;
-
-    public float temperatureInCelsius
-    {
-        get
-        {
-            return temperatureInKelvin - 273.15f;
-        }
-    }
-
-    public float temperatureInFarenheit
-    {
-        get
-        {
-            return (temperatureInKelvin * 1.8f) - 459.67f;
-        }
+        return "K: " + TemperatureInKelvin + " C: " + TemperatureInCelsius + " F: " + TemperatureInFarenheit + " R: " + TemperatureInRankine;
     }
 }
