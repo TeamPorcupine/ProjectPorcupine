@@ -63,12 +63,62 @@ public class WorldGenerator
         if (SceneController.GenerateAsteroids)
         {
             int numAsteroids = (world.Height * world.Width) / Random.Range(800, 1200);
-            for (int asteroid = 0; asteroid < numAsteroids; asteroid++)
+
+            List<Vector3> asteroidSeeds = GeneratePoints(numAsteroids, world);
+            for (int asteroid = 0; asteroid < asteroidSeeds.Count; asteroid++)
             {
-                Vector3 asteroidSeed = new Vector3(Random.Range(0, width), Random.Range(0, height), Random.Range(0, depth));
-                GrowAsteroid(asteroidSeed, world);
+                GrowAsteroid(asteroidSeeds[asteroid], world);
             }
         }
+    }
+
+    private List<Vector3> GeneratePoints(int numPoints, World world)
+    {
+        List<Vector3> finalPoints = new List<Vector3>();
+        List<Vector3> workingPoints = new List<Vector3>();
+
+        for (int i = 0; i < numPoints * 4; i++)
+        {
+            workingPoints.Add(new Vector3(Random.Range(0, world.Width), Random.Range(0, world.Height), Random.Range(0, world.Depth)));
+        }
+
+        for (int i = 0; i < numPoints; i++)
+        {
+            if (finalPoints.Count == 0)
+            {
+                int pointToAdd = Random.Range(0, workingPoints.Count);
+                finalPoints.Add(workingPoints[pointToAdd]);
+                workingPoints.RemoveAt(pointToAdd);
+            }
+            else
+            {
+                float currentFarthestTotalDistance = 0f;
+                int currentFarthestPointIndex = 0;
+                for (int j = 0; j < workingPoints.Count; j++) {
+                    float closestDistance = Mathf.Infinity;
+                    for (int k = 0; i < finalPoints.Count; k++) 
+                    {
+                        float thisDistance = Vector3.Distance(finalPoints[k], workingPoints[j]);
+                        if (thisDistance < closestDistance)
+                        {
+                            closestDistance = thisDistance;
+                        }
+                    }
+
+                    if (closestDistance > currentFarthestTotalDistance)
+                    {
+                        currentFarthestTotalDistance = closestDistance;
+                        currentFarthestPointIndex = j;
+                    }
+                }
+
+
+                finalPoints.Add(workingPoints[currentFarthestPointIndex]);
+                workingPoints.RemoveAt(currentFarthestPointIndex);
+            }
+        }
+
+        return finalPoints;
     }
 
     private static void ReadXmlWallet(XmlReader reader, World world)
@@ -120,30 +170,43 @@ public class WorldGenerator
             return;
         }
 
-        tile.SetTileType(asteroidFloorType);
+        const int neededNeighbors = 3;
 
-        world.FurnitureManager.PlaceFurniture("astro_wall", tile, false);
-
-        if (Random.value <= asteroidInfo.ResourceChance && tile.Furniture.Type == "astro_wall")
+        if (tile.GetNeighbours(true, true).Count(currentAsteroid.Contains) >= neededNeighbors)
         {
-            if (asteroidInfo.Resources.Count > 0)
+            tile.SetTileType(asteroidFloorType);
+
+            world.FurnitureManager.PlaceFurniture("astro_wall", tile, false);
+            if (tile.GetNeighbours(true, true).Count(currentAsteroid.Contains) < neededNeighbors)
             {
-                int currentweight = 0;
-                int randomweight = Random.Range(0, sumOfAllWeightedChances);
+                tile.Furniture.Parameters["culled"].SetValue(true);
+            }
+            else
+            {
+                tile.Furniture.Parameters["culled"].SetValue(false);
+            }
 
-                for (int i = 0; i < asteroidInfo.Resources.Count; i++)
+            if (Random.value <= asteroidInfo.ResourceChance && tile.Furniture.Type == "astro_wall")
+            {
+                if (asteroidInfo.Resources.Count > 0)
                 {
-                    Resource inv = asteroidInfo.Resources[i];
+                    int currentweight = 0;
+                    int randomweight = Random.Range(0, sumOfAllWeightedChances);
 
-                    int weight = inv.WeightedChance; 
-                    currentweight += weight;
-
-                    if (randomweight <= currentweight)
+                    for (int i = 0; i < asteroidInfo.Resources.Count; i++)
                     {
-                        tile.Furniture.Parameters["ore_type"].SetValue(inv.Type);
-                        tile.Furniture.Parameters["source_type"].SetValue(inv.Source);
+                        Resource inv = asteroidInfo.Resources[i];
 
-                        break;
+                        int weight = inv.WeightedChance; 
+                        currentweight += weight;
+
+                        if (randomweight <= currentweight)
+                        {
+                            tile.Furniture.Parameters["ore_type"].SetValue(inv.Type);
+                            tile.Furniture.Parameters["source_type"].SetValue(inv.Source);
+
+                            break;
+                        }
                     }
                 }
             }
