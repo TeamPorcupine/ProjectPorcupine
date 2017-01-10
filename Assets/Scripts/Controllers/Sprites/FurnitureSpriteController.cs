@@ -145,9 +145,16 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         SpriteRenderer sr = furn_go.AddComponent<SpriteRenderer>();
         sr.sprite = GetSpriteForFurniture(furniture);
         sr.sortingLayerName = "Furniture";
-        if (furniture.Parameters["culled"].ToBool())
+        if (furniture.Parameters.ContainsKey("culled"))
         {
-            sr.color = Color.red;
+            if (furniture.Parameters["culled"].ToBool())
+            {
+                sr.color = Color.red;
+            }
+            else
+            {
+                sr.color = Color.green;
+            }
         }
         else
         {
