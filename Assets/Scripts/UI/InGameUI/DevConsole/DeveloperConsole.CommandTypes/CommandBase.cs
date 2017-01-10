@@ -225,7 +225,6 @@ namespace DeveloperConsole.CommandTypes
                                 }
                                 else
                                 {
-                                    Debug.LogWarning(possibleParameters[j].ParameterType);
                                     parameters.Add(Convert.ChangeType(args[j], possibleParameters[j].ParameterType));
                                 }
                             }

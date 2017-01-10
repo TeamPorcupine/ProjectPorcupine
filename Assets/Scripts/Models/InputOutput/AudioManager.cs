@@ -91,7 +91,7 @@ public class AudioManager
         {
             try
             {
-                UnityDebugger.Debugger.LogWarning("No audio available called: " + audioNameAndCategory);
+                UnityDebugger.Debugger.LogWarning("AudioManager", "No audio available called: " + audioNameAndCategory);
                 clip = audioClips["Sound/Error"];
             }
             catch
