@@ -172,13 +172,6 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
             splitting = false;
         }
 
-        /* TODO: Remove me later just for testing purposes
-        if (newTileType == TileType.Floor)
-        {
-            this.TemperatureUnit = new TemperatureUnit(273.15f);
-        }
-        */
-
         if (doRoomFloodFill)
         {
             World.Current.RoomManager.DoRoomFloodFill(this, splitting, true);
@@ -347,14 +340,23 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
     /// <param name="startingTemperature"> The starting temperature from the source. </param>
     public void ApplyTemperature(float deltaTemperature, float startingTemperature)
     {
+        float absoluteDelta;
+
         // We do this because log is very high around such a low value and it helps to get from negative to positive
         if (Mathf.Abs(TemperatureUnit.TemperatureInKelvin) < 3)
         {
-            this.TemperatureUnit.TemperatureInKelvin += deltaTemperature / Mathf.Log(startingTemperature);
+            absoluteDelta = deltaTemperature / Mathf.Log(startingTemperature);
         }
         else
         {
-            this.TemperatureUnit.TemperatureInKelvin += deltaTemperature / this.TemperatureUnit.TemperatureInKelvin;
+            absoluteDelta = deltaTemperature / this.TemperatureUnit.TemperatureInKelvin;
+        }
+
+        this.TemperatureUnit.TemperatureInKelvin += absoluteDelta;
+
+        if (this.Room != null)
+        {
+            this.Room.UpdateAverageTemperature(absoluteDelta);
         }
     }
 
@@ -645,6 +647,7 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
         if (Room != null)
         {
             Room.AssignTile(this);
+            Room.DirtyAverageTemperature();
         }
 
         // Since we are loading from a save here, we don't want to do a RoomFloodfill here.

@@ -64,6 +64,10 @@ public class Temperature
         this.world = world;
     }
 
+    /// <summary>
+    /// The 2D Direction that is reflected 3D wise.
+    /// Just makes it more clear what I do.
+    /// </summary>
     private enum Direction
     {
         NW = 1,

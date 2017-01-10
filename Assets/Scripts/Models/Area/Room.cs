@@ -29,6 +29,7 @@ namespace ProjectPorcupine.Rooms
             atmosphericGasses = new Dictionary<string, float>();
             deltaGas = new Dictionary<string, string>();
             RoomBehaviors = new Dictionary<string, RoomBehavior>();
+            DirtyAverageTemperature();
         }
 
         public int ID
@@ -99,13 +100,14 @@ namespace ProjectPorcupine.Rooms
 
         public void ReturnTilesToOutsideRoom()
         {
-            for (int i = 0; i < tiles.Count; i++)
+            for (int i = 0; i < TileCount; i++)
             {
                 // Assign to outside.
                 tiles[i].Room = World.Current.RoomManager.OutsideRoom;
             }
 
             tiles.Clear();
+            DirtyAverageTemperature();
         }
 
         public bool IsOutsideRoom()
@@ -178,6 +180,34 @@ namespace ProjectPorcupine.Rooms
             }
 
             return neighboursRooms;
+        }
+
+        /// <summary>
+        /// The average temperature of the room.
+        /// </summary>
+        public float AverageTemperature { get; private set; }
+
+        /// <summary>
+        /// Update the average temperature.
+        /// To reduce load on the dirty command.
+        /// </summary>
+        /// <param name="tileTemperature"> Temperature difference for a tile. </param>
+        public void UpdateAverageTemperature(float temperatureDifference)
+        {
+            AverageTemperature += temperatureDifference / TileCount;
+        }
+
+        /// <summary>
+        /// Redo the average, on every room size change and on load/save.
+        /// </summary>
+        public void DirtyAverageTemperature()
+        {
+            for (int i = 0; i < TileCount; i++)
+            {
+                AverageTemperature += tiles[i].TemperatureUnit.TemperatureInKelvin;
+            }
+
+            AverageTemperature /= TileCount;
         }
 
         // Changes gas by an amount in preasure(in atm) multiplyed by number of tiles, limited to a pressure

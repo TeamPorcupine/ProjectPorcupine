@@ -37,7 +37,11 @@ namespace ProjectPorcupine.Buildable.Components
 
         [XmlElement("Requires")]
         [JsonProperty("Requires")]
-        public TemperatureInfo Requires { get; set; }
+        public InputInfo Requires { get; set; }
+
+        [XmlElement("Outputs")]
+        [JsonProperty("Outputs")]
+        public OutputInfo Outputs { get; set; }
 
         [XmlElement("ParameterDefinitions")]
         [JsonProperty("ParameterDefinitions")]
@@ -51,16 +55,6 @@ namespace ProjectPorcupine.Buildable.Components
             }
         }
 
-        [XmlIgnore]
-        public bool Outputs
-        {
-            get
-            {
-                return FurnitureParams[ParamsDefinitions.OutputRate.ParameterName].ToFloat() != -1;
-            }
-        }
-
-        [XmlIgnore]
         public float OutputRate
         {
             get
@@ -92,12 +86,17 @@ namespace ProjectPorcupine.Buildable.Components
                 }
             }
 
+            if (Outputs != null)
+            {
+                if ()
+            }
+
             return canFunction;
         }
 
         public override void FixedFrequencyUpdate(float deltaTime)
         {
-            if (Outputs)
+            if (Outputs != null)
             {
                 World.Current.temperature.ProduceTemperatureAtFurniture(ParentFurniture, OutputRate, deltaTime);
             }
@@ -112,11 +111,16 @@ namespace ProjectPorcupine.Buildable.Components
                 // don't need definition for all furniture, just use defaults
                 ParamsDefinitions = new TemperatureConnectionParameterDefinitions();
             }
+
+            if (Outputs != null)
+            {
+                OutputRate = Outputs.InitialOutput;
+            }
         }
 
         [Serializable]
         [JsonObject(MemberSerialization.OptOut)]
-        public class TemperatureInfo
+        public class InputInfo
         {
             [XmlAttribute("minLimit")]
             public float MinLimit { get; set; }
@@ -144,6 +148,14 @@ namespace ProjectPorcupine.Buildable.Components
             }
 
             public ParameterDefinition OutputRate { get; set; }
+        }
+
+        [Serializable]
+        [JsonObject(MemberSerialization.OptOut)]
+        public class OutputInfo : InputInfo
+        {
+            [XmlAttribute("initialOutput")]
+            public float InitialOutput { get; set; }
         }
     }
 }

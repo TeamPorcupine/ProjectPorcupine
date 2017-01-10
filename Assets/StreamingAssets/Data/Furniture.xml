@@ -502,9 +502,6 @@
     <Width>1</Width>
     <Height>1</Height>
     <ThermalConductivityIndex>0.05</ThermalConductivityIndex>
-    <Params>
-      <Param name="temperature_outputRate" value="200" />
-    </Params>
     <OrderAction type="Build">
       <Job time="1" />
       <Inventory type="steel_plate" amount="2" />
@@ -520,6 +517,7 @@
       <ParameterDefinitions>
         <OutputRate name="temperature_outputRate" />
       </ParameterDefinitions>
+      <Outputs initialOutput="200" minLimit="0" maxLimit="220" />
     </Component>
     <Component type="PowerConnection">
       <Requires rate="4" />
@@ -549,9 +547,6 @@
         <Frame name="groundFan" />
       </Animation>
     </Animations>
-    <Params>
-      <Param name="temperature_outputRate" value="-105" />
-    </Params>
     <OrderAction type="Build">
       <Job time="1" />
       <Inventory type="steel_plate" amount="2" />
@@ -567,6 +562,7 @@
       <ParameterDefinitions>
         <OutputRate name="temperature_outputRate" />
       </ParameterDefinitions>
+      <Outputs initialOutput="-105" minLimit="220" />
     </Component>
     <LocalizationCode>furn_cooler</LocalizationCode>
     <UnlocalizedDescription>furn_cooler_desc</UnlocalizedDescription>
@@ -896,6 +892,7 @@
       <ParameterDefinitions>
         <OutputRate name="temperature_outputRate" />
       </ParameterDefinitions>
+      <Outputs initialOutput="274.15" />
     </Component>
     <OrderAction type="Build">
       <Job time="2" />
@@ -906,9 +903,6 @@
       <Job time="1" />
       <Inventory type="raw_uranium" amount="1" />
     </OrderAction>
-    <Params>
-      <Param name="temperature_outputRate" value="274.15" />
-    </Params>
     <LocalizationCode>furn_rtg</LocalizationCode>
     <UnlocalizedDescription>furn_rtg_desc</UnlocalizedDescription>
   </Furniture>
