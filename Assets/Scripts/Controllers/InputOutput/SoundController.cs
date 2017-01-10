@@ -172,9 +172,9 @@ public class SoundController
         AudioManager.SoundSystem.update();
     }
 
-    public void SetVolume(AudioChannel channel)
+    public void SetVolume(AudioChannel channel, float volume)
     {
-        SetVolume(channel.ToString());
+        SetVolume(channel.ToString(), volume);
     }
 
     public void SetVolume(string channel, float volume)
