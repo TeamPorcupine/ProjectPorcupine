@@ -50,8 +50,11 @@ public class World
     {
         // Creates an empty world.
         SetupWorld(width, height, depth);
-        int seed = UnityEngine.Random.Range(0, int.MaxValue);
-        Debug.LogWarning("World Seed: " + seed);
+		int seed = UnityEngine.Random.Range(0, int.MaxValue);
+		if (SceneController.NewWorldSize != null) {
+			seed = SceneController.Seed;
+		}
+		Debug.LogWarning("World Seed: " + seed);
         WorldGenerator.Instance.Generate(this, seed);
         UnityDebugger.Debugger.Log("World", "Generated World");
 
