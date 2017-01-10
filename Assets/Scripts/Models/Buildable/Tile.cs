@@ -172,11 +172,12 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
             splitting = false;
         }
 
-        // TODO: Remove me later just for testing purposes
+        /* TODO: Remove me later just for testing purposes
         if (newTileType == TileType.Floor)
         {
             this.TemperatureUnit = new TemperatureUnit(273.15f);
         }
+        */
 
         if (doRoomFloodFill)
         {

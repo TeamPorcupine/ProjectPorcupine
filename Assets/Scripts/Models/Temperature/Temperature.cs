@@ -43,7 +43,7 @@ public class Temperature
     /// A constant that changes the value of the result,
     /// a smaller k will result in a smaller heat potential => less heat dispersion.
     /// </summary>
-    public const float K = 1;
+    public const float K = 0.5f;
 
     /// <summary>
     /// Cache maps of heat, these don't have to be regenerated ever.
@@ -62,6 +62,19 @@ public class Temperature
     public Temperature(World world)
     {
         this.world = world;
+    }
+
+    private enum Direction
+    {
+        NW = 1,
+        N = 2,
+        NE = 3,
+        W = 4,
+        O = 5,
+        E = 6,
+        SW = 7,
+        S = 8,
+        SE = 9
     }
 
     /// <summary>
@@ -194,184 +207,228 @@ public class Temperature
             // Cycle across
             // This creates does the outside of each layer that is does the top bottom left and right sides.
             // So it always does x and does y at the very left and very right
-            for (int x = -i; x <= i; x++)
+            for (int z = 0; z < world.Depth; z++)
             {
-                if (x == -i || x == i)
+                for (int x = -i; x <= i; x++)
                 {
-                    // If we are at an end then cycle downwards
-                    for (int y = -i; y <= i; y++)
+                    if (x == -i || x == i)
                     {
+                        // If we are at an end then cycle downwards
+                        for (int y = -i; y <= i; y++)
+                        {
+                            // Checking if we are at map limit
+                            // Could just have a null check in determine if polygonal for speed improvements
+                            if (source.X + x >= 0 && source.X + x < world.Width && source.Y + y >= 0 && source.Y + y < world.Height)
+                            {
+                                DetermineIfPolygonal(world.GetTileAt(source.X + x, source.Y + y, source.Z + z), potentialHeat * effect * deltaTime, startingEnergy, source);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // If we aren't at map limit then do top and bottom.
                         // Checking if we are at map limit
                         // Could just have a null check in determine if polygonal for speed improvements
-                        if (source.X + x >= 0 && source.X + x < world.Width && source.Y + y >= 0 && source.Y + y < world.Height)
+                        if (source.X + x >= 0 && source.X + x < world.Width && source.Y + i >= 0 && source.Y + i < world.Height)
                         {
-                            int z = 0;
-                            DetermineIfPolygonal(world.GetTileAt(source.X + x, source.Y + y, source.Z + z), potentialHeat * effect * deltaTime, startingEnergy, source);
+                            DetermineIfPolygonal(world.GetTileAt(source.X + x, source.Y + i, source.Z + z), potentialHeat * effect * deltaTime, startingEnergy, source);
+                        }
+
+                        // Checking if we are at map limit
+                        // Could just have a null check in determine if polygonal for speed improvements
+                        if (source.X + x >= 0 && source.X + x < world.Width && source.Y - i >= 0 && source.Y - i < world.Height)
+                        {
+                            DetermineIfPolygonal(world.GetTileAt(source.X + x, source.Y - i, source.Z + z), potentialHeat * effect * deltaTime, startingEnergy, source);
                         }
                     }
                 }
-                else
-                {
-                    // If we aren't at map limit then do top and bottom.
-                    // Checking if we are at map limit
-                    // Could just have a null check in determine if polygonal for speed improvements
-                    if (source.X + x >= 0 && source.X + x < world.Width && source.Y + i >= 0 && source.Y + i < world.Height)
-                    {
-                        int z = 0;
-                        DetermineIfPolygonal(world.GetTileAt(source.X + x, source.Y + i, source.Z + z), potentialHeat * effect * deltaTime, startingEnergy, source);
-                    }
 
-                    // Checking if we are at map limit
-                    // Could just have a null check in determine if polygonal for speed improvements
-                    if (source.X + x >= 0 && source.X + x < world.Width && source.Y - i >= 0 && source.Y - i < world.Height)
-                    {
-                        int z = 0;
-                        DetermineIfPolygonal(world.GetTileAt(source.X + x, source.Y - i, source.Z + z), potentialHeat * effect * deltaTime, startingEnergy, source);
-                    }
+                // If our tile is beyond the map border then stop
+                if (((i / 2) + source.X > world.Width && source.X - (i / 2) <= 0) || ((i / 2) + source.Y > world.Height && source.Y - (i / 2) <= 0))
+                {
+                    break;
                 }
             }
+        }
+    }
 
-            // If our tile is beyond the map border then stop
-            if (((i / 2) + source.X > world.Width && source.X - (i / 2) <= 0) || ((i / 2) + source.Y > world.Height && source.Y - (i / 2) <= 0))
-            {
+    private List<Tile> GetMinMaxTiles(Tile tile, Tile source)
+    {
+        // If we are greater than + 1, lower - 1, equal +- 0 (exactly what CompareTo gives us :D)
+        int zLevel = tile.Z.CompareTo(source.Z);
+
+        // Just uses comparative operators (Compare to)
+        Direction direction = (Direction)((tile.Y.CompareTo(source.Y) + 2) * (tile.X.CompareTo(source.X) + 2));
+
+        List<Tile> tiles = new List<Tile>();
+        Tile t;
+
+        switch (direction)
+        {
+            case Direction.NW:
+                // W
+                t = world.GetTileAt(tile.X - 1, tile.Y, tile.Z + zLevel);
+
+                if (t != null)
+                {
+                    tiles.Add(t);
+                }
+
+                // NW
+                t = world.GetTileAt(tile.X - 1, tile.Y + 1, tile.Z + zLevel);
+
+                if (t != null)
+                {
+                    tiles.Add(t);
+                }
+
+                // N
+                t = world.GetTileAt(tile.X, tile.Y + 1, tile.Z + zLevel);
+
+                if (t != null)
+                {
+                    tiles.Add(t);
+                }
+
                 break;
-            }
+            case Direction.N:
+                for (int i = -1; i <= 1; i++)
+                {
+                    t = world.GetTileAt(tile.X + i, tile.Y + 1, tile.Z + zLevel);
+
+                    if (t != null)
+                    {
+                        tiles.Add(t);
+                    }
+                }
+
+                break;
+            case Direction.NE:
+                // E
+                t = world.GetTileAt(tile.X + 1, tile.Y, tile.Z + zLevel);
+
+                if (t != null)
+                {
+                    tiles.Add(t);
+                }
+
+                // NE
+                t = world.GetTileAt(tile.X + 1, tile.Y + 1, tile.Z + zLevel);
+
+                if (t != null)
+                {
+                    tiles.Add(t);
+                }
+
+                // N
+                t = world.GetTileAt(tile.X, tile.Y + 1, tile.Z + zLevel);
+
+                if (t != null)
+                {
+                    tiles.Add(t);
+                }
+
+                break;
+            case Direction.W:
+                for (int i = -1; i <= 1; i++)
+                {
+                    t = world.GetTileAt(tile.X - 1, tile.Y + i, tile.Z + zLevel);
+
+                    if (t != null)
+                    {
+                        tiles.Add(t);
+                    }
+                }
+
+                break;
+            case Direction.O:
+                t = world.GetTileAt(tile.X, tile.Y, tile.Z + zLevel);
+
+                if (t != null)
+                {
+                    tiles.Add(t);
+                }
+
+                break;
+            case Direction.E:
+                for (int i = -1; i <= 1; i++)
+                {
+                    t = world.GetTileAt(tile.X + 1, tile.Y + i, tile.Z + zLevel);
+
+                    if (t != null)
+                    {
+                        tiles.Add(t);
+                    }
+                }
+
+                break;
+            case Direction.SW:
+                // S
+                t = world.GetTileAt(tile.X, tile.Y - 1, tile.Z + zLevel);
+
+                if (t != null)
+                {
+                    tiles.Add(t);
+                }
+
+                // SW
+                t = world.GetTileAt(tile.X - 1, tile.Y - 1, tile.Z + zLevel);
+
+                if (t != null)
+                {
+                    tiles.Add(t);
+                }
+
+                // W
+                t = world.GetTileAt(tile.X - 1, tile.Y, tile.Z + zLevel);
+
+                if (t != null)
+                {
+                    tiles.Add(t);
+                }
+
+                break;
+            case Direction.S:
+                for (int i = -1; i <= 1; i++)
+                {
+                    t = world.GetTileAt(tile.X + i, tile.Y - 1, tile.Z + zLevel);
+
+                    if (t != null)
+                    {
+                        tiles.Add(t);
+                    }
+                }
+
+                break;
+            case Direction.SE:
+                // S
+                t = world.GetTileAt(tile.X, tile.Y - 1, tile.Z + zLevel);
+
+                if (t != null)
+                {
+                    tiles.Add(t);
+                }
+
+                // SE
+                t = world.GetTileAt(tile.X + 1, tile.Y - 1, tile.Z + zLevel);
+
+                if (t != null)
+                {
+                    tiles.Add(t);
+                }
+
+                // E
+                t = world.GetTileAt(tile.X + 1, tile.Y, tile.Z + zLevel);
+
+                if (t != null)
+                {
+                    tiles.Add(t);
+                }
+
+                break;
         }
-    }
 
-    /// <summary>
-    /// Returns a mapped float from the supplied x, y and center location.
-    /// 0 = None, 1 = N, 1.5 = NE, 2 = E, 2.5 = SE, 3 = S, 3.5 = SW, 4 = W, 4.5 = NW.
-    /// </summary>
-    /// <param name="centerLocation"> The location to create the relative location from. </param>
-    /// <param name="tile"> The tile that is relative to the center location. </param>
-    private float GetLocationFloatFromXY(Tile tile, Tile centerLocation)
-    {
-        int x = tile.X;
-        int y = tile.Y;
-
-        if (x == y)
-        {
-            // If x == y then it either has to be top right corner or bottom left corner
-            return x == 0 ? 0 : (x > centerLocation.X ? 1.5f : 3.5f);
-        }
-        else if (Math.Abs(x) == Math.Abs(y))
-        {
-            // If the |x| == |y| and x != y, then it has to be top left or bottom right corner.
-            return x > centerLocation.X ? 2.5f : 4.5f;
-        }
-        else
-        {
-            // X != Y so it has to be one of the 4 cordinal directions
-            if (x == 0 || Math.Abs(x) < Math.Abs(y))
-            {
-                // If x == 0 and y can't equal 0, then it has to be top or bottom
-                // Or x < y (same conditional essentially, just the x == 0 is faster and happens in 1/2 of the cases)
-                return y > centerLocation.Y ? 1 : 3;
-            }
-            else
-            {
-                // If x != 0 and |x| > |y| then x has to be either left or right
-                return x > centerLocation.X ? 2 : 4;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Get all the relative numbers based of the relative location.
-    /// Relative neighbours are the min - max of a certain relative location.
-    /// </summary>
-    /// <param name="posRelativeToSource"> The relative location <seealso cref="GetLocationFloatFromXY(Tile, Tile)"/>. </param>
-    /// <param name="tile"> The tile to get the relative neighbours from. </param>
-    /// <returns> A list of all relative neighbours. </returns>
-    /// <example>
-    /// That is if we have the following example x is tile, y is relative neighbours, c is the center tile that x is relative to
-    /// - - - y
-    /// - c x y
-    /// - - - y
-    /// Or
-    /// - y y
-    /// - x y
-    /// c - -.
-    /// </example>
-    private List<Tile> GetRelativeNeighbours(float posRelativeToSource, Tile tile)
-    {
-        // 0 is our 'null' case basically
-        if (posRelativeToSource == 0)
-        {
-            return new List<Tile>();
-        }
-
-        List<Tile> locations = new List<Tile>();
-
-        float max, min;
-
-        // Due to the fact the numbers don't wrap around we have to do these two 'checks'
-        // Could be switch but you don't gain much and its kinda less readable
-        if (posRelativeToSource == 1)
-        {
-            // If we are at 1 (N) then do NW and NE
-            max = 1.5f;
-            min = 4.5f;
-        }
-        else if (posRelativeToSource == 4.5f)
-        {
-            // If we are at 4.5 (NW) do W and E
-            max = 1;
-            min = 4;
-        }
-        else
-        {
-            // Else the rest will work via this simple method
-            max = posRelativeToSource + 0.5f;
-            min = posRelativeToSource - 0.5f;
-        }
-
-        // Do the numbered direction of 'center', left, and right
-        locations.Add(GetTileFromRelativeDirection(posRelativeToSource, tile));
-        locations.Add(GetTileFromRelativeDirection(min, tile));
-        locations.Add(GetTileFromRelativeDirection(max, tile));
-
-        return locations;
-    }
-
-    /// <summary>
-    /// Works out the x, y, and z coordinates
-    /// Z can just be the x and y one up and one below.
-    /// </summary>
-    /// <param name="posRelativeToSource"> The position that we are at relative to the source. <seealso cref="GetLocationFloatFromXY(Tile, Tile)"/>.</param>
-    /// <param name="tile"> The tile that is relative to source. </param>
-    /// <returns></returns>
-    private Tile GetTileFromRelativeDirection(float posRelativeToSource, Tile tile)
-    {
-        // Our coordinates
-        int intPosRelativeToSource = (int)posRelativeToSource;
-        int x = 0;
-        int y = 0;
-
-        if (intPosRelativeToSource % 2 == 0)
-        {
-            // Then it has to be either 2, 2.5, 4, 4.5
-            x = intPosRelativeToSource == 4 ? -1 : 1;
-
-            if (posRelativeToSource % 2 != 0)
-            {
-                y = posRelativeToSource == 4.5f ? 1 : -1;
-            }
-        }
-        else if (intPosRelativeToSource % 2 == 1)
-        {
-            // Has to be either 1, 1.5, 3, 3.5
-            y = posRelativeToSource == 3 ? -1 : 1;
-
-            if (posRelativeToSource % 2 != 1)
-            {
-                x = posRelativeToSource == 3.5 ? -1 : 1;
-            }
-        }
-
-        // Return tile
-        return world.GetTileAt(tile.X + x, tile.Y + y, tile.Z);
+        return tiles;
     }
 
     /// <summary>
@@ -389,7 +446,7 @@ public class Temperature
     {
         float indexForTile;
 
-        if (tile == null || tile.Room == null || tile.Room.ID == -1)
+        if (tile == null || tile.Room == null || tile.Room.ID == 0)
         {
             // If we are at 'void' this is the thermal value of vacuum/space/void.
             indexForTile = VacuumThermalConductivity;
@@ -413,8 +470,7 @@ public class Temperature
         if (indexForTile != DefaultThermalConductivity)
         {
             // Get effect relative neighbours
-            float position = GetLocationFloatFromXY(tile, centerLocation);
-            List<Tile> neighbours = GetRelativeNeighbours(position, tile);
+            List<Tile> neighbours = GetMinMaxTiles(tile, centerLocation);
 
             // Get our effect on the index (based off our temperature, so the hotter the 'better' we stop heat mimicking real behaviour)
             float baseTemperature = tile.TemperatureUnit.TemperatureInKelvin / (E * Mathf.Abs(Mathf.Log(indexForTile)) * K);
@@ -425,7 +481,7 @@ public class Temperature
                 // Apply to neighbours
                 for (int i = 0; i < neighbours.Count; i++)
                 {
-                    neighbours[i].ApplyTemperature(-baseTemperature, startingHeat);
+                    neighbours[i].ApplyTemperature(-baseTemperature / startingHeat, startingHeat);
                 }
             }
         }
