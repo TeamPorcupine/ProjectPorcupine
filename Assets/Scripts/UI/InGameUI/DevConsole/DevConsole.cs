@@ -142,7 +142,7 @@ namespace DeveloperConsole
                 return;
             }
 
-            if (SettingsKeyHolder.Enable == false)
+            if (SettingsKeyHolder.EnableDevConsole == false)
             {
                 Close();
                 return;
@@ -732,7 +732,7 @@ namespace DeveloperConsole
                 KeyboardManager.Instance.RegisterInputAction("DevConsole", KeyboardMappedInputType.KeyUp, ToggleConsole);
             }
 
-            if (SettingsKeyHolder.Enable == false || closed)
+            if (SettingsKeyHolder.EnableDevConsole == false || closed)
             {
                 Close();
             }

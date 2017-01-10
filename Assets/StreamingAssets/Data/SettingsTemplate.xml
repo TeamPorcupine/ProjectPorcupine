@@ -43,7 +43,7 @@
   <Category Name="Developer">
     <OptionHeading Name="General">
       <Option Name="Developer Mode" Key="developer_general_developerMode" DefaultValue="false" ClassName="DeveloperModeToggle" />
-      <Option Name="Logging Level" Key="developer_general_loggingLevel" DefaultValue="0" ClassName="LoggingLevelComboBox" />
+      <Option Name="Logging Level" Key="developer_general_loggingLevel" DefaultValue="false" ClassName="GenericToggle" />
     </OptionHeading>
     <OptionHeading Name="Console">
       <Option Name="Scroll Sensitivity" Key="developer_console_scrollSensitivity" DefaultValue="6" ClassName="ScrollSensitivitySlider" />

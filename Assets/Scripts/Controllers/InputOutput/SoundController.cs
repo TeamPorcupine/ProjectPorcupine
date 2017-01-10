@@ -34,7 +34,7 @@ public class SoundController
         up = GetVectorFrom(Vector3.up);
         cooldowns = new Dictionary<SoundClip, float>();
     }
-    
+
     // Update is called once per frame
     public void Update(float deltaTime)
     {

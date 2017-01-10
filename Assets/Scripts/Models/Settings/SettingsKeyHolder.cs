@@ -353,11 +353,11 @@ public static partial class SettingsKeyHolder
         }
     }
 
-    public static int LoggingLevel
+    public static bool LoggingLevel
     {
         get
         {
-            return Settings.GetSetting("developer_general_loggingLevel", 0);
+            return Settings.GetSetting("developer_general_loggingLevel", false);
         }
 
         set
@@ -379,7 +379,7 @@ public static partial class SettingsKeyHolder
         }
     }
 
-    public static bool Enable
+    public static bool EnableDevConsole
     {
         get
         {
