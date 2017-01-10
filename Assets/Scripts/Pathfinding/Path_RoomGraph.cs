@@ -47,7 +47,7 @@ public class Path_RoomGraph
             UnityDebugger.Debugger.Log("Path_RoomGraph", "Room " + room.ID + " has edges to:");
             foreach (Path_Edge<Room> edge in nodes[room].edges)
             {
-                UnityDebugger.Debugger.Log("\tEdge connects to " + edge.node.data.ID);
+                UnityDebugger.Debugger.Log("Path_RoomGraph", "\tEdge connects to " + edge.node.data.ID);
             }
         }
     }
