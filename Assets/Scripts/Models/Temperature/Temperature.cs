@@ -8,11 +8,8 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using MoonSharp.Interpreter;
 using UnityEngine;
-using System.Collections;
 
 /// <summary>
 /// A tile by tile temperature management system.
@@ -205,7 +202,6 @@ public class Temperature
         // We work backwards cause it means we can also do a equalisation operation without needing another loop
         for (int i = 0; i < temperatureMap[startingTemperature].Length; i++)
         {
-            Profiler.BeginSample("Temp1");
             // The current potential heat
             float potentialHeat = temperatureMap[startingTemperature][i];
 
@@ -216,9 +212,6 @@ public class Temperature
                 world.GetTileAt(source.X, source.Y, source.Z).ApplyTemperature(potentialHeat * deltaTime, startingTemperature);
                 continue;
             }
-
-            Profiler.EndSample();
-            Profiler.BeginSample("Temp2");
 
             // Cycle across
             // This creates does the outside of each layer that is does the top bottom left and right sides.
@@ -242,8 +235,6 @@ public class Temperature
                     }
                 }
             }
-
-            Profiler.EndSample();
         }
     }
 

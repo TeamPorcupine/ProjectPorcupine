@@ -88,11 +88,6 @@ namespace ProjectPorcupine.Buildable.Components
                 }
             }
 
-            if (Outputs != null)
-            {
-
-            }
-
             return canFunction;
         }
 
