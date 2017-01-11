@@ -339,20 +339,20 @@ public class World
         {
             if (width < Width)
             {
-                Debug.LogWarning("Width too small: " + Width + " " + width);
+                UnityDebugger.Debugger.LogWarning("World", "Width too small: " + Width + " " + width);
             }
 
             if (height < Height)
             {
-                Debug.LogWarning("Height too small: " + Height + " " + height);
+                UnityDebugger.Debugger.LogWarning("World", "Height too small: " + Height + " " + height);
             }
 
             if (depth < Depth)
             {
-                Debug.LogWarning("Depth too small: " + Depth + " " + depth);
+                UnityDebugger.Debugger.LogWarning("World", "Depth too small: " + Depth + " " + depth);
             }
 
-            Debug.LogError("Shrinking the world is not presently supported");
+            UnityDebugger.Debugger.LogError("World", "Shrinking the world is not presently supported");
             return;
         }
 

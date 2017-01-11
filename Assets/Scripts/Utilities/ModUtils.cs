@@ -81,17 +81,17 @@ public static class ModUtils
 
     public static void Log(object obj)
     {
-        Debug.Log(obj);
+        UnityDebugger.Debugger.Log(defaultLogChannel, obj);
     }
 
     public static void LogWarning(object obj)
     {
-        Debug.LogWarning(obj);
+        UnityDebugger.Debugger.LogWarning(defaultLogChannel, obj);
     }
 
     public static void LogError(object obj)
     {
-        Debug.LogError(obj);
+        UnityDebugger.Debugger.LogError(defaultLogChannel, obj);
     }
 
     public static void ULogChannel(string channel, string message)
