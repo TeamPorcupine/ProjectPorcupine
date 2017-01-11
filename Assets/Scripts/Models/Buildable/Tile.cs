@@ -311,21 +311,20 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
     /// Equalising temperature along neighbours in the same room.
     /// It keeps it within a room just so rooms are more equalised.
     /// </summary>
-    public void EqualiseTemperature()
+    public void EqualiseTemperature(List<Tile> neighbours, float deltaTime)
     {
-        // Get neighbours (we currently get all neighbours, but could get relative neighbours).
-        Tile[] neighbours = GetNeighbours(true, true);
+        neighbours.AddRange(GetVerticalNeighbors(false));
 
         // Cycle through and apply a value change depending on our average if we have a difference of greater than one
         // Its greater than one due to float things, it just helps makes things easier and so we don't need to do a - b < epsilon
-        for (int i = neighbours.Length - 1; i >= 0; i--)
+        for (int i = neighbours.Count - 1; i >= 0; i--)
         {
             if (neighbours[i].TemperatureUnit.TemperatureInKelvin + 1 < this.TemperatureUnit.TemperatureInKelvin && neighbours[i].Room == this.Room)
             {
                 // They are less so we should disperse heat into them
                 float value = (this.TemperatureUnit.TemperatureInKelvin + neighbours[i].TemperatureUnit.TemperatureInKelvin) / 2;
-                neighbours[i].ApplyTemperature(value, 0);
-                this.ApplyTemperature(-value, 0);
+                neighbours[i].ApplyTemperature(value * deltaTime, 0);
+                this.ApplyTemperature(-value * deltaTime, 0);
             }
         }
     }
@@ -349,7 +348,7 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
         }
         else
         {
-            absoluteDelta = deltaTemperature / this.TemperatureUnit.TemperatureInKelvin;
+            absoluteDelta = deltaTemperature / (this.TemperatureUnit.TemperatureInKelvin * 4);
         }
 
         this.TemperatureUnit.TemperatureInKelvin += absoluteDelta;

@@ -90,21 +90,7 @@ namespace ProjectPorcupine.Buildable.Components
 
             if (Outputs != null)
             {
-                if (Outputs.MaxLimit != -1)
-                {
-                    if (ParentFurniture.Tile.Room != null && ParentFurniture.Tile.TemperatureUnit.TemperatureInKelvin > Outputs.MaxLimit)
-                    {
-                        return false;
-                    }
-                }
 
-                if (Outputs.MinLimit != -1)
-                {
-                    if (ParentFurniture.Tile.Room != null && ParentFurniture.Tile.TemperatureUnit.TemperatureInKelvin < Outputs.MinLimit)
-                    {
-                        return false;
-                    }
-                }
             }
 
             return canFunction;
@@ -114,6 +100,23 @@ namespace ProjectPorcupine.Buildable.Components
         {
             if (Outputs != null && OutputRate != 0)
             {
+                if (Outputs.MaxLimit != -1)
+                {
+                    if (ParentFurniture.Tile.Room != null && ParentFurniture.Tile.TemperatureUnit.TemperatureInKelvin > Outputs.MaxLimit)
+                    {
+                        return;
+                    }
+                }
+
+                if (Outputs.MinLimit != -1)
+                {
+                    if (ParentFurniture.Tile.Room != null && ParentFurniture.Tile.TemperatureUnit.TemperatureInKelvin < Outputs.MinLimit)
+                    {
+                        return;
+                    }
+                }
+
+                // Else we are fine :D
                 World.Current.temperature.ProduceTemperatureAtFurniture(ParentFurniture, OutputRate, deltaTime);
             }
         }

@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading;
 using MoonSharp.Interpreter;
 using UnityEngine;
+using System.Collections;
 
 /// <summary>
 /// A tile by tile temperature management system.
@@ -25,7 +26,7 @@ public class Temperature
     /// <summary>
     /// The thermal conductivity of air (within the range).
     /// </summary>
-    public const float DefaultThermalConductivity = 0.024f;
+    public const float DefaultThermalConductivity = 0.030f;
 
     /// <summary>
     /// The thermal conductivity of a vacuum.
@@ -41,7 +42,7 @@ public class Temperature
 
     /// <summary>
     /// A constant that changes the value of the result,
-    /// a smaller k will result in a smaller heat potential => less heat dispersion.
+    /// a smaller k will result in a lower heat potential => less heat dispersion.
     /// </summary>
     public const float K = 0.5f;
 
@@ -170,9 +171,6 @@ public class Temperature
     /// </remarks>
     public void ProduceTemperatureAtTile(Tile source, float value, float deltaTime)
     {
-        float startingEnergy = value;
-        float effect = 1;
-
         // If a cache doesn't exist generate one.
         if (temperatureMap.ContainsKey(value) == false)
         {
@@ -185,33 +183,47 @@ public class Temperature
             {
                 // Add the previous heat then work out the next layer.
                 premap.Add(potentialHeat);
-                potentialHeat -= startingEnergy / (E * Mathf.Abs(Mathf.Log(DefaultThermalConductivity)) * K);
+                potentialHeat -= value / (E * Mathf.Abs(Mathf.Log(DefaultThermalConductivity)) * K);
             }
 
             temperatureMap[value] = premap.ToArray();
         }
 
+        CycleTemperatures(source, value, deltaTime);
+    }
+
+    // Does sections of the temperature at small intervals
+    // This way the system is nicer in how it handles the timing
+    private void CycleTemperatures(Tile source, float startingTemperature, float deltaTime)
+    {
+        if (source == null)
+        {
+            return;
+        }
+
         // Perform the majoritively circular generalisation
         // We work backwards cause it means we can also do a equalisation operation without needing another loop
-        for (int i = temperatureMap[value].Length - 1; i >= 0; i--)
+        for (int i = 0; i < temperatureMap[startingTemperature].Length; i++)
         {
+            Profiler.BeginSample("Temp1");
             // The current potential heat
-            float potentialHeat = temperatureMap[value][i];
+            float potentialHeat = temperatureMap[startingTemperature][i];
 
             // If we are at center then we do this case so it doesn't spread to neighbours 
             // since if you have heat exiting a heater you don't want that heater to block heater from getting to neighbours
             if (i == 0)
             {
-                world.GetTileAt(source.X, source.Y, source.Z).ApplyTemperature(potentialHeat * effect * deltaTime, startingEnergy);
-
-                // No need to continue since we are at end
-                break;
+                world.GetTileAt(source.X, source.Y, source.Z).ApplyTemperature(potentialHeat * deltaTime, startingTemperature);
+                continue;
             }
+
+            Profiler.EndSample();
+            Profiler.BeginSample("Temp2");
 
             // Cycle across
             // This creates does the outside of each layer that is does the top bottom left and right sides.
             // So it always does x and does y at the very left and very right
-            for (int z = 0; z < world.Depth; z++)
+            for (int z = 0; z < Math.Min(i, world.Depth); z++)
             {
                 for (int x = -i; x <= i; x++)
                 {
@@ -220,56 +232,38 @@ public class Temperature
                         // If we are at an end then cycle downwards
                         for (int y = -i; y <= i; y++)
                         {
-                            // Checking if we are at map limit
-                            // Could just have a null check in determine if polygonal for speed improvements
-                            if (source.X + x >= 0 && source.X + x < world.Width && source.Y + y >= 0 && source.Y + y < world.Height)
-                            {
-                                DetermineIfPolygonal(world.GetTileAt(source.X + x, source.Y + y, source.Z + z), potentialHeat * effect * deltaTime, startingEnergy, source);
-                            }
+                            DetermineIfPolygonal(world.GetTileAt(source.X + x, source.Y + y, source.Z + z), potentialHeat * deltaTime, startingTemperature, source, deltaTime);
                         }
                     }
                     else
                     {
-                        // If we aren't at map limit then do top and bottom.
-                        // Checking if we are at map limit
-                        // Could just have a null check in determine if polygonal for speed improvements
-                        if (source.X + x >= 0 && source.X + x < world.Width && source.Y + i >= 0 && source.Y + i < world.Height)
-                        {
-                            DetermineIfPolygonal(world.GetTileAt(source.X + x, source.Y + i, source.Z + z), potentialHeat * effect * deltaTime, startingEnergy, source);
-                        }
-
-                        // Checking if we are at map limit
-                        // Could just have a null check in determine if polygonal for speed improvements
-                        if (source.X + x >= 0 && source.X + x < world.Width && source.Y - i >= 0 && source.Y - i < world.Height)
-                        {
-                            DetermineIfPolygonal(world.GetTileAt(source.X + x, source.Y - i, source.Z + z), potentialHeat * effect * deltaTime, startingEnergy, source);
-                        }
+                        DetermineIfPolygonal(world.GetTileAt(source.X + x, source.Y + i, source.Z + z), potentialHeat * deltaTime, startingTemperature, source, deltaTime);
+                        DetermineIfPolygonal(world.GetTileAt(source.X + x, source.Y - i, source.Z + z), potentialHeat * deltaTime, startingTemperature, source, deltaTime);
                     }
                 }
-
-                // If our tile is beyond the map border then stop
-                if (((i / 2) + source.X > world.Width && source.X - (i / 2) <= 0) || ((i / 2) + source.Y > world.Height && source.Y - (i / 2) <= 0))
-                {
-                    break;
-                }
             }
+
+            Profiler.EndSample();
         }
     }
 
+    /// <summary>
+    /// Get the min, middle, and max tiles from a tile source using comparison matrixes.
+    /// </summary>
+    /// <param name="tile"> The tile in question. </param>
+    /// <param name="source"> The relevant source. </param>
+    /// <returns></returns>
     private List<Tile> GetMinMaxTiles(Tile tile, Tile source)
     {
         // If we are greater than + 1, lower - 1, equal +- 0 (exactly what CompareTo gives us :D)
         int zLevel = tile.Z.CompareTo(source.Z);
 
-        // Just uses comparative operators (Compare to)
-        Direction direction = (Direction)((tile.Y.CompareTo(source.Y) + 2) * (tile.X.CompareTo(source.X) + 2));
-
         List<Tile> tiles = new List<Tile>();
         Tile t;
 
-        switch (direction)
+        switch ((tile.Y.CompareTo(source.Y) + 2) * (tile.X.CompareTo(source.X) + 2))
         {
-            case Direction.NW:
+            case (int)Direction.NW:
                 // W
                 t = world.GetTileAt(tile.X - 1, tile.Y, tile.Z + zLevel);
 
@@ -295,7 +289,7 @@ public class Temperature
                 }
 
                 break;
-            case Direction.N:
+            case (int)Direction.N:
                 for (int i = -1; i <= 1; i++)
                 {
                     t = world.GetTileAt(tile.X + i, tile.Y + 1, tile.Z + zLevel);
@@ -307,7 +301,7 @@ public class Temperature
                 }
 
                 break;
-            case Direction.NE:
+            case (int)Direction.NE:
                 // E
                 t = world.GetTileAt(tile.X + 1, tile.Y, tile.Z + zLevel);
 
@@ -333,7 +327,7 @@ public class Temperature
                 }
 
                 break;
-            case Direction.W:
+            case (int)Direction.W:
                 for (int i = -1; i <= 1; i++)
                 {
                     t = world.GetTileAt(tile.X - 1, tile.Y + i, tile.Z + zLevel);
@@ -345,7 +339,7 @@ public class Temperature
                 }
 
                 break;
-            case Direction.O:
+            case (int)Direction.O:
                 t = world.GetTileAt(tile.X, tile.Y, tile.Z + zLevel);
 
                 if (t != null)
@@ -354,7 +348,7 @@ public class Temperature
                 }
 
                 break;
-            case Direction.E:
+            case (int)Direction.E:
                 for (int i = -1; i <= 1; i++)
                 {
                     t = world.GetTileAt(tile.X + 1, tile.Y + i, tile.Z + zLevel);
@@ -366,7 +360,7 @@ public class Temperature
                 }
 
                 break;
-            case Direction.SW:
+            case (int)Direction.SW:
                 // S
                 t = world.GetTileAt(tile.X, tile.Y - 1, tile.Z + zLevel);
 
@@ -392,7 +386,7 @@ public class Temperature
                 }
 
                 break;
-            case Direction.S:
+            case (int)Direction.S:
                 for (int i = -1; i <= 1; i++)
                 {
                     t = world.GetTileAt(tile.X + i, tile.Y - 1, tile.Z + zLevel);
@@ -404,7 +398,7 @@ public class Temperature
                 }
 
                 break;
-            case Direction.SE:
+            case (int)Direction.SE:
                 // S
                 t = world.GetTileAt(tile.X, tile.Y - 1, tile.Z + zLevel);
 
@@ -446,8 +440,13 @@ public class Temperature
     /// <param name="tile"> The relative tile to center location that has an index different from <see cref="DefaultThermalConductivity"/>. </param>
     /// <param name="potentialHeat"> The potential heat of this layer. </param>
     /// <param name="startingHeat"> The heat we began at. </param>
-    private void DetermineIfPolygonal(Tile tile, float potentialHeat, float startingHeat, Tile centerLocation)
+    private void DetermineIfPolygonal(Tile tile, float potentialHeat, float startingHeat, Tile centerLocation, float deltaTime)
     {
+        if (tile == null)
+        {
+            return;
+        }
+
         float indexForTile;
 
         if (tile == null || tile.Room == null || tile.Room.ID == 0)
@@ -470,14 +469,14 @@ public class Temperature
         // Apply the potential heat to the polygonal flagged tile
         tile.ApplyTemperature(potentialHeat, startingHeat);
 
+        // Get effect relative neighbours
+        List<Tile> neighbours = GetMinMaxTiles(tile, centerLocation);
+
         // If the index is different then the default thermal conductivity value then perform our neighbour generalisation
         if (indexForTile != DefaultThermalConductivity)
         {
-            // Get effect relative neighbours
-            List<Tile> neighbours = GetMinMaxTiles(tile, centerLocation);
-
-            // Get our effect on the index (based off our temperature, so the hotter the 'better' we stop heat mimicking real behaviour)
-            float baseTemperature = tile.TemperatureUnit.TemperatureInKelvin / (E * Mathf.Abs(Mathf.Log(indexForTile)) * K);
+            // Get our effect on the index (based off our temperature, so the hotter the 'better' we stop heat; mimicking real behaviour)
+            float baseTemperature = tile.TemperatureUnit.TemperatureInKelvin / (Mathf.Abs(Mathf.Log(indexForTile)) * 4);
 
             // If heat within limits
             if (HeatGreaterThanLimit(baseTemperature, tile.TemperatureUnit.TemperatureInKelvin > 0))
@@ -485,12 +484,12 @@ public class Temperature
                 // Apply to neighbours
                 for (int i = 0; i < neighbours.Count; i++)
                 {
-                    neighbours[i].ApplyTemperature(-baseTemperature / startingHeat, startingHeat);
+                    neighbours[i].ApplyTemperature(-(baseTemperature * deltaTime) / startingHeat, startingHeat);
                 }
             }
         }
 
         // Perform the tile's equalisation method
-        tile.EqualiseTemperature();
+        tile.EqualiseTemperature(neighbours, deltaTime);
     }
 }

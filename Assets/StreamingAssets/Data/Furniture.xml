@@ -889,7 +889,7 @@
       <ParameterDefinitions>
         <OutputRate name="temperature_outputRate" />
       </ParameterDefinitions>
-      <Outputs initialOutput="274.15" />
+      <Outputs initialOutput="273.5" />
     </Component>
     <OrderAction type="Build">
       <Job time="2" />

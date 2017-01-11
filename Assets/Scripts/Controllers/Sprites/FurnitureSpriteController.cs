@@ -15,7 +15,7 @@ using UnityEngine;
 public class FurnitureSpriteController : BaseSpriteController<Furniture>
 {
     private const float IndicatorOffset = 0.25f;
-    private const float IndicatorScale = 0.35f;
+    private const float IndicatorScale = 0.5f;
 
     private Dictionary<Furniture, FurnitureChildObjects> childObjectMap;
 
