@@ -120,7 +120,7 @@ namespace ProjectPorcupine.Buildable.Components
 
         protected override void Initialize()
         {
-            componentRequirements = Requirements.Production;
+            componentRequirements = Requirements.Temperature;
 
             if (ParamsDefinitions == null)
             {

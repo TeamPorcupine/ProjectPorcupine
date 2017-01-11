@@ -514,7 +514,7 @@
       <ParameterDefinitions>
         <OutputRate name="temperature_outputRate" />
       </ParameterDefinitions>
-      <Outputs initialOutput="200" maxLimit="220" />
+      <Outputs initialOutput="295" maxLimit="300" />
     </Component>
     <Component type="PowerConnection">
       <Requires rate="4" />
@@ -559,7 +559,7 @@
       <ParameterDefinitions>
         <OutputRate name="temperature_outputRate" />
       </ParameterDefinitions>
-      <Outputs initialOutput="-105" minLimit="220" />
+      <Outputs initialOutput="260" minLimit="300" />
     </Component>
     <LocalizationCode>furn_cooler</LocalizationCode>
     <UnlocalizedDescription>furn_cooler_desc</UnlocalizedDescription>
