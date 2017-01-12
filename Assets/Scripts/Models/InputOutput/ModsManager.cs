@@ -14,6 +14,7 @@ public class ModsManager
 {
     public ModsManager()
     {
+        ModMenu.Load();
         LoadSharedFiles();
 
         if (SceneController.Instance.IsAtIntroScene())

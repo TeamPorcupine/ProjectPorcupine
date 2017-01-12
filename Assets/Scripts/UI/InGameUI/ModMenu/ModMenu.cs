@@ -97,15 +97,29 @@ public static class ModMenu
             {
                 JObject modData = (JObject)JToken.ReadFrom(new JsonTextReader(File.OpenText(modPath)));
                 name = (string)modData["name"];
+                if (RevModDirs.ContainsKey(name))
+                {
+                    continue;
+                }
+
                 bool noSave = (bool)(modData["doNotSave"] ?? false);
                 if (noSave)
                 {
                     nonSaving.Add(name);
                 }
             }
+            else if (RevModDirs.ContainsKey(name))
+            {
+                continue;
+            }
 
             ModDirs.Add(name, mod.FullName);
             RevModDirs.Add(mod.FullName, name);
+        }
+
+        if (ActiveModDirs == null)
+        {
+            return;
         }
 
         for (int i = 0; i < active.Count; i++)
