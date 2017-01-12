@@ -62,18 +62,30 @@ public class WorldGenerator
 
         if (SceneController.GenerateAsteroids)
         {
-            int numAsteroids = (world.Height * world.Width) / Random.Range(800, 1200);
-
-            float averageAsteroidVolume = (4/3) * Mathf.PI * Mathf.Min(asteroidInfo.AsteroidSize, world.Height) * Mathf.Min(asteroidInfo.AsteroidSize, world.Width) * Mathf.Min(asteroidInfo.AsteroidSize, world.Depth);
-            int numAst = (int)((world.Height * world.Width * world.Depth) / averageAsteroidVolume * asteroidInfo.AsteroidDensity);
-            numAst = (int)(numAst * Random.Range(.6f, 1.4f));
-            Debug.LogWarning("Calculated Asteroid Count: " + numAst);
-            numAsteroids = numAst;
+            // To clarify this is the formula for an ellipsoid, taking the lesser of asteroid radius and world size in that dimension
+            float averageAsteroidVolume = (4 / 3) * Mathf.PI * Mathf.Min(asteroidInfo.AsteroidSize, world.Height) * Mathf.Min(asteroidInfo.AsteroidSize, world.Width) * Mathf.Min(asteroidInfo.AsteroidSize, world.Depth);
+            int numAsteroids = (int)((world.Height * world.Width * world.Depth) / averageAsteroidVolume * asteroidInfo.AsteroidDensity);
+            numAsteroids = (int)(numAsteroids * Random.Range(.6f, 1.4f));
 
             List<Vector3> asteroidSeeds = GeneratePoints(numAsteroids, world);
             for (int asteroid = 0; asteroid < asteroidSeeds.Count; asteroid++)
             {
                 GrowAsteroid(asteroidSeeds[asteroid], world);
+            }
+        }
+    }
+
+    private static void ReadXmlWallet(XmlReader reader, World world)
+    {
+        XmlReader wallet = reader.ReadSubtree();
+
+        while (wallet.Read())
+        {
+            if (wallet.Name == "Currency")
+            {
+                world.Wallet.AddCurrency(
+                    wallet.GetAttribute("name"),
+                    float.Parse(wallet.GetAttribute("startingBalance")));
             }
         }
     }
@@ -100,7 +112,8 @@ public class WorldGenerator
             {
                 float currentFarthestTotalDistance = 0f;
                 int currentFarthestPointIndex = 0;
-                for (int j = 0; j < workingPoints.Count; j++) {
+                for (int j = 0; j < workingPoints.Count; j++) 
+                {
                     float closestDistance = Mathf.Infinity;
                     for (int k = 0; i < finalPoints.Count; k++) 
                     {
@@ -118,28 +131,12 @@ public class WorldGenerator
                     }
                 }
 
-
                 finalPoints.Add(workingPoints[currentFarthestPointIndex]);
                 workingPoints.RemoveAt(currentFarthestPointIndex);
             }
         }
 
         return finalPoints;
-    }
-
-    private static void ReadXmlWallet(XmlReader reader, World world)
-    {
-        XmlReader wallet = reader.ReadSubtree();
-
-        while (wallet.Read())
-        {
-            if (wallet.Name == "Currency")
-            {
-                world.Wallet.AddCurrency(
-                    wallet.GetAttribute("name"),
-                    float.Parse(wallet.GetAttribute("startingBalance")));
-            }
-        }
     }
 
     private void GrowAsteroid(Vector3 location, World world)
@@ -177,14 +174,14 @@ public class WorldGenerator
             return;
         }
 
-        const int neededNeighbors = 3;
+        const int NeededNeighbors = 3;
 
-        if (tile.GetNeighbours(true, true).Count(currentAsteroid.Contains) >= neededNeighbors)
+        if (tile.GetNeighbours(true, true).Count(currentAsteroid.Contains) >= NeededNeighbors)
         {
             tile.SetTileType(asteroidFloorType);
 
             world.FurnitureManager.PlaceFurniture("astro_wall", tile, false);
-            if (tile.GetNeighbours(true, true).Count(currentAsteroid.Contains) < neededNeighbors)
+            if (tile.GetNeighbours(true, true).Count(currentAsteroid.Contains) < NeededNeighbors)
             {
                 tile.Furniture.Parameters["culled"].SetValue(true);
             }
