@@ -116,12 +116,12 @@ public static class ModMenu
             ModDirs.Add(name, mod.FullName);
             RevModDirs.Add(mod.FullName, name);
         }
-
+        
         if (ActiveModDirs == null)
         {
             return;
         }
-
+        
         for (int i = 0; i < active.Count; i++)
         {
             JToken activeMod = active[i];
