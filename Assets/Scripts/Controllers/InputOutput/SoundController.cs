@@ -11,6 +11,29 @@ using System.Linq;
 using FMOD;
 using UnityEngine;
 
+public struct DriverInfo
+{
+    public int id;
+    public System.Text.StringBuilder name;
+    public System.Guid guid;
+    public int systemRate;
+    public SPEAKERMODE speakerMode;
+    public int speakerModeChannels;
+
+    public override string ToString()
+    {
+        return id.ToString() + ", " + name.ToString();
+    }
+
+    public DriverInfo(int id)
+    {
+        this.id = id;
+        this.name = new System.Text.StringBuilder(64);
+
+        AudioManager.SoundSystem.getDriverInfo(id, this.name, 64, out this.guid, out this.systemRate, out this.speakerMode, out this.speakerModeChannels);
+    }
+}
+
 public class SoundController
 {
     private Dictionary<SoundClip, float> cooldowns;
@@ -33,6 +56,11 @@ public class SoundController
         forward = GetVectorFrom(Vector3.forward);
         up = GetVectorFrom(Vector3.up);
         cooldowns = new Dictionary<SoundClip, float>();
+    }
+
+    public enum AudioChannel
+    {
+        master, UI, gameSounds, alerts, music
     }
 
     // Update is called once per frame
@@ -143,6 +171,86 @@ public class SoundController
     }
 
     /// <summary>
+    /// Sets the driver to the id provided.
+    /// </summary>
+    /// <param name="driverID"> Driver ID in question. </param>
+    public void SetAudioDriver(int driverID)
+    {
+        if (driverID != GetCurrentAudioDriver())
+        {
+            AudioManager.SoundSystem.setDriver(driverID);
+        }
+    }
+
+    /// <summary>
+    /// Sets the driver to the driver with the string GUID provided.
+    /// </summary>
+    /// <param name="driverGUID"> Driver string GUID in question. </param>
+    public void SetAudioDriver(string driverGUID)
+    {
+        for (int i = 0; i < GetDriverCount(); i++)
+        {
+            if (GetDriverInfo(i).guid.ToString() == driverGUID)
+            {
+                SetAudioDriver(i);
+                break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Sets the driver to the driver with the GUID provided.
+    /// </summary>
+    /// <param name="driverGUID"> Driver GUID in question. </param>
+    public void SetAudioDriver(System.Guid driverGUID)
+    {
+        SetAudioDriver(driverGUID.ToString());
+    }
+
+    /// <summary>
+    /// Returns the current audio device index.
+    /// </summary>
+    /// <returns> The index of the current audio device. </returns>
+    public int GetCurrentAudioDriver()
+    {
+        int audioDriver;
+        AudioManager.SoundSystem.getDriver(out audioDriver);
+        return audioDriver;
+    }
+
+    /// <summary>
+    /// Returns information on the current driver.
+    /// </summary>
+    /// <returns> Information covering index, name, GUID, and other information <see cref="DriverInfo"/>. </returns>
+    public DriverInfo GetCurrentAudioDriverInfo()
+    {
+        int audioDriver;
+        AudioManager.SoundSystem.getDriver(out audioDriver);
+        return GetDriverInfo(audioDriver);
+    }
+
+    /// <summary>
+    /// Gets driver information on the provided index.
+    /// </summary>
+    /// <param name="id"> The index in question. </param>
+    /// <returns> Information covering index, name, GUID, and other information <see cref="DriverInfo"/>. </returns>
+    public DriverInfo GetDriverInfo(int id)
+    {
+        return new DriverInfo(id);
+    }
+
+    /// <summary>
+    /// Returns the total driver count.
+    /// </summary>
+    /// <returns> An integer representing the total count of all audio drivers. </returns>
+    public int GetDriverCount()
+    {
+        int count;
+        AudioManager.SoundSystem.getNumDrivers(out count);
+        return count;
+    }
+
+    /// <summary>
     /// Sets the listener position.
     /// </summary>
     /// <param name="newPosition">New position for the listener.</param>
@@ -165,6 +273,43 @@ public class SoundController
         curLoc.z = z * 2;
         AudioManager.SoundSystem.set3DListenerAttributes(0, ref curLoc, ref zero, ref forward, ref up);
         AudioManager.SoundSystem.update();
+    }
+
+    public void SetVolume(AudioChannel channel, float volume)
+    {
+        SetVolume(channel.ToString(), volume);
+    }
+
+    public void SetVolume(string channel, float volume)
+    {
+        if (AudioManager.channelGroups.ContainsKey(channel))
+        {
+            AudioManager.channelGroups[channel].setVolume(volume);
+        }
+        else
+        {
+            UnityDebugger.Debugger.LogWarning("Channel " + channel + "does not exist.");
+        }
+    }
+
+    public float GetVolume(AudioChannel channel)
+    {
+        return GetVolume(channel.ToString());
+    }
+
+    public float GetVolume(string channel)
+    {
+        if (AudioManager.channelGroups.ContainsKey(channel))
+        {
+            float volume = 0;
+            AudioManager.channelGroups[channel].getVolume(out volume);
+            return volume;
+        }
+        else
+        {
+            UnityDebugger.Debugger.LogWarning("Channel " + channel + "does not exist.");
+            return 0f;
+        }
     }
 
     private VECTOR GetVectorFrom(Vector3 vector)

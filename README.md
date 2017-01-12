@@ -70,13 +70,6 @@ For further information, such as Roadmaps, explanations of systems and features,
 
 Make sure that you are using Unity 5.4.2 [Windows] (https://unity3d.com/get-unity/download?thank-you=update&download_nid=43049&os=Win) | [Mac] (https://unity3d.com/get-unity/download?thank-you=update&download_nid=43049&os=Mac)
 
-## Vote on Proposed Features
-
-You can propose features you'd like to see and vote on which ones to prioritize here:  [http://feathub.com/TeamPorcupine/ProjectPorcupine/](http://feathub.com/TeamPorcupine/ProjectPorcupine/)
-
-Here's the current list of proposed features:  
-[![Feature Requests](http://feathub.com/TeamPorcupine/ProjectPorcupine?format=svg)](http://feathub.com/TeamPorcupine/ProjectPorcupine)
-
 ## Community
 
 * [Unoffical Discord Channel ](https://discord.gg/68hkpSA)<discord.projectporcupine.com>

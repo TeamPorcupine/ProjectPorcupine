@@ -409,7 +409,7 @@ public class BuildModeController
     public bool DoesSameUtilityTypeAlreadyExist(string type, Tile tile)
     {
         Utility proto = PrototypeManager.Utility.Get(type);
-        return tile.Utilities.ContainsKey(proto.Name);
+        return tile.Utilities.ContainsKey(proto.Type);
     }
 
     private bool IsTilePartOfPressuredRoom(Tile tile)

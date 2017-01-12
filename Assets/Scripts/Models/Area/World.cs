@@ -168,15 +168,6 @@ public class World
     }
 
     /// <summary>
-    /// Notify world that the camera moved, so we can check which entities are visible to the camera.
-    /// The invisible enities can be updated less frequent for better performance.
-    /// </summary>
-    public void OnCameraMoved(Bounds cameraBounds)
-    {
-        FurnitureManager.OnCameraMoved(cameraBounds);
-    }
-
-    /// <summary>
     /// Gets the tile data at x and y.
     /// </summary>
     /// <returns>The <see cref="Tile"/> or null if called with invalid arguments.</returns>
@@ -348,20 +339,20 @@ public class World
         {
             if (width < Width)
             {
-                Debug.LogWarning("Width too small: " + Width + " " + width);
+                UnityDebugger.Debugger.LogWarning("World", "Width too small: " + Width + " " + width);
             }
 
             if (height < Height)
             {
-                Debug.LogWarning("Height too small: " + Height + " " + height);
+                UnityDebugger.Debugger.LogWarning("World", "Height too small: " + Height + " " + height);
             }
 
             if (depth < Depth)
             {
-                Debug.LogWarning("Depth too small: " + Depth + " " + depth);
+                UnityDebugger.Debugger.LogWarning("World", "Depth too small: " + Depth + " " + depth);
             }
 
-            Debug.LogError("Shrinking the world is not presently supported");
+            UnityDebugger.Debugger.LogError("World", "Shrinking the world is not presently supported");
             return;
         }
 
@@ -509,8 +500,6 @@ public class World
     /// <param name="deltaTime">Delta time.</param>
     private void TickEveryFrame(float deltaTime)
     {
-        CharacterManager.Update(deltaTime);
-        FurnitureManager.TickEveryFrame(deltaTime);
         GameEventManager.Update(deltaTime);
         ShipManager.Update(deltaTime);
     }
@@ -521,8 +510,6 @@ public class World
     /// <param name="deltaTime">Delta time.</param>
     private void TickFixedFrequency(float deltaTime)
     {
-        FurnitureManager.TickFixedFrequency(deltaTime);
-
         // Progress temperature modelling
         temperature.Update(deltaTime);
         PowerNetwork.Update(deltaTime);

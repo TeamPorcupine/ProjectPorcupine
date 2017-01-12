@@ -109,7 +109,6 @@ public class WorldController : MonoBehaviour
         spawnInventoryController.SetUIVisibility(SettingsKeyHolder.DeveloperMode);
 
         cameraController.Initialize();
-        cameraController.Moved += this.World.OnCameraMoved;
 
         // Initialising controllers.
         GameObject canvas = GameObject.Find("Canvas");

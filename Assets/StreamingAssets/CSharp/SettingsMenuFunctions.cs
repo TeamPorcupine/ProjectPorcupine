@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using DeveloperConsole;
 using ProjectPorcupine.Localization;
 using UnityEngine.UI;
@@ -117,6 +118,11 @@ public static class SettingsMenuFunctions
     public static AAComboBox GetAAComboBox()
     {
         return new AAComboBox();
+    }
+
+    public static SoundDeviceComboBox GetSoundDeviceComboBox()
+    {
+        return new SoundDeviceComboBox();
     }
 }
 
@@ -447,7 +453,7 @@ public class GenericSlider : BaseSettingsElement
 }
 
 // This class is just to help you create your own dropdown class
-private class GenericComboBox : BaseSettingsElement
+public class GenericComboBox : BaseSettingsElement
 {
     protected Dropdown dropdownElement;
     protected int selectedValue;
@@ -545,7 +551,7 @@ public class LocalizationComboBox : GenericComboBox
         LocalizationTable.SetLocalization(selectedValue);
     }
 
-    public int getValue()
+    public new int getValue()
     {
         // Tbh this never gets called (like legit never) or rather ever gets used
         // But this is here cause if you ever need to call it for some reason it can come as a number or a string...
@@ -638,7 +644,6 @@ public class ResolutionComboBox : GenericComboBox
     /// <summary>
     /// Create the differents option for the resolution dropdown.
     /// </summary>
-    // SettingsMenu TODO: Change to handle all options
     private Dropdown.OptionData[] CreateResolutionDropdown()
     {
         Dropdown.OptionData[] options = new Dropdown.OptionData[Screen.resolutions.Length + 1];
@@ -1032,6 +1037,79 @@ public class ShadowComboBox : GenericComboBox
     {
         base.CancelSetting();
         ApplyShadowSetting(getValue());
+    }
+}
+
+public class SoundDeviceComboBox : GenericComboBox
+{
+    private DriverDropdownOption selectedOption;
+
+    private class DriverDropdownOption : Dropdown.OptionData
+    {
+        public string driverInfo { get; set; }
+    }
+
+    public override GameObject InitializeElement()
+    {
+        GameObject go = DropdownHelperFromOptionData(CreateDeviceDropdown(), WorldController.Instance.soundController.GetCurrentAudioDriver());
+
+        dropdownElement.onValueChanged.AddListener(
+        (int v) =>
+        {
+            if (v != selectedValue)
+            {
+                valueChanged = true;
+                selectedOption = (DriverDropdownOption)dropdownElement.options[v];
+                selectedValue = v;
+            }
+        });
+
+        return go;
+    }
+
+    private Dropdown.OptionData[] CreateDeviceDropdown()
+    {
+        Dropdown.OptionData[] options = new Dropdown.OptionData[WorldController.Instance.soundController.GetDriverCount()];
+
+        for (int i = 0; i < Screen.resolutions.Length; i++)
+        {
+            DriverInfo info = WorldController.Instance.soundController.GetDriverInfo(i);
+
+            options[i] = new DriverDropdownOption
+            {
+                text = info.name.ToString(),
+                driverInfo = info.guid.ToString()
+            };
+        }
+
+        return options;
+    }
+
+    public override void ApplySetting()
+    {
+        base.ApplySetting();
+
+        if (selectedOption != null)
+        {
+            WorldController.Instance.soundController.SetAudioDriver(selectedOption.driverInfo);
+        }
+    }
+
+    public override void CancelSetting()
+    {
+        base.CancelSetting();
+
+        if (selectedOption != null)
+        {
+            WorldController.Instance.soundController.SetAudioDriver(getValue());
+        }
+    }
+
+    public new string getValue()
+    {
+        string defaultGUID = WorldController.Instance.soundController.GetCurrentAudioDriverInfo().guid.ToString();
+
+        return Settings.GetSetting(option.key, defaultGUID);
     }
 }
 

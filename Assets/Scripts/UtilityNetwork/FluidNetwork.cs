@@ -48,7 +48,7 @@ namespace ProjectPorcupine.PowerNetwork
             if (IsEmpty || !fluidGrids.Any(grid => grid.CanPlugIn(connection)))
             {
                 fluidGrids.Add(new Grid());
-                UnityDebugger.Debugger.LogWarning("Adding new Grid");
+                UnityDebugger.Debugger.LogWarning("FluidNetwork", "Adding new Fluid Grid");
             }
 
             // TODO: Currently, this will create a "Universal" Fluid system... that is not ideal.
