@@ -181,14 +181,6 @@ public class WorldGenerator
             tile.SetTileType(asteroidFloorType);
 
             world.FurnitureManager.PlaceFurniture("astro_wall", tile, false);
-            if (tile.GetNeighbours(true, true).Count(currentAsteroid.Contains) < NeededNeighbors)
-            {
-                tile.Furniture.Parameters["culled"].SetValue(true);
-            }
-            else
-            {
-                tile.Furniture.Parameters["culled"].SetValue(false);
-            }
 
             if (Random.value <= asteroidInfo.ResourceChance && tile.Furniture.Type == "astro_wall")
             {
