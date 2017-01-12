@@ -86,8 +86,13 @@ public static class ModMenu
         {
             active = new JArray();
         }
+
+        if (ActiveModDirs == null)
+        {
+            ActiveModDirs = new List<string>();
+            activeModDirsWaiting = ActiveModDirs;
+        }
         
-        ActiveModDirs = new List<string>();
         foreach (DirectoryInfo mod in ModsManager.GetModsFiles())
         {
             string modPath = Path.Combine(mod.FullName, "mod.json");
@@ -117,7 +122,7 @@ public static class ModMenu
             RevModDirs.Add(mod.FullName, name);
         }
         
-        if (ActiveModDirs == null)
+        if (ActiveModDirs.Count == 0)
         {
             return;
         }
