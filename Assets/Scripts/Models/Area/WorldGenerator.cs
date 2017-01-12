@@ -159,7 +159,7 @@ public class WorldGenerator
             currentAsteroid.Add(tile);
             foreach (Tile neighbor in tile.GetNeighbours(false, true))
             {
-                if (depth < 20 && !currentAsteroid.Contains(neighbor) && neighbor.Furniture == null && Random.value < (float)minSize / depth)
+                if (depth < maxSize && !currentAsteroid.Contains(neighbor) && neighbor.Furniture == null && Random.value < (float)minSize / depth)
                 {
                     GrowAsteroid(neighbor, depth + 1);
                 }
