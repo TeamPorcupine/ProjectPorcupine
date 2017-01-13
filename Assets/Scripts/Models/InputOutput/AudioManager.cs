@@ -121,7 +121,11 @@ public class AudioManager
 
     public static void Destroy()
     {
+        SoundSystem.close();
+        master.release();
         SoundSystem.release();
+
+        SoundSystem = null;
         audioClips = null;
     }
 
