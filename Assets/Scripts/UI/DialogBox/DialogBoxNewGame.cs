@@ -77,7 +77,11 @@ public class DialogBoxNewGame : DialogBox
 
         // Try and parse seed as Integer if this is not possible then hash string as integer
         int seed = 0;
-        if (int.TryParse(Seed.text, out seed) == false)
+        if (Seed.text == string.Empty)
+        {
+            seed = UnityEngine.Random.Range(0, int.MaxValue);
+        } 
+        else if (int.TryParse(Seed.text, out seed) == false)
         {
             seed = Seed.text.GetHashCode();
             Debug.LogWarning("Converted " + Seed.text + " to hash " + seed);
