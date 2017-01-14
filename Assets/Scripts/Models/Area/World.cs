@@ -101,7 +101,7 @@ public class World
     /// <summary>
     /// Gets or sets the world seed.
     /// </summary>
-    /// <value>The seed.</value>
+    /// <value>The world seed.</value>
     public int Seed { get; protected set; }
 
     /// <summary>
