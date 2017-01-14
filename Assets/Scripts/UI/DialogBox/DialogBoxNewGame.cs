@@ -31,7 +31,7 @@ public class DialogBoxNewGame : DialogBox
         Depth.onEndEdit.AddListener(delegate { VerifyNumericInput(Depth); });
 
         // Generate Random Seed TODO: make it alphanumerical
-        Seed.text = UnityEngine.Random.Range(0, int.MaxValue).ToString();
+        Seed.text = UnityEngine.Random.Range(int.MinValue, int.MaxValue).ToString();
 
         // Get list of files in save location
         string generatorDirectoryPath = GameController.Instance.GeneratorBasePath();
