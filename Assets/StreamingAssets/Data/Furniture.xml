@@ -382,7 +382,7 @@
         <MovementCost>2</MovementCost>
         <PathfindingModifier>0</PathfindingModifier>
         <PathfindingWeight>2</PathfindingWeight>
-        <Width>1</Width>
+        <Width>2</Width>
         <Height>1</Height>
 
 
@@ -395,7 +395,16 @@
             <Job time="1" />
             <Inventory type="steel_plate" amount="1" />
         </OrderAction>
-<!--
+
+        <Animations>
+            <Animation state="idle" looping="false">
+                <Frame name="water_generator_off" />
+            </Animation>
+            <Animation state="running" looping="false">
+                <Frame name="water_generator_on" />
+            </Animation>
+        </Animations>
+
         <Component type="Workshop">
             <ParameterDefinitions>
                 <CurrentProcessingTime name="cur_processing_time" />
@@ -403,24 +412,36 @@
                 <IsProcessing name="cur_processed_inv" />
                 <CurrentProductionChainName name="cur_production_chain" />
             </ParameterDefinitions>
-            <ProductionChain name="Power generation" processingTime="60">
+            <ProductionChain name="Ice melting" processingTime="60">
                 <Input>
-                    <Item objectType="Power Cell" amount="1" slotPosX="0" slotPosY="0" hasHopper="false" />
+                    <Item objectType="ice" amount="1" slotPosX="0" slotPosY="0" hasHopper="true" />
                 </Input>
             </ProductionChain>
+        </Component>    
+
+        <Component type="Visuals">
+            <DefaultSpriteName useName="water_generator_off" />
+            <UseAnimation name="idle">
+                <Requires>
+                    <Param name="cur_processed_inv" condition="IsZero" />
+                </Requires>
+            </UseAnimation>
+            <UseAnimation name="running">
+                <Requires>
+                    <Param name="cur_processed_inv" condition="IsGreaterThanZero" />
+                </Requires>
+            </UseAnimation>
         </Component>
-    -->    
+        
         <Component type="FluidConnection">
 			<FluidType>water</FluidType>
-            <Provides rate="5"/>            
-			<!--
+            <Provides rate="5"/>
             <Requires>
                 <Param name="cur_processed_inv" condition="IsGreaterThanZero" />
-            </Requires>            
-			-->
-        </Component>        
+            </Requires>
+        </Component>
 
-        
+        <GetProgressInfo functionName="WaterGenerator_StatusInfo" />
         
         <LocalizationCode>furn_water_generator</LocalizationCode>
         <UnlocalizedDescription>furn_water_generator_desc</UnlocalizedDescription>
@@ -442,6 +463,21 @@
             <Job time="1" />
             <Inventory type="steel_plate" amount="1" />
         </OrderAction>
+
+        <Animations>
+            <Animation state="filling" valuebased="true">
+                <Frame name="water_tank_0" />
+                <Frame name="water_tank_25" />
+                <Frame name="water_tank_50" />
+                <Frame name="water_tank_75" />
+                <Frame name="water_tank_100" />
+            </Animation>
+        </Animations>
+       
+        <Component type="Visuals">
+            <DefaultSpriteName useName="water_tank_0" />
+            <UseAnimation name="filling" valuebasedParamerName="fluid_storage_index"/>
+        </Component>
 		
         <Component type="FluidConnection">
             <Provides rate="10" capacity="50" capacityThresholds="5"/>
@@ -602,6 +638,10 @@
             <Job time="1" />
             <Inventory type="steel_plate" amount="1" />
         </OrderAction>
+
+        <Component type="Visuals">
+            <DefaultSpriteName useName="Heater" />
+        </Component>
 
         <!-- This method gets called on Install -->
         <Action event="OnInstall" functionName="Heater_InstallAction"></Action>
