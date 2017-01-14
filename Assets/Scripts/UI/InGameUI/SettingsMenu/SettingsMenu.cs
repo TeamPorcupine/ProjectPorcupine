@@ -131,6 +131,27 @@ public class SettingsMenu : MonoBehaviour
                 }
             }
         }
+
+        if (category == "Mods")
+        {
+            GameObject go = new GameObject();
+            RectTransform rect = go.AddComponent<RectTransform>();
+            rect.SetParent(instance.transform.GetChild(0).GetChild(2).GetChild(2).GetChild(0).GetChild(0));
+            rect.parent.GetComponent<HorizontalLayoutGroup>().enabled = false;
+            rect.parent.GetComponent<ContentSizeFitter>().enabled = false;
+            rect.anchoredPosition = new Vector2(0, 0);
+            rect.sizeDelta = new Vector2(600, rect.sizeDelta.y);
+            VerticalLayoutGroup vlg = go.AddComponent<VerticalLayoutGroup>();
+            AutomaticVerticalSize avs = go.AddComponent<AutomaticVerticalSize>();
+            avs.childHeight = 105;
+            LayoutElement le = go.AddComponent<LayoutElement>();
+            ModMenu.DisplaySettings(rect);
+        }
+        else
+        {
+            instance.transform.GetChild(0).GetChild(2).GetChild(2).GetChild(0).GetChild(0).GetComponent<HorizontalLayoutGroup>().enabled = true;
+            instance.transform.GetChild(0).GetChild(2).GetChild(2).GetChild(0).GetChild(0).GetComponent<ContentSizeFitter>().enabled = true;
+        }
     }
 
     public void Apply()
@@ -144,6 +165,11 @@ public class SettingsMenu : MonoBehaviour
         {
             changesTracker[i].ApplySetting();
         }
+
+        if (currentCategory == "Mods")
+        {
+            ModMenu.Commit();
+        }
     }
 
     public void Save()
@@ -152,7 +178,7 @@ public class SettingsMenu : MonoBehaviour
 
         Settings.SaveSettings();
         changesTracker.Clear();
-
+        ModMenu.Save();
         GameController.Instance.IsModal = false;
         GameController.Instance.soundController.OnButtonSFX();
         mainRoot.SetActive(false);
@@ -198,6 +224,8 @@ public class SettingsMenu : MonoBehaviour
                             changesTracker[i].CancelSetting();
                         }
 
+                        ModMenu.Reset();
+
                         GameController.Instance.IsModal = false;
                         GameController.Instance.soundController.OnButtonSFX();
                         mainRoot.SetActive(false);
@@ -226,6 +254,11 @@ public class SettingsMenu : MonoBehaviour
             }
         }
 
+        if (currentCategory == "Mods")
+        {
+            ModMenu.DisableAll();
+        }
+
         changesTracker.Clear();
 
         DisplayCategory(currentCategory);
@@ -251,7 +284,7 @@ public class SettingsMenu : MonoBehaviour
         }
 
         changesTracker.Clear();
-
+        ModMenu.DisableAll();
         DisplayCategory(currentCategory);
     }
 

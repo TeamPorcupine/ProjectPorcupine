@@ -163,6 +163,83 @@ public class World
     /// <value>The camera data.</value>
     public CameraData CameraData { get; private set; }
 
+    public static void CheckMods(string filename, DialogBoxLoadGame dblg)
+    {
+        if (File.Exists(filename) == false)
+        {
+            SceneController.Instance.LoadMainMenu();
+            return;
+        }
+
+        StreamReader file = File.OpenText(filename);
+        JObject worldFile = (JObject)JToken.ReadFrom(new JsonTextReader(file));
+        JArray modsNeeded = (JArray)worldFile["ActiveMods"];
+        file.Close();
+        if (modsNeeded == null)
+        {
+            dblg.LoadWorld(filename);
+            return;
+        }
+
+        for (int i = 0; i < modsNeeded.Count; i++)
+        {
+            JToken mod = modsNeeded[i];
+            if (ModMenu.activeModDirs.Contains(ModMenu.ModDirs[(string)mod]) == false)
+            {
+                // Activate inactive mods prompt
+                DialogBoxPromptOrInfo check;
+
+                if (WorldController.Instance != null)
+                {
+                    check = WorldController.Instance.dialogBoxManager.dialogBoxPromptOrInfo;
+                }
+                else if (MainMenuController.Instance != null)
+                {
+                    check = MainMenuController.Instance.dialogBoxManager.dialogBoxPromptOrInfo;
+                }
+                else
+                {
+                    return;
+                }
+
+                check.SetPrompt("This world was saved with mods that are not loaded. Load mods?");
+                check.SetButtons(new DialogBoxResult[] { DialogBoxResult.Yes, DialogBoxResult.No, DialogBoxResult.Cancel });
+                check.Closed =
+                    () =>
+                    {
+                        switch (check.Result)
+                        {
+                            case DialogBoxResult.Yes:
+                                // Load mods
+                                for (int m = 0; m < modsNeeded.Count; m++)
+                                {
+                                    ModMenu.SetEnabled((string)modsNeeded[m], true);
+                                }
+
+                                ModMenu.Reset();
+                                GameController.Instance.soundController.OnButtonSFX();
+                                dblg.LoadWorld(filename);
+                                break;
+                            case DialogBoxResult.No:
+                                dblg.LoadWorld(filename);
+                                GameController.Instance.soundController.OnButtonSFX();
+                                break;
+                            case DialogBoxResult.Cancel:
+                                GameController.Instance.soundController.OnButtonSFX();
+                                break;
+                        }
+                    };
+
+                check.ShowDialog();
+                GameController.Instance.IsModal = true;
+                return;
+            }
+        }
+
+        Debug.Log("ModCheck sucessful");
+        dblg.LoadWorld(filename);
+    }
+
     /// <summary>
     /// Adds the listeners to the required Time Manager events.
     /// </summary>
@@ -287,6 +364,7 @@ public class World
     public JObject ToJson()
     {
         JObject worldJson = new JObject();
+        worldJson.Add("ActiveMods", ModMenu.WriteJSON(true));
         worldJson.Add("Width", Width.ToString());
         worldJson.Add("Height", Height.ToString());
         worldJson.Add("Depth", Depth.ToString());
@@ -400,7 +478,7 @@ public class World
             }   
         }
     }
-
+    
     private void SetupWorld(int width, int height, int depth)
     {
         // Set the current world to be this world.

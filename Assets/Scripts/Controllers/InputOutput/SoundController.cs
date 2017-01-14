@@ -56,7 +56,7 @@ public class SoundController
     public void OnButtonSFX()
     {
         SoundClip clip = AudioManager.GetAudio("Sound", "MenuClick");
-        if (cooldowns.ContainsKey(clip) && cooldowns[clip] > 0)
+        if (clip == null || (cooldowns.ContainsKey(clip) && cooldowns[clip] > 0))
         {
             return;
         }

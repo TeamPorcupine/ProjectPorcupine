@@ -7,17 +7,14 @@
 // ====================================================
 #endregion
 using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
 public class ModsManager
 {
-    private DirectoryInfo[] mods;
-
     public ModsManager()
     {
-        mods = GetModsFiles();
-
         LoadSharedFiles();
 
         if (SceneController.Instance.IsAtIntroScene())
@@ -110,6 +107,7 @@ public class ModsManager
 
     private void LoadSharedFiles()
     {
+        ModMenu.ReportModsLoaded();
         LoadDirectoryAssets("Shared/Images", SpriteManager.LoadSpriteFiles);
         LoadDirectoryAssets("Shared/Audio", AudioManager.LoadAudioFiles);
 
@@ -201,9 +199,11 @@ public class ModsManager
             readText(filePath);
         }
 
-        foreach (DirectoryInfo mod in mods)
+        List<string> mods = ModMenu.activeModDirs;
+        mods.Reverse();
+        foreach (string mod in mods)
         {
-            filePath = Path.Combine(mod.FullName, fileName);
+            filePath = Path.Combine(mod, directoryName);
             if (File.Exists(filePath))
             {
                 readText(filePath);
@@ -223,10 +223,12 @@ public class ModsManager
         {
             readDirectory(directoryPath);
         }
-
-        foreach (DirectoryInfo mod in mods)
+        
+        List<string> mods = ModMenu.activeModDirs;
+        mods.Reverse();
+        foreach (string mod in mods)
         {
-            directoryPath = Path.Combine(mod.FullName, directoryName);
+            directoryPath = Path.Combine(mod, directoryName);
             if (Directory.Exists(directoryPath))
             {
                 readDirectory(directoryPath);

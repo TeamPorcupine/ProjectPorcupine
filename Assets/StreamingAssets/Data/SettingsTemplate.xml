@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Categories>
   <Category Name="General">
     <OptionHeading Name="Autosave">
@@ -39,5 +39,7 @@
     <OptionHeading Name="God Mode Settings">
       <Option Name="Developer Mode" Key="DialogBoxSettingsDevConsole_developerModeToggle" DefaultValue="false" ClassName="DeveloperModeToggle" />
     </OptionHeading>
+  </Category>
+  <Category Name="Mods">
   </Category>
 </Categories>

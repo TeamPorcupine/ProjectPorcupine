@@ -307,6 +307,25 @@ public class OverlayMap : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Grabs references, sets a dummy size and evaluation function.
+    /// </summary>
+    public void Start()
+    {
+        // Grab references.
+        meshRenderer = GetComponent<MeshRenderer>();
+        meshFilter = GetComponent<MeshFilter>();
+
+        overlayColorMapLookup = new Dictionary<string, Dictionary<int, Color>>();
+
+        // Build GUI.
+        CreateGUI();
+
+        // TODO: remove this dummy set size.
+        SetOverlay("None");
+        SetSize(100, 100);
+    }
+
     private static void GenerateRandomColors(int size)
     {
         if (randomColors == null)
@@ -343,25 +362,6 @@ public class OverlayMap : MonoBehaviour
         paletteColors.Add(new Color32(128, 0, 128, 255));
         paletteColors.Add(new Color32(0, 128, 128, 255));
         paletteColors.Add(new Color32(0, 0, 128, 255));
-    }
-
-    /// <summary>
-    /// Grabs references, sets a dummy size and evaluation function.
-    /// </summary>
-    private void Start()
-    {
-        // Grab references.
-        meshRenderer = GetComponent<MeshRenderer>();
-        meshFilter = GetComponent<MeshFilter>();
-
-        overlayColorMapLookup = new Dictionary<string, Dictionary<int, Color>>();
-
-        // Build GUI.
-        CreateGUI();
-
-        // TODO: remove this dummy set size.
-        SetOverlay("None");
-        SetSize(100, 100);
     }
 
     /// <summary>

@@ -71,6 +71,7 @@ public class GameController : MonoBehaviour
     {
         // Load settings.
         Settings.LoadSettings();
+        ModMenu.Load();
 
         // Add a gameobject that Localization
         this.gameObject.AddComponent<LocalizationLoader>();

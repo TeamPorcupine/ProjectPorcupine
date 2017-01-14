@@ -83,6 +83,12 @@ public class AudioManager
 
         string audioNameAndCategory = categoryName + "/" + audioName;
 
+        if (audioClips == null)
+        {
+            UnityDebugger.Debugger.LogWarning("AudioManager", "Failed to load audio clip '" + audioNameAndCategory + "' - audioClips == null");
+            return null;
+        }
+
         if (audioClips.ContainsKey(audioNameAndCategory))
         {
             clip = audioClips[audioNameAndCategory];
