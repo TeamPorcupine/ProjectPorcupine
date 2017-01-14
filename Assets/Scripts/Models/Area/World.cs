@@ -50,14 +50,14 @@ public class World
     {
         // Creates an empty world.
         SetupWorld(width, height, depth);
-        int seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+        Seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
         if (SceneController.NewWorldSize != Vector3.zero)
         {
-            seed = SceneController.Seed;
+            Seed = SceneController.Seed;
         }
 
-        Debug.LogWarning("World Seed: " + seed);
-        WorldGenerator.Instance.Generate(this, seed);
+        Debug.LogWarning("World Seed: " + Seed);
+        WorldGenerator.Instance.Generate(this, Seed);
         UnityDebugger.Debugger.Log("World", "Generated World");
 
         tileGraph = new Path_TileGraph(this);
@@ -97,6 +97,12 @@ public class World
 
     // The tile depth of the world
     public int Depth { get; protected set; }
+
+    /// <summary>
+    /// Gets or sets the world seed.
+    /// </summary>
+    /// <value>The seed.</value>
+    public int Seed { get; protected set; }
 
     /// <summary>
     /// Gets the inventory manager.
@@ -284,9 +290,26 @@ public class World
         }
     }
 
+    public JToken RandomStateToJson()
+    {
+        // JSON.Net can't serialize the Random.State so we use JsonUtility
+        return JToken.Parse(JsonUtility.ToJson(UnityEngine.Random.state));
+    }
+
+    public void RandomStateFromJson(JToken randomState)
+    {
+        if (randomState != null)
+        {
+            // JSON.Net can't serialize the Random.State so we use JsonUtility
+            UnityEngine.Random.state = JsonUtility.FromJson<UnityEngine.Random.State>(randomState.ToString());
+        }
+    }
+
     public JObject ToJson()
     {
         JObject worldJson = new JObject();
+        worldJson.Add("Seed", Seed);
+        worldJson.Add("RandomState", RandomStateToJson());
         worldJson.Add("Width", Width.ToString());
         worldJson.Add("Height", Height.ToString());
         worldJson.Add("Depth", Depth.ToString());
@@ -312,6 +335,13 @@ public class World
 
     public void ReadJson(JObject worldJson)
     {
+        if (worldJson["Seed"] != null)
+        {
+            Seed = (int)worldJson["Seed"];
+        }
+
+        RandomStateFromJson(worldJson["RandomState"]);
+
         Width = (int)worldJson["Width"];
         Height = (int)worldJson["Height"];
         Depth = (int)worldJson["Depth"];
