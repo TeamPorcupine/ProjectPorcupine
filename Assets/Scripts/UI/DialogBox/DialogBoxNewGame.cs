@@ -17,6 +17,7 @@ public class DialogBoxNewGame : DialogBox
     public InputField Height;
     public InputField Width;
     public InputField Depth;
+    public InputField Seed;
     public Toggle GenerateAsteroids;
     public InputField GeneratorInputField;
     public GameObject generatorListItemPrefab;
@@ -28,6 +29,9 @@ public class DialogBoxNewGame : DialogBox
         Height.onEndEdit.AddListener(delegate { VerifyNumericInput(Height); });
         Width.onEndEdit.AddListener(delegate { VerifyNumericInput(Width); });
         Depth.onEndEdit.AddListener(delegate { VerifyNumericInput(Depth); });
+
+        // Generate Random Seed TODO: make it alphanumerical
+        Seed.text = UnityEngine.Random.Range(int.MinValue, int.MaxValue).ToString();
 
         // Get list of files in save location
         string generatorDirectoryPath = GameController.Instance.GeneratorBasePath();
@@ -70,11 +74,24 @@ public class DialogBoxNewGame : DialogBox
         int height = int.Parse(Height.text);
         int width = int.Parse(Width.text);
         int depth = int.Parse(Depth.text);
+
+        // Try and parse seed as Integer if this is not possible then hash string as integer
+        int seed = 0;
+        if (Seed.text == string.Empty)
+        {
+            seed = UnityEngine.Random.Range(0, int.MaxValue);
+        } 
+        else if (int.TryParse(Seed.text, out seed) == false)
+        {
+            seed = Seed.text.GetHashCode();
+            Debug.LogWarning("Converted " + Seed.text + " to hash " + seed);
+        }
+
         string generatorFile = GeneratorInputField.text + ".xml";
         DialogBoxManager dialogManager = GameObject.FindObjectOfType<DialogBoxManager>();
         dialogManager.dialogBoxPromptOrInfo.SetPrompt("message_creating_new_world");
         dialogManager.dialogBoxPromptOrInfo.ShowDialog();
-        SceneController.Instance.LoadNewWorld(width, height, depth, generatorFile, GenerateAsteroids.isOn);
+        SceneController.Instance.LoadNewWorld(width, height, depth, seed, generatorFile, GenerateAsteroids.isOn);
     }
 
     public void VerifyNumericInput(InputField input)
