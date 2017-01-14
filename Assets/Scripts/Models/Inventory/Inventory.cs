@@ -201,6 +201,16 @@ public class Inventory : ISelectable, IContextActionProvider
             RequireCharacterSelected = true,
             Action = (cm, c) => UnityDebugger.Debugger.Log("Inventory", "Sample menu action")
         };
+
+        if (PrototypeManager.Furniture.Has(this.Type))
+        {
+            yield return new ContextMenuAction
+            {
+                LocalizationKey = "install_order",
+                RequireCharacterSelected = false,
+                Action = (cm, c) => BuildModeController.Instance.SetMode_BuildFurniture(Type, true)
+            };
+        }
     }
 
     public bool CanBePickedUp(bool canTakeFromStockpile)
