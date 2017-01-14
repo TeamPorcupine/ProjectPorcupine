@@ -122,7 +122,13 @@ public class AudioManager
     public static void Destroy()
     {
         SoundSystem.close();
-        master.release();
+
+        // This will also release master, so we don't have to call master.release();
+        foreach (string key in channelGroups.Keys)
+        {
+            channelGroups[key].release();
+        }
+
         SoundSystem.release();
 
         SoundSystem = null;
