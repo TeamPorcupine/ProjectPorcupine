@@ -10,20 +10,25 @@
     <LinksToNeighbours>wall</LinksToNeighbours>
     <EnclosesRooms>true</EnclosesRooms>
     <DragType>path</DragType>
+	
     <OrderAction type="Build">
       <Job time="1" />
       <Inventory type="steel_plate" amount="5" />
     </OrderAction>
+	
     <OrderAction type="Deconstruct">
       <Job time="1" />
       <Inventory type="steel_plate" amount="3" />
     </OrderAction>
+	
     <Component type="Visuals">
       <DefaultSpriteName useName="steel_wall_" />
     </Component>
+	
     <LocalizationCode>furn_steel_wall</LocalizationCode>
     <UnlocalizedDescription>furn_steel_wall_desc</UnlocalizedDescription>
   </Furniture>
+  
   <Furniture type="door">
     <TypeTag>Door</TypeTag>
     <MovementCost>1</MovementCost>
@@ -39,18 +44,22 @@
     <Health>500</Health>
     <EnclosesRooms>true</EnclosesRooms>
     <CanReplaceFurniture typeTag="Wall" />
+	
     <OrderAction type="Build">
       <Job time="1" />
       <Inventory type="steel_plate" amount="2" />
     </OrderAction>
+	
     <OrderAction type="Deconstruct">
       <Job time="1" />
       <Inventory type="steel_plate" amount="1" />
     </OrderAction>
+	
     <Component type="Visuals">
       <DefaultSpriteName useName="door_horizontal_0" />
       <SpriteName fromFunction="Door_GetSpriteName" />
     </Component>
+	
     <Animations>
       <Animation state="horizontal" valuebased="true">
         <Frame name="door_horizontal_0" />
@@ -73,16 +82,21 @@
         <Frame name="door_vertical_5" />
       </Animation>
     </Animations>
+	
     <Params>
       <Param name="openness" value="0" />
       <Param name="is_opening" value="0" />
     </Params>
+	
     <Action event="OnFastUpdate" functionName="OnUpdate_Door" />
     <Action event="OnUpdate" functionName="OnUpdate_Leak_Door" />
+	
     <IsEnterable FunctionName="IsEnterable_Door" />
+	
     <LocalizationCode>furn_door</LocalizationCode>
     <UnlocalizedDescription>furn_door_desc</UnlocalizedDescription>
   </Furniture>
+  
   <Furniture type="airlock_door">
     <TypeTag>Door</TypeTag>
     <TypeTag>Pressure Door</TypeTag>
@@ -95,18 +109,22 @@
     <EnclosesRooms>true</EnclosesRooms>
     <CanReplaceFurniture typeTag="Wall" />
     <CanReplaceFurniture typeTag="Door" />
+	
     <Component type="Visuals">
       <DefaultSpriteName useName="airlock_door_horizontal_0" />
       <SpriteName fromFunction="Door_GetSpriteName" />
     </Component>
+	
     <OrderAction type="Build">
       <Job time="1" />
       <Inventory type="steel_plate" amount="10" />
     </OrderAction>
+	
     <OrderAction type="Deconstruct">
       <Job time="1" />
       <Inventory type="steel_plate" amount="7" />
     </OrderAction>
+	
     <Animations>
       <Animation state="horizontal" valuebased="true">
         <Frame name="airlock_door_horizontal_0" />
@@ -129,15 +147,20 @@
         <Frame name="airlock_door_vertical_5" />
       </Animation>
     </Animations>
+	
     <Params>
       <Param name="openness" value="0" />
       <Param name="is_opening" value="0" />
       <Param name="pressure_locked" value="0" />
     </Params>
+	
     <Action event="OnFastUpdate" functionName="OnUpdate_AirlockDoor" />
     <Action event="OnUpdate" functionName="OnUpdate_Leak_Airlock" />
+	
     <ContextMenuAction FunctionName="AirlockDoor_Toggle_Pressure_Lock" LocalizationKey="toggle_pressure_lock" RequireCharacterSelected="false" />
+	
     <IsEnterable FunctionName="IsEnterable_AirlockDoor" />
+	
     <LocalizationCode>furn_airlock_door</LocalizationCode>
     <UnlocalizedDescription>furn_airlock_door_desc</UnlocalizedDescription>
   </Furniture>
@@ -146,17 +169,24 @@
     <MovementCost>1</MovementCost>
     <LinksToNeighbours>stockpile</LinksToNeighbours>
     <ThermalConductivityIndex>0.024</ThermalConductivityIndex>
+	
     <OrderAction type="Build" />
+	
     <OrderAction type="Deconstruct" />
+	
     <Action event="OnUpdate" functionName="Stockpile_UpdateAction" />
     <DragType>area</DragType>
+	
     <Component type="Visuals">
       <DefaultSpriteName useName="stockpile_" />
     </Component>
+	
     <ContextMenuAction FunctionName="Stockpile_SetNewFilter" LocalizationKey="set_filter" RequireCharacterSelected="false" />
+	
     <LocalizationCode>furn_stockpile</LocalizationCode>
     <UnlocalizedDescription>furn_stockpile_desc</UnlocalizedDescription>
   </Furniture>
+  
   <Furniture type="oxygen_generator">
     <TypeTag>Generator</TypeTag>
     <MovementCost>2</MovementCost>
@@ -165,14 +195,21 @@
     <Width>2</Width>
     <Height>2</Height>
     <ThermalConductivityIndex>0.05</ThermalConductivityIndex>
+	
     <OrderAction type="Build">
       <Job time="2" />
       <Inventory type="steel_plate" amount="2" />
     </OrderAction>
+	
     <OrderAction type="Deconstruct">
       <Job time="1" />
       <Inventory type="steel_plate" amount="1" />
     </OrderAction>
+	
+	<OrderAction type="Uninstall">
+		<Job time="1" />
+	</OrderAction>
+	
     <Animations>
       <Animation state="idle" looping="false">
         <Frame name="oxygen_generator" />
@@ -183,6 +220,7 @@
         <Frame name="oxygen_generator_running_3" />
       </Animation>
     </Animations>
+	
     <Component type="Visuals">
       <UseAnimation name="idle">
         <Requires>
@@ -195,6 +233,7 @@
         </Requires>
       </UseAnimation>
     </Component>
+	
     <Component type="PowerConnection">
       <Requires rate="1" />
       <ParameterDefinitions>
@@ -203,6 +242,7 @@
         <IsRunning name="pow_is_running" />
       </ParameterDefinitions>
     </Component>
+	
     <Component type="FluidConnection">
       <Requires rate="1" />
       <FluidType>water</FluidType>
@@ -212,6 +252,7 @@
         <IsRunning name="water_is_running" />
       </ParameterDefinitions>
     </Component>
+	
     <Component type="GasConnection">
       <!-- Rate should be 0.16 total for all gas generation, smaller amounts
                  for individual gasses allows O2 gen to mimic proper functionality
@@ -219,9 +260,11 @@
       <Provides gas="O2" rate="0.032" minLimit="0" maxLimit="0.2" />
       <Provides gas="N2" rate="0.128" minLimit="0" maxLimit="0.8" />
     </Component>
+	
     <LocalizationCode>furn_oxygen_generator</LocalizationCode>
     <UnlocalizedDescription>furn_oxygen_generator_desc</UnlocalizedDescription>
   </Furniture>
+  
   <Furniture type="mining_drone_station">
     <TypeTag>Workstation</TypeTag>
     <MovementCost>1</MovementCost>
@@ -230,28 +273,41 @@
     <Width>3</Width>
     <Height>2</Height>
     <ThermalConductivityIndex>0.05</ThermalConductivityIndex>
+	
     <Component type="PowerConnection">
       <Requires rate="1" />
     </Component>
+	
     <OrderAction type="Build">
       <Job time="1" />
       <Inventory type="steel_plate" amount="2" />
     </OrderAction>
+	
     <OrderAction type="Deconstruct">
       <Job time="1" />
       <Inventory type="steel_plate" amount="1" />
     </OrderAction>
+	
+	<OrderAction type="Uninstall">
+		<Job time="1" />
+	</OrderAction>
+	
     <Params>
       <Param name="mine_type" value="Raw Iron" />
     </Params>
+	
     <JobWorkSpotOffset X="1" Y="-1" />
     <JobOutputSpotOffset X="0" Y="0" />
+	
     <Action event="OnUpdate" functionName="MiningDroneStation_UpdateAction" />
+	
     <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Iron" LocalizationKey="change_to_raw_iron" RequireCharacterSelected="false" />
     <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Copper" LocalizationKey="change_to_raw_copper" RequireCharacterSelected="false" />
+	
     <LocalizationCode>furn_mining_drone_station</LocalizationCode>
     <UnlocalizedDescription>furn_mining_drone_station_desc</UnlocalizedDescription>
   </Furniture>
+  
   <Furniture type="fission_reactor">
     <TypeTag>Generator</TypeTag>
     <MovementCost>2</MovementCost>
@@ -260,6 +316,7 @@
     <Width>2</Width>
     <Height>2</Height>
     <ThermalConductivityIndex>10</ThermalConductivityIndex>
+	
     <Animations>
       <Animation state="idle" looping="false">
         <Frame name="fission_reactor_1" />
@@ -270,14 +327,21 @@
         <Frame name="fission_reactor_4" />
       </Animation>
     </Animations>
+	
     <OrderAction type="Build">
       <Job time="1" />
       <Inventory type="steel_plate" amount="2" />
     </OrderAction>
+	
     <OrderAction type="Deconstruct">
       <Job time="1" />
       <Inventory type="steel_plate" amount="1" />
     </OrderAction>
+	
+	<OrderAction type="Uninstall">
+		<Job time="1" />
+	</OrderAction>
+        
     <Component type="Visuals">
       <DefaultSpriteName useName="fission_reactor_1" />
       <UseAnimation name="idle">
@@ -291,6 +355,7 @@
         </Requires>
       </UseAnimation>
     </Component>
+	
     <Component type="Workshop">
       <ParameterDefinitions>
         <CurrentProcessingTime name="cur_processing_time" />
@@ -304,16 +369,20 @@
         </Input>
       </ProductionChain>
     </Component>
+	
     <Component type="PowerConnection">
       <Provides rate="5" />
       <Requires>
         <Param name="cur_processed_inv" condition="IsGreaterThanZero" />
       </Requires>
     </Component>
+	
     <GetProgressInfo functionName="PowerGenerator_FuelInfo" />
+	
     <LocalizationCode>furn_fission_reactor</LocalizationCode>
     <UnlocalizedDescription>furn_fission_reactor_desc</UnlocalizedDescription>
   </Furniture>
+  
   <Furniture type="water_generator">
     <TypeTag>Generator</TypeTag>
     <MovementCost>2</MovementCost>
@@ -322,14 +391,20 @@
     <Width>1</Width>
     <Height>1</Height>
     <ThermalConductivityIndex>0.8</ThermalConductivityIndex>
+	
     <OrderAction type="Build">
       <Job time="1" />
       <Inventory type="steel_plate" amount="2" />
     </OrderAction>
+	
     <OrderAction type="Deconstruct">
       <Job time="1" />
       <Inventory type="steel_plate" amount="1" />
-    </OrderAction>
+    </OrderAction>	
+	
+	<OrderAction type="Uninstall">
+		<Job time="1" />
+	</OrderAction>
     <!--
         <Component type="Workshop">
             <ParameterDefinitions>
@@ -354,23 +429,33 @@
             </Requires>            
 			-->
     </Component>
+	
     <LocalizationCode>furn_water_generator</LocalizationCode>
     <UnlocalizedDescription>furn_water_generator_desc</UnlocalizedDescription>
   </Furniture>
+  
   <Furniture type="water_tank">
     <MovementCost>2</MovementCost>
     <PathfindingModifier>0</PathfindingModifier>
     <PathfindingWeight>2</PathfindingWeight>
     <Width>1</Width>
     <Height>1</Height>
+	<ThermalConductivityIndex>6</ThermalConductivityIndex>
+
     <OrderAction type="Build">
       <Job time="1" />
       <Inventory type="steel_plate" amount="2" />
     </OrderAction>
+	
     <OrderAction type="Deconstruct">
-      <Job time="1" />
-      <Inventory type="steel_plate" amount="1" />
+	  <Job time="1" />
+	  <Inventory type="steel_plate" amount="1" />
     </OrderAction>
+	
+	<OrderAction type="Uninstall">
+      <Job time="1" />
+    </OrderAction>
+	
     <Component type="FluidConnection">
       <Provides rate="10" capacity="50" capacityThresholds="5" />
       <Requires rate="5" />
@@ -380,9 +465,11 @@
         <IsRunning name="fluid_is_running" />
       </ParameterDefinitions>
     </Component>
+	
     <LocalizationCode>furn_tank</LocalizationCode>
     <UnlocalizedDescription>furn_tank_desc</UnlocalizedDescription>
   </Furniture>
+  
   <Furniture type="cloning_pod">
     <MovementCost>2</MovementCost>
     <PathfindingModifier>0</PathfindingModifier>
@@ -390,17 +477,25 @@
     <Width>2</Width>
     <Height>2</Height>
     <ThermalConductivityIndex>1</ThermalConductivityIndex>
+	
     <Component type="PowerConnection">
       <Requires rate="1" />
     </Component>
+	
     <OrderAction type="Build">
       <Job time="10" />
       <Inventory type="steel_plate" amount="5" />
     </OrderAction>
+	
     <OrderAction type="Deconstruct">
       <Job time="8" />
       <Inventory type="steel_plate" amount="2" />
     </OrderAction>
+	
+	<OrderAction type="Uninstall">
+      <Job time="8" />
+    </OrderAction>
+	
     <Animations>
       <Animation state="idle" looping="false">
         <Frame name="cloning_pod" />
@@ -410,16 +505,21 @@
         <Frame name="cloning_pod_1" />
       </Animation>
     </Animations>
+	
     <Params>
       <Param name="animationTimer" value="1" />
       <Param name="animationStep" value="0" />
     </Params>
+	
     <JobWorkSpotOffset X="0" Y="0" />
     <JobOutputSpotOffset X="1" Y="0" />
+	
     <Action event="OnUpdate" functionName="CloningPod_UpdateAction" />
+	
     <LocalizationCode>furn_cloning_pod</LocalizationCode>
     <UnlocalizedDescription>furn_cloning_pod_desc</UnlocalizedDescription>
   </Furniture>
+  
   <Furniture type="metal_smelter">
     <TypeTag>Processor</TypeTag>
     <MovementCost>1</MovementCost>
@@ -428,21 +528,31 @@
     <Width>3</Width>
     <Height>3</Height>
     <ThermalConductivityIndex>0.8</ThermalConductivityIndex>
+	
     <OrderAction type="Build">
       <Job time="1" />
       <Inventory type="steel_plate" amount="5" />
     </OrderAction>
+	
     <OrderAction type="Deconstruct">
       <Job time="1" />
       <Inventory type="steel_plate" amount="2" />
     </OrderAction>
+
+    <OrderAction type="Uninstall">
+      <Job time="1" />
+    </OrderAction>
+	
     <JobWorkSpotOffset X="1" Y="0" />
+	
     <Component type="PowerConnection">
       <Requires rate="2" />
     </Component>
+	
     <Component type="GasConnection">
       <Requires gas="O2" minLimit="0.1" />
     </Component>
+	
     <Component type="Workshop">
       <ParameterDefinitions>
         <CurrentProcessingTime name="cur_processing_time" />
@@ -467,6 +577,7 @@
         </Output>
       </ProductionChain>
     </Component>
+	
     <Component type="Visuals">
       <UseAnimation name="idle">
         <Requires>
@@ -479,6 +590,7 @@
         </Requires>
       </UseAnimation>
     </Component>
+	
     <Animations>
       <Animation state="idle" fps="2" looping="false">
         <Frame name="metal_smelter" />
@@ -491,9 +603,11 @@
         <Frame name="metal_smelter_running_5" />
       </Animation>
     </Animations>
+	
     <LocalizationCode>furn_metal_smelter</LocalizationCode>
     <UnlocalizedDescription>furn_metal_smelter_desc</UnlocalizedDescription>
   </Furniture>
+  
   <Furniture type="heater">
     <BaseType>Temperature</BaseType>
     <MovementCost>2</MovementCost>
@@ -502,14 +616,21 @@
     <Width>1</Width>
     <Height>1</Height>
     <ThermalConductivityIndex>0.05</ThermalConductivityIndex>
+	
     <OrderAction type="Build">
       <Job time="1" />
       <Inventory type="steel_plate" amount="2" />
     </OrderAction>
+	
     <OrderAction type="Deconstruct">
       <Job time="1" />
       <Inventory type="steel_plate" amount="1" />
     </OrderAction>
+	
+	<OrderAction type="Uninstall">
+      <Job time="1" />
+    </OrderAction>
+	
     <Component type="TemperatureConnection">
       <ParameterDefinitions>
         <OutputRate name="temperature_outputRate" />
@@ -519,9 +640,11 @@
     <Component type="PowerConnection">
       <Requires rate="4" />
     </Component>
+	
     <LocalizationCode>furn_heater</LocalizationCode>
     <UnlocalizedDescription>furn_heater_desc</UnlocalizedDescription>
   </Furniture>
+  
   <Furniture type="groundFan">
     <BaseType>Temperature</BaseType>
     <MovementCost>2</MovementCost>
@@ -530,6 +653,7 @@
     <Width>1</Width>
     <Height>1</Height>
     <ThermalConductivityIndex>0.05</ThermalConductivityIndex>
+	
     <Animations>
       <Animation state="running" fps="24" looping="true">
         <Frame name="groundFan_2" />
@@ -544,26 +668,36 @@
         <Frame name="groundFan" />
       </Animation>
     </Animations>
+	
     <OrderAction type="Build">
       <Job time="1" />
       <Inventory type="steel_plate" amount="2" />
     </OrderAction>
+	
     <OrderAction type="Deconstruct">
       <Job time="1" />
       <Inventory type="steel_plate" amount="1" />
     </OrderAction>
+	
+	<OrderAction type="Uninstall">
+      <Job time="1" />
+    </OrderAction>
+	
     <Component type="PowerConnection">
       <Requires rate="4" />
     </Component>
+	
     <Component type="TemperatureConnection">
       <ParameterDefinitions>
         <OutputRate name="temperature_outputRate" />
       </ParameterDefinitions>
       <Outputs initialOutput="260" minLimit="300" />
     </Component>
+	
     <LocalizationCode>furn_cooler</LocalizationCode>
     <UnlocalizedDescription>furn_cooler_desc</UnlocalizedDescription>
   </Furniture>
+  
   <Furniture type="power_cell_press">
     <MovementCost>1</MovementCost>
     <PathfindingModifier>1.5</PathfindingModifier>
@@ -571,14 +705,21 @@
     <Width>2</Width>
     <Height>2</Height>
     <ThermalConductivityIndex>1</ThermalConductivityIndex>
+	
     <OrderAction type="Build">
       <Job time="1" />
       <Inventory type="steel_plate" amount="2" />
     </OrderAction>
+	
     <OrderAction type="Deconstruct">
       <Job time="1" />
       <Inventory type="steel_plate" amount="1" />
     </OrderAction>
+	
+	<OrderAction type="Uninstall">
+      <Job time="1" />
+    </OrderAction>
+	
     <Component type="Workshop">
       <ParameterDefinitions>
         <CurrentProcessingTime name="cur_processing_time" />
@@ -596,13 +737,17 @@
         </Output>
       </ProductionChain>
     </Component>
+	
     <Component type="PowerConnection">
       <Requires rate="1" />
     </Component>
+	
     <GetProgressInfo functionName="PowerCellPress_StatusInfo" />
+	
     <LocalizationCode>furn_power_cell_press</LocalizationCode>
     <UnlocalizedDescription>furn_power_cell_press_desc</UnlocalizedDescription>
   </Furniture>
+  
   <Furniture type="small_landing_pad">
     <TypeTag>OutdoorOnly</TypeTag>
     <TypeTag>LandingPad</TypeTag>
@@ -612,20 +757,30 @@
     <Width>3</Width>
     <Height>3</Height>
     <ThermalConductivityIndex>0.024</ThermalConductivityIndex>
+	
     <OrderAction type="Build">
       <Job time="5" />
       <Inventory type="steel_plate" amount="20" />
     </OrderAction>
+	
     <OrderAction type="Deconstruct">
       <Job time="3" />
       <Inventory type="steel_plate" amount="10" />
     </OrderAction>
+	
+	<OrderAction type="Uninstall">
+	  <Job time="3" />
+	</OrderAction>	
+	
     <JobWorkSpotOffset X="0" Y="0" />
     <JobOutputSpotOffset X="1" Y="-1" />
+	
     <ContextMenuAction FunctionName="LandingPad_Test_CallTradeShip" LocalizationKey="call_trade_ship_test" RequireCharacterSelected="false" DevModeOnly="true" />
+	
     <LocalizationCode>furn_small_landing_pad</LocalizationCode>
     <UnlocalizedDescription>furn_small_landing_pad_desc</UnlocalizedDescription>
   </Furniture>
+  
   <Furniture type="oxygen_compressor">
     <MovementCost>2</MovementCost>
     <PathfindingModifier>0</PathfindingModifier>
@@ -633,14 +788,21 @@
     <Width>2</Width>
     <Height>2</Height>
     <ThermalConductivityIndex>0.05</ThermalConductivityIndex>
+	
     <OrderAction type="Build">
       <Job time="2" />
       <Inventory type="steel_plate" amount="2" />
     </OrderAction>
+	
     <OrderAction type="Deconstruct">
       <Job time="1" />
       <Inventory type="steel_plate" amount="1" />
     </OrderAction>
+	
+	<OrderAction type="Uninstall">
+	  <Job time="1" />
+	</OrderAction>	
+	
     <Animations>
       <Animation state="running" valuebased="true">
         <Frame name="oxygen_compressor" />
@@ -655,6 +817,7 @@
         <Frame name="oxygen_compressor_8" />
       </Animation>
     </Animations>
+	
     <Params>
       <!-- <Param name="gas_name" value="O2" /> -->
       <Param name="max_gas_content" value="5" />
@@ -663,11 +826,14 @@
       <Param name="take_threshold" value="0.01" />
       <Param name="flow_rate" value="0.1" />
     </Params>
+	
     <Action event="OnUpdate" functionName="OxygenCompressor_OnUpdate" />
     <Action event="OnPowerOff" functionName="OxygenCompressor_OnPowerOff" />
+	
     <LocalizationCode>furn_oxygen_compressor</LocalizationCode>
     <UnlocalizedDescription>furn_oxygen_compressor_desc</UnlocalizedDescription>
   </Furniture>
+  
   <Furniture type="solar_panel">
     <TypeTag>Generator</TypeTag>
     <TypeTag>OutdoorOnly</TypeTag>
@@ -678,42 +844,62 @@
     <Height>3</Height>
     <ThermalConductivityIndex>0.05</ThermalConductivityIndex>
     <CanRotate>true</CanRotate>
+	
     <CanBeBuiltOn tileType="Ladder" />
+	
     <OrderAction type="Build">
       <Job time="1" />
       <Inventory type="steel_plate" amount="2" />
     </OrderAction>
+	
     <OrderAction type="Deconstruct">
       <Job time="1" />
       <Inventory type="steel_plate" amount="1" />
     </OrderAction>
+	
+    <OrderAction type="Uninstall">
+      <Job time="1" />
+    </OrderAction>
+	
     <Params>
       <Param name="base_output" value="3" />
       <Param name="efficiency" value="1" />
     </Params>
+	
     <Component type="PowerConnection">
       <Provides rate="3" />
     </Component>
+	
     <!--<Action event="OnUpdate" functionName="SolarPanel_OnUpdate" />-->
+	
     <LocalizationCode>furn_solar_panel</LocalizationCode>
     <UnlocalizedDescription>furn_solar_panel_desc</UnlocalizedDescription>
   </Furniture>
+  
   <Furniture type="air_pump">
     <MovementCost>0</MovementCost>
     <Width>1</Width>
     <Height>1</Height>
     <ThermalConductivityIndex>15</ThermalConductivityIndex>
     <EnclosesRooms>true</EnclosesRooms>
+	
     <OrderAction type="Build">
       <Job time="1" />
       <Inventory type="steel_plate" amount="2" />
     </OrderAction>
+	
     <CanReplaceFurniture typeTag="Wall" />
     <LinksToNeighbours>wall</LinksToNeighbours>
+	
     <OrderAction type="Deconstruct">
       <Job time="1" />
       <Inventory type="steel_plate" amount="1" />
     </OrderAction>
+	
+    <OrderAction type="Uninstall">
+      <Job time="1" />
+    </OrderAction>
+	
     <Params>
       <Param name="gas_throughput" value="1" />
       <Param name="source_pressure_limit" value="0" />
@@ -721,42 +907,59 @@
       <Param name="flow_direction_up" value="1" />
       <Param name="active" value="true" />
     </Params>
+	
     <Component type="PowerConnection">
       <Requires rate="1" />
     </Component>
+	
     <Component type="Visuals">
       <DefaultSpriteName useName="air_pump" />
       <SpriteName fromFunction="AirPump_GetSpriteName" />
     </Component>
+	
     <Action event="OnUpdate" functionName="AirPump_OnUpdate" />
+	
     <ContextMenuAction FunctionName="AirPump_FlipDirection" LocalizationKey="flip_direction" RequireCharacterSelected="false" />
+	
     <LocalizationCode>furn_air_pump</LocalizationCode>
     <UnlocalizedDescription>furn_air_pump_desc</UnlocalizedDescription>
   </Furniture>
+  
   <Furniture type="vent">
     <MovementCost>0</MovementCost>
     <Width>1</Width>
     <Height>1</Height>
     <ThermalConductivityIndex>0.01</ThermalConductivityIndex>
     <EnclosesRooms>true</EnclosesRooms>
+	
     <OrderAction type="Build">
       <Job time="1" />
       <Inventory type="steel_plate" amount="2" />
     </OrderAction>
+	
     <CanReplaceFurniture typeTag="Wall" />
+	
     <OrderAction type="Deconstruct">
       <Job time="1" />
       <Inventory type="steel_plate" amount="1" />
     </OrderAction>
+	
+	<OrderAction type="Uninstall">
+	  <Job time="3" />
+	</OrderAction>	
+	
     <Params>
       <Param name="gas_throughput" value="0.5" />
       <Param name="openness" value="1" />
     </Params>
+	
     <Action event="OnUpdate" functionName="Vent_OnUpdate" />
     <Action event="OnChange" functionName="Vent_SetOrientationState" />
     <Action event="OnInstall" functionName="Vent_SetOrientationState" />
+	
     <ContextMenuAction FunctionName="Vent_Open" LocalizationKey="open_vent" RequireCharacterSelected="false" />
     <ContextMenuAction FunctionName="Vent_Close" LocalizationKey="close_vent" RequireCharacterSelected="false" />
+	
     <Animations>
       <Animation state="horizontal" valuebased="true">
         <Frame name="vent_EW_closed" />
@@ -767,9 +970,11 @@
         <Frame name="vent_NS_opened" />
       </Animation>
     </Animations>
+	
     <LocalizationCode>furn_vent</LocalizationCode>
     <UnlocalizedDescription>furn_vent_desc</UnlocalizedDescription>
   </Furniture>
+  
   <Furniture type="simple_bed">
     <TypeTag>Bed</TypeTag>
     <MovementCost>2</MovementCost>
@@ -779,20 +984,29 @@
     <PathfindingModifier>1</PathfindingModifier>
     <PathfindingWeight>1</PathfindingWeight>
     <CanRotate>true</CanRotate>
+	
     <OrderAction type="Build">
       <Job time="1" />
       <Inventory type="steel_plate" amount="2" />
     </OrderAction>
+	
     <OrderAction type="Deconstruct">
       <Job time="1" />
       <Inventory type="steel_plate" amount="1" />
     </OrderAction>
+	
+	<OrderAction type="Uninstall">
+      <Job time="1" />
+    </OrderAction>
+	
     <Params>
       <Param name="comfort" value="0.5" />
     </Params>
+	
     <LocalizationCode>furn_simple_bed</LocalizationCode>
     <UnlocalizedDescription>furn_simple_bed_desc</UnlocalizedDescription>
   </Furniture>
+  
   <Furniture type="accumulator">
     <MovementCost>2</MovementCost>
     <PathfindingModifier>0</PathfindingModifier>
@@ -800,14 +1014,21 @@
     <Width>1</Width>
     <Height>1</Height>
     <ThermalConductivityIndex>0.05</ThermalConductivityIndex>
+	
     <OrderAction type="Build">
       <Job time="2" />
       <Inventory type="steel_plate" amount="2" />
     </OrderAction>
+	
     <OrderAction type="Deconstruct">
       <Job time="1" />
       <Inventory type="steel_plate" amount="1" />
     </OrderAction>
+	
+	<OrderAction type="Uninstall">
+	  <Job time="1" />
+	</OrderAction>	
+	
     <Animations>
       <Animation state="accumulate" valuebased="true">
         <Frame name="accumulator_0" />
@@ -817,9 +1038,11 @@
         <Frame name="accumulator_100" />
       </Animation>
     </Animations>
+	
     <Component type="Visuals">
       <UseAnimation name="accumulate" valuebasedParamerName="pow_accumulator_index" />
     </Component>
+	
     <Component type="PowerConnection">
       <Provides rate="10" capacity="50" capacityThresholds="5" />
       <Requires rate="5" />
@@ -829,9 +1052,11 @@
         <IsRunning name="pow_is_running" />
       </ParameterDefinitions>
     </Component>
+	
     <LocalizationCode>furn_accumulator</LocalizationCode>
     <UnlocalizedDescription>furn_accumulator_desc</UnlocalizedDescription>
   </Furniture>
+  
   <Furniture type="mine">
     <TypeTag>Ore</TypeTag>
     <TypeTag>Non-buildable</TypeTag>
@@ -842,16 +1067,21 @@
     <Width>1</Width>
     <Height>1</Height>
     <ThermalConductivityIndex>2.5</ThermalConductivityIndex>
+	
     <Params>
       <Param name="ore_type" value="raw_iron" />
     </Params>
+	
     <ContextMenuAction FunctionName="OreMine_CreateMiningJob" LocalizationKey="mine_ore" RequireCharacterSelected="false" />
+	
     <Component type="Visuals">
       <SpriteName fromFunction="OreMine_GetSpriteName" />
     </Component>
+	
     <LocalizationCode>furn_mine</LocalizationCode>
     <UnlocalizedDescription>furn_mine_desc</UnlocalizedDescription>
   </Furniture>
+  
   <Furniture type="berth">
     <MovementCost>1</MovementCost>
     <PathfindingModifier>1</PathfindingModifier>
@@ -859,21 +1089,31 @@
     <Width>3</Width>
     <Height>1</Height>
     <ThermalConductivityIndex>5</ThermalConductivityIndex>
+	
     <OrderAction type="Build">
       <Job time="1" />
       <Inventory type="steel_plate" amount="2" />
     </OrderAction>
+	
     <OrderAction type="Deconstruct">
       <Job time="1" />
       <Inventory type="steel_plate" amount="1" />
     </OrderAction>
+	
+	<OrderAction type="Uninstall">
+	  <Job time="1" />
+	</OrderAction>	
+	
     <Params>
       <Param name="occupied" value="0" />
     </Params>
+	
     <Action event="OnUpdate" functionName="Berth_TestSummoning" />
+	
     <LocalizationCode>furn_berth</LocalizationCode>
     <UnlocalizedDescription>furn_berth_desc</UnlocalizedDescription>
   </Furniture>
+  
   <Furniture type="rtg">
     <TypeTag>Temperature</TypeTag>
     <MovementCost>2</MovementCost>
@@ -882,27 +1122,37 @@
     <Width>1</Width>
     <Height>1</Height>
     <ThermalConductivityIndex>8</ThermalConductivityIndex>
+	
     <Component type="PowerConnection">
       <Provides rate="2" />
     </Component>
+	
     <Component type="TemperatureConnection">
       <ParameterDefinitions>
         <OutputRate name="temperature_outputRate" />
       </ParameterDefinitions>
       <Outputs initialOutput="273.5" />
     </Component>
+	
     <OrderAction type="Build">
       <Job time="2" />
       <Inventory type="steel_plate" amount="2" />
       <Inventory type="raw_uranium" amount="2" />
     </OrderAction>
+	
     <OrderAction type="Deconstruct">
       <Job time="1" />
       <Inventory type="raw_uranium" amount="1" />
     </OrderAction>
+	
+	<OrderAction type="Uninstall">
+	  <Job time="1" />
+	</OrderAction>	
+	
     <LocalizationCode>furn_rtg</LocalizationCode>
     <UnlocalizedDescription>furn_rtg_desc</UnlocalizedDescription>
   </Furniture>
+  
   <Furniture type="astro_wall">
     <TypeTag>Wall</TypeTag>
     <TypeTag>Non-buildable</TypeTag>
@@ -911,18 +1161,22 @@
     <MovementCost>0</MovementCost>
     <Width>1</Width>
     <Height>1</Height>
-    <ThermalConductivityIndex>24</ThermalConductivityIndex>
+    <ThermalConductivityIndex>24</ThermalConductivityIndex>	
     <LinksToNeighbours>astro_wall</LinksToNeighbours>
     <EnclosesRooms>true</EnclosesRooms>
+	
     <Params>
       <Param name="ore_type" value="None" />
     </Params>
+	
     <Component type="Visuals">
       <OverlaySpriteName fromParameter="source_type" />
     </Component>
+	
     <OrderAction type="Mine">
       <Job time="1" fromFunction="OreMine_CreateMiningJob" />
     </OrderAction>
+	
     <LocalizationCode>furn_astro_wall</LocalizationCode>
     <UnlocalizedDescription>furn_astro_wall_desc</UnlocalizedDescription>
   </Furniture>
