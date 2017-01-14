@@ -18,8 +18,8 @@ public class WorldGeneratorTest
     {
         WorldGenerator.AsteroidInfo asteroidInfo = new WorldGenerator.AsteroidInfo()
         {
-            NoiseScale = 0.2f,
-            NoiseThreshhold = 0.75f,
+            AsteroidSize = 10,
+            AsteroidDensity = 0.25f,
             ResourceChance = 0.15f,
             Resources = new List<WorldGenerator.Resource>()
                 {
