@@ -1651,7 +1651,6 @@ MonoBehaviour:
   dialogBoxTrade: {fileID: 0}
   dialogBoxPromptOrInfo: {fileID: 0}
   dialogBoxQuests: {fileID: 0}
-  dialogBoxNewGame: {fileID: 0}
   DialogBoxGO: {fileID: 0}
 --- !u!1 &2038247388
 GameObject:
