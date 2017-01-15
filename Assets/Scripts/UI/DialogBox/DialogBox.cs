@@ -57,10 +57,9 @@ public class DialogBox : MonoBehaviour
 
     private void InvokeClosed()
     {
-        Action closed = Closed;
-        if (closed != null)
+        if (Closed != null)
         {
-            closed();
+            Closed();
             Closed = null;
         }
     }
