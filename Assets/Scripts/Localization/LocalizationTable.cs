@@ -76,9 +76,6 @@ namespace ProjectPorcupine.Localization
         /// </summary>
         public static string GetLocalization(string key, FallbackMode fallbackMode, string language, params object[] additionalValues)
         {
-            // for debug
-            // fallbackMode = FallbackMode.test;
-
             string value;
             if (localizationTable.ContainsKey(language) && localizationTable[language].TryGetValue(key, out value))
             {

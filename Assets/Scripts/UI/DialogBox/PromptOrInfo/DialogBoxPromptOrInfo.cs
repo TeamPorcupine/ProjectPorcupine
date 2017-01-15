@@ -143,7 +143,7 @@ public class DialogBoxPromptOrInfo : DialogBox
     /// <summary>
     /// Sets the text to show in the dialog.
     /// </summary>
-    /// <param name="key">Loalization key</param>
+    /// <param name="key">Loalization key for the prompt's text.</param>
     public void SetPrompt(string key, params string[] additionalValues)
     {
         string localized = ProjectPorcupine.Localization.LocalizationTable.GetLocalization(key, additionalValues);
