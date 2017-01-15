@@ -311,13 +311,13 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
     /// Equalising temperature along neighbours in the same room.
     /// It keeps it within a room just so rooms are more equalised.
     /// </summary>
-    public void EqualiseTemperature(List<Tile> neighbours, float deltaTime)
+    public void EqualiseTemperature(float deltaTime)
     {
-        neighbours.AddRange(GetVerticalNeighbors(false));
+        Tile[] neighbours = GetNeighbours(true, true);
 
         // Cycle through and apply a value change depending on our average if we have a difference of greater than one
         // Its greater than one due to float things, it just helps makes things easier and so we don't need to do a - b < epsilon
-        for (int i = neighbours.Count - 1; i >= 0; i--)
+        for (int i = 0; i < neighbours.Length; i++)
         {
             if (neighbours[i].TemperatureUnit.TemperatureInKelvin + 1 < this.TemperatureUnit.TemperatureInKelvin && neighbours[i].Room == this.Room)
             {
@@ -341,9 +341,14 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
     {
         float absoluteDelta;
 
-        // We do this because log is very high around such a low value and it helps to get from negative to positive
-        if (Mathf.Abs(TemperatureUnit.TemperatureInKelvin) < 3)
+        // This just makes it so it will slow the temperature rise on vacuum tiles.
+        if (this.type == TileType.Empty && this.Room != null && this.Room.ID == 0)
         {
+            absoluteDelta = deltaTemperature / (this.TemperatureUnit.TemperatureInKelvin * 16);
+        }
+        else if (Mathf.Abs(TemperatureUnit.TemperatureInKelvin) < 3)
+        {
+            // We do this because log is very high around such a low value and it helps to get from negative to positive
             absoluteDelta = deltaTemperature / Mathf.Log(startingTemperature);
         }
         else

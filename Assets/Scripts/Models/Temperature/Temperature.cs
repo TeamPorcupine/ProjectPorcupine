@@ -15,22 +15,23 @@ using UnityEngine;
 /// A tile by tile temperature management system.
 /// It utilises a generalised formula for temperature diffusion and conduction (credit: Braedon Wooding)
 /// Formula is: H -= startingEnergy / (e * abs(log(index)) * k), 
+/// We do abs(log(index)) at 'init' time to save speed later on.
 /// where index is the thermal conductivity index in format W/m.K (watts per Kelvin metre).
 /// </summary>
 [MoonSharpUserData]
 public class Temperature
 {
     /// <summary>
-    /// The thermal conductivity of air (within the range).
+    /// Abs(Log(i)) where I represents the thermal conductivity of air (within the range).
     /// </summary>
-    public const float DefaultThermalConductivity = 0.030f;
+    public readonly float DefaultThermalConductivity = 1.523f;
 
     /// <summary>
     /// The thermal conductivity of a vacuum.
     /// This won't effect the square in which the vacuum is located but rather its neighbours => resulting in a space vacuum effect.
-    /// Value of 10,000,000 (10 million).
+    /// Value of Log(10,000,000) (10 million).
     /// </summary>
-    public const float VacuumThermalConductivity = 10000000f;
+    public readonly float VacuumThermalConductivity = 7;
 
     /// <summary>
     /// The value E, but as a float.
@@ -41,7 +42,7 @@ public class Temperature
     /// A constant that changes the value of the result,
     /// a smaller k will result in a lower heat potential => less heat dispersion.
     /// </summary>
-    public const float K = 0.5f;
+    public const float K = 0.9f;
 
     /// <summary>
     /// Cache maps of heat, these don't have to be regenerated ever.
@@ -117,11 +118,11 @@ public class Temperature
     {
         if (positive)
         {
-            return heat > 0.1;
+            return heat > 0.01;
         }
         else
         {
-            return heat < -0.1;
+            return heat < -0.01;
         }
     }
 
@@ -180,7 +181,7 @@ public class Temperature
             {
                 // Add the previous heat then work out the next layer.
                 premap.Add(potentialHeat);
-                potentialHeat -= value / (E * Mathf.Abs(Mathf.Log(DefaultThermalConductivity)) * K);
+                potentialHeat -= value / (E * DefaultThermalConductivity * K);
             }
 
             temperatureMap[value] = premap.ToArray();
@@ -440,7 +441,7 @@ public class Temperature
 
         float indexForTile;
 
-        if (tile == null || tile.Room == null || tile.Room.ID == 0)
+        if (tile.Type != TileType.Floor)
         {
             // If we are at 'void' this is the thermal value of vacuum/space/void.
             indexForTile = VacuumThermalConductivity;
@@ -460,14 +461,14 @@ public class Temperature
         // Apply the potential heat to the polygonal flagged tile
         tile.ApplyTemperature(potentialHeat, startingHeat);
 
-        // Get effect relative neighbours
-        List<Tile> neighbours = GetMinMaxTiles(tile, centerLocation);
-
         // If the index is different then the default thermal conductivity value then perform our neighbour generalisation
         if (indexForTile != DefaultThermalConductivity)
         {
+            // Get effect relative neighbours
+            List<Tile> neighbours = GetMinMaxTiles(tile, centerLocation);
+
             // Get our effect on the index (based off our temperature, so the hotter the 'better' we stop heat; mimicking real behaviour)
-            float baseTemperature = tile.TemperatureUnit.TemperatureInKelvin / (Mathf.Abs(Mathf.Log(indexForTile)) * 4);
+            float baseTemperature = tile.TemperatureUnit.TemperatureInKelvin / (E * indexForTile * K);
 
             // If heat within limits
             if (HeatGreaterThanLimit(baseTemperature, tile.TemperatureUnit.TemperatureInKelvin > 0))
@@ -475,12 +476,12 @@ public class Temperature
                 // Apply to neighbours
                 for (int i = 0; i < neighbours.Count; i++)
                 {
-                    neighbours[i].ApplyTemperature(-(baseTemperature * deltaTime) / startingHeat, startingHeat);
+                    neighbours[i].ApplyTemperature(-baseTemperature / startingHeat, startingHeat);
                 }
             }
         }
 
         // Perform the tile's equalisation method
-        tile.EqualiseTemperature(neighbours, deltaTime);
+        tile.EqualiseTemperature(deltaTime);
     }
 }

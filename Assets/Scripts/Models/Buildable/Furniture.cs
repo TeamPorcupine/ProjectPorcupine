@@ -776,7 +776,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                     break;
                 case "ThermalConductivityIndex":
                     reader.Read();
-                    ThermalConductivityIndex = reader.ReadContentAsFloat();
+                    ThermalConductivityIndex = Mathf.Abs(Mathf.Log(reader.ReadContentAsFloat()));
                     break;
                 case "Component":
                     BuildableComponent component = BuildableComponent.Deserialize(reader);
