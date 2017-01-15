@@ -148,4 +148,9 @@ public static class ModUtils
 
         return null;
     }
+
+    public static bool IsModLoaded(string modName)
+    {
+        return ModMenu.loadedMods.Contains(modName);
+    }
 }

@@ -12,12 +12,9 @@ using UnityEngine;
 
 public class ModsManager
 {
-    private DirectoryInfo[] mods;
-
     public ModsManager()
     {
-        mods = GetModsFiles();
-
+        ModMenu.Load();
         LoadSharedFiles();
 
         if (SceneController.Instance.IsAtIntroScene())
@@ -28,6 +25,8 @@ public class ModsManager
         {
             LoadMainSceneFiles();
         }
+
+        ModMenu.ReportModsLoaded();
     }
 
     /// <summary>
@@ -201,9 +200,9 @@ public class ModsManager
             readText(filePath);
         }
 
-        foreach (DirectoryInfo mod in mods)
+        foreach (string mod in ModMenu.ActiveModDirsRev)
         {
-            filePath = Path.Combine(mod.FullName, fileName);
+            filePath = Path.Combine(mod, fileName);
             if (File.Exists(filePath))
             {
                 readText(filePath);
@@ -224,9 +223,9 @@ public class ModsManager
             readDirectory(directoryPath);
         }
 
-        foreach (DirectoryInfo mod in mods)
+        foreach (string mod in ModMenu.ActiveModDirsRev)
         {
-            directoryPath = Path.Combine(mod.FullName, directoryName);
+            directoryPath = Path.Combine(mod, directoryName);
             if (Directory.Exists(directoryPath))
             {
                 readDirectory(directoryPath);

@@ -56,6 +56,7 @@ public class GameController : MonoBehaviour
         EnableDontDestroyOnLoad();
 
         soundController = new SoundController();
+        ModMenu.Load();
 
         // Load Keyboard Mapping.
         KeyboardManager = KeyboardManager.Instance;

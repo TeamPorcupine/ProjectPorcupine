@@ -78,7 +78,7 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 
         CloseDialog();
 
-        LoadWorld(filePath);
+        ModMenu.CheckMods(filePath, this);
     }
 
     public override void CloseDialog()
