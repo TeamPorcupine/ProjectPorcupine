@@ -20,17 +20,17 @@ public struct DriverInfo
     public SPEAKERMODE speakerMode;
     public int speakerModeChannels;
 
-    public override string ToString()
-    {
-        return id.ToString() + ", " + name.ToString();
-    }
-
     public DriverInfo(int id)
     {
         this.id = id;
         this.name = new System.Text.StringBuilder(64);
 
         AudioManager.SoundSystem.getDriverInfo(id, this.name, 64, out this.guid, out this.systemRate, out this.speakerMode, out this.speakerModeChannels);
+    }
+
+    public override string ToString()
+    {
+        return id.ToString() + ", " + name.ToString();
     }
 }
 
@@ -166,7 +166,7 @@ public class SoundController
             channel.setVolume(curVol * DecibelsToVolume(volChange));
         }
 
-        channel.set3DLevel(0.75f);
+        channel.set3DLevel(SettingsKeyHolder.Locational ? 0.75f : 0f);
         channel.setPaused(false);
     }
 
