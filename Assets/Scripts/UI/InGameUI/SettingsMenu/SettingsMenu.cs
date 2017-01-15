@@ -178,7 +178,7 @@ public class SettingsMenu : MonoBehaviour
             return;
         }
 
-        check.SetPrompt(LocalizationTable.GetLocalization("confirm_settings_menu_close"));
+        check.SetPrompt("confirm_settings_menu_close");
         check.SetButtons(new DialogBoxResult[] { DialogBoxResult.Yes, DialogBoxResult.No });
         check.Closed =
             () =>

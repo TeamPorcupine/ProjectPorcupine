@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
@@ -143,10 +143,10 @@ public class DialogBoxPromptOrInfo : DialogBox
     /// <summary>
     /// Sets the text to show in the dialog.
     /// </summary>
-    /// <param name="prompt"></param>
-    public void SetPrompt(string prompt, params string[] additionalValues)
+    /// <param name="key">Loalization key</param>
+    public void SetPrompt(string key, params string[] additionalValues)
     {
-        string localized = ProjectPorcupine.Localization.LocalizationTable.GetLocalization(prompt, additionalValues);
+        string localized = ProjectPorcupine.Localization.LocalizationTable.GetLocalization(key, additionalValues);
 
         gameObject.transform.Find("Prompt").GetComponent<Text>().text = localized;
     }
