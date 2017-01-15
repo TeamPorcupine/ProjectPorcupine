@@ -24,14 +24,14 @@ public class Temperature
     /// <summary>
     /// Abs(Log(i)) where I represents the thermal conductivity of air (within the range).
     /// </summary>
-    public readonly float DefaultThermalConductivity = 1.523f;
+    public const float DefaultThermalConductivity = 1.523f;
 
     /// <summary>
     /// The thermal conductivity of a vacuum.
     /// This won't effect the square in which the vacuum is located but rather its neighbours => resulting in a space vacuum effect.
     /// Value of Log(10,000,000) (10 million).
     /// </summary>
-    public readonly float VacuumThermalConductivity = 7;
+    public const float VacuumThermalConductivity = 7;
 
     /// <summary>
     /// The value E, but as a float.
