@@ -8,6 +8,7 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using Newtonsoft.Json;
@@ -268,9 +269,14 @@ namespace ProjectPorcupine.Buildable.Components
 
         private void OnReconnecting()
         {
-            foreach (Utility util in ParentFurniture.Tile.Utilities.Values)
+            foreach (Utility util in ParentFurniture.GetAllTiles().SelectMany(tile => tile.Utilities.Values))
             {
-                util.Grid.PlugIn(this);
+                if (util.Grid.PlugIn(this))
+                {
+                    // For now it's meaningless to connect to multiple utilities, and behavior isn't well defined, so break out of all loops
+//                    breakLoop = true;
+                    break;
+                }
             }
         }
 
