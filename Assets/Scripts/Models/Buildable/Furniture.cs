@@ -214,7 +214,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// <value>The event actions that is called on update.</value>
     public EventActions EventActions { get; private set; }
 
-    public Bounds Bounds 
+    public Bounds Bounds
     {
         get
         {
