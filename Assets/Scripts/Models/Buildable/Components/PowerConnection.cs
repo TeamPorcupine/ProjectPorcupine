@@ -273,6 +273,7 @@ namespace ProjectPorcupine.Buildable.Components
             {
                 if (util.Grid.PlugIn(this))
                 {
+                    // For now it's meaningless to connect to multiple utilities, and behavior isn't well defined, so bail
                     break;
                 }
             }
