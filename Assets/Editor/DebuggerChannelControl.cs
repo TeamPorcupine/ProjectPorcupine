@@ -111,6 +111,7 @@ public class DebuggerChannelControl : EditorWindow, IHasCustomMenu
             {
                 Awake();
             }
+            
             EditorUtility.SetDirty(channelSettings);
         }
 
