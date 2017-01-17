@@ -63,6 +63,7 @@ public class Temperature
         if (sinksAndSources.Contains(provider) == false)
         {
             sinksAndSources.Add(provider);
+            Debug.Log("Registered sources: " + sinksAndSources.Count);
         }
     }
 
@@ -71,6 +72,7 @@ public class Temperature
         if (sinksAndSources.Contains(provider))
         {
             sinksAndSources.Remove(provider);
+            Debug.Log("Registered sources: " + sinksAndSources.Count);
         }
     }
 
@@ -264,7 +266,7 @@ public class Temperature
                 float temperatureDifference = GetTemperature(r1) - GetTemperature(r2);
                 if (temperatureDifference > 0)
                 {
-                    float energyTransfer = diffusion[r1][r2] * temperatureDifference * deltaTime;
+                    float energyTransfer = diffusion[r1][r2] * temperatureDifference * Mathf.Sqrt(r1.GetGasPressure()) * Mathf.Sqrt(r2.GetGasPressure()) * deltaTime;
                     ChangeEnergy(r1, -energyTransfer);
                     ChangeEnergy(r2, energyTransfer);
                 }

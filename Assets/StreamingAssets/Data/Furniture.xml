@@ -639,7 +639,6 @@
         <Action event="OnInstall" functionName="Heater_InstallAction"></Action>
         <!-- This method gets called on Uninstall -->
         <Action event="OnUninstall" functionName="Heater_UninstallAction"></Action>
-        <Action event="OnUpdateTemperature" functionName="Heater_UpdateTemperature" />
 
         <Params>
             <Param name="base_heating" value="500" />
