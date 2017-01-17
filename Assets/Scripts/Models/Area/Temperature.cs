@@ -25,6 +25,7 @@ public class Temperature
     private Dictionary<Room, float> thermalEnergy;
     private Dictionary<Room, Dictionary<Room, float>> diffusion;
     private List<Furniture> sinksAndSources;
+    private bool recomputeOnNextUpdate;
 
     /// <summary>
     /// Create and Initialize arrays with default values.
@@ -40,15 +41,13 @@ public class Temperature
         RecomputeDiffusion();
         sinksAndSources = new List<Furniture>();
 
-        World.Current.RoomManager.Added += (room) =>
-            {
-                if (thermalEnergy.ContainsKey(room) == false)
-                {
-                    thermalEnergy[room] = 0;
-                }
-
-                RecomputeDiffusion();
-            };
+        World.Current.FurnitureManager.Created += OnFurnitureCreated;
+        foreach (Furniture furn in World.Current.FurnitureManager)
+        {
+            if(furn.RoomEnclosure) {
+                furn.Removed += OnFurnitureRemoved;
+            }
+        }
     }
 
     /// <summary>
@@ -85,12 +84,7 @@ public class Temperature
     public float GetTemperature(int x, int y, int z)
     {
         Room room = World.Current.GetTileAt(x, y, z).Room;
-        if (room == null || room.IsOutsideRoom())
-        {
-            return 0;
-        }
-
-        return thermalEnergy[room] / room.TileCount;
+        return GetTemperature(room);
     }
 
     public float GetTemperature(Room room)
@@ -98,6 +92,10 @@ public class Temperature
         if (room == null || room.IsOutsideRoom())
         {
             return 0;
+        }
+
+        if(thermalEnergy.ContainsKey(room) == false) {
+            thermalEnergy[room] = 0;
         }
 
         return thermalEnergy[room] / room.TileCount;
@@ -151,8 +149,23 @@ public class Temperature
         sinksAndSources = new List<Furniture>();
     }
 
+    private void OnFurnitureCreated(Furniture furn)
+    {
+        if(furn.RoomEnclosure) {
+            furn.Removed += OnFurnitureRemoved;
+            recomputeOnNextUpdate = true;
+        }
+    }
+
+    private void OnFurnitureRemoved(Furniture furn)
+    {
+        recomputeOnNextUpdate = true;
+    }
+
     private void RecomputeDiffusion()
     {
+        recomputeOnNextUpdate = false;
+
         InitDiffusionMap();
 
         for (int x = 0; x < World.Current.Width; x++)
@@ -234,6 +247,11 @@ public class Temperature
 
     private void UpdateTemperature(float deltaTime)
     {
+        if(recomputeOnNextUpdate)
+        {
+            RecomputeDiffusion();
+        }
+
         foreach (var furn in sinksAndSources)
         {
             GenerateHeatFromFurniture(furn, deltaTime);
