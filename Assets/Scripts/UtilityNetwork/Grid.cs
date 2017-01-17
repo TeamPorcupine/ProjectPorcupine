@@ -65,13 +65,13 @@ namespace ProjectPorcupine.PowerNetwork
 
             if (UtilityType != string.Empty && UtilityType != connection.UtilityType)
             {
-                UnityDebugger.Debugger.LogWarning("UtilityType isn't null and doesn't match, no plugin");
+                UnityDebugger.Debugger.LogWarning("Grid", "UtilityType isn't null and doesn't match, no plugin");
                 return false;
             }
 
             if (SubType != string.Empty && connection.SubType != string.Empty && SubType != connection.SubType)
             {
-                UnityDebugger.Debugger.LogWarning("Neither SubType is empty, and they don't match, no plugin");
+                UnityDebugger.Debugger.LogWarning("Grid", "Neither SubType is empty, and they don't match, no plugin");
                 return false;
             }
 
@@ -92,7 +92,7 @@ namespace ProjectPorcupine.PowerNetwork
 
             if (!CanPlugIn(connection))
             {
-                UnityDebugger.Debugger.LogWarning("Can't Plugin");
+                UnityDebugger.Debugger.LogWarning("Grid", "Can't Plugin");
                 return false;
             }
 

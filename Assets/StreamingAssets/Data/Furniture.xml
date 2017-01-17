@@ -12,12 +12,12 @@
 
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="5" />
+            <Inventory type="steel_plate" amount="5" />
         </OrderAction>
 
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="3" />
+            <Inventory type="steel_plate" amount="3" />
         </OrderAction>
 
         <Params>
@@ -55,12 +55,12 @@
 
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>
         
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
         </OrderAction>
                 
         <Component type="Visuals">
@@ -125,12 +125,12 @@
 
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="10" />
+            <Inventory type="steel_plate" amount="10" />
         </OrderAction>
 
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="7" />
+            <Inventory type="steel_plate" amount="7" />
         </OrderAction>
 
         <Animations>
@@ -206,12 +206,16 @@
 
         <OrderAction type="Build">
             <Job time="2" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>
         
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
 
         <Animations>
@@ -283,12 +287,16 @@
 
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>
         
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
 
         <Params>
@@ -328,12 +336,16 @@
 
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>
                 
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
         
         <Component type="Visuals">
@@ -359,7 +371,7 @@
             </ParameterDefinitions>
             <ProductionChain name="Power generation" processingTime="60">
                 <Input>
-                    <Item objectType="Power Cell" amount="1" slotPosX="0" slotPosY="0" hasHopper="false" />
+                    <Item objectType="power_cell" amount="1" slotPosX="0" slotPosY="0" hasHopper="false" />
                 </Input>
             </ProductionChain>
         </Component>
@@ -388,12 +400,16 @@
 
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>
                 
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
 <!--
         <Component type="Workshop">
@@ -435,12 +451,16 @@
 
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>
                 
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
 		
         <Component type="FluidConnection">
@@ -470,12 +490,16 @@
 
         <OrderAction type="Build">
             <Job time="10" />
-            <Inventory type="Steel Plate" amount="5" />
+            <Inventory type="steel_plate" amount="5" />
         </OrderAction>
 
         <OrderAction type="Deconstruct">
             <Job time="8" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="8" />
         </OrderAction>
 
         <Animations>
@@ -512,12 +536,16 @@
  
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="5" />
+            <Inventory type="steel_plate" amount="5" />
         </OrderAction>
         
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
         
         <JobWorkSpotOffset X="1" Y="0" />
@@ -539,18 +567,18 @@
             </ParameterDefinitions>
             <ProductionChain name="Copper smelting" processingTime="3">
                 <Input>
-                    <Item objectType="Raw Copper" amount="2" slotPosX="0" slotPosY="0" hasHopper="true"/>
+                    <Item objectType="raw_copper" amount="2" slotPosX="0" slotPosY="0" hasHopper="true"/>
                 </Input>
                 <Output>
-                    <Item objectType="Copper Plate" amount="1" slotPosX="2" slotPosY="0" />
+                    <Item objectType="copper_plate" amount="1" slotPosX="2" slotPosY="0" />
                 </Output>
             </ProductionChain>
             <ProductionChain name="Iron smelting" processingTime="4">
                 <Input>
-                    <Item objectType="Raw Iron" amount="2" slotPosX="0" slotPosY="0" hasHopper="true"/>
+                    <Item objectType="raw_iron" amount="2" slotPosX="0" slotPosY="0" hasHopper="true"/>
                 </Input>
                 <Output>
-                    <Item objectType="Steel Plate" amount="1" slotPosX="2" slotPosY="0"/>
+                    <Item objectType="steel_plate" amount="1" slotPosX="2" slotPosY="0"/>
                 </Output>
             </ProductionChain>
         </Component>
@@ -595,12 +623,16 @@
 
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>
         
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
 
         <!-- This method gets called on Install -->
@@ -631,12 +663,16 @@
 
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>
         
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
        
         <Component type="Workshop">
@@ -648,11 +684,11 @@
             </ParameterDefinitions>
             <ProductionChain name="Power Cell Pressing" processingTime="5">
                 <Input>
-                    <Item objectType="Uranium" amount="3" slotPosX="0" slotPosY="0" hasHopper="true"/>
-                    <Item objectType="Steel Plate" amount="2" slotPosX="1" slotPosY="0" hasHopper="true"/>
+                    <Item objectType="raw_uranium" amount="3" slotPosX="0" slotPosY="0" hasHopper="true"/>
+                    <Item objectType="steel_plate" amount="2" slotPosX="1" slotPosY="0" hasHopper="true"/>
                 </Input>
                 <Output>
-                    <Item objectType="Power Cell" amount="1" slotPosX="2" slotPosY="1" />
+                    <Item objectType="power_cell" amount="1" slotPosX="2" slotPosY="1" />
                 </Output>
             </ProductionChain>
         </Component>
@@ -678,12 +714,16 @@
 
         <OrderAction type="Build">
             <Job time="5" />
-            <Inventory type="Steel Plate" amount="20" />
+            <Inventory type="steel_plate" amount="20" />
         </OrderAction>
         
         <OrderAction type="Deconstruct">
             <Job time="3" />
-            <Inventory type="Steel Plate" amount="10" />
+            <Inventory type="steel_plate" amount="10" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="3" />
         </OrderAction>
 
         <JobWorkSpotOffset X="0" Y="0" />
@@ -707,12 +747,16 @@
 
         <OrderAction type="Build">
             <Job time="2" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>
         
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
         
         <Animations>
@@ -760,12 +804,16 @@
 
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>        
         
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
         
         <Params>
@@ -791,7 +839,7 @@
 
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>  
         
         <CanReplaceFurniture typeTag="Wall" />
@@ -799,7 +847,11 @@
 
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
 
         <Params>
@@ -835,14 +887,18 @@
 
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>  
             
         <CanReplaceFurniture typeTag="Wall" />
         
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
         
         <Params>
@@ -884,12 +940,16 @@
 
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>  
 
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
         
         <Params>
@@ -908,12 +968,16 @@
 
         <OrderAction type="Build">
             <Job time="2" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>  
         
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
                 
         <Animations>
@@ -955,7 +1019,7 @@
         <Height>1</Height>
 
         <Params>
-            <Param name="ore_type" value="Raw Iron" />
+            <Param name="ore_type" value="raw_iron" />
         </Params>
 
         <ContextMenuAction FunctionName="OreMine_CreateMiningJob" LocalizationKey="mine_ore" RequireCharacterSelected="false" />
@@ -977,12 +1041,16 @@
 
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>  
         
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
 
         <Params>
@@ -1009,13 +1077,17 @@
 
         <OrderAction type="Build">
             <Job time="2" />
-            <Inventory type="Steel Plate" amount="2" />
-            <Inventory type="Uranium" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
+            <Inventory type="raw_uranium" amount="2" />
         </OrderAction>  
         
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Uranium" amount="1" />
+            <Inventory type="raw_uranium" amount="1" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
         
         <!-- This method gets called on Install -->

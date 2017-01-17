@@ -91,7 +91,7 @@ public class AudioManager
         {
             try
             {
-                UnityDebugger.Debugger.LogWarning("No audio available called: " + audioNameAndCategory);
+                UnityDebugger.Debugger.LogWarning("AudioManager", "No audio available called: " + audioNameAndCategory);
                 clip = audioClips["Sound/Error"];
             }
             catch
@@ -121,7 +121,17 @@ public class AudioManager
 
     public static void Destroy()
     {
+        SoundSystem.close();
+
+        // This will also release master, so we don't have to call master.release();
+        foreach (string key in channelGroups.Keys)
+        {
+            channelGroups[key].release();
+        }
+
         SoundSystem.release();
+
+        SoundSystem = null;
         audioClips = null;
     }
 
