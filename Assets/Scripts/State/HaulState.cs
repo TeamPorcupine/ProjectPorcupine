@@ -70,6 +70,7 @@ namespace ProjectPorcupine.State
                     {
                         noMoreMaterialFound = true;
                     }
+
                     break;
 
                 case HaulAction.PickupMaterial:
