@@ -104,6 +104,17 @@ public class TimeManager
     /// <value>The game time.</value>
     public float GameTime { get; private set; } // TODO: Implement saving and loading game time, so time is persistent across loads.
 
+    /// <summary>
+    /// Gets the world time in seconds.
+    /// </summary>
+    /// <value>The world time in seconds.</value>
+    public float WorldTime {
+        get 
+        {
+            return GameTime / 90f;
+        }
+    } 
+
     // Current position in that array.
     // Public so TimeScaleUpdater can easily get a position appropriate to an image.
     public int TimeScalePosition { get; private set; }
