@@ -311,7 +311,7 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
     /// Equalising temperature along neighbours in the same room.
     /// It keeps it within a room just so rooms are more equalised.
     /// </summary>
-    public void EqualiseTemperature(float deltaTime)
+    public void EqualiseTemperature(float deltaTime, Tile sourceTile, bool edge)
     {
         Tile[] neighbours = GetNeighbours(true, true).OrderBy(x => x.TemperatureUnit.TemperatureInKelvin).ToArray();
 
@@ -319,13 +319,13 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
         // Its greater than one due to float things, it just helps makes things easier and so we don't need to do a - b < epsilon
         for (int i = 0; i < neighbours.Length; i++)
         {
-            if (neighbours[i].TemperatureUnit.TemperatureInKelvin + 1 < this.TemperatureUnit.TemperatureInKelvin && neighbours[i].Room == this.Room)
+            if (neighbours[i].TemperatureUnit.TemperatureInKelvin + 1 < this.TemperatureUnit.TemperatureInKelvin && neighbours[i].Room == this.Room && neighbours[i] != sourceTile)
             {
                 // They are less so we should disperse heat into them
                 float value = (this.TemperatureUnit.TemperatureInKelvin + neighbours[i].TemperatureUnit.TemperatureInKelvin) / 2;
                 neighbours[i].ApplyTemperature(value * deltaTime, 0);
                 this.ApplyTemperature(-value * deltaTime, 0);
-                neighbours[i].EqualiseTemperature(deltaTime);
+                //neighbours[i].EqualiseTemperature(deltaTime, this, true);
             }
         }
     }

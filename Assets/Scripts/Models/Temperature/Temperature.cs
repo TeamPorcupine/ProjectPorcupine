@@ -238,8 +238,6 @@ public class Temperature
                 }
             }
         }
-
-        source.EqualiseTemperature(0.5f);
     }
 
     /// <summary>
@@ -483,5 +481,7 @@ public class Temperature
                 }
             }
         }
+
+        tile.EqualiseTemperature(deltaTime, tile, edge);
     }
 }
