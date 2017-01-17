@@ -100,7 +100,6 @@ public class Inventory : ISelectable, IContextActionProvider
 
     public void Claim(Character character, int amount)
     {
-        // FIXME: The various Claim related functions should most likely track claim time in an in game time increment.
         float requestTime = TimeManager.Instance.GameTime;
         List<InventoryClaim> validClaims = claims.Where(claim => (requestTime - claim.time) < ClaimDuration).ToList();
         int availableInventory = this.stackSize - validClaims.Sum(claim => claim.amount);
