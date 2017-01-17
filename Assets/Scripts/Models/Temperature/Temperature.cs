@@ -24,14 +24,14 @@ public class Temperature
     /// <summary>
     /// Abs(Log(i)) where I represents the thermal conductivity of air (within the range).
     /// </summary>
-    public readonly float DefaultThermalConductivity = 1.523f;
+    public const float DefaultThermalConductivity = 1.05f;
 
     /// <summary>
     /// The thermal conductivity of a vacuum.
     /// This won't effect the square in which the vacuum is located but rather its neighbours => resulting in a space vacuum effect.
     /// Value of Log(10,000,000) (10 million).
     /// </summary>
-    public readonly float VacuumThermalConductivity = 7;
+    public const float VacuumThermalConductivity = 12;
 
     /// <summary>
     /// The value E, but as a float.
@@ -42,7 +42,7 @@ public class Temperature
     /// A constant that changes the value of the result,
     /// a smaller k will result in a lower heat potential => less heat dispersion.
     /// </summary>
-    public const float K = 0.9f;
+    public const float K = 1.5f;
 
     /// <summary>
     /// Cache maps of heat, these don't have to be regenerated ever.
@@ -203,6 +203,7 @@ public class Temperature
         // We work backwards cause it means we can also do a equalisation operation without needing another loop
         for (int i = 0; i < temperatureMap[startingTemperature].Length; i++)
         {
+            bool edge = i == temperatureMap[startingTemperature].Length - 1;
             // The current potential heat
             float potentialHeat = temperatureMap[startingTemperature][i];
 
@@ -226,17 +227,19 @@ public class Temperature
                         // If we are at an end then cycle downwards
                         for (int y = -i; y <= i; y++)
                         {
-                            DetermineIfPolygonal(world.GetTileAt(source.X + x, source.Y + y, source.Z + z), potentialHeat * deltaTime, startingTemperature, source, deltaTime);
+                            DetermineIfPolygonal(world.GetTileAt(source.X + x, source.Y + y, source.Z + z), potentialHeat * deltaTime, startingTemperature, source, deltaTime, edge);
                         }
                     }
                     else
                     {
-                        DetermineIfPolygonal(world.GetTileAt(source.X + x, source.Y + i, source.Z + z), potentialHeat * deltaTime, startingTemperature, source, deltaTime);
-                        DetermineIfPolygonal(world.GetTileAt(source.X + x, source.Y - i, source.Z + z), potentialHeat * deltaTime, startingTemperature, source, deltaTime);
+                        DetermineIfPolygonal(world.GetTileAt(source.X + x, source.Y + i, source.Z + z), potentialHeat * deltaTime, startingTemperature, source, deltaTime, edge);
+                        DetermineIfPolygonal(world.GetTileAt(source.X + x, source.Y - i, source.Z + z), potentialHeat * deltaTime, startingTemperature, source, deltaTime, edge);
                     }
                 }
             }
         }
+
+        source.EqualiseTemperature(0.5f);
     }
 
     /// <summary>
@@ -432,7 +435,7 @@ public class Temperature
     /// <param name="tile"> The relative tile to center location that has an index different from <see cref="DefaultThermalConductivity"/>. </param>
     /// <param name="potentialHeat"> The potential heat of this layer. </param>
     /// <param name="startingHeat"> The heat we began at. </param>
-    private void DetermineIfPolygonal(Tile tile, float potentialHeat, float startingHeat, Tile centerLocation, float deltaTime)
+    private void DetermineIfPolygonal(Tile tile, float potentialHeat, float startingHeat, Tile centerLocation, float deltaTime, bool edge)
     {
         if (tile == null)
         {
@@ -462,13 +465,13 @@ public class Temperature
         tile.ApplyTemperature(potentialHeat, startingHeat);
 
         // If the index is different then the default thermal conductivity value then perform our neighbour generalisation
-        if (indexForTile != DefaultThermalConductivity)
+        if (indexForTile != DefaultThermalConductivity && edge == false)
         {
             // Get effect relative neighbours
             List<Tile> neighbours = GetMinMaxTiles(tile, centerLocation);
 
             // Get our effect on the index (based off our temperature, so the hotter the 'better' we stop heat; mimicking real behaviour)
-            float baseTemperature = tile.TemperatureUnit.TemperatureInKelvin / (E * indexForTile * K);
+            float baseTemperature = potentialHeat / (E * indexForTile * K);
 
             // If heat within limits
             if (HeatGreaterThanLimit(baseTemperature, tile.TemperatureUnit.TemperatureInKelvin > 0))
@@ -480,8 +483,5 @@ public class Temperature
                 }
             }
         }
-
-        // Perform the tile's equalisation method
-        tile.EqualiseTemperature(deltaTime);
     }
 }

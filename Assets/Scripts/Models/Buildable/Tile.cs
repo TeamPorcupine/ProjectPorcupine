@@ -313,7 +313,7 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
     /// </summary>
     public void EqualiseTemperature(float deltaTime)
     {
-        Tile[] neighbours = GetNeighbours(true, true);
+        Tile[] neighbours = GetNeighbours(true, true).OrderBy(x => x.TemperatureUnit.TemperatureInKelvin).ToArray();
 
         // Cycle through and apply a value change depending on our average if we have a difference of greater than one
         // Its greater than one due to float things, it just helps makes things easier and so we don't need to do a - b < epsilon
@@ -325,6 +325,7 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
                 float value = (this.TemperatureUnit.TemperatureInKelvin + neighbours[i].TemperatureUnit.TemperatureInKelvin) / 2;
                 neighbours[i].ApplyTemperature(value * deltaTime, 0);
                 this.ApplyTemperature(-value * deltaTime, 0);
+                neighbours[i].EqualiseTemperature(deltaTime);
             }
         }
     }
@@ -360,7 +361,7 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
 
         if (this.Room != null)
         {
-            this.Room.UpdateAverageTemperature(absoluteDelta);
+            this.Room.UpdateAverageTemperature(absoluteDelta / Temperature.K);
         }
     }
 
