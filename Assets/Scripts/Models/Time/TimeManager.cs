@@ -11,6 +11,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 public class TimeManager
@@ -44,6 +45,10 @@ public class TimeManager
         TimeScalePosition = 2;
         IsPaused = false;
 
+        // Initialize GameTime to a value equivalent to 8 am
+        GameTime = 320f;
+
+//        GameTime += (3600 * (15 + 24)) / 90;
         for (int i = 0; i < slowUpdatablesLists.Length; i++)
         {
             slowUpdatablesLists[i] = new List<IUpdatable>();
@@ -314,6 +319,22 @@ public class TimeManager
     public void RunNextFrame(Action action)
     {
         nextFrameActions.Add(action);
+    }
+
+    public void FromJson(JToken timeToken)
+    {
+        if (timeToken != null)
+        {
+            GameTime = (float)timeToken;
+        }
+    }
+
+    public JToken ToJson()
+    {
+
+        JValue timeJson = new JValue(GameTime);
+
+        return timeJson;
     }
 
     /// <summary>
