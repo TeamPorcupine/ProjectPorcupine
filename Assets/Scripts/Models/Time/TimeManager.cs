@@ -116,7 +116,12 @@ public class TimeManager
     public float WorldTime {
         get 
         {
-            return GameTime / 90f;
+            return GameTime * 90f;
+        }
+
+        private set
+        {
+            GameTime = value / 90;
         }
     } 
 

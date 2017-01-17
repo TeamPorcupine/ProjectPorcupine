@@ -16,7 +16,7 @@ public class DateTimeUpdater : MonoBehaviour {
 	void Update () {
         StringBuilder sb = new StringBuilder();
         TimeManager tm = TimeManager.Instance;
-        int time = (int)(tm.GameTime * 90);
+        int time = (int)(tm.WorldTime);
         int seconds = time % 60;
         int minutes = (time / 60)  % 60;
         int hours = (time / 3600)  % 24;
