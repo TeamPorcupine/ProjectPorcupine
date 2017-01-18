@@ -46,9 +46,10 @@ public class TimeManager
         IsPaused = false;
 
         // Initialize GameTime to a value equivalent to 8 am
-        GameTime = 320f;
+        GameTime = 320f / 60;
 
-//        GameTime += (3600 * (15 + 24)) / 90;
+//        GameTime += ((3600 * (15 + 24)) / 90)/60;
+//        GameTime += ((3600 * 24) *14)/90/60;
         for (int i = 0; i < slowUpdatablesLists.Length; i++)
         {
             slowUpdatablesLists[i] = new List<IUpdatable>();

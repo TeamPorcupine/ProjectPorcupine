@@ -17,6 +17,7 @@ public class DateTimeUpdater : MonoBehaviour {
         StringBuilder sb = new StringBuilder();
         TimeManager tm = TimeManager.Instance;
         int time = (int)(tm.WorldTime);
+//        time *= 60;
         int seconds = time % 60;
         int minutes = (time / 60)  % 60;
         int hours = (time / 3600)  % 24;
@@ -33,15 +34,11 @@ public class DateTimeUpdater : MonoBehaviour {
 
         int days = time / 86400;
 
-        int month = (days / 15) % 12;
-        string monthString = ((Month)month).ToString();
-        month += 1;
-        int dayOfMonth = (days % 15) + 1;
-        int year = 2999 + days / 180;
+        int quarter = ((days / 15) % 4) + 1;
+        int dayOfQuarter = (days % 15) + 1;
+        int year = 2999 + days / 60;
         sb.AppendFormat("{0}:{1:00} {2}\n", hours, minutes, pm ? "pm" : "am");
-        sb.AppendFormat("{0} {1}, {2}", monthString, dayOfMonth, year);
+        sb.AppendFormat("Q{0} Day {1}, {2}", quarter, dayOfQuarter, year);
         textComponent.text = sb.ToString();
 	}
-
-    private enum Month {January, February, March, April, May, June, July, August, September, October, November, December}
 }
