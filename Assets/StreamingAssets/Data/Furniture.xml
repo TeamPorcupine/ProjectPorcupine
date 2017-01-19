@@ -214,10 +214,6 @@
             <Inventory type="steel_plate" amount="1" />
         </OrderAction>
 
-        <OrderAction type="Uninstall">
-            <Job time="1" />
-        </OrderAction>
-
         <Animations>
           <Animation state="idle" looping="false">
             <Frame name="oxygen_generator" />
@@ -295,10 +291,6 @@
             <Inventory type="steel_plate" amount="1" />
         </OrderAction>
 
-        <OrderAction type="Uninstall">
-            <Job time="1" />
-        </OrderAction>
-
         <Params>
             <Param name="mine_type" value="Raw Iron" />
         </Params>
@@ -342,10 +334,6 @@
         <OrderAction type="Deconstruct">
             <Job time="1" />
             <Inventory type="steel_plate" amount="1" />
-        </OrderAction>
-
-        <OrderAction type="Uninstall">
-            <Job time="1" />
         </OrderAction>
         
         <Component type="Visuals">
@@ -407,10 +395,6 @@
             <Job time="1" />
             <Inventory type="steel_plate" amount="1" />
         </OrderAction>
-
-        <OrderAction type="Uninstall">
-            <Job time="1" />
-        </OrderAction>
 <!--
         <Component type="Workshop">
             <ParameterDefinitions>
@@ -458,10 +442,6 @@
             <Job time="1" />
             <Inventory type="steel_plate" amount="1" />
         </OrderAction>
-
-        <OrderAction type="Uninstall">
-            <Job time="1" />
-        </OrderAction>
 		
         <Component type="FluidConnection">
             <Provides rate="10" capacity="50" capacityThresholds="5"/>
@@ -496,10 +476,6 @@
         <OrderAction type="Deconstruct">
             <Job time="8" />
             <Inventory type="steel_plate" amount="2" />
-        </OrderAction>
-
-        <OrderAction type="Uninstall">
-            <Job time="8" />
         </OrderAction>
 
         <Animations>
@@ -542,10 +518,6 @@
         <OrderAction type="Deconstruct">
             <Job time="1" />
             <Inventory type="steel_plate" amount="2" />
-        </OrderAction>
-
-        <OrderAction type="Uninstall">
-            <Job time="1" />
         </OrderAction>
         
         <JobWorkSpotOffset X="1" Y="0" />
@@ -631,10 +603,6 @@
             <Inventory type="steel_plate" amount="1" />
         </OrderAction>
 
-        <OrderAction type="Uninstall">
-            <Job time="1" />
-        </OrderAction>
-
         <!-- This method gets called on Install -->
         <Action event="OnInstall" functionName="Heater_InstallAction"></Action>
         <!-- This method gets called on Uninstall -->
@@ -669,10 +637,6 @@
         <OrderAction type="Deconstruct">
             <Job time="1" />
             <Inventory type="steel_plate" amount="1" />
-        </OrderAction>
-
-        <OrderAction type="Uninstall">
-            <Job time="1" />
         </OrderAction>
        
         <Component type="Workshop">
@@ -722,10 +686,6 @@
             <Inventory type="steel_plate" amount="10" />
         </OrderAction>
 
-        <OrderAction type="Uninstall">
-            <Job time="3" />
-        </OrderAction>
-
         <JobWorkSpotOffset X="0" Y="0" />
         <JobOutputSpotOffset X="1" Y="-1" />
 
@@ -753,10 +713,6 @@
         <OrderAction type="Deconstruct">
             <Job time="1" />
             <Inventory type="steel_plate" amount="1" />
-        </OrderAction>
-
-        <OrderAction type="Uninstall">
-            <Job time="1" />
         </OrderAction>
         
         <Animations>
@@ -811,10 +767,6 @@
             <Job time="1" />
             <Inventory type="steel_plate" amount="1" />
         </OrderAction>
-
-        <OrderAction type="Uninstall">
-            <Job time="1" />
-        </OrderAction>
         
         <Params>
             <Param name="base_output" value="3" />
@@ -848,10 +800,6 @@
         <OrderAction type="Deconstruct">
             <Job time="1" />
             <Inventory type="steel_plate" amount="1" />
-        </OrderAction>
-
-        <OrderAction type="Uninstall">
-            <Job time="1" />
         </OrderAction>
 
         <Params>
@@ -895,10 +843,6 @@
         <OrderAction type="Deconstruct">
             <Job time="1" />
             <Inventory type="steel_plate" amount="1" />
-        </OrderAction>
-
-        <OrderAction type="Uninstall">
-            <Job time="1" />
         </OrderAction>
         
         <Params>
@@ -947,10 +891,6 @@
             <Job time="1" />
             <Inventory type="steel_plate" amount="1" />
         </OrderAction>
-
-        <OrderAction type="Uninstall">
-            <Job time="1" />
-        </OrderAction>
         
         <Params>
             <Param name="comfort" value="0.5" />
@@ -974,10 +914,6 @@
         <OrderAction type="Deconstruct">
             <Job time="1" />
             <Inventory type="steel_plate" amount="1" />
-        </OrderAction>
-
-        <OrderAction type="Uninstall">
-            <Job time="1" />
         </OrderAction>
                 
         <Animations>
@@ -1049,10 +985,6 @@
             <Inventory type="steel_plate" amount="1" />
         </OrderAction>
 
-        <OrderAction type="Uninstall">
-            <Job time="1" />
-        </OrderAction>
-
         <Params>
             <Param name="occupied" value="0" />
         </Params>
@@ -1084,10 +1016,6 @@
         <OrderAction type="Deconstruct">
             <Job time="1" />
             <Inventory type="raw_uranium" amount="1" />
-        </OrderAction>
-
-        <OrderAction type="Uninstall">
-            <Job time="1" />
         </OrderAction>
         
         <!-- This method gets called on Install -->
