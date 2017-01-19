@@ -29,6 +29,8 @@ public class BuildModeController
     private MouseController mouseController;
     private TileType buildModeTile = TileType.Floor;
 
+    private bool useCratedObject;
+
     public BuildModeController()
     {
         Instance = this;
@@ -87,11 +89,12 @@ public class BuildModeController
         mouseController.StartBuildMode();
     }
 
-    public void SetMode_BuildFurniture(string type)
+    public void SetMode_BuildFurniture(string type, bool useCratedObject = false)
     {
         // Wall is not a Tile!  Wall is an "Furniture" that exists on TOP of a tile.
         buildMode = BuildMode.FURNITURE;
         buildModeType = type;
+        this.useCratedObject = useCratedObject;
         CurrentPreviewRotation = 0f;
         mouseController.StartBuildMode();
     }
@@ -156,6 +159,13 @@ public class BuildModeController
                 if (orderAction != null)
                 {
                     job = orderAction.CreateJob(tile, furnitureType);
+                    if (useCratedObject)
+                    {
+                        // We want to use a crated furniture, so set requested items to crated version.
+                        job.RequestedItems.Clear();
+                        job.RequestedItems.Add(this.buildModeType, new ProjectPorcupine.Jobs.RequestedItem(this.buildModeType, 1));
+                        useCratedObject = false;
+                    }
 
                     // this is here so OrderAction can be used for utility as well as furniture
                     job.OnJobCompleted += (theJob) => World.Current.FurnitureManager.ConstructJobCompleted(theJob);
