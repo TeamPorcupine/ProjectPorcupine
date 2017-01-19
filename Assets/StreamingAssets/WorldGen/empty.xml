@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <WorldGenerator>
     <Asteroid>
-        <NoiseScale>0.2</NoiseScale>
-        <NoiseThreshhold>0.75</NoiseThreshhold>
+        <AsteroidSize>10</AsteroidSize>
+        <AsteroidDensity>.5</AsteroidDensity>
         <ResourceChance>0.15</ResourceChance>
         <Resources>
             <Resource type="raw_iron" source="iron_ore" min="5" max="15" weightedChance="30" />

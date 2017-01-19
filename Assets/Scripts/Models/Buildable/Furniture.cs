@@ -794,6 +794,16 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                     break;
             }
         }
+
+        if (orderActions.ContainsKey("Uninstall"))
+        {
+            InventoryCommon asInventory = new InventoryCommon();
+            asInventory.type = Type;
+            asInventory.maxStackSize = 1;
+            asInventory.basePrice = 0f;
+            asInventory.category = "crated_furniture";
+            PrototypeManager.Inventory.Add(asInventory);
+        }
     }
 
     /// <summary>
@@ -853,6 +863,101 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         }
 
         return itemsDict.Values.ToArray();
+    }
+
+    public void SetUninstallJob()
+    {
+        if (CommandSettings.DeveloperModeToggle)
+        {
+            Uninstall();
+            return;
+        }
+
+        Jobs.CancelAll();
+
+        Uninstall uninstallOrder = GetOrderAction<Uninstall>();
+        if (uninstallOrder != null)
+        {
+            Job job = uninstallOrder.CreateJob(Tile, Type);
+            job.OnJobCompleted += (inJob) => Uninstall();
+            World.Current.jobQueue.Enqueue(job);
+        }        
+    }
+
+    /// <summary>
+    /// Deconstructs the furniture.
+    /// </summary>
+    public void Uninstall()
+    {
+        int x = Tile.X;
+        int y = Tile.Y;
+        int fwidth = 1;
+        int fheight = 1;
+        string linksToNeighbour = string.Empty;
+        if (Tile.Furniture != null)
+        {
+            Furniture furniture = Tile.Furniture;
+            fwidth = furniture.Width;
+            fheight = furniture.Height;
+            linksToNeighbour = furniture.LinksToNeighbour;
+            furniture.Jobs.CancelAll();
+        }
+
+        // We call lua to decostruct
+        EventActions.Trigger("OnUninstall", this);
+
+        // Update thermalDiffusifity to default value
+        World.Current.temperature.SetThermalDiffusivity(Tile.X, Tile.Y, Tile.Z, Temperature.defaultThermalDiffusivity);
+
+        // Let our workspot tile know it is no longer reserved for us
+        World.Current.UnreserveTileAsWorkSpot(this);
+
+        Tile.UnplaceFurniture();
+
+        Deconstruct deconstructOrder = GetOrderAction<Deconstruct>();
+        if (deconstructOrder != null)
+        {
+            World.Current.InventoryManager.PlaceInventoryAround(Tile, new Inventory(Type, 1));
+        }
+
+        if (Removed != null)
+        {
+            Removed(this);
+        }
+
+        // Do we need to recalculate our rooms?
+        if (RoomEnclosure)
+        {
+            World.Current.RoomManager.DoRoomFloodFill(Tile, false);
+        }
+
+        ////World.current.InvalidateTileGraph();
+
+        if (World.Current.tileGraph != null)
+        {
+            World.Current.tileGraph.RegenerateGraphAtTile(Tile);
+        }
+
+        // We should inform our neighbours that they have just lost a
+        // neighbour regardless of type.  
+        // Just trigger their OnChangedCallback. 
+        if (linksToNeighbour != string.Empty)
+        {
+            for (int xpos = x - 1; xpos < x + fwidth + 1; xpos++)
+            {
+                for (int ypos = y - 1; ypos < y + fheight + 1; ypos++)
+                {
+                    Tile t = World.Current.GetTileAt(xpos, ypos, Tile.Z);
+                    if (t != null && t.Furniture != null && t.Furniture.Changed != null)
+                    {
+                        t.Furniture.Changed(t.Furniture);
+                    }
+                }
+            }
+        }
+
+        // At this point, no DATA structures should be pointing to us, so we
+        // should get garbage-collected.
     }
 
     #region Deconstruct
@@ -1128,6 +1233,16 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                 LocalizationKey = LocalizationTable.GetLocalization("deconstruct_furniture", LocalizationCode),
                 RequireCharacterSelected = false,
                 Action = (ca, c) => SetDeconstructJob()
+            };
+        }
+
+        if (PrototypeManager.Inventory.Has(this.Type))
+        {
+            yield return new ContextMenuAction
+            {
+                LocalizationKey = LocalizationTable.GetLocalization("uninstall_furniture", LocalizationCode),
+                RequireCharacterSelected = false,
+                Action = (ca, c) => SetUninstallJob()
             };
         }
 
