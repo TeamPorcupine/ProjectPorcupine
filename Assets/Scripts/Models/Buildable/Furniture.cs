@@ -867,7 +867,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
 
     public void SetUninstallJob()
     {
-        if (CommandSettings.DeveloperModeToggle)
+        if (SettingsKeyHolder.DeveloperMode)
         {
             Uninstall();
             return;
@@ -881,7 +881,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
             Job job = uninstallOrder.CreateJob(Tile, Type);
             job.OnJobCompleted += (inJob) => Uninstall();
             World.Current.jobQueue.Enqueue(job);
-        }        
+        }
     }
 
     /// <summary>
