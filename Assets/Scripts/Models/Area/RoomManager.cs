@@ -81,7 +81,7 @@ namespace ProjectPorcupine.Rooms
         public int Count
         {
             get
-            { 
+            {
                 return rooms.Count;
             }
         }
@@ -99,7 +99,7 @@ namespace ProjectPorcupine.Rooms
         public Room this[int index]
         {
             get
-            { 
+            {
                 if (index < 0 || index > Count - 1)
                 {
                     return null;
@@ -385,6 +385,12 @@ namespace ProjectPorcupine.Rooms
                         Joined(r, newRoom);
                     }
                 }
+            }
+
+            // So we don't do it on every add
+            for (int i = 0; i < rooms.Count; i++)
+            {
+                rooms[i].DirtyAverageTemperature();
             }
         }
 

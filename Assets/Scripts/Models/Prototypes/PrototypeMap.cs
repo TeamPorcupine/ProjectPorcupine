@@ -182,7 +182,6 @@ public class PrototypeMap<T> where T : IPrototypable, new()
         }
         catch (Exception e)
         {
-            // Leaving this for Unitys console because UberLogger doesn't show multiline messages correctly.
             UnityDebugger.Debugger.LogError("PrototypeMap", "Error reading '" + elementTag + "' prototype for: " + listTag + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
         }
 

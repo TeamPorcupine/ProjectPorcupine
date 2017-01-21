@@ -149,7 +149,7 @@ public class TimeManager
     /// </summary>
     /// <param name="time">Time since last frame.</param>
     public void Update(float time)
-    {   
+    {
         float deltaTime = time * TimeScale;
 
         // Systems that update every frame.

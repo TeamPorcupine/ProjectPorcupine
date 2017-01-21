@@ -427,14 +427,10 @@ end
 
 -- This function gets called once, when the furniture is installed
 function Heater_InstallAction( furniture, deltaTime)
-    -- TODO: find elegant way to register heat source and sinks to Temperature
-	World.Current.temperature.RegisterSinkOrSource(furniture)
 end
 
 -- This function gets called once, when the furniture is uninstalled
 function Heater_UninstallAction( furniture, deltaTime)
-	World.Current.temperature.DeregisterSinkOrSource(furniture)
-	-- TODO: find elegant way to unregister previous register
 end
 
 -- Should maybe later be integrated with GasGenerator function by
@@ -674,18 +670,6 @@ function OreMine_GetSpriteName(furniture)
     end
 
     return "astro_wall"
-end
-
--- This function gets called once, when the furniture is installed
-function Rtg_InstallAction( furniture, deltaTime)
-    -- TODO: find elegant way to register heat source and sinks to Temperature
-	World.Current.temperature.RegisterSinkOrSource(furniture)
-end
-
--- This function gets called once, when the furniture is uninstalled
-function Rtg_UninstallAction( furniture, deltaTime)
-	World.Current.temperature.DeregisterSinkOrSource(furniture)
-	-- TODO: find elegant way to unregister previous register
 end
 
 function Berth_TestSummoning(furniture, deltaTime)

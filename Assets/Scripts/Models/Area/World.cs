@@ -415,8 +415,8 @@ public class World
         tileGraph = null;
         roomGraph = null;
 
-        // Reset temperature, so it properly sizes arrays to the new world size
-        temperature.Resize();
+        // Reset the temperature internal sizes
+        temperature.OnWorldChange(this);
 
         for (int x = 0; x < oldWidth; x++)
         {
@@ -427,7 +427,7 @@ public class World
                     tiles[x + offsetX, y + offsetY, z] = oldTiles[x, y, z];
                     oldTiles[x, y, z].MoveTile(x + offsetX, y + offsetY, z);
                 }
-            }   
+            }
         }
     }
 
@@ -459,7 +459,7 @@ public class World
         GameEventManager = new GameEventManager();
         PowerNetwork = new PowerNetwork();
         FluidNetwork = new FluidNetwork();
-        temperature = new Temperature();
+        temperature = new Temperature(this);
         ShipManager = new ShipManager();
         Wallet = new Wallet();
         CameraData = new CameraData();
@@ -545,8 +545,6 @@ public class World
     /// <param name="deltaTime">Delta time.</param>
     private void TickFixedFrequency(float deltaTime)
     {
-        // Progress temperature modelling
-        temperature.Update(deltaTime);
         PowerNetwork.Update(deltaTime);
         FluidNetwork.Update(deltaTime);
     }

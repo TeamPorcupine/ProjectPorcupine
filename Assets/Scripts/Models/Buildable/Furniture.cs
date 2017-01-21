@@ -52,10 +52,10 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     private HashSet<string> tileTypeBuildPermissions;
 
     private bool isOperating;
-    
+
     // Need to hold the health value.
     private HealthSystem health;
-    
+
     // Did we have power in the last update?
     private bool prevUpdatePowerOn;
     #endregion
@@ -107,6 +107,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         Tint = other.Tint;
         LinksToNeighbour = other.LinksToNeighbour;
         health = other.health;
+        ThermalConductivityIndex = other.ThermalConductivityIndex;
 
         Parameters = new Parameter(other.Parameters);
         Jobs = new BuildableJobs(this, other.Jobs);
@@ -124,7 +125,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         {
             orderActions.Add(orderAction.Key, orderAction.Value.Clone());
         }
-        
+
         if (other.Animation != null)
         {
             Animation = other.Animation.Clone();
@@ -199,6 +200,13 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     public Color Tint { get; set; }
 
     /// <summary>
+    /// Gets the thermal conductivity index of the furniture.
+    /// </summary>
+    /// <value>The 
+    /// conductivity index of the furniture.</value>
+    public float ThermalConductivityIndex { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the door is Vertical or not.
     /// Should be false if the furniture is not a door.
     /// This field will most likely be moved to another class.
@@ -214,7 +222,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// <value>The event actions that is called on update.</value>
     public EventActions EventActions { get; private set; }
 
-    public Bounds Bounds 
+    public Bounds Bounds
     {
         get
         {
@@ -468,15 +476,6 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         // Call LUA install scripts
         furnObj.EventActions.Trigger("OnInstall", furnObj);
 
-        // Update thermalDiffusivity using coefficient
-        float thermalDiffusivity = Temperature.defaultThermalDiffusivity;
-        if (furnObj.Parameters.ContainsKey("thermal_diffusivity"))
-        {
-            thermalDiffusivity = furnObj.Parameters["thermal_diffusivity"].ToFloat();
-        }
-
-        World.Current.temperature.SetThermalDiffusivity(tile.X, tile.Y, tile.Z, thermalDiffusivity);
-
         return furnObj;
     }
 
@@ -527,7 +526,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
             Requirements = newRequirements;
             OnIsOperatingChanged(this);
         }
-        
+
         IsOperating = canFunction;
 
         if (canFunction == false)
@@ -727,7 +726,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                 case "DragType":
                     reader.Read();
                     DragType = reader.ReadContentAsString();
-                    break;               
+                    break;
                 case "CanBeBuiltOn":
                     tileTypeBuildPermissions.Add(reader.GetAttribute("tileType"));
                     break;
@@ -775,6 +774,10 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                     reader.Read();
                     UnlocalizedDescription = reader.ReadContentAsString();
                     break;
+                case "ThermalConductivityIndex":
+                    reader.Read();
+                    ThermalConductivityIndex = Mathf.Abs(Mathf.Log(reader.ReadContentAsFloat()));
+                    break;
                 case "Component":
                     BuildableComponent component = BuildableComponent.Deserialize(reader);
                     if (component != null)
@@ -813,7 +816,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     public void ReadXmlParams(XmlReader reader)
     {
         Parameters = Parameter.ReadXml(reader);
-    }    
+    }
     #endregion
 
     public object ToJSon()
@@ -881,7 +884,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
             Job job = uninstallOrder.CreateJob(Tile, Type);
             job.OnJobCompleted += (inJob) => Uninstall();
             World.Current.jobQueue.Enqueue(job);
-        }        
+        }
     }
 
     /// <summary>
@@ -905,9 +908,6 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
 
         // We call lua to decostruct
         EventActions.Trigger("OnUninstall", this);
-
-        // Update thermalDiffusifity to default value
-        World.Current.temperature.SetThermalDiffusivity(Tile.X, Tile.Y, Tile.Z, Temperature.defaultThermalDiffusivity);
 
         // Let our workspot tile know it is no longer reserved for us
         World.Current.UnreserveTileAsWorkSpot(this);
@@ -986,7 +986,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
             Job job = deconstructOrder.CreateJob(Tile, Type);
             job.OnJobCompleted += (inJob) => Deconstruct();
             World.Current.jobQueue.Enqueue(job);
-        }        
+        }
     }
 
     /// <summary>
@@ -1011,9 +1011,6 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         // We call lua to decostruct
         EventActions.Trigger("OnUninstall", this);
 
-        // Update thermalDiffusifity to default value
-        World.Current.temperature.SetThermalDiffusivity(Tile.X, Tile.Y, Tile.Z, Temperature.defaultThermalDiffusivity);
-
         // Let our workspot tile know it is no longer reserved for us
         World.Current.UnreserveTileAsWorkSpot(this);
 
@@ -1024,7 +1021,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         {
             foreach (OrderAction.InventoryInfo inv in deconstructOrder.Inventory)
             {
-                World.Current.InventoryManager.PlaceInventoryAround(Tile, new Inventory(inv.Type, inv.Amount));               
+                World.Current.InventoryManager.PlaceInventoryAround(Tile, new Inventory(inv.Type, inv.Amount));
             }
         }
 
@@ -1215,7 +1212,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
             return null;
         }
     }
-    
+
     #endregion
 
     #region Context Menu

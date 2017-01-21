@@ -218,17 +218,7 @@ namespace DeveloperConsole
 
             if (ModUtils.GetCurrentWorld(out world))
             {
-                DevConsole.Log("Temperature: " + world.temperature.GetTemperature((int)pos.x, (int)pos.y, (int)pos.z), "green");
-            }
-        }
-
-        public static void GetThermallDiffusivity(Vector3 pos)
-        {
-            World world;
-
-            if (ModUtils.GetCurrentWorld(out world))
-            {
-                DevConsole.Log("Thermal Diffusivity: " + world.temperature.GetThermalDiffusivity((int)pos.x, (int)pos.y, (int)pos.z), "green");
+                DevConsole.Log("Temperature: " + world.temperature.GetTemperatureUnit((int)pos.x, (int)pos.y, (int)pos.z), "green");
             }
         }
 

@@ -47,7 +47,8 @@ namespace ProjectPorcupine.Buildable.Components
             Power = 1,
             Production = 1 << 1,
             Gas = 1 << 2,
-            Fluid = 1 << 3
+            Fluid = 1 << 3,
+            Temperature = 1 << 4
         }
 
         public enum ConditionType
@@ -70,28 +71,28 @@ namespace ProjectPorcupine.Buildable.Components
             }
         }
 
-        public bool Initialized 
-        { 
-            get 
-            { 
-                return initialized; 
-            } 
+        public bool Initialized
+        {
+            get
+            {
+                return initialized;
+            }
         }
 
-        public virtual bool RequiresSlowUpdate 
-        { 
-            get 
-            { 
-                return false; 
-            } 
+        public virtual bool RequiresSlowUpdate
+        {
+            get
+            {
+                return false;
+            }
         }
 
-        public virtual bool RequiresFastUpdate 
-        { 
-            get 
-            { 
-                return false; 
-            } 
+        public virtual bool RequiresFastUpdate
+        {
+            get
+            {
+                return false;
+            }
         }
 
         [XmlIgnore]

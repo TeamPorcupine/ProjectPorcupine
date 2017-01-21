@@ -47,24 +47,17 @@ end
 
 -- Return temperature (in K) in current tile
 function temperatureValueAt(tile, world)
-    --if world == nil or world.current == nil or world.current.temperature == nil then
-    --	return -1
-    --end
-
-    --if tile == nil then
-    --	return -2
-    --end
-    return math.max(math.min(world.temperature.GetTemperature(tile.X, tile.Y, tile.Z) / 3, 254), 0)
-end
-
-
--- Returns coloring of thermal diffusivity of tile
-function thermalDiffusivityValueAt(tile, world)
     if tile == nil then
-        return 255
-    else
-        return math.max(math.min(254*world.temperature.GetThermalDiffusivity(tile.X, tile.Y, tile.Z)))
+    	return -2
     end
+	
+	local temp = world.temperature.GetTemperatureUnit(tile.X, tile.Y, tile.Z)
+	
+	if temp ~= nil then
+		return math.max(math.min(temp.temperatureInKelvin / 3, 254), 0)
+	else
+		return 0
+	end
 end
 
 -- Dummy function, will be implemented

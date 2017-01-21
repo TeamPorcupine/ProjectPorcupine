@@ -29,7 +29,7 @@ namespace Animation
         private string currentAnimationState;
 
         public FurnitureAnimation()
-        {            
+        {
             animations = new Dictionary<string, SpritenameAnimation>();
         }
 
@@ -99,14 +99,14 @@ namespace Animation
             currentAnimationState = stateName;
             currentAnimation = animations[currentAnimationState];
             currentAnimation.Play();
-            ShowSprite(currentAnimation.CurrentFrameName);                       
+            ShowSprite(currentAnimation.CurrentFrameName);
         }
 
         /// <summary>
         /// Get spritename from the current animation.
         /// </summary>
         public string GetSpriteName()
-        {            
+        {
             return currentAnimation.CurrentFrameName;
         }
 
@@ -135,7 +135,7 @@ namespace Animation
                 prevFrameIndex = currentAnimation.CurrentFrame;
             }
         }
-        
+
         private void ShowSprite(string spriteName)
         {
             if (Renderer != null)

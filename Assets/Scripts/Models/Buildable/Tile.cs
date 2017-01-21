@@ -45,6 +45,7 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
         Utilities = new Dictionary<string, Utility>();
         ReservedAsWorkSpotBy = new HashSet<Furniture>();
         PendingBuildJobs = new HashSet<Job>();
+        TemperatureUnit = new TemperatureUnit(2.7f);
     }
 
     // The function we callback any time our tile's data changes
@@ -116,6 +117,8 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
     public int Y { get; private set; }
 
     public int Z { get; private set; }
+
+    public TemperatureUnit TemperatureUnit { get; private set; }
 
     public float MovementModifier { get; set; }
 
@@ -298,6 +301,68 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
         inventory.StackSize = 0;
 
         return true;
+    }
+
+    #endregion
+
+    #region Manage Temperature 
+
+    /// <summary>
+    /// Equalising temperature along neighbours in the same room.
+    /// It keeps it within a room just so rooms are more equalised.
+    /// </summary>
+    public void EqualiseTemperature(float deltaTime, Tile sourceTile, bool edge)
+    {
+        Tile[] neighbours = GetNeighbours(true, true).OrderBy(x => x.TemperatureUnit.TemperatureInKelvin).ToArray();
+
+        // Cycle through and apply a value change depending on our average if we have a difference of greater than one
+        // Its greater than one due to float things, it just helps makes things easier and so we don't need to do a - b < epsilon
+        for (int i = 0; i < neighbours.Length; i++)
+        {
+            if (neighbours[i].TemperatureUnit.TemperatureInKelvin + 1 < this.TemperatureUnit.TemperatureInKelvin && neighbours[i].Room == this.Room && neighbours[i] != sourceTile)
+            {
+                // They are less so we should disperse heat into them
+                float value = (this.TemperatureUnit.TemperatureInKelvin + neighbours[i].TemperatureUnit.TemperatureInKelvin) / 2;
+                neighbours[i].ApplyTemperature(value * deltaTime, 0);
+                this.ApplyTemperature(-value * deltaTime, 0);
+                //neighbours[i].EqualiseTemperature(deltaTime, this, true);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Applies a temperature to the tile.
+    /// Temperature is divided by current to simulate greater energy to get higher and higher temperatures.
+    /// Though we could later replace this with making the thermal index lower, 
+    /// but that would require more work for the machine.
+    /// </summary>
+    /// <param name="deltaTemperature"> The change in temperature/potential temperature. </param>
+    /// <param name="startingTemperature"> The starting temperature from the source. </param>
+    public void ApplyTemperature(float deltaTemperature, float startingTemperature)
+    {
+        float absoluteDelta;
+
+        // This just makes it so it will slow the temperature rise on vacuum tiles.
+        if (this.type == TileType.Empty && this.Room != null && this.Room.ID == 0)
+        {
+            absoluteDelta = deltaTemperature / (this.TemperatureUnit.TemperatureInKelvin * 16);
+        }
+        else if (Mathf.Abs(TemperatureUnit.TemperatureInKelvin) < 3)
+        {
+            // We do this because log is very high around such a low value and it helps to get from negative to positive
+            absoluteDelta = deltaTemperature / Mathf.Log(startingTemperature);
+        }
+        else
+        {
+            absoluteDelta = deltaTemperature / (this.TemperatureUnit.TemperatureInKelvin * 4);
+        }
+
+        this.TemperatureUnit.TemperatureInKelvin += absoluteDelta;
+
+        if (this.Room != null)
+        {
+            this.Room.UpdateAverageTemperature(absoluteDelta / Temperature.K);
+        }
     }
 
     #endregion
@@ -587,6 +652,7 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
         if (Room != null)
         {
             Room.AssignTile(this);
+            Room.DirtyAverageTemperature();
         }
 
         // Since we are loading from a save here, we don't want to do a RoomFloodfill here.
@@ -614,8 +680,7 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
 
     public IEnumerable<string> GetAdditionalInfo()
     {
-        // Do tiles have hitpoints? Can flooring be damaged? Obviously "empty" is indestructible.
-        yield break;
+        yield return string.Empty;
     }
 
     #endregion

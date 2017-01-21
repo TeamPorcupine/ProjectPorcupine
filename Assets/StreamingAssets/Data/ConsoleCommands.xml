@@ -27,8 +27,8 @@
   <ConsoleCommand Title="PlaceFurniture" FunctionName="PlaceFurniture" Description="Places furniture" Parameters="string type, UnityEngine.Vector3 pos, Single rotation" Tags="Furniture, Build" DefaultValue=""></ConsoleCommand>
   <ConsoleCommand Title="IsWorkSpotClear" FunctionName="IsWorkSpotClear" Description="Is the work spot clear?" Parameters="string type, UnityEngine.Vector3 pos" Tags="Work, Check" DefaultValue=""></ConsoleCommand>
   <ConsoleCommand Title="IsPlacementValid" FunctionName="IsPlacementValid" Description="Is the placement spot valid" Parameters="string type, UnityEngine.Vector3 pos, Single rotation" Tags="Check, Build" DefaultValue=""></ConsoleCommand>
-  <ConsoleCommand Title="GetTemperature" FunctionName="GetTemperature" Description="Gets the temperature at the position" Parameters=" UnityEngine.Vector3 pos" Tags="Temperature" DefaultValue="'Center'"></ConsoleCommand>
-  <ConsoleCommand Title="GetThermalDiffusivity" FunctionName="GetThermalDiffusivity" Description="Gets the thermal diffusivity at the position" Parameters="UnityEngine.Vector3 pos" Tags="Temperature" DefaultValue="{Center}"></ConsoleCommand>
+  <ConsoleCommand Title="Get
+                  " FunctionName="GetTemperature" Description="Gets the temperature at the position" Parameters=" UnityEngine.Vector3 pos" Tags="Temperature" DefaultValue="'Center'"></ConsoleCommand>
   <ConsoleCommand Title="FloodFillRoom" FunctionName="FloodFillRoomAt" Description="Floods fills the room at the position provided" Parameters="UnityEngine.Vector3 pos" Tags="Room" DefaultValue="'Center'"></ConsoleCommand>
   <ConsoleCommand Title="GetAllRoomIDs" FunctionName="GetAllRoomIDs" Description="Logs all the room ids" Parameters="" Tags="Room" DefaultValue=""></ConsoleCommand>
   <ConsoleCommand Title="Exit" FunctionName="Exit" Description="Exits the console" Parameters="" Tags="System" DefaultValue=""></ConsoleCommand>

@@ -127,7 +127,7 @@ public class ContextMenu : MonoBehaviour
         {
             contextualActions.AddRange(contextualActionProvider.GetContextMenuActions(this));
         }
-        
+
         return contextualActions;
     }
 }
