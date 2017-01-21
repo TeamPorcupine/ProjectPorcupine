@@ -46,7 +46,7 @@ namespace ProjectPorcupine.Localization
 
         public enum FallbackMode
         {
-            ReturnKey, ReturnDefaultLanguage, test
+            ReturnKey, ReturnDefaultLanguage
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace ProjectPorcupine.Localization
                 case FallbackMode.ReturnDefaultLanguage:
                     return GetLocalization(key, FallbackMode.ReturnKey, DefaultLanguage, additionalValues);
                 default:
-                    return "IM LOCALIZED"; // string.Empty;
+                    return string.Empty;
             }
         }
 
