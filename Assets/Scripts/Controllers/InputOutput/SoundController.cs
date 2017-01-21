@@ -34,6 +34,11 @@ public class SoundController
         up = GetVectorFrom(Vector3.up);
         cooldowns = new Dictionary<SoundClip, float>();
     }
+
+    public enum AudioChannel 
+    {
+        master, UI, gameSounds, alerts, music
+    }
     
     // Update is called once per frame
     public void Update(float deltaTime)
@@ -165,6 +170,43 @@ public class SoundController
         curLoc.z = z * 2;
         AudioManager.SoundSystem.set3DListenerAttributes(0, ref curLoc, ref zero, ref forward, ref up);
         AudioManager.SoundSystem.update();
+    }
+
+    public void SetVolume(AudioChannel channel, float volume)
+    {
+        SetVolume(channel.ToString(), volume);
+    }
+
+    public void SetVolume(string channel, float volume)
+    {
+        if (AudioManager.channelGroups.ContainsKey(channel))
+        {
+            AudioManager.channelGroups[channel].setVolume(volume);
+        }
+        else
+        {
+            UnityDebugger.Debugger.LogWarning("Channel " + channel + "does not exist.");
+        }
+    }
+
+    public float GetVolume(AudioChannel channel)
+    {
+        return GetVolume(channel.ToString());
+    }
+
+    public float GetVolume(string channel)
+    {
+        if (AudioManager.channelGroups.ContainsKey(channel))
+        {
+            float volume = 0;
+            AudioManager.channelGroups[channel].getVolume(out volume);
+            return volume;
+        }
+        else
+        {
+            UnityDebugger.Debugger.LogWarning("Channel " + channel + "does not exist.");
+            return 0f;
+        }
     }
 
     private VECTOR GetVectorFrom(Vector3 vector)

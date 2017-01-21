@@ -13,7 +13,7 @@
         <Rewards>
             <Reward Description="Receive 50 free Raw Iron" OnRewardLuaFunction="Quest_Spawn_Inventory">
                 <Params>
-                    <Param name="type" value="Raw Iron"/>
+                    <Param name="type" value="raw_iron"/>
                     <Param name="amount" value="50"/>
                 </Params>
             </Reward>
@@ -36,8 +36,8 @@
         <Rewards>
             <Reward Description="Receive 50 free Raw Iron" OnRewardLuaFunction="Quest_Spawn_Inventory">
                 <Params>
-                    <Param name="type" value="Steel Plate"/>
-                    <Param name="amount" value="15"/>
+                    <Param name="type" value="raw_iron"/>
+                    <Param name="amount" value="50"/>
                 </Params>
             </Reward>
         </Rewards>
@@ -62,7 +62,7 @@
         <Rewards>
             <Reward Description="Receive 10 free Power Cell" OnRewardLuaFunction="Quest_Spawn_Inventory">
                 <Params>
-                    <Param name="type" value="Raw Iron"/>
+                    <Param name="type" value="power_cell"/>
                     <Param name="amount" value="10"/>
                 </Params>
             </Reward>
@@ -85,8 +85,8 @@
         <Rewards>
             <Reward Description="Receive 10 free Power Cell" OnRewardLuaFunction="Quest_Spawn_Inventory">
                 <Params>
-                    <Param name="type" value="Ice"/>
-                    <Param name="amount" value="20"/>
+                    <Param name="type" value="power_cell"/>
+                    <Param name="amount" value="10"/>
                 </Params>
             </Reward>
         </Rewards>

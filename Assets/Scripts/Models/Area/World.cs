@@ -50,9 +50,14 @@ public class World
     {
         // Creates an empty world.
         SetupWorld(width, height, depth);
-        int seed = UnityEngine.Random.Range(0, int.MaxValue);
-        Debug.LogWarning("World Seed: " + seed);
-        WorldGenerator.Instance.Generate(this, seed);
+        Seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+        if (SceneController.NewWorldSize != Vector3.zero)
+        {
+            Seed = SceneController.Seed;
+        }
+
+        Debug.LogWarning("World Seed: " + Seed);
+        WorldGenerator.Instance.Generate(this, Seed);
         UnityDebugger.Debugger.Log("World", "Generated World");
 
         tileGraph = new Path_TileGraph(this);
@@ -92,6 +97,12 @@ public class World
 
     // The tile depth of the world
     public int Depth { get; protected set; }
+
+    /// <summary>
+    /// Gets or sets the world seed.
+    /// </summary>
+    /// <value>The world seed.</value>
+    public int Seed { get; protected set; }
 
     /// <summary>
     /// Gets the inventory manager.
@@ -165,15 +176,6 @@ public class World
     {
         TimeManager.Instance.EveryFrameUnpaused += TickEveryFrame;
         TimeManager.Instance.FixedFrequencyUnpaused += TickFixedFrequency;
-    }
-
-    /// <summary>
-    /// Notify world that the camera moved, so we can check which entities are visible to the camera.
-    /// The invisible enities can be updated less frequent for better performance.
-    /// </summary>
-    public void OnCameraMoved(Bounds cameraBounds)
-    {
-        FurnitureManager.OnCameraMoved(cameraBounds);
     }
 
     /// <summary>
@@ -288,9 +290,26 @@ public class World
         }
     }
 
+    public JToken RandomStateToJson()
+    {
+        // JSON.Net can't serialize the Random.State so we use JsonUtility
+        return JToken.Parse(JsonUtility.ToJson(UnityEngine.Random.state));
+    }
+
+    public void RandomStateFromJson(JToken randomState)
+    {
+        if (randomState != null)
+        {
+            // JSON.Net can't serialize the Random.State so we use JsonUtility
+            UnityEngine.Random.state = JsonUtility.FromJson<UnityEngine.Random.State>(randomState.ToString());
+        }
+    }
+
     public JObject ToJson()
     {
         JObject worldJson = new JObject();
+        worldJson.Add("Seed", Seed);
+        worldJson.Add("RandomState", RandomStateToJson());
         worldJson.Add("Width", Width.ToString());
         worldJson.Add("Height", Height.ToString());
         worldJson.Add("Depth", Depth.ToString());
@@ -316,6 +335,13 @@ public class World
 
     public void ReadJson(JObject worldJson)
     {
+        if (worldJson["Seed"] != null)
+        {
+            Seed = (int)worldJson["Seed"];
+        }
+
+        RandomStateFromJson(worldJson["RandomState"]);
+
         Width = (int)worldJson["Width"];
         Height = (int)worldJson["Height"];
         Depth = (int)worldJson["Depth"];
@@ -348,20 +374,20 @@ public class World
         {
             if (width < Width)
             {
-                Debug.LogWarning("Width too small: " + Width + " " + width);
+                UnityDebugger.Debugger.LogWarning("World", "Width too small: " + Width + " " + width);
             }
 
             if (height < Height)
             {
-                Debug.LogWarning("Height too small: " + Height + " " + height);
+                UnityDebugger.Debugger.LogWarning("World", "Height too small: " + Height + " " + height);
             }
 
             if (depth < Depth)
             {
-                Debug.LogWarning("Depth too small: " + Depth + " " + depth);
+                UnityDebugger.Debugger.LogWarning("World", "Depth too small: " + Depth + " " + depth);
             }
 
-            Debug.LogError("Shrinking the world is not presently supported");
+            UnityDebugger.Debugger.LogError("World", "Shrinking the world is not presently supported");
             return;
         }
 
@@ -390,7 +416,7 @@ public class World
         roomGraph = null;
 
         // Reset temperature, so it properly sizes arrays to the new world size
-        temperature = new Temperature();
+        temperature.Resize();
 
         for (int x = 0; x < oldWidth; x++)
         {
@@ -509,8 +535,6 @@ public class World
     /// <param name="deltaTime">Delta time.</param>
     private void TickEveryFrame(float deltaTime)
     {
-        CharacterManager.Update(deltaTime);
-        FurnitureManager.TickEveryFrame(deltaTime);
         GameEventManager.Update(deltaTime);
         ShipManager.Update(deltaTime);
     }
@@ -521,10 +545,8 @@ public class World
     /// <param name="deltaTime">Delta time.</param>
     private void TickFixedFrequency(float deltaTime)
     {
-        FurnitureManager.TickFixedFrequency(deltaTime);
-
         // Progress temperature modelling
-        temperature.Update();
+        temperature.Update(deltaTime);
         PowerNetwork.Update(deltaTime);
         FluidNetwork.Update(deltaTime);
     }

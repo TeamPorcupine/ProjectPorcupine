@@ -51,6 +51,14 @@ namespace ProjectPorcupine.Buildable.Components
         [XmlIgnore]
         public string CurrentAnimationName { get; private set; }
 
+        public override bool RequiresSlowUpdate
+        {
+            get
+            {
+                return Initialized && (UsedAnimations != null && ParentFurniture.Animation != null && UsedAnimations.Count > 0);
+            }
+        }
+
         [XmlIgnore]
         private string DefaultAnimationName { get; set; }
 

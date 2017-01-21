@@ -106,13 +106,11 @@ public class Inventory : ISelectable, IContextActionProvider
         int availableInventory = this.stackSize - validClaims.Sum(claim => claim.amount);
         if (availableInventory >= amount)
         {
-            UnityDebugger.Debugger.LogWarning(availableInventory.ToString() + " Available, claiming some");
             validClaims.Add(new InventoryClaim(requestTime, character, amount));
         }
 
         // Set claims to validClaims to keep claims from filling up with old claims
         claims = validClaims;
-        UnityDebugger.Debugger.LogWarning(AvailableInventory + " Still Available.");
     }
 
     public void ReleaseClaim(Character character)
@@ -203,6 +201,16 @@ public class Inventory : ISelectable, IContextActionProvider
             RequireCharacterSelected = true,
             Action = (cm, c) => UnityDebugger.Debugger.Log("Inventory", "Sample menu action")
         };
+
+        if (PrototypeManager.Furniture.Has(this.Type))
+        {
+            yield return new ContextMenuAction
+            {
+                LocalizationKey = "install_order",
+                RequireCharacterSelected = false,
+                Action = (cm, c) => BuildModeController.Instance.SetMode_BuildFurniture(Type, true)
+            };
+        }
     }
 
     public bool CanBePickedUp(bool canTakeFromStockpile)

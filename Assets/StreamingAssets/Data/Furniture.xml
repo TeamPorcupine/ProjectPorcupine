@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Furnitures>
     <Furniture type="steel_wall">
-        <Name>Steel Wall</Name>
-        <Description>This is a steel wall.</Description>
         <TypeTag>Wall</TypeTag>
         <MovementCost>0</MovementCost>
         <Width>1</Width>
@@ -14,12 +12,12 @@
 
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="5" />
+            <Inventory type="steel_plate" amount="5" />
         </OrderAction>
 
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="3" />
+            <Inventory type="steel_plate" amount="3" />
         </OrderAction>
 
         <Params>
@@ -41,8 +39,6 @@
     </Furniture>
 
     <Furniture type="door">
-        <Name>Door</Name>
-        <Description>A door that characters can walk through.</Description>
         <TypeTag>Door</TypeTag>
         <MovementCost>1</MovementCost>
         <!-- PathfindingModifer is additive, so a PathfindingModifier of 1 will basically respond to Pathfinding as though it takes 1 extra tile of movement -->
@@ -59,12 +55,12 @@
 
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>
         
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
         </OrderAction>
                 
         <Component type="Visuals">
@@ -111,8 +107,6 @@
     </Furniture>
 
     <Furniture type="airlock_door">
-        <Name>Airlock Door</Name>
-        <Description>An Airlock prevents air from leaving the base</Description>
         <TypeTag>Door</TypeTag>
         <TypeTag>Pressure Door</TypeTag>
         <MovementCost>1</MovementCost>
@@ -131,12 +125,12 @@
 
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="10" />
+            <Inventory type="steel_plate" amount="10" />
         </OrderAction>
 
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="7" />
+            <Inventory type="steel_plate" amount="7" />
         </OrderAction>
 
         <Animations>
@@ -181,8 +175,6 @@
     </Furniture>
 
     <Furniture type="stockpile">
-        <Name>Stockpile</Name>
-        <Description>Characters will brings inventory here for storage.</Description>
         <TypeTag>Storage</TypeTag>
         <MovementCost>1</MovementCost>
         <LinksToNeighbours>stockpile</LinksToNeighbours>
@@ -205,8 +197,6 @@
     </Furniture>
 
     <Furniture type="oxygen_generator">
-        <Name>Oxygen Generator</Name>
-        <Description>Create O2 in the room in which it is built.</Description>
         <TypeTag>Generator</TypeTag>
         <MovementCost>2</MovementCost>
         <PathfindingModifier>0</PathfindingModifier>
@@ -216,12 +206,16 @@
 
         <OrderAction type="Build">
             <Job time="2" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>
         
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
 
         <Animations>
@@ -280,8 +274,6 @@
     </Furniture>
 
     <Furniture type="mining_drone_station">
-        <Name>Mining Drone Station</Name>
-        <Description>Creates raw materials when worked by a character.</Description>
         <TypeTag>Workstation</TypeTag>
         <MovementCost>1</MovementCost>
         <PathfindingModifier>0</PathfindingModifier>
@@ -295,12 +287,16 @@
 
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>
         
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
 
         <Params>
@@ -320,7 +316,6 @@
     </Furniture>
 
     <Furniture type="fission_reactor">
-        <Name>Fission Reactor</Name>
         <TypeTag>Generator</TypeTag>
         <MovementCost>2</MovementCost>
         <PathfindingModifier>0</PathfindingModifier>
@@ -341,12 +336,16 @@
 
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>
                 
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
         
         <Component type="Visuals">
@@ -372,7 +371,7 @@
             </ParameterDefinitions>
             <ProductionChain name="Power generation" processingTime="60">
                 <Input>
-                    <Item objectType="Power Cell" amount="1" slotPosX="0" slotPosY="0" hasHopper="false" />
+                    <Item objectType="power_cell" amount="1" slotPosX="0" slotPosY="0" hasHopper="false" />
                 </Input>
             </ProductionChain>
         </Component>
@@ -391,7 +390,6 @@
     </Furniture>
 
     <Furniture type="water_generator">
-        <Name>Water Generator</Name>
         <TypeTag>Generator</TypeTag>
         <MovementCost>2</MovementCost>
         <PathfindingModifier>0</PathfindingModifier>
@@ -402,12 +400,16 @@
 
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>
                 
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
 <!--
         <Component type="Workshop">
@@ -441,8 +443,6 @@
     </Furniture>
 
     <Furniture type="water_tank">
-        <Name>Water Tank</Name>
-        <Description>Water Tank</Description>
         <MovementCost>2</MovementCost>
         <PathfindingModifier>0</PathfindingModifier>
         <PathfindingWeight>2</PathfindingWeight>
@@ -451,12 +451,16 @@
 
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>
                 
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
 		
         <Component type="FluidConnection">
@@ -474,8 +478,6 @@
     </Furniture>
 
     <Furniture type="cloning_pod">
-        <Name>Cloning Pod</Name>
-        <Description>Creates an additional worker, then is destroyed.</Description>
         <MovementCost>2</MovementCost>
         <PathfindingModifier>0</PathfindingModifier>
         <PathfindingWeight>2</PathfindingWeight>
@@ -488,12 +490,16 @@
 
         <OrderAction type="Build">
             <Job time="10" />
-            <Inventory type="Steel Plate" amount="5" />
+            <Inventory type="steel_plate" amount="5" />
         </OrderAction>
 
         <OrderAction type="Deconstruct">
             <Job time="8" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="8" />
         </OrderAction>
 
         <Animations>
@@ -521,8 +527,6 @@
     </Furniture>
 
     <Furniture type="metal_smelter">
-        <Name>Metal Smelter</Name>
-        <Description>Smelts your raw ores into metal.</Description>
         <TypeTag>Processor</TypeTag>
         <MovementCost>1</MovementCost>
         <PathfindingModifier>1.5</PathfindingModifier>
@@ -532,12 +536,16 @@
  
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="5" />
+            <Inventory type="steel_plate" amount="5" />
         </OrderAction>
         
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
         
         <JobWorkSpotOffset X="1" Y="0" />
@@ -559,18 +567,18 @@
             </ParameterDefinitions>
             <ProductionChain name="Copper smelting" processingTime="3">
                 <Input>
-                    <Item objectType="Raw Copper" amount="2" slotPosX="0" slotPosY="0" hasHopper="true"/>
+                    <Item objectType="raw_copper" amount="2" slotPosX="0" slotPosY="0" hasHopper="true"/>
                 </Input>
                 <Output>
-                    <Item objectType="Copper Plate" amount="1" slotPosX="2" slotPosY="0" />
+                    <Item objectType="copper_plate" amount="1" slotPosX="2" slotPosY="0" />
                 </Output>
             </ProductionChain>
             <ProductionChain name="Iron smelting" processingTime="4">
                 <Input>
-                    <Item objectType="Raw Iron" amount="2" slotPosX="0" slotPosY="0" hasHopper="true"/>
+                    <Item objectType="raw_iron" amount="2" slotPosX="0" slotPosY="0" hasHopper="true"/>
                 </Input>
                 <Output>
-                    <Item objectType="Steel Plate" amount="1" slotPosX="2" slotPosY="0"/>
+                    <Item objectType="steel_plate" amount="1" slotPosX="2" slotPosY="0"/>
                 </Output>
             </ProductionChain>
         </Component>
@@ -606,8 +614,6 @@
     </Furniture>
 
     <Furniture type="heater">
-        <Name>Heater</Name>
-        <Description>Raises temperature in the room.</Description>
         <BaseType>Temperature</BaseType>
         <MovementCost>2</MovementCost>
         <PathfindingModifier>0</PathfindingModifier>
@@ -617,12 +623,16 @@
 
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>
         
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
 
         <!-- This method gets called on Install -->
@@ -645,8 +655,6 @@
     </Furniture>
 
     <Furniture type="power_cell_press">
-        <Name>Power Cell Press</Name>
-        <Description>A press that converts steel plate and something into power cells.</Description>
         <MovementCost>1</MovementCost>
         <PathfindingModifier>1.5</PathfindingModifier>
         <PathfindingWeight>2</PathfindingWeight>
@@ -655,12 +663,16 @@
 
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>
         
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
        
         <Component type="Workshop">
@@ -672,11 +684,11 @@
             </ParameterDefinitions>
             <ProductionChain name="Power Cell Pressing" processingTime="5">
                 <Input>
-                    <Item objectType="Uranium" amount="3" slotPosX="0" slotPosY="0" hasHopper="true"/>
-                    <Item objectType="Steel Plate" amount="2" slotPosX="1" slotPosY="0" hasHopper="true"/>
+                    <Item objectType="raw_uranium" amount="3" slotPosX="0" slotPosY="0" hasHopper="true"/>
+                    <Item objectType="steel_plate" amount="2" slotPosX="1" slotPosY="0" hasHopper="true"/>
                 </Input>
                 <Output>
-                    <Item objectType="Power Cell" amount="1" slotPosX="2" slotPosY="1" />
+                    <Item objectType="power_cell" amount="1" slotPosX="2" slotPosY="1" />
                 </Output>
             </ProductionChain>
         </Component>
@@ -692,8 +704,6 @@
     </Furniture>
 
     <Furniture type="small_landing_pad">
-        <Name>Small Landing Pad</Name>
-        <Description>A landing pad for small spaceboats to land.</Description>
         <TypeTag>OutdoorOnly</TypeTag>
         <TypeTag>LandingPad</TypeTag>
         <MovementCost>2</MovementCost>
@@ -704,12 +714,16 @@
 
         <OrderAction type="Build">
             <Job time="5" />
-            <Inventory type="Steel Plate" amount="20" />
+            <Inventory type="steel_plate" amount="20" />
         </OrderAction>
         
         <OrderAction type="Deconstruct">
             <Job time="3" />
-            <Inventory type="Steel Plate" amount="10" />
+            <Inventory type="steel_plate" amount="10" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="3" />
         </OrderAction>
 
         <JobWorkSpotOffset X="0" Y="0" />
@@ -725,8 +739,6 @@
     </Furniture>
 
     <Furniture type="oxygen_compressor">
-        <Name>Oxygen Compressor</Name>
-        <Description>Stores and releases oxygen as needed</Description>
         <MovementCost>2</MovementCost>
         <PathfindingModifier>0</PathfindingModifier>
         <PathfindingWeight>2</PathfindingWeight>
@@ -735,12 +747,16 @@
 
         <OrderAction type="Build">
             <Job time="2" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>
         
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
         
         <Animations>
@@ -775,7 +791,6 @@
     </Furniture>
 
     <Furniture type="solar_panel">
-        <Name>Solar Panel</Name>
         <TypeTag>Generator</TypeTag>
         <TypeTag>OutdoorOnly</TypeTag>
         <MovementCost>2</MovementCost>
@@ -789,12 +804,16 @@
 
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>        
         
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
         
         <Params>
@@ -813,7 +832,6 @@
     </Furniture>
 
     <Furniture type="air_pump">
-        <Name>Air Pump</Name>
         <MovementCost>0</MovementCost>
         <Width>1</Width>
         <Height>1</Height>
@@ -821,7 +839,7 @@
 
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>  
         
         <CanReplaceFurniture typeTag="Wall" />
@@ -829,7 +847,11 @@
 
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
 
         <Params>
@@ -858,7 +880,6 @@
     </Furniture>
 
     <Furniture type="vent">
-        <Name>Vent</Name>
         <MovementCost>0</MovementCost>
         <Width>1</Width>
         <Height>1</Height>
@@ -866,14 +887,18 @@
 
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>  
             
         <CanReplaceFurniture typeTag="Wall" />
         
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
         
         <Params>
@@ -905,8 +930,6 @@
     </Furniture>
 
     <Furniture type="simple_bed">
-        <Name>Simple Bed</Name>
-        <Description>A simple bed</Description>
         <TypeTag>Bed</TypeTag>
         <MovementCost>2</MovementCost>
         <Width>1</Width>
@@ -917,12 +940,16 @@
 
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>  
 
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
         
         <Params>
@@ -933,8 +960,6 @@
     </Furniture>
 
     <Furniture type="accumulator">
-        <Name>Accumulator</Name>
-        <Description>Accumulator</Description>
         <MovementCost>2</MovementCost>
         <PathfindingModifier>0</PathfindingModifier>
         <PathfindingWeight>2</PathfindingWeight>
@@ -943,12 +968,16 @@
 
         <OrderAction type="Build">
             <Job time="2" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>  
         
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
                 
         <Animations>
@@ -980,8 +1009,6 @@
     </Furniture>
 
     <Furniture type="mine">
-        <Name>A Mining Spot</Name>
-        <Description>A spot for mining ore</Description>
         <TypeTag>Ore</TypeTag>
         <TypeTag>Non-buildable</TypeTag>
         <TypeTag>Non-deconstructible</TypeTag>
@@ -992,7 +1019,7 @@
         <Height>1</Height>
 
         <Params>
-            <Param name="ore_type" value="Raw Iron" />
+            <Param name="ore_type" value="raw_iron" />
         </Params>
 
         <ContextMenuAction FunctionName="OreMine_CreateMiningJob" LocalizationKey="mine_ore" RequireCharacterSelected="false" />
@@ -1006,7 +1033,6 @@
     </Furniture>
     
     <Furniture type="berth">
-        <Name>Ship Berth</Name>
         <MovementCost>1</MovementCost>
         <PathfindingModifier>1</PathfindingModifier>
         <PathfindingWeight>0</PathfindingWeight>
@@ -1015,12 +1041,16 @@
 
         <OrderAction type="Build">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
         </OrderAction>  
         
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Steel Plate" amount="1" />
+            <Inventory type="steel_plate" amount="1" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
 
         <Params>
@@ -1034,8 +1064,6 @@
     </Furniture>
 
     <Furniture type="rtg">
-        <Name>RTG</Name>
-        <Description>Radioisotope thermoelectric generator provides electricity and heat</Description>
         <TypeTag>Temperature</TypeTag>
         <MovementCost>2</MovementCost>
         <PathfindingModifier>0</PathfindingModifier>
@@ -1049,13 +1077,17 @@
 
         <OrderAction type="Build">
             <Job time="2" />
-            <Inventory type="Steel Plate" amount="2" />
-            <Inventory type="Uranium" amount="2" />
+            <Inventory type="steel_plate" amount="2" />
+            <Inventory type="raw_uranium" amount="2" />
         </OrderAction>  
         
         <OrderAction type="Deconstruct">
             <Job time="1" />
-            <Inventory type="Uranium" amount="1" />
+            <Inventory type="raw_uranium" amount="1" />
+        </OrderAction>
+
+        <OrderAction type="Uninstall">
+            <Job time="1" />
         </OrderAction>
         
         <!-- This method gets called on Install -->
@@ -1074,8 +1106,6 @@
     </Furniture>
 
     <Furniture type="astro_wall">
-        <Name>Rock Wall</Name>
-        <Description>This is a wall of rock!</Description>
         <TypeTag>Wall</TypeTag>
         <TypeTag>Non-buildable</TypeTag>
         <TypeTag>Non-deconstructible</TypeTag>

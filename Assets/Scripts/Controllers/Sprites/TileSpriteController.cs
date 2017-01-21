@@ -54,7 +54,7 @@ public class TileSpriteController : BaseSpriteController<Tile>
         // Add a Sprite Renderer
         // Add a default sprite for empty tiles.
         SpriteRenderer sr = tile_go.AddComponent<SpriteRenderer>();
-        sr.sprite = SpriteManager.GetSprite("Tile", "Empty");
+        sr.sprite = SpriteManager.GetSprite("Tile", "empty");
         sr.sortingLayerName = "Tiles";
 
         OnChanged(tile);
@@ -78,23 +78,23 @@ public class TileSpriteController : BaseSpriteController<Tile>
         }
 
         // TODO Evaluate this criteria and naming schema!
-        if (DoesTileSpriteExist(tile.Type.Name + "_Heavy") && (tile.WalkCount >= 30))
+        if (DoesTileSpriteExist(tile.Type.Type + "_heavy") && (tile.WalkCount >= 30))
         {
             if (tile.ForceTileUpdate || tile.WalkCount == 30)
             {
-                ChangeTileSprite(tile_go, tile.Type.Name + "_Heavy");
+                ChangeTileSprite(tile_go, tile.Type.Type + "_heavy");
             }
         }
-        else if (DoesTileSpriteExist(tile.Type.Name + "_Low") && (tile.WalkCount >= 10))
+        else if (DoesTileSpriteExist(tile.Type.Type + "_low") && (tile.WalkCount >= 10))
         {
             if (tile.ForceTileUpdate || tile.WalkCount == 10)
             {
-                ChangeTileSprite(tile_go, tile.Type.Name + "_Low");
+                ChangeTileSprite(tile_go, tile.Type.Type + "_low");
             }
         }
         else
         { 
-            ChangeTileSprite(tile_go, tile.Type.Name);
+            ChangeTileSprite(tile_go, tile.Type.Type);
         }
 
         if (tile.Type == TileType.Empty)

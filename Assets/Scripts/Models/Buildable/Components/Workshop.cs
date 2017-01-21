@@ -71,9 +71,17 @@ namespace ProjectPorcupine.Buildable.Components
         [XmlElement("ProductionChain")]
         [JsonProperty("ProductionChain")]
         public List<ProductionChain> PossibleProductions { get; set; }
+
+        public override bool RequiresSlowUpdate
+        {
+            get
+            {
+                return true;
+            }
+        }   
                 
         [XmlIgnore]
-        private List<ComponentContextMenu> WorkshopMenuActions { get; set; }       
+        private List<ComponentContextMenu> WorkshopMenuActions { get; set; }
         
         public override BuildableComponent Clone()
         {
@@ -97,6 +105,7 @@ namespace ProjectPorcupine.Buildable.Components
 
         public override bool CanFunction()
         {
+            bool canWork = false;
             string curSetupChainName = CurrentProductionChainName.ToString();
 
             if (!string.IsNullOrEmpty(curSetupChainName))
@@ -104,9 +113,14 @@ namespace ProjectPorcupine.Buildable.Components
                 ProductionChain prodChain = GetProductionChainByName(curSetupChainName);
                 //// create possible jobs for factory(hauling input)
                 HaulingJobForInputs(prodChain);
+                canWork = true;
+            }
+            else
+            {
+                componentRequirements = Requirements.Production;
             }
 
-            return true;
+            return canWork;
         }
 
         public override void FixedFrequencyUpdate(float deltaTime)
@@ -215,7 +229,7 @@ namespace ProjectPorcupine.Buildable.Components
                 }
                 else
                 {
-                    UnityDebugger.Debugger.LogWarningFormat(ComponentLogChannel, "Furniture {0} is marked as factory, but has no production chain", ParentFurniture.Name);
+                    UnityDebugger.Debugger.LogWarningFormat(ComponentLogChannel, "Furniture {0} is marked as factory, but has no production chain", ParentFurniture.Type);
                 }
             }
 
@@ -358,7 +372,7 @@ namespace ProjectPorcupine.Buildable.Components
                                      false,
                                      false);
                         
-                        job.Description = string.Format("Hauling '{0}' to '{1}'", desiredInv, ParentFurniture.Name);
+                        job.Description = string.Format("Hauling '{0}' to '{1}'", desiredInv, ParentFurniture.GetName());
                         job.OnJobWorked += PlaceInventoryToWorkshopInput;
                         ParentFurniture.Jobs.Add(job);
                     }

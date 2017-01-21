@@ -25,7 +25,7 @@ using UnityEngine;
 /// InstalledObjects are things like walls, doors, and furniture (e.g. a sofa).
 /// </summary>
 [MoonSharpUserData]
-public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBuildable
+public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBuildable, IUpdatable
 {
     #region Private Variables
     private string isEnterableAction;
@@ -49,14 +49,10 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     // This is the generic type of object this is, allowing things to interact with it based on it's generic type
     private HashSet<string> typeTags;
 
-    private string name = null;
-
-    private string description = string.Empty;
-
     private HashSet<string> tileTypeBuildPermissions;
 
     private bool isOperating;
-
+    
     // Need to hold the health value.
     private HealthSystem health;
     
@@ -99,9 +95,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     private Furniture(Furniture other)
     {
         Type = other.Type;
-        Name = other.Name;
         typeTags = new HashSet<string>(other.typeTags);
-        description = other.description;
         MovementCost = other.MovementCost;
         PathfindingModifier = other.PathfindingModifier;
         PathfindingWeight = other.PathfindingWeight;
@@ -156,6 +150,10 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         getProgressInfoNameAction = other.getProgressInfoNameAction;
 
         tileTypeBuildPermissions = new HashSet<string>(other.tileTypeBuildPermissions);
+
+        RequiresSlowUpdate = EventActions.HasEvent("OnUpdate") || components.Any(c => c.RequiresSlowUpdate);
+
+        RequiresFastUpdate = EventActions.HasEvent("OnFastUpdate") || components.Any(c => c.RequiresFastUpdate);
 
         LocalizationCode = other.LocalizationCode;
         UnlocalizedDescription = other.UnlocalizedDescription;
@@ -216,6 +214,16 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// <value>The event actions that is called on update.</value>
     public EventActions EventActions { get; private set; }
 
+    public Bounds Bounds 
+    {
+        get
+        {
+            return new Bounds(
+                new Vector3(Tile.X - 0.5f + (Width / 2), Tile.Y - 0.5f + (Height / 2), 0),
+                new Vector3(Width, Height));
+        }
+    }
+
     /// <summary>
     /// Gets a value indicating whether the furniture is operating or not.
     /// </summary>
@@ -258,23 +266,6 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// </summary>
     /// <value>The type of the furniture.</value>
     public string Type { get; private set; }
-
-    /// <summary>
-    /// Gets the name of the furniture. The name is the object type by default.
-    /// </summary>
-    /// <value>The name of the furniture.</value>
-    public string Name
-    {
-        get
-        {
-            return string.IsNullOrEmpty(name) ? Type : name;
-        }
-
-        private set
-        {
-            name = value;
-        }
-    }
 
     /// <summary>
     /// Gets a list of furniture Type this furniture can be replaced with.
@@ -378,6 +369,22 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     public bool IsBeingDestroyed { get; protected set; }
 
     /// <summary>
+    /// Gets a value indicating whether this instance has components.
+    /// </summary>
+    /// <value><c>true</c> if this instance has components; otherwise, <c>false</c>.</value>
+    public bool HasComponents
+    {
+        get
+        {
+            return components != null || components.Count != 0;
+        }
+    }
+
+    public bool RequiresFastUpdate { get; set; }
+
+    public bool RequiresSlowUpdate { get; set; }
+
+    /// <summary>
     /// Flag with furniture requirements (used for showing icon overlay, e.g. No power, ... ).
     /// </summary>
     public BuildableComponent.Requirements Requirements { get; protected set; }
@@ -410,7 +417,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     {
         if (proto.IsValidPosition(tile) == false)
         {
-            UnityDebugger.Debugger.LogWarning("Furniture", "PlaceInstance :: Position Validity Function returned FALSE. " + proto.Name + " " + tile.X + ", " + tile.Y + ", " + tile.Z);
+            UnityDebugger.Debugger.LogWarning("Furniture", "PlaceInstance :: Position Validity Function returned FALSE. " + proto.Type + " " + tile.X + ", " + tile.Y + ", " + tile.Z);
             return null;
         }
 
@@ -501,7 +508,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     {
         // requirements from components (gas, ...)
         bool canFunction = true;
-        Requirements = BuildableComponent.Requirements.None;
+        BuildableComponent.Requirements newRequirements = BuildableComponent.Requirements.None;
         foreach (BuildableComponent component in components)
         {
             bool componentCanFunction = component.CanFunction();
@@ -510,10 +517,17 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
             // if it can't function, collect all stuff it needs (power, gas, ...) for icon signalization
             if (!componentCanFunction)
             {
-                Requirements |= component.Needs;
+                newRequirements |= component.Needs;
             }
         }
 
+        // requirements were changed, force update of status icons
+        if (Requirements != newRequirements)
+        {
+            Requirements = newRequirements;
+            OnIsOperatingChanged(this);
+        }
+        
         IsOperating = canFunction;
 
         if (canFunction == false)
@@ -667,17 +681,9 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         {
             switch (reader.Name)
             {
-                case "Name":
-                    reader.Read();
-                    Name = reader.ReadContentAsString();
-                    break;
                 case "TypeTag":
                     reader.Read();
                     typeTags.Add(reader.ReadContentAsString());
-                    break;
-                case "Description":
-                    reader.Read();
-                    description = reader.ReadContentAsString();
                     break;
                 case "MovementCost":
                     reader.Read();
@@ -788,6 +794,16 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                     break;
             }
         }
+
+        if (orderActions.ContainsKey("Uninstall"))
+        {
+            InventoryCommon asInventory = new InventoryCommon();
+            asInventory.type = Type;
+            asInventory.maxStackSize = 1;
+            asInventory.basePrice = 0f;
+            asInventory.category = "crated_furniture";
+            PrototypeManager.Inventory.Add(asInventory);
+        }
     }
 
     /// <summary>
@@ -847,6 +863,101 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         }
 
         return itemsDict.Values.ToArray();
+    }
+
+    public void SetUninstallJob()
+    {
+        if (CommandSettings.DeveloperModeToggle)
+        {
+            Uninstall();
+            return;
+        }
+
+        Jobs.CancelAll();
+
+        Uninstall uninstallOrder = GetOrderAction<Uninstall>();
+        if (uninstallOrder != null)
+        {
+            Job job = uninstallOrder.CreateJob(Tile, Type);
+            job.OnJobCompleted += (inJob) => Uninstall();
+            World.Current.jobQueue.Enqueue(job);
+        }        
+    }
+
+    /// <summary>
+    /// Deconstructs the furniture.
+    /// </summary>
+    public void Uninstall()
+    {
+        int x = Tile.X;
+        int y = Tile.Y;
+        int fwidth = 1;
+        int fheight = 1;
+        string linksToNeighbour = string.Empty;
+        if (Tile.Furniture != null)
+        {
+            Furniture furniture = Tile.Furniture;
+            fwidth = furniture.Width;
+            fheight = furniture.Height;
+            linksToNeighbour = furniture.LinksToNeighbour;
+            furniture.Jobs.CancelAll();
+        }
+
+        // We call lua to decostruct
+        EventActions.Trigger("OnUninstall", this);
+
+        // Update thermalDiffusifity to default value
+        World.Current.temperature.SetThermalDiffusivity(Tile.X, Tile.Y, Tile.Z, Temperature.defaultThermalDiffusivity);
+
+        // Let our workspot tile know it is no longer reserved for us
+        World.Current.UnreserveTileAsWorkSpot(this);
+
+        Tile.UnplaceFurniture();
+
+        Deconstruct deconstructOrder = GetOrderAction<Deconstruct>();
+        if (deconstructOrder != null)
+        {
+            World.Current.InventoryManager.PlaceInventoryAround(Tile, new Inventory(Type, 1));
+        }
+
+        if (Removed != null)
+        {
+            Removed(this);
+        }
+
+        // Do we need to recalculate our rooms?
+        if (RoomEnclosure)
+        {
+            World.Current.RoomManager.DoRoomFloodFill(Tile, false);
+        }
+
+        ////World.current.InvalidateTileGraph();
+
+        if (World.Current.tileGraph != null)
+        {
+            World.Current.tileGraph.RegenerateGraphAtTile(Tile);
+        }
+
+        // We should inform our neighbours that they have just lost a
+        // neighbour regardless of type.  
+        // Just trigger their OnChangedCallback. 
+        if (linksToNeighbour != string.Empty)
+        {
+            for (int xpos = x - 1; xpos < x + fwidth + 1; xpos++)
+            {
+                for (int ypos = y - 1; ypos < y + fheight + 1; ypos++)
+                {
+                    Tile t = World.Current.GetTileAt(xpos, ypos, Tile.Z);
+                    if (t != null && t.Furniture != null && t.Furniture.Changed != null)
+                    {
+                        t.Furniture.Changed(t.Furniture);
+                    }
+                }
+            }
+        }
+
+        // At this point, no DATA structures should be pointing to us, so we
+        // should get garbage-collected.
     }
 
     #region Deconstruct
@@ -1080,6 +1191,18 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         return null;
     }
 
+    public BuildableComponent.Requirements GetPossibleRequirements()
+    {
+        BuildableComponent.Requirements requires = BuildableComponent.Requirements.None;
+
+        foreach (BuildableComponent component in components)
+        {
+            requires |= component.Needs;
+        }
+
+        return requires;
+    }
+
     public T GetOrderAction<T>() where T : OrderAction
     {
         OrderAction orderAction;
@@ -1110,6 +1233,16 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                 LocalizationKey = LocalizationTable.GetLocalization("deconstruct_furniture", LocalizationCode),
                 RequireCharacterSelected = false,
                 Action = (ca, c) => SetDeconstructJob()
+            };
+        }
+
+        if (PrototypeManager.Inventory.Has(this.Type))
+        {
+            yield return new ContextMenuAction
+            {
+                LocalizationKey = LocalizationTable.GetLocalization("uninstall_furniture", LocalizationCode),
+                RequireCharacterSelected = false,
+                Action = (ca, c) => SetUninstallJob()
             };
         }
 
