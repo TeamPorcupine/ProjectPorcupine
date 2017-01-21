@@ -308,6 +308,7 @@ public class World
     public JObject ToJson()
     {
         JObject worldJson = new JObject();
+        worldJson.Add("ActiveMods", ModMenu.WriteJSON(true));
         worldJson.Add("Seed", Seed);
         worldJson.Add("RandomState", RandomStateToJson());
         worldJson.Add("Width", Width.ToString());
