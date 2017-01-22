@@ -19,7 +19,7 @@ using Newtonsoft.Json.Linq;
 [System.Diagnostics.DebuggerDisplay("Inventory {ObjectType} {StackSize}/{MaxStackSize}")]
 public class Inventory : ISelectable, IContextActionProvider
 {
-    private const int ClaimDuration = 120; // in Seconds
+    private const float ClaimDuration = 120; // in Seconds
 
     private int stackSize = 1;
     private List<InventoryClaim> claims;
@@ -86,8 +86,8 @@ public class Inventory : ISelectable, IContextActionProvider
     {
         get
         {
-            DateTime requestTime = DateTime.Now;
-            return this.stackSize - claims.Where(claim => (requestTime - claim.time).TotalSeconds < ClaimDuration).Sum(claim => claim.amount);
+            float requestTime = TimeManager.Instance.GameTime;
+            return this.stackSize - claims.Where(claim => (requestTime - claim.time) < ClaimDuration).Sum(claim => claim.amount);
         }
     }
 
@@ -100,9 +100,8 @@ public class Inventory : ISelectable, IContextActionProvider
 
     public void Claim(Character character, int amount)
     {
-        // FIXME: The various Claim related functions should most likely track claim time in an in game time increment.
-        DateTime requestTime = DateTime.Now;
-        List<InventoryClaim> validClaims = claims.Where(claim => (requestTime - claim.time).TotalSeconds < ClaimDuration).ToList();
+        float requestTime = TimeManager.Instance.GameTime;
+        List<InventoryClaim> validClaims = claims.Where(claim => (requestTime - claim.time) < ClaimDuration).ToList();
         int availableInventory = this.stackSize - validClaims.Sum(claim => claim.amount);
         if (availableInventory >= amount)
         {
@@ -125,8 +124,8 @@ public class Inventory : ISelectable, IContextActionProvider
 
     public bool CanClaim()
     {
-        DateTime requestTime = DateTime.Now;
-        List<InventoryClaim> validClaims = claims.Where(claim => (requestTime - claim.time).TotalSeconds < ClaimDuration).ToList();
+        float requestTime = TimeManager.Instance.GameTime;
+        List<InventoryClaim> validClaims = claims.Where(claim => (requestTime - claim.time) < ClaimDuration).ToList();
         int availableInventory = this.stackSize - validClaims.Sum(claim => claim.amount);
 
         // Set claims to validClaims to keep claims from filling up with old claims
@@ -257,11 +256,11 @@ public class Inventory : ISelectable, IContextActionProvider
 
     public struct InventoryClaim
     {
-        public DateTime time;
+        public float time;
         public Character character;
         public int amount;
 
-        public InventoryClaim(DateTime time, Character character, int amount)
+        public InventoryClaim(float time, Character character, int amount)
         {
             this.time = time;
             this.character = character;

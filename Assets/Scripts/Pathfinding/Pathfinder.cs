@@ -106,7 +106,7 @@ namespace ProjectPorcupine.Pathfinding
 
                 foreach (Inventory inventory in World.Current.InventoryManager.Inventories.Where(dictEntry => types.Contains(dictEntry.Key)).SelectMany(dictEntry => dictEntry.Value))
                 {
-                    if (inventory.Tile == null)
+                    if (inventory.Tile == null || !inventory.CanBePickedUp(canTakeFromStockpile))
                     {
                         continue;
                     }
