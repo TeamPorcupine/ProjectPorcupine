@@ -2156,6 +2156,16 @@
       }
     },
     {
+      "X": 2,
+      "Y": 6,
+      "Z": 0,
+      "Type": "metal_smelter",
+      "Rotation": 0.0,
+      "Parameters": {
+        "pow_is_running": "False"
+      }
+    },
+    {
       "X": 11,
       "Y": 3,
       "Z": 0,
