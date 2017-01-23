@@ -262,17 +262,7 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
             // If we're skipping the update, we need a temporary grid for furniture in the same tile to connect to.
             obj.Grid = new Grid();
             World.Current.PowerNetwork.RegisterGrid(obj.Grid);
-        }
-
-        // try to reconnect furniture if present and compatible     
-        if (obj.Tile != null && obj.Tile.Furniture != null)
-        {
-            IPluggable pluggableComponent = obj.Tile.Furniture.GetPluggable(proto.typeTags);
-            if (pluggableComponent != null)
-            {
-                // plug in
-                pluggableComponent.Reconnect();
-            }
+            obj.SeekConnection();
         }
 
         // Call LUA install scripts
@@ -666,6 +656,8 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
                 }
             }
         }
+
+        SeekConnection();
     }
 
     public object ToJSon()
@@ -691,6 +683,20 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
         if (utilityJObject.Children().Contains("Parameters"))
         {
             Parameters.FromJson(utilityJObject["Parameters"]);
+        }
+    }
+
+    private void SeekConnection()
+    {
+        // try to reconnect furniture if present and compatible     
+        if (Tile != null && Tile.Furniture != null)
+        {
+            IPluggable pluggableComponent = Tile.Furniture.GetPluggable(typeTags);
+            if (pluggableComponent != null)
+            {
+                // plug in
+                pluggableComponent.Reconnect();
+            }
         }
     }
 
