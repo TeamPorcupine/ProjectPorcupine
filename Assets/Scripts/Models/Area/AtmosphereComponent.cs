@@ -18,8 +18,8 @@ using UnityEngine;
 [MoonSharpUserData]
 public class AtmosphereComponent
 {
-    private float totalGas, totalDeltaGas;
-    private Dictionary<string, float> gasses, gassesDelta;
+    private float totalGas;
+    private Dictionary<string, float> gasses;
 
     private float thermalEnergy;
 
@@ -27,50 +27,121 @@ public class AtmosphereComponent
     {
         totalGas = 0;
         gasses = new Dictionary<string, float>();
-        gassesDelta = new Dictionary<string, float>();
     }
 
     #region gas
     /// <summary>
-    /// Gets the gas amount.
+    /// Gets the total gas stored in this component.
     /// </summary>
-    /// <returns>The gas amount.</returns>
-    public float GetGasAmount() {}
+    /// <returns>The total gas amount.</returns>
+    public float GetGasAmount()
+    {
+        return totalGas;
+    }
 
     /// <summary>
-    /// Gets the gas amount.
+    /// Gets the amount of this gas stored in this component.
     /// </summary>
-    /// <returns>The gas amount.</returns>
-    /// <param name="gasName">Gas name.</param>
-    public float GetGasAmount(string gasName) {}
+    /// <returns>The amount of this gas stored in the component.</returns>
+    /// <param name="gasName">Gas you want the pressure of.</param>
+    public float GetGasAmount(string gasName)
+    {
+        return gasses.ContainsKey(gasName) ? gasses[gasName] : 0;
+    }
 
     /// <summary>
-    /// Gets the gas delta.
+    /// Gets the fraction of the gas present that is this type of gas.
     /// </summary>
-    /// <returns>The gas delta.</returns>
-    public float GetGasDelta() {}
+    /// <returns>The fraction of this type of gas.</returns>
+    /// <param name="gasName">Name of the gas.</param>
+    public float GetGasFraction(string gasName)
+    {
+        return GetGasAmount(gasName) / totalGas;
+    }
 
     /// <summary>
-    /// Gets the gas delta.
+    /// Creates gas of a determined type and temperature out of nowhere. This should only be used when there is no source for the gas. Otherwise use MoveGasTo.
     /// </summary>
-    /// <returns>The gas delta.</returns>
-    /// <param name="gasName">Gas name.</param>
-    public float GetGasDelta(string gasName) {}
+    /// <param name="gasName">Name of the gas to create.</param>
+    /// <param name="GetGasAmount">Amount of gas to create.</param>
+    /// <param name="temperature">Temperature of the gas.</param>
+    public void CreateGas(string gasName, float amount, float temperature)
+    {
+        if (amount < 0)
+        {
+            UnityDebugger.Debugger.LogError("CreateGas -- Amount can not be negative: " + amount);
+            return;
+        }
+
+        if (gasses.ContainsKey(gasName))
+        {
+            gasses[gasName] += amount;
+        }
+        else
+        {
+            gasses[gasName] = amount;
+        }
+
+        thermalEnergy += amount * temperature;
+    }
 
     /// <summary>
-    /// Creates the gas.
+    /// Destroys gas evenly. This should only be used when there is no destination for the gas. Otherwise use MoveGasTo.
     /// </summary>
-    /// <param name="gasName">Gas name.</param>
-    /// <param name="GetGasAmount">Get gas amount.</param>
-    /// <param name="temperature">Temperature.</param>
-    public void CreateGas(string gasName, float GetGasAmount, float temperature) {}
+    /// <param name="amount">Amount to destroy.</param>
+    public void DestroyGas(float amount)
+    {
+        amount = Mathf.Min(totalGas, amount);
+        foreach (var gasName in gasses.Keys)
+        {
+            ChangeGas(gasName, amount * GetGasFraction(gasName));
+        }
+
+        thermalEnergy -= amount * GetTemperature();
+    }
 
     /// <summary>
-    /// Moves the gas to.
+    /// Destroys gas of this type. This should only be used when there is no destination for the gas. Otherwise use MoveGasTo.
     /// </summary>
-    /// <param name="destination">Destination.</param>
-    /// <param name="amount">Amount.</param>
-    public void MoveGasTo(AtmosphereComponent destination, float amount) {}
+    /// <param name="gasName">Name of gas to destroy.</param>
+    /// <param name="amount">Amount to destroy.</param>
+    public void DestroyGas(string gasName, float amount)
+    {
+        amount = Mathf.Min(GetGasAmount(gasName), amount);
+        ChangeGas(gasName, amount);
+        thermalEnergy -= amount * GetTemperature();
+    }
+
+    /// <summary>
+    /// Moves gas to another atmosphere. Thermal energy is transferred accordingly.
+    /// </summary>
+    /// <param name="destination">Destination of the gas.</param>
+    /// <param name="amount">Amount of gas to move.</param>
+    public void MoveGasTo(AtmosphereComponent destination, float amount)
+    {
+        amount = Mathf.Min(this.totalGas, amount);
+        foreach (var gasName in this.gasses.Keys)
+        {
+            float partialAmount = amount * GetGasFraction(gasName);
+            this.ChangeGas(gasName, -partialAmount);
+            destination.ChangeGas(gasName, partialAmount);
+        }
+
+        float thermalDelta = amount * this.GetTemperature();
+        this.thermalEnergy -= thermalDelta;
+        destination.thermalEnergy += thermalDelta;
+    }
+
+    public void MoveGasTo(AtmosphereComponent destination, string gasName, float amount)
+    {
+        amount = Mathf.Min(this.GetGasAmount(gasName), amount);
+        this.ChangeGas(gasName, -amount);
+        destination.ChangeGas(gasName, amount);
+
+        float thermalDelta = amount * this.GetTemperature();
+        this.thermalEnergy -= thermalDelta;
+        destination.thermalEnergy += thermalDelta;
+    }
     #endregion
 
     #region temperature
@@ -92,4 +163,18 @@ public class AtmosphereComponent
     /// <param name="amount">Amount.</param>
     public void ChangeEnergy(float amount) {}
     #endregion
+
+    private void ChangeGas(string gasName, float amount)
+    {
+        if (gasses.ContainsKey(gasName) == false)
+        {
+            gasses[gasName] = 0;
+        }
+
+        gasses[gasName] += amount;
+        if (gasses[gasName] < 0)
+        {
+            gasses[gasName] = 0;
+        }
+    }
 }
