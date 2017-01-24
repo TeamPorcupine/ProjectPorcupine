@@ -18,7 +18,6 @@ using UnityEngine;
 [MoonSharpUserData]
 public class Temperature
 {
-    private Dictionary<Room, float> thermalEnergy;
     private Dictionary<Room, Dictionary<Room, float>> diffusion;
     private List<Furniture> sinksAndSources;
     private bool recomputeOnNextUpdate;
@@ -28,12 +27,6 @@ public class Temperature
     /// </summary>
     public Temperature()
     {
-        thermalEnergy = new Dictionary<Room, float>();
-        foreach (Room room in World.Current.RoomManager)
-        {
-            thermalEnergy[room] = 0;
-        }
-
         RecomputeDiffusion();
         sinksAndSources = new List<Furniture>();
 
@@ -72,6 +65,7 @@ public class Temperature
         }
     }
 
+
     /// <summary>
     /// Public interface to temperature model, returns temperature at x, y.
     /// </summary>
@@ -82,21 +76,7 @@ public class Temperature
     public float GetTemperature(int x, int y, int z)
     {
         Room room = World.Current.GetTileAt(x, y, z).Room;
-        return GetTemperature(room);
-    }
-
-    public float GetTemperature(Room room)
-    {
-        if (room == null || room.IsOutsideRoom())
-        {
-            return 0;
-        }
-
-        if(thermalEnergy.ContainsKey(room) == false) {
-            thermalEnergy[room] = 0;
-        }
-
-        return thermalEnergy[room] / room.TileCount;
+        return room.Atmosphere.GetTemperature();
     }
 
     public float GetTemperatureInC(int x, int y, int z)
@@ -109,6 +89,7 @@ public class Temperature
         return (GetTemperature(x, y, z) * 1.8f) - 459.67f;
     }
 
+    /*
     /// <summary>
     /// Sets the temperature at (x,y,z) to a value.
     /// </summary>
@@ -139,10 +120,10 @@ public class Temperature
             thermalEnergy[room] += energy;
         }
     }
+    */
 
     public void Resize()
     {
-        thermalEnergy = new Dictionary<Room, float>();
         RecomputeDiffusion();
         sinksAndSources = new List<Furniture>();
     }
@@ -259,12 +240,12 @@ public class Temperature
         {
             foreach (var r2 in diffusion[r1].Keys)
             {
-                float temperatureDifference = GetTemperature(r1) - GetTemperature(r2);
+                float temperatureDifference = r1.Atmosphere.GetTemperature() - r2.Atmosphere.GetTemperature();
                 if (temperatureDifference > 0)
                 {
                     float energyTransfer = diffusion[r1][r2] * temperatureDifference * Mathf.Sqrt(r1.GetGasPressure()) * Mathf.Sqrt(r2.GetGasPressure()) * deltaTime;
-                    ChangeEnergy(r1, -energyTransfer);
-                    ChangeEnergy(r2, energyTransfer);
+                    r1.Atmosphere.ChangeEnergy(-energyTransfer);
+                    r2.Atmosphere.ChangeEnergy(energyTransfer);
                 }
             }
         }
@@ -283,6 +264,6 @@ public class Temperature
         float energyChangePerSecond = furniture.Parameters["base_heating"].ToFloat() * efficiency;
         float energyChange = energyChangePerSecond * deltaTime;
 
-        World.Current.temperature.ChangeEnergy(tile.Room, energyChange);
+        tile.Room.Atmosphere.ChangeEnergy(energyChange);
     }
 }
