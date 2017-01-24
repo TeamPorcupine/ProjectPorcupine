@@ -34,6 +34,8 @@ public class TimeManager
     private float[] accumulatedTime = new float[FramesInSlowUpdateCycle];
     private int timePos = 0;
 
+    private const float realTimeToWorldTimeFactor = 90;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="TimeManager"/> class.
     /// </summary>
@@ -46,7 +48,12 @@ public class TimeManager
         IsPaused = false;
 
         // Initialize GameTime to a value equivalent to 8 am
-        GameTime = 320f / 60;
+        //        WorldTime timeTemp = new WorldTime(8,0,0,1,1,2999);
+//        WorldTime timeTemp = new WorldTime();
+//        timeTemp.SetHour(8);
+//        timeTemp.Hour = 8;
+//        Debug.LogWarning(timeTemp.TimeToString());
+        WorldTime = new WorldTime().SetHour(8);
 
 //        GameTime += ((3600 * (15 + 24)) / 90)/60;
 //        GameTime += ((3600 * 24) *14)/90/60;
@@ -110,19 +117,15 @@ public class TimeManager
     /// <value>The game time.</value>
     public float GameTime { get; private set; } // TODO: Implement saving and loading game time, so time is persistent across loads.
 
-    /// <summary>
-    /// Gets the world time in seconds.
-    /// </summary>
-    /// <value>The world time in seconds.</value>
-    public float WorldTime {
+    public WorldTime WorldTime {
         get 
         {
-            return GameTime * 90f;
+            return new WorldTime(GameTime * 90);
         }
 
         private set
         {
-            GameTime = value / 90;
+            GameTime = value.Seconds / 90;
         }
     } 
 
