@@ -149,19 +149,28 @@ public class AtmosphereComponent
     /// Gets the temperature.
     /// </summary>
     /// <returns>The temperature.</returns>
-    public float GetTemperature() {}
+    public float GetTemperature()
+    {
+        return thermalEnergy / totalGas;
+    }
 
     /// <summary>
     /// Sets the temperature.
     /// </summary>
     /// <param name="temperature">Temperature.</param>
-    public void SetTemperature(float temperature) {}
+    public void SetTemperature(float temperature)
+    {
+        thermalEnergy = totalGas * temperature;
+    }
 
     /// <summary>
     /// Changes the energy.
     /// </summary>
     /// <param name="amount">Amount.</param>
-    public void ChangeEnergy(float amount) {}
+    public void ChangeEnergy(float amount)
+    {
+        thermalEnergy += Mathf.Max(-thermalEnergy, amount);
+    }
     #endregion
 
     private void ChangeGas(string gasName, float amount)
