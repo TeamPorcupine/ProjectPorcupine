@@ -346,7 +346,7 @@ namespace DeveloperConsole
         {
             // Adding gas to room
             Room room = World.Current.RoomManager[roomID];
-            room.SetGas(gas, pressure * room.TileCount);
+            room.Atmosphere.SetGas(gas, pressure * room.TileCount);
         }
 
         public static void SetAllRoomsGas(string gas, float pressure)
@@ -356,7 +356,7 @@ namespace DeveloperConsole
             {
                 if (room.ID > 0)
                 {
-                    room.SetGas(gas, pressure * room.TileCount);
+                    room.Atmosphere.SetGas(gas, pressure * room.TileCount);
                 }
             }
         }
@@ -365,13 +365,13 @@ namespace DeveloperConsole
         {
             // Adding air to room
             Room room = World.Current.RoomManager[roomID];
-            foreach (string gas in room.GetGasNames())
+            foreach (string gas in room.Atmosphere.GetGasNames())
             {
-                room.SetGas(gas, 0);
+                room.Atmosphere.SetGas(gas, 0);
             }
 
-            room.SetGas("O2", 0.2f * room.TileCount);
-            room.SetGas("N2", 0.8f * room.TileCount);
+            room.Atmosphere.SetGas("O2", 0.2f * room.TileCount);
+            room.Atmosphere.SetGas("N2", 0.8f * room.TileCount);
         }
 
         public static void FillAllRoomsWithAir()
@@ -379,15 +379,15 @@ namespace DeveloperConsole
             // Adding air to all rooms
             foreach (Room room in World.Current.RoomManager)
             {
-                foreach (string gas in room.GetGasNames())
+                foreach (string gas in room.Atmosphere.GetGasNames())
                 {
-                    room.SetGas(gas, 0);
+                    room.Atmosphere.SetGas(gas, 0);
                 }
 
                 if (room.ID > 0)
                 {
-                    room.SetGas("O2", 0.2f * room.TileCount);
-                    room.SetGas("N2", 0.8f * room.TileCount);
+                    room.Atmosphere.SetGas("O2", 0.2f * room.TileCount);
+                    room.Atmosphere.SetGas("N2", 0.8f * room.TileCount);
                 }
             }
         }
@@ -395,9 +395,9 @@ namespace DeveloperConsole
         public static void EmptyRoom(int roomId)
         {
             Room room = World.Current.RoomManager[roomId];
-            foreach (string gas in room.GetGasNames())
+            foreach (string gas in room.Atmosphere.GetGasNames())
             {
-                room.SetGas(gas, 0);
+                room.Atmosphere.SetGas(gas, 0);
             }
         }
 
@@ -407,9 +407,9 @@ namespace DeveloperConsole
             {
                 if (room.ID > 0)
                 {
-                    foreach (string gas in room.GetGasNames())
+                    foreach (string gas in room.Atmosphere.GetGasNames())
                     {
-                        room.SetGas(gas, 0);
+                        room.Atmosphere.SetGas(gas, 0);
                     }
                 }
             }

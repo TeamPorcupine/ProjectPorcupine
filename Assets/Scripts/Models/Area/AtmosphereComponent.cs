@@ -69,6 +69,18 @@ public class AtmosphereComponent
     }
 
     /// <summary>
+    /// Sets the amount of gas of this type to the value. Temperature will stay constant.
+    /// </summary>
+    /// <param name="gasName">Gas name.</param>
+    /// <param name="amount">Amount.</param>
+    public void SetGas(string gasName, float value)
+    {
+        float delta = value - GetGasAmount(gasName);
+        thermalEnergy += delta * GetTemperature();
+        gasses[gasName] = value;
+    }
+
+    /// <summary>
     /// Creates gas of a determined type and temperature out of nowhere. This should only be used when there is no source for the gas. Otherwise use MoveGasTo.
     /// </summary>
     /// <param name="gasName">Name of the gas to create.</param>

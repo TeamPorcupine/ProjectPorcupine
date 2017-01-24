@@ -278,7 +278,7 @@ public class Temperature
         }
 
         Tile tile = furniture.Tile;
-        float pressure = tile.Room.GetTotalGasPressure();
+        float pressure = tile.Room.GetGasPressure();
         float efficiency = ModUtils.Clamp01(pressure / furniture.Parameters["pressure_threshold"].ToFloat());
         float energyChangePerSecond = furniture.Parameters["base_heating"].ToFloat() * efficiency;
         float energyChange = energyChangePerSecond * deltaTime;
