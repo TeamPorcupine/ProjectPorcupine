@@ -6,7 +6,6 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using MoonSharp.Interpreter;
@@ -23,8 +22,6 @@ namespace ProjectPorcupine.Rooms
         private Dictionary<string, string> deltaGas;
 
         private List<Tile> tiles;
-
-        public event Action<Room,float,float> AtmosphereChanged;
 
         public Room()
         {
@@ -47,14 +44,6 @@ namespace ProjectPorcupine.Rooms
             get
             {
                 return tiles.Count;
-            }
-        }
-
-        public float Temperature
-        {
-            get
-            {
-                return World.Current.temperature.GetTemperature(this);
             }
         }
 
@@ -192,21 +181,16 @@ namespace ProjectPorcupine.Rooms
         }
 
         // Changes gas by an amount in preasure(in atm) multiplyed by number of tiles, limited to a pressure
-        public void ChangeGasToLimit(string name, float amount, float pressureLimit)
+        public void ChangeGas(string name, float amount, float pressureLimit)
         {
-            ChangeGas(name, Mathf.Min(amount, (TileCount * pressureLimit) - GetGasAmount(name)), Temperature);
-        }
-
-        public void ChangeGas(string name, float amount)
-        {
-            ChangeGas(name, amount, Temperature);
+            ChangeGas(name, Mathf.Min(amount, (TileCount * pressureLimit) - GetGasAmount(name)));
         }
 
         // Changes gas by an amount in pressure(in atm) multiplyed by number of tiles
         // Note: This description is somewhat misleading. Pressure is stored as the sum total pressure 
         //       of every tile's pressure, so while it is technically accurate, it implies that
         //       this method does the multiplication, when it is already stored that way
-        public void ChangeGas(string name, float amount, float temperature)
+        public void ChangeGas(string name, float amount)
         {
             if (IsOutsideRoom())
             {
@@ -239,11 +223,6 @@ namespace ProjectPorcupine.Rooms
             {
                 atmosphericGasses[name] = 0;
             }
-
-            if(AtmosphereChanged != null)
-            {
-                AtmosphereChanged(this, amount, temperature);
-            }
         }
 
         public void SetGas(string name, float amount)
@@ -253,13 +232,7 @@ namespace ProjectPorcupine.Rooms
                 return;
             }
 
-            float deltaAmount = amount - atmosphericGasses[name];
             atmosphericGasses[name] = amount;
-
-            if(AtmosphereChanged != null)
-            {
-                AtmosphereChanged(this, deltaAmount, World.Current.temperature.GetTemperature(this));
-            }
         }
 
         public string ChangeInGas(string name)
@@ -358,7 +331,7 @@ namespace ProjectPorcupine.Rooms
             return totalGas;
         }
 
-        public void MoveGasToToLimit(Room room, float amount, float pressureLimit)
+        public void MoveGasTo(Room room, float amount, float pressureLimit)
         {
             MoveGasTo(room, Mathf.Min(amount, (room.TileCount * pressureLimit) - room.GetTotalGas()));
         }
@@ -375,8 +348,8 @@ namespace ProjectPorcupine.Rooms
         public void MoveGasTo(Room room, string name, float amount)
         {
             float amountMoved = Mathf.Min(amount, GetGasAmount(name));
-            this.ChangeGas(name, -amountMoved, Temperature);
-            room.ChangeGas(name, amountMoved, Temperature);
+            this.ChangeGas(name, -amountMoved);
+            room.ChangeGas(name, amountMoved);
         }
 
         public string[] GetGasNames()
@@ -407,17 +380,9 @@ namespace ProjectPorcupine.Rooms
 
         public void SplitGas(Room other, int sizeOfOtherRoom)
         {
-            float totalGas = 0;
             foreach (string n in other.atmosphericGasses.Keys)
             {
-                float gasOfType = other.atmosphericGasses[n] * TileCount / sizeOfOtherRoom;
-                this.atmosphericGasses[n] = gasOfType;
-                totalGas += gasOfType;
-            }
-
-            if(AtmosphereChanged != null)
-            {
-                AtmosphereChanged(this, totalGas, Temperature);
+                this.atmosphericGasses[n] = other.atmosphericGasses[n] * TileCount / sizeOfOtherRoom;
             }
         }
 
