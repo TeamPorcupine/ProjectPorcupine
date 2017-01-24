@@ -60,6 +60,15 @@ public class AtmosphereComponent
     }
 
     /// <summary>
+    /// Get the names of gasses present in this component.
+    /// </summary>
+    /// <returns>The names of gasses present.</returns>
+    public string[] GetGasNames()
+    {
+        return gasses.Keys.ToArray();
+    }
+
+    /// <summary>
     /// Creates gas of a determined type and temperature out of nowhere. This should only be used when there is no source for the gas. Otherwise use MoveGasTo.
     /// </summary>
     /// <param name="gasName">Name of the gas to create.</param>
@@ -67,20 +76,13 @@ public class AtmosphereComponent
     /// <param name="temperature">Temperature of the gas.</param>
     public void CreateGas(string gasName, float amount, float temperature)
     {
-        if (amount < 0)
+        if (amount < 0 || temperature < 0)
         {
-            UnityDebugger.Debugger.LogError("CreateGas -- Amount can not be negative: " + amount);
+            UnityDebugger.Debugger.LogError("CreateGas -- Amount or temperature can not be negative: " + amount + ", " + temperature);
             return;
         }
 
-        if (gasses.ContainsKey(gasName))
-        {
-            gasses[gasName] += amount;
-        }
-        else
-        {
-            gasses[gasName] = amount;
-        }
+        ChangeGas(gasName, amount);
 
         thermalEnergy += amount * temperature;
     }
@@ -91,10 +93,16 @@ public class AtmosphereComponent
     /// <param name="amount">Amount to destroy.</param>
     public void DestroyGas(float amount)
     {
-        amount = Mathf.Min(totalGas, amount);
-        foreach (var gasName in gasses.Keys)
+        if (amount < 0)
         {
-            ChangeGas(gasName, amount * GetGasFraction(gasName));
+            UnityDebugger.Debugger.LogError("DestroyGas -- Amount can not be negative: " + amount);
+            return;
+        }
+
+        amount = Mathf.Min(totalGas, amount);
+        foreach (var gasName in GetGasNames())
+        {
+            ChangeGas(gasName, -amount * GetGasFraction(gasName));
         }
 
         thermalEnergy -= amount * GetTemperature();
@@ -107,9 +115,16 @@ public class AtmosphereComponent
     /// <param name="amount">Amount to destroy.</param>
     public void DestroyGas(string gasName, float amount)
     {
+        if (amount < 0)
+        {
+            UnityDebugger.Debugger.LogError("DestroyGas -- Amount can not be negative: " + amount);
+            return;
+        }
+
         amount = Mathf.Min(GetGasAmount(gasName), amount);
-        ChangeGas(gasName, amount);
+
         thermalEnergy -= amount * GetTemperature();
+        ChangeGas(gasName, -amount);
     }
 
     /// <summary>
@@ -119,28 +134,48 @@ public class AtmosphereComponent
     /// <param name="amount">Amount of gas to move.</param>
     public void MoveGasTo(AtmosphereComponent destination, float amount)
     {
+        if(destination == null)
+        {
+            UnityDebugger.Debugger.LogError("MoveGasTo -- Destination can not be null");
+            return;
+        }
+
+        if (amount < 0)
+        {
+            UnityDebugger.Debugger.LogError("MoveGasTo -- Amount can not be negative: " + amount);
+            return;
+        }
+
         amount = Mathf.Min(this.totalGas, amount);
-        foreach (var gasName in this.gasses.Keys)
+
+        float thermalDelta = amount * this.GetTemperature();
+        this.thermalEnergy -= thermalDelta;
+        destination.thermalEnergy += thermalDelta;
+
+        foreach (var gasName in this.GetGasNames())
         {
             float partialAmount = amount * GetGasFraction(gasName);
             this.ChangeGas(gasName, -partialAmount);
             destination.ChangeGas(gasName, partialAmount);
         }
-
-        float thermalDelta = amount * this.GetTemperature();
-        this.thermalEnergy -= thermalDelta;
-        destination.thermalEnergy += thermalDelta;
     }
 
     public void MoveGasTo(AtmosphereComponent destination, string gasName, float amount)
     {
+        if (amount < 0)
+        {
+            UnityDebugger.Debugger.LogError("MoveGasTo -- Amount can not be negative: " + amount);
+            return;
+        }
+
         amount = Mathf.Min(this.GetGasAmount(gasName), amount);
-        this.ChangeGas(gasName, -amount);
-        destination.ChangeGas(gasName, amount);
 
         float thermalDelta = amount * this.GetTemperature();
         this.thermalEnergy -= thermalDelta;
         destination.thermalEnergy += thermalDelta;
+
+        this.ChangeGas(gasName, -amount);
+        destination.ChangeGas(gasName, amount);
     }
     #endregion
 
@@ -151,7 +186,7 @@ public class AtmosphereComponent
     /// <returns>The temperature.</returns>
     public float GetTemperature()
     {
-        return thermalEnergy / totalGas;
+        return totalGas.AreEqual(0) ? 0.0f : thermalEnergy / totalGas;
     }
 
     /// <summary>
@@ -180,10 +215,13 @@ public class AtmosphereComponent
             gasses[gasName] = 0;
         }
 
+        amount = Mathf.Max(-gasses[gasName], amount);
         gasses[gasName] += amount;
-        if (gasses[gasName] < 0)
+        if (gasses[gasName].AreEqual(0))
         {
-            gasses[gasName] = 0;
+            gasses.Remove(gasName);
         }
+
+        totalGas += amount;
     }
 }
