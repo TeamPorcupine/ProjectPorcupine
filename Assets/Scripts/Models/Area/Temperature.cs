@@ -15,10 +15,6 @@ using MoonSharp.Interpreter;
 using ProjectPorcupine.Rooms;
 using UnityEngine;
 
-/// <summary>
-/// A  Temperature management system. Temperature is stored at each tile and evolved using
-/// https://en.wikipedia.org/wiki/Heat_equation.
-/// </summary>
 [MoonSharpUserData]
 public class Temperature
 {
