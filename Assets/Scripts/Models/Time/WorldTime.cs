@@ -259,9 +259,45 @@ public struct WorldTime
     {
         // TODO: Optimally, we should have WorldTime as an IFormattable, so the format can be more easily adjusted, and doesn't require
         // separate TimeToString and DateToString methods.
+        // Note: overloading is used, rather than defaults so that this plays nicely with Lua, which can't see default parameter values properly.
+        return ToString(true, true);
+    }
+
+    /// <summary>
+    /// Returns a string that represents the WorldTime, separated by a linebreak if both time and date are present.
+    /// </summary>
+    /// <returns>The string representing the WorldTime.</returns>
+    /// <param name="time">If set to <c>true</c> include the time in the string.</param>
+    /// <param name="date">If set to <c>true</c> include the date in the string.</param>
+    public string ToString(bool time, bool date)
+    {
         StringBuilder sb = new StringBuilder();
-        sb.AppendLine(TimeToString());
-        sb.Append(DateToString());
+        if(time)
+        {
+            int hour = Hour;
+            bool pm = (hour >= 12);
+            if (pm)
+            {
+                hour -= 12;
+            }
+
+            if (hour == 0)
+            {
+                hour = 12;
+            }
+            sb.AppendFormat("{0}:{1:00}{2}", hour, Minute, pm ? "pm" : "am");
+        }
+
+        if (time && date)
+        {
+            sb.AppendLine();
+        }
+
+        if (date)
+        {
+            sb.AppendFormat("Q{0} Day {1}, {2}", Quarter, Day, Year);
+        }
+
         return sb.ToString();
     }
 
@@ -271,18 +307,7 @@ public struct WorldTime
     /// <returns>A string that represents the WorldTime time.</returns>
     public string TimeToString()
     {
-        int hour = Hour;
-        bool pm = (hour >= 12);
-        if (pm)
-        {
-            hour -= 12;
-        }
-
-        if (hour == 0)
-        {
-            hour = 12;
-        }
-        return string.Format("{0}:{1:00}{2}", hour, Minute, pm ? "pm" : "am");
+        return ToString(true, false);
     }
 
 
@@ -292,7 +317,7 @@ public struct WorldTime
     /// <returns>A string that represents the WorldTime date.</returns>
     public string DateToString()
     {
-        return string.Format("Q{0} Day {1}, {2}", Quarter, Day, Year);
+        return ToString(false, true);
     }
 
     /// <summary>
