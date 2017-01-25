@@ -150,6 +150,19 @@ namespace ProjectPorcupine.PowerNetwork
             return grid != null && grid.IsOperating;
         }
 
+        public float GetEfficiency(IPluggable connection)
+        {
+            float efficiency = 0f;
+            Grid grid;
+            IsPluggedIn(connection, out grid);
+            if(grid != null)
+            {
+                efficiency = grid.Efficiency;
+            }
+
+            return efficiency;
+        }
+
         public void Update(float deltaTime)
         {
             secondsPassed += deltaTime;

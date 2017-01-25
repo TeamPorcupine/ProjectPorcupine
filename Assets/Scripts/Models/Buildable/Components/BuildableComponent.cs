@@ -15,6 +15,7 @@ using System.Xml.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
+using MoonSharp.Interpreter;
 
 namespace ProjectPorcupine.Buildable.Components
 {
@@ -250,6 +251,52 @@ namespace ProjectPorcupine.Buildable.Components
             return conditionsFulFilled;
         }
 
+        protected string RetrieveStringFor(SourceDataInfo sourceDataInfo, Furniture furniture)
+        {
+            string retString = null;
+            if (sourceDataInfo != null)
+            {
+                if (!string.IsNullOrEmpty(sourceDataInfo.Value))
+                {
+                    retString = sourceDataInfo.Value;
+                }
+                else if (!string.IsNullOrEmpty(sourceDataInfo.FromFunction))
+                {
+                    DynValue ret = FunctionsManager.Furniture.Call(sourceDataInfo.FromFunction, furniture);
+                    retString = ret.String;
+                }
+                else if (!string.IsNullOrEmpty(sourceDataInfo.FromParameter))
+                {
+                    retString = furniture.Parameters[sourceDataInfo.FromParameter].ToString();
+                }
+            }
+
+            return retString;
+        }
+
+        protected float RetrieveFloatFor(SourceDataInfo sourceDataInfo, Furniture furniture)
+        {
+            float retFloat = 0f;
+            if (sourceDataInfo != null)
+            {
+                if (!string.IsNullOrEmpty(sourceDataInfo.Value))
+                {
+                    retFloat = float.Parse(sourceDataInfo.Value);
+                }
+                else if (!string.IsNullOrEmpty(sourceDataInfo.FromFunction))
+                {
+                    DynValue ret = FunctionsManager.Furniture.Call(sourceDataInfo.FromFunction, furniture);
+                    retFloat = (float)ret.Number;
+                }
+                else if (!string.IsNullOrEmpty(sourceDataInfo.FromParameter))
+                {
+                    retFloat = furniture.Parameters[sourceDataInfo.FromParameter].ToFloat();
+                }
+            }
+
+            return retFloat;
+        }
+
         private static Dictionary<string, System.Type> FindComponentsInAssembly()
         {
             componentTypes = new Dictionary<string, System.Type>();
@@ -324,6 +371,20 @@ namespace ProjectPorcupine.Buildable.Components
 
             [XmlAttribute("type")]
             public string Type { get; set; }
+        }
+
+        [Serializable]
+        [JsonObject(MemberSerialization.OptOut)]
+        public class SourceDataInfo
+        {
+            [XmlAttribute("value")]
+            public string Value { get; set; }
+
+            [XmlAttribute("fromParameter")]
+            public string FromParameter { get; set; }
+
+            [XmlAttribute("fromFunction")]
+            public string FromFunction { get; set; }
         }
     }
 }

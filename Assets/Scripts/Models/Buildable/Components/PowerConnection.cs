@@ -73,6 +73,20 @@ namespace ProjectPorcupine.Buildable.Components
             }
         }
 
+        [XmlIgnore]
+        public float Efficiency
+        {
+            get
+            {
+                return FurnitureParams[ParamsDefinitions.Efficiency.ParameterName].ToFloat();
+            }
+
+            set
+            {
+                FurnitureParams[ParamsDefinitions.Efficiency.ParameterName].SetValue(value);
+            }
+        }
+
         [XmlElement("Provides")]
         [JsonProperty("Provides")]
         public Info Provides { get; set; }
@@ -80,6 +94,10 @@ namespace ProjectPorcupine.Buildable.Components
         [XmlElement("Requires")]
         [JsonProperty("Requires")]
         public Info Requires { get; set; }
+
+        //[XmlElement("VariableEfficiency")]
+        //[JsonProperty("VariableEfficiency")]
+        //public bool VariableEfficiency { get; set; }
         
         [XmlIgnore]
         public float StoredAmount
@@ -180,7 +198,14 @@ namespace ProjectPorcupine.Buildable.Components
             bool hasPower = true;
             if (IsConsumer)
             {
-                hasPower = World.Current.PowerNetwork.HasPower(this);
+                if (Requires.CanFluctuate)
+                {
+                    hasPower = World.Current.PowerNetwork.GetEfficiency(this) > 0f;
+                }
+                else
+                {
+                    hasPower = World.Current.PowerNetwork.HasPower(this);
+                }
             }
 
             return hasPower;
@@ -200,6 +225,12 @@ namespace ProjectPorcupine.Buildable.Components
             }
 
             IsRunning = areAllParamReqsFulfilled;
+
+            // store the actual efficiency for other components to use
+            if (IsConsumer && Requires.CanFluctuate)
+            {
+                Efficiency = World.Current.PowerNetwork.GetEfficiency(this);
+            }
         }
         
         public override IEnumerable<string> GetDescription()
@@ -208,17 +239,22 @@ namespace ProjectPorcupine.Buildable.Components
             string status = IsRunning ? "online" : "offline";
             yield return LocalizationTable.GetLocalization("power_grid_status_" + status, powerColor);
 
-            if (IsConsumer && Requires != null)
+            if (IsConsumer)
             {
                 yield return LocalizationTable.GetLocalization("power_input_status", powerColor, Requires.Rate);
+
+                if (Requires.CanFluctuate)
+                {
+                    yield return string.Format("Electricity: {0:0}%", Efficiency * 100); // TODO: localization
+                }
             }
 
-            if (IsProducer && Requires != null)
+            if (IsProducer)
             {
-                yield return LocalizationTable.GetLocalization("power_output_status", powerColor, Requires.Rate);
+                yield return LocalizationTable.GetLocalization("power_output_status", powerColor, Provides.Rate);
             }
 
-            if (IsStorage && Provides != null)
+            if (IsStorage)
             {
                 yield return LocalizationTable.GetLocalization("power_accumulated_fraction", StoredAmount, Provides.Capacity);
             }
@@ -255,6 +291,7 @@ namespace ProjectPorcupine.Buildable.Components
             }
 
             IsRunning = false;
+            Efficiency = 1f;
 
             OnReconnecting();
 
@@ -292,6 +329,9 @@ namespace ProjectPorcupine.Buildable.Components
             [XmlAttribute("capacityThresholds")]
             public int CapacityThresholds { get; set; }
 
+            [XmlAttribute("canFluctuate")]
+            public bool CanFluctuate { get; set; }
+
             [XmlElement("Param")]
             public List<ParameterCondition> ParamConditions { get; set; }            
         }
@@ -304,13 +344,15 @@ namespace ProjectPorcupine.Buildable.Components
             public const string CurAccumulatorChargeParamName = "pow_accumulator_charge";
             public const string CurAccumulatorIndexParamName = "pow_accumulator_index";
             public const string CurIsRunningParamName = "pow_is_running";
-            
+            public const string CurEfficiencyParamName = "pow_efficiency";
+
             public PowerConnectionParameterDefinitions()
             {
                 // defaults
                 CurrentAcumulatorCharge = new ParameterDefinition(CurAccumulatorChargeParamName);
                 CurrentAcumulatorChargeIndex = new ParameterDefinition(CurAccumulatorIndexParamName);
                 IsRunning = new ParameterDefinition(CurIsRunningParamName);
+                Efficiency = new ParameterDefinition(CurEfficiencyParamName);
             }
 
             public ParameterDefinition CurrentAcumulatorCharge { get; set; }
@@ -318,6 +360,8 @@ namespace ProjectPorcupine.Buildable.Components
             public ParameterDefinition CurrentAcumulatorChargeIndex { get; set; }
 
             public ParameterDefinition IsRunning { get; set; }
+
+            public ParameterDefinition Efficiency { get; set; }
         }
     }
 }

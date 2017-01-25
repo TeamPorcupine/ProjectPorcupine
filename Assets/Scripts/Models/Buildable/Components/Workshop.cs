@@ -72,6 +72,10 @@ namespace ProjectPorcupine.Buildable.Components
         [JsonProperty("ProductionChain")]
         public List<ProductionChain> PossibleProductions { get; set; }
 
+        [XmlElement("Efficiency")]
+        [JsonProperty("Efficiency")]
+        public SourceDataInfo Efficiency { get; set; }
+
         public override bool RequiresSlowUpdate
         {
             get
@@ -136,6 +140,12 @@ namespace ProjectPorcupine.Buildable.Components
                 return;
             }
 
+            float efficiency = 1f;
+            if (Efficiency != null)
+            {
+                efficiency = RetrieveFloatFor(Efficiency, ParentFurniture);
+            }
+            
             string curSetupChainName = CurrentProductionChainName.ToString();
 
             if (!string.IsNullOrEmpty(curSetupChainName))
@@ -164,7 +174,7 @@ namespace ProjectPorcupine.Buildable.Components
                 else
                 {
                     // processing is in progress
-                    CurrentProcessingTime.ChangeFloatValue(deltaTime);
+                    CurrentProcessingTime.ChangeFloatValue(deltaTime * efficiency);
 
                     if (CurrentProcessingTime.ToFloat() >=
                         MaxProcessingTime.ToFloat())

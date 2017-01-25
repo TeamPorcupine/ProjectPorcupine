@@ -10,6 +10,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace ProjectPorcupine.PowerNetwork
 {
@@ -22,6 +23,7 @@ namespace ProjectPorcupine.PowerNetwork
             connections = new HashSet<IPluggable>();
             UtilityType = string.Empty;
             SubType = string.Empty;
+            Efficiency = 1f;
         }
 
         /// <summary>
@@ -47,6 +49,8 @@ namespace ProjectPorcupine.PowerNetwork
                 return connections.Count; 
             }
         }
+
+        public float Efficiency { get; private set; }
 
         public string UtilityType { get; private set; }
 
@@ -144,21 +148,25 @@ namespace ProjectPorcupine.PowerNetwork
 
         public void Tick()
         {
-            float currentLevel = 0.0f;
+            float producents = 0f;
+            float consumers = 0f;
+            
             foreach (IPluggable connection in connections)
             {
                 if (connection.IsProducer)
                 {
-                    currentLevel += connection.OutputRate;
+                    producents += connection.OutputRate;
                 }
 
                 if (connection.IsConsumer)
                 {
-                    currentLevel -= connection.InputRate;
+                    consumers += connection.InputRate * Efficiency;
                 }
             }
 
-            if (currentLevel.IsZero())
+            float currentLevel = producents - consumers;
+            
+            if (producents > 0f && currentLevel.IsZero())
             {
                 IsOperating = true;
                 return;
@@ -173,7 +181,19 @@ namespace ProjectPorcupine.PowerNetwork
                 EmptyStorage(ref currentLevel);
             }
 
-            IsOperating = currentLevel >= 0.0f;
+            if (currentLevel <= 0f)
+            {
+                Efficiency -= 0.1f;
+            }
+            else
+            {
+                Efficiency += 0.1f;
+            }
+
+            Efficiency = Mathf.Clamp(Efficiency, 0, 1f);
+
+            //IsOperating = producents >= 0.0f;
+            IsOperating = producents > 0f && currentLevel >= 0.0f;
         }
 
         /// <summary>

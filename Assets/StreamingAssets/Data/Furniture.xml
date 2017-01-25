@@ -31,7 +31,7 @@
         </Params>
         
         <Component type="Visuals">
-            <DefaultSpriteName useName="steel_wall_" />
+            <DefaultSpriteName value="steel_wall_" />
         </Component>
 
         <LocalizationCode>furn_steel_wall</LocalizationCode>
@@ -64,7 +64,7 @@
         </OrderAction>
                 
         <Component type="Visuals">
-            <DefaultSpriteName useName="door_horizontal_0" />
+            <DefaultSpriteName value="door_horizontal_0" />
             <SpriteName fromFunction="Door_GetSpriteName" />
         </Component>
 
@@ -119,7 +119,7 @@
         <CanReplaceFurniture typeTag="Door" />
                 
         <Component type="Visuals">
-            <DefaultSpriteName useName="airlock_door_horizontal_0" />
+            <DefaultSpriteName value="airlock_door_horizontal_0" />
             <SpriteName fromFunction="Door_GetSpriteName" />
         </Component>
 
@@ -187,7 +187,7 @@
         <DragType>area</DragType>
         
         <Component type="Visuals">
-            <DefaultSpriteName useName="stockpile_" />
+            <DefaultSpriteName value="stockpile_" />
         </Component>
 
         <ContextMenuAction FunctionName="Stockpile_SetNewFilter" LocalizationKey="set_filter" RequireCharacterSelected="false"/>
@@ -243,11 +243,12 @@
         </Component>
 		
         <Component type="PowerConnection">
-            <Requires rate="1"/>
+            <Requires rate="1" canFluctuate="true"/>
             <ParameterDefinitions>
                 <CurrentAcumulatorCharge name="pow_accumulator_charge" />
                 <CurrentAcumulatorChargeIndex name="pow_accumulator_index" />
                 <IsRunning name="pow_is_running" />
+                <Efficiency name="pow_efficiency" />
             </ParameterDefinitions>
         </Component>
 		
@@ -267,6 +268,7 @@
                  without hacking the GasComponent to pieces. -->
             <Provides gas="O2" rate="0.032" minLimit="0" maxLimit="0.2" />
             <Provides gas="N2" rate="0.128" minLimit="0" maxLimit="0.8" />
+            <Efficiency fromParameter="pow_efficiency" />
         </Component>
       
         <LocalizationCode>furn_oxygen_generator</LocalizationCode>
@@ -349,7 +351,7 @@
         </OrderAction>
         
         <Component type="Visuals">
-            <DefaultSpriteName useName="fission_reactor_1" />
+            <DefaultSpriteName value="fission_reactor_1" />
             <UseAnimation name="idle">
                 <Requires>
                     <Param name="cur_processed_inv" condition="IsZero" />
@@ -436,7 +438,7 @@
         </Component>    
 
         <Component type="Visuals">
-            <DefaultSpriteName useName="water_generator_off" />
+            <DefaultSpriteName value="water_generator_off" />
             <UseAnimation name="idle">
                 <Requires>
                     <Param name="cur_processed_inv" condition="IsZero" />
@@ -495,7 +497,7 @@
         </Animations>
        
         <Component type="Visuals">
-            <DefaultSpriteName useName="water_tank_0" />
+            <DefaultSpriteName value="water_tank_0" />
             <UseAnimation name="filling" valuebasedParamerName="fluid_storage_index"/>
         </Component>
 		
@@ -587,7 +589,7 @@
         <JobWorkSpotOffset X="1" Y="0" />
 
         <Component type="PowerConnection">
-            <Requires rate="2" />
+            <Requires rate="2" canFluctuate="true"/>
         </Component>
 
         <Component type="GasConnection">
@@ -617,6 +619,7 @@
                     <Item objectType="steel_plate" amount="1" slotPosX="2" slotPosY="0"/>
                 </Output>
             </ProductionChain>
+            <Efficiency fromParameter="pow_efficiency" />
         </Component>
 
         <Component type="Visuals">
@@ -668,7 +671,7 @@
         </OrderAction>
 
         <Component type="Visuals">
-            <DefaultSpriteName useName="Heater" />
+            <DefaultSpriteName value="Heater" />
         </Component>
 
         <OrderAction type="Uninstall">
@@ -907,7 +910,7 @@
         </Component>
         
         <Component type="Visuals">
-            <DefaultSpriteName useName="air_pump" />
+            <DefaultSpriteName value="air_pump" />
             <SpriteName fromFunction="AirPump_GetSpriteName" />
         </Component>
 
