@@ -117,13 +117,20 @@ public class TimeManager
     /// <value>The game time.</value>
     public float GameTime { get; private set; } // TODO: Implement saving and loading game time, so time is persistent across loads.
 
+    /// <summary>
+    /// <para>Gets or sets the world time.</para>
+    /// <para>Assigning to WorldTime will adjust GameTime appropriately, however, using the Set and Add methods directly
+    /// on WorldTime will not work. To adjust WorldTime assign a new WorldTime, or assign immediately after adjusting.</para>
+    /// <para>Example: <code>WorldTime = WorldTime.SetHour(8).SetMinute(0)</code> will properly change the time to 8:00, leaving everything else the same.</para>
+    /// </summary>
+    /// <value>The world time.</value>
     public WorldTime WorldTime {
         get 
         {
             return new WorldTime(GameTime * realTimeToWorldTimeFactor);
         }
 
-        private set
+        set
         {
             GameTime = value.Seconds / realTimeToWorldTimeFactor;
         }
