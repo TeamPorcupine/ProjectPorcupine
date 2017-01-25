@@ -120,12 +120,12 @@ public class TimeManager
     public WorldTime WorldTime {
         get 
         {
-            return new WorldTime(GameTime * 90);
+            return new WorldTime(GameTime * realTimeToWorldTimeFactor);
         }
 
         private set
         {
-            GameTime = value.Seconds / 90;
+            GameTime = value.Seconds / realTimeToWorldTimeFactor;
         }
     } 
 
