@@ -37,6 +37,7 @@ public class PrototypeManager
         Ship = new PrototypeMap<Ship>("Ships", "Ship");
         DevConsole = new PrototypeMap<DeveloperConsole.CommandPrototype>("ConsoleCommands", "ConsoleCommand");
         SettingsCategories = new PrototypeMap<SettingsCategory>("Categories", "Category");
+        PerformanceHUD = new PrototypeMap<PerformanceGroupReader>("ComponentGroups", "ComponentGroup");
     }
 
     /// <summary>
@@ -50,13 +51,13 @@ public class PrototypeManager
     /// </summary>
     /// <value>The furniture prototype map.</value>
     public static PrototypeMap<Furniture> Furniture { get; private set; }
-  
+
     /// <summary>
     /// Gets the utility prototype map.
     /// </summary>
     /// <value>The utility prototype map.</value>
     public static PrototypeMap<Utility> Utility { get; private set; }
-    
+
     /// Gets the roomBehavior prototype map.
     /// </summary>
     /// <value>The roomBehavior prototype map.</value>
@@ -133,6 +134,12 @@ public class PrototypeManager
     /// </summary>
     /// <value>The SettingsCategory prototype map.</value>
     public static PrototypeMap<SettingsCategory> SettingsCategories { get; private set; }
+
+    /// <summary>
+    /// Gets the PerformanceHUD prototype map.
+    /// </summary>
+    /// <value>The PerformanceHUD prototype map.</value>
+    public static PrototypeMap<PerformanceGroupReader> PerformanceHUD { get; private set; }
 
     /// <summary>
     /// Gets the ship prototype map.

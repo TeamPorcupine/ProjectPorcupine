@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -17,16 +18,25 @@ public class PerformanceHUDManager : MonoBehaviour
     /// <summary>
     /// The current group/mode to display.
     /// </summary>
-    private static PerformanceComponentGroup currentGroup;
+    public static Dictionary<PerformanceGroup, BasePerformanceHUDElement[]> allGroups;
+
+    /// <summary>
+    /// What group are we currently at.
+    /// </summary>
+    private static PerformanceGroup groupPointer;
 
     /// <summary>
     /// The root object for the HUD.
     /// </summary>
     private static GameObject rootObject;
 
+    public static string[] GetNames()
+    {
+        return allGroups.Keys.Select(x => x.name).ToArray();
+    }
+
     /// <summary>
     /// Clean and Re-Draw
-    /// Can be static cause it shouldn't matter.
     /// </summary>
     public static void DirtyUI()
     {
@@ -45,30 +55,29 @@ public class PerformanceHUDManager : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        // Draw
-        // Get new Performance Mode/Group
-        currentGroup = PerformanceComponentGroups.groups[CommandSettings.PerformanceHUDMode];
+        groupPointer = allGroups.FirstOrDefault(x => x.Key.name == CommandSettings.PerformanceHUDMode).Key;
+
+        // Set group
+        if (groupPointer.name == null)
+        {
+            groupPointer = allGroups.First(x => x.Key.name == "none").Key;
+        }
+
+        Debug.LogWarning(groupPointer.name);
 
         // Draw and Begin UI Functionality
-        foreach (BasePerformanceHUDElement element in currentGroup.groupElements)
+        foreach (BasePerformanceHUDElement elementName in allGroups[groupPointer])
         {
-            //IPerformanceComponent go = ((GameObject)Instantiate(Resources.Load(element.NameOfComponent()))).GetComponent<BasePerformanceComponentUI>();
-            //go.start();
+            Debug.LogWarning(elementName.GetName());
+            GameObject go = elementName.InitializeElement();
+            go.transform.SetParent(rootObject.transform);
+            go.name = elementName.GetName();
         }
     }
 
-    // Setup the groups
-    private void Awake()
-    {
-        PerformanceComponentGroups.groups = new PerformanceComponentGroup[]
-        {
-            PerformanceComponentGroups.None,
-            PerformanceComponentGroups.Basic,
-            PerformanceComponentGroups.Extended,
-            PerformanceComponentGroups.Verbose
-        };
-    }
-
+    /// <summary>
+    /// Assign variables, and hookup to API.
+    /// </summary>
     private void Start()
     {
         TimeManager.Instance.EveryFrame += Instance_EveryFrame;
@@ -79,24 +88,30 @@ public class PerformanceHUDManager : MonoBehaviour
             rootObject = transform.GetChild(0).gameObject;
         }
 
-        int groupSetting = CommandSettings.PerformanceHUDMode;
+        // Load Settings
+        allGroups = new Dictionary<PerformanceGroup, BasePerformanceHUDElement[]>();
 
-        // Just a guard statement essentially
-        if (PerformanceComponentGroups.groups.Length > groupSetting)
+        PerformanceGroup[] groups = PrototypeManager.PerformanceHUD.Values.SelectMany(x => x.groups).ToArray();
+
+        allGroups.Add(new PerformanceGroup("none", new string[0], true), new BasePerformanceHUDElement[0]);
+
+        for (int i = 0; i < groups.Length; i++)
         {
-            UnityDebugger.Debugger.Log("Performance", "The current channel was set to index: " + groupSetting);
-            currentGroup = PerformanceComponentGroups.groups[groupSetting];
-        }
-        else if (groupSetting > 0 && PerformanceComponentGroups.groups.Length > 0)
-        {
-            // If so then just set to first option (normally none)
-            UnityDebugger.Debugger.LogError("Performance", "Index out of range: Current group is set to 0" + groupSetting);
-        }
-        else
-        {
-            // Else set to none (none is a readonly so it should always exist)
-            UnityDebugger.Debugger.LogError("Performance", "Array Empty: The PerformanceComponentGroups.groups array is empty");
-            currentGroup = PerformanceComponentGroups.None;
+            BasePerformanceHUDElement[] elements = new BasePerformanceHUDElement[groups[i].elementNames.Length];
+
+            for (int j = 0; j < groups[i].elementNames.Length; j++)
+            {
+                if (FunctionsManager.PerformanceHUD.HasFunction("Get" + groups[i].elementNames[j]))
+                {
+                    elements[j] = FunctionsManager.SettingsMenu.Call("Get" + groups[i].elementNames[j]).ToObject<BasePerformanceHUDElement>();
+                }
+                else
+                {
+                    Debug.LogWarning("Get" + groups[i].elementNames[j] + "() Doesn't exist");
+                }
+            }
+
+            allGroups.Add(groups[i], elements);
         }
 
         // Setup UI
@@ -106,7 +121,7 @@ public class PerformanceHUDManager : MonoBehaviour
     private void Instance_EveryFrame(float obj)
     {
         // If we are at group -1, or are already disabled then return
-        if (gameObject.activeInHierarchy == false || currentGroup.disableUI == true)
+        if (gameObject.activeInHierarchy == false && groupPointer.disableUI == true)
         {
             // Disable self
             gameObject.SetActive(false);
@@ -115,7 +130,7 @@ public class PerformanceHUDManager : MonoBehaviour
         }
 
         // Update UI
-        foreach (BasePerformanceHUDElement element in currentGroup.groupElements)
+        foreach (BasePerformanceHUDElement element in allGroups[groupPointer])
         {
             if (element != null)
             {

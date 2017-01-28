@@ -20,13 +20,4 @@ public abstract class BasePerformanceHUDElement : BaseUIElement
     /// Update function.
     /// </summary>
     public abstract void Update();
-
-    /// <summary>
-    /// Returns the name of the element.
-    /// Actually implement
-    /// </summary>
-    public override string GetName()
-    {
-        return "";
-    }
 }

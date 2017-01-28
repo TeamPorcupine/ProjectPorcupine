@@ -82,11 +82,11 @@ public static class CommandSettings
     /// <summary>
     /// The current performance hud mode.
     /// </summary>
-    public static int PerformanceHUDMode
+    public static string PerformanceHUDMode
     {
         get
         {
-            return Settings.GetSetting("DialogBoxSettingsDevConsole_performanceGroup", 1);
+            return Settings.GetSetting("DialogBoxSettingsDevConsole_performanceGroup", "none");
         }
 
         set

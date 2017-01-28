@@ -938,14 +938,11 @@ public class TimeStampToggle : GenericToggle
 
 public class PerformanceHUDComboBox : GenericComboBox
 {
+    string[] groupNames;
+
     public override GameObject InitializeElement()
     {
-        string[] groupNames = new string[PerformanceComponentGroups.groups.Length];
-
-        for (int i = 0; i < PerformanceComponentGroups.groups.Length; i++)
-        {
-            groupNames[i] = PerformanceComponentGroups.groups[i].groupName;
-        }
+        groupNames = PerformanceHUDManager.GetNames();
 
         GameObject go = DropdownHelperFromText(groupNames, getValue());
 
@@ -964,13 +961,13 @@ public class PerformanceHUDComboBox : GenericComboBox
 
     public override void ApplySetting()
     {
-        base.ApplySetting();
+        Settings.SetSetting(option.key, groupNames[selectedValue]);
         PerformanceHUDManager.DirtyUI();
     }
 
     public override void CancelSetting()
     {
-        base.CancelSetting();
+        Settings.SetSetting(option.key, groupNames[getValue()]);
         PerformanceHUDManager.DirtyUI();
     }
 }
