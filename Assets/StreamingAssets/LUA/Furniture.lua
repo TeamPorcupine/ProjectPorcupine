@@ -448,7 +448,7 @@ function OxygenCompressor_OnUpdate(furniture, deltaTime)
         -- Expel gas if available
         if (furniture.Parameters["gas_content"].ToFloat() > 0) then
             furniture.Parameters["gas_content"].ChangeFloatValue(-gasAmount)
-            room.Atmosphere.CreateGas("O2", gasAmount / room.TileCount, 0.0f)
+            room.Atmosphere.CreateGas("O2", gasAmount / room.TileCount, 0.0)
             furniture.UpdateOnChanged(furniture)
         end
     elseif (pressure > furniture.Parameters["take_threshold"].ToFloat()) then
