@@ -12,11 +12,11 @@
   </Category>
   <Category Name="Sound">
     <OptionHeading Name="Volume">
-      <Option Name="Master" Key="sound_volume_master" DefaultValue="1" ClassName="SoundSlider" />
-      <Option Name="Music" Key="sound_volume_music" DefaultValue="1" ClassName="SoundSlider" />
-      <Option Name="Game" Key="sound_volume_game" DefaultValue="1" ClassName="SoundSlider" />
-      <Option Name="Alerts" Key="sound_volume_alerts" DefaultValue="1" ClassName="SoundSlider" />
-      <Option Name="UI" Key="sound_volume_ui" DefaultValue="1" ClassName="SoundSlider" />
+      <Option Name="Master" Key="sound_volume_master" DefaultValue="1" ClassName="MasterSoundSlider" />
+      <Option Name="Music" Key="sound_volume_music" DefaultValue="1" ClassName="MusicSoundSlider" />
+      <Option Name="Game" Key="sound_volume_game" DefaultValue="1" ClassName="GameSoundSlider" />
+      <Option Name="Alerts" Key="sound_volume_alerts" DefaultValue="1" ClassName="AlertsSoundSlider" />
+      <Option Name="UI" Key="sound_volume_ui" DefaultValue="1" ClassName="UISoundSlider" />
     </OptionHeading>
     <OptionHeading Name="Advanced">
       <Option Name="Device" Key="sound_advanced_device" DefaultValue="0" ClassName="SoundDeviceComboBox" />

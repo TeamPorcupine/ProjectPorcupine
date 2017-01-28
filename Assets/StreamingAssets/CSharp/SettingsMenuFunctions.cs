@@ -45,6 +45,31 @@ public static class SettingsMenuFunctions
         return new SoundSlider();
     }
 
+    public static MasterSoundSlider GetMasterSoundSlider()
+    {
+        return new MasterSoundSlider();
+    }
+
+    public static MusicSoundSlider GetMusicSoundSlider()
+    {
+        return new MusicSoundSlider();
+    }
+
+    public static GameSoundSlider GetGameSoundSlider()
+    {
+        return new GameSoundSlider();
+    }
+
+    public static AlertsSoundSlider GetAlertsSoundSlider()
+    {
+        return new AlertsSoundSlider();
+    }
+
+    public static UISoundSlider GetUISoundSlider()
+    {
+        return new UISoundSlider();
+    }
+
     public static UISkinComboBox GetUISkinComboBox()
     {
         return new UISkinComboBox();
@@ -712,6 +737,71 @@ public class SoundSlider : GenericSlider
         textElement.text = string.Format(format, (int)(value * 100));
 
         return go;
+    }
+}
+
+public class MasterSoundSlider : SoundSlider
+{
+    public override void ApplySetting()
+    {
+        WorldController.Instance.soundController.SetVolume("master", value);
+    }
+
+    public override void CancelSetting()
+    {
+        WorldController.Instance.soundController.SetVolume("master", getValue());
+    }
+}
+
+public class MusicSoundSlider : SoundSlider
+{
+    public override void ApplySetting()
+    {
+        WorldController.Instance.soundController.SetVolume("music", value);
+    }
+
+    public override void CancelSetting()
+    {
+        WorldController.Instance.soundController.SetVolume("music", getValue());
+    }
+}
+
+public class GameSoundSlider : SoundSlider
+{
+    public override void ApplySetting()
+    {
+        WorldController.Instance.soundController.SetVolume("game", value);
+    }
+
+    public override void CancelSetting()
+    {
+        WorldController.Instance.soundController.SetVolume("game", getValue());
+    }
+}
+
+public class AlertsSoundSlider : SoundSlider
+{
+    public override void ApplySetting()
+    {
+        WorldController.Instance.soundController.SetVolume("alerts", value);
+    }
+
+    public override void CancelSetting()
+    {
+        WorldController.Instance.soundController.SetVolume("alerts", getValue());
+    }
+}
+
+public class UISoundSlider : SoundSlider
+{
+    public override void ApplySetting()
+    {
+        WorldController.Instance.soundController.SetVolume("UI", value);
+    }
+
+    public override void CancelSetting()
+    {
+        WorldController.Instance.soundController.SetVolume("UI", getValue());
     }
 }
 
