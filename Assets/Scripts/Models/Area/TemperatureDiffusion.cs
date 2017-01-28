@@ -16,7 +16,7 @@ using ProjectPorcupine.Rooms;
 using UnityEngine;
 
 [MoonSharpUserData]
-public class Temperature
+public class TemperatureDiffusion
 {
     private Dictionary<Room, Dictionary<Room, float>> diffusion;
     private List<Furniture> sinksAndSources;
@@ -25,7 +25,7 @@ public class Temperature
     /// <summary>
     /// Create and Initialize arrays with default values.
     /// </summary>
-    public Temperature()
+    public TemperatureDiffusion()
     {
         RecomputeDiffusion();
         sinksAndSources = new List<Furniture>();
@@ -76,7 +76,7 @@ public class Temperature
     public float GetTemperature(int x, int y, int z)
     {
         Room room = World.Current.GetTileAt(x, y, z).Room;
-        return room.Atmosphere.GetTemperature();
+        return room == null ? 0 : room.Atmosphere.GetTemperature();
     }
 
     public float GetTemperatureInC(int x, int y, int z)
