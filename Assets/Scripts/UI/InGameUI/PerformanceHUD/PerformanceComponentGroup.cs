@@ -15,22 +15,22 @@ public static class PerformanceComponentGroups
     /// <summary>
     /// A group with no elements (empty HUD).
     /// </summary>
-    public static readonly PerformanceComponentGroup None = new PerformanceComponentGroup(new BasePerformanceComponent[] { }, true, "No FPS");
+    public static readonly PerformanceComponentGroup None = new PerformanceComponentGroup(new BasePerformanceHUDElement[] { }, true, "No FPS");
 
     /// <summary>
     /// A group with just an FPS Counter.
     /// </summary>
-    public static readonly PerformanceComponentGroup Basic = new PerformanceComponentGroup(new BasePerformanceComponent[] { new FPSPerformanceComponent() }, false, "Basic");
+    public static readonly PerformanceComponentGroup Basic = new PerformanceComponentGroup(new BasePerformanceHUDElement[] { new FPSPerformanceComponent() }, false, "Basic");
 
     /// <summary>
     /// A group with elements: FPS, AVG FPS, and Range FPS.
     /// </summary>           
-    public static readonly PerformanceComponentGroup Extended = new PerformanceComponentGroup(new BasePerformanceComponent[] { new FPSPerformanceComponent(), new FPSRangePerformanceComponent(), new FPSAveragePerformanceComponent() }, false, "Extended");
+    public static readonly PerformanceComponentGroup Extended = new PerformanceComponentGroup(new BasePerformanceHUDElement[] { new FPSPerformanceComponent(), new FPSRangePerformanceComponent(), new FPSAveragePerformanceComponent() }, false, "Extended");
 
     /// <summary>
     /// A group with elements: FPS, AVG FPS, Range FPS, and Memory.
     /// </summary>
-    public static readonly PerformanceComponentGroup Verbose = new PerformanceComponentGroup(new BasePerformanceComponent[] { new FPSPerformanceComponent(), new FPSRangePerformanceComponent(), new FPSAveragePerformanceComponent(), new MemoryPerformanceComponent() }, false, "Verbose");
+    public static readonly PerformanceComponentGroup Verbose = new PerformanceComponentGroup(new BasePerformanceHUDElement[] { new FPSPerformanceComponent(), new FPSRangePerformanceComponent(), new FPSAveragePerformanceComponent(), new MemoryPerformanceComponent() }, false, "Verbose");
 
     /// <summary>
     /// All groups in a single array.

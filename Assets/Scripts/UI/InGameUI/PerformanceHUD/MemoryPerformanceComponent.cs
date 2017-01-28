@@ -6,7 +6,9 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 #if UNITY_5_5_OR_NEWER
     using UnityEngine.Profiling;
@@ -15,35 +17,26 @@ using UnityEngine;
 /// <summary>
 /// Displays the currently used memory and the currently allocated memory.
 /// </summary>
-public class MemoryPerformanceComponent : BasePerformanceComponent
+public class MemoryPerformanceComponent : BasePerformanceHUDElement
 {
-    private TextPerformanceComponentUI component;
-
-    public override int PriorityID()
-    {
-        return 5;
-    }
+    public Text UITextElement { get; set; }
 
     public override void Update()
     {
-        component.ChangeText("Mem: " + ((Profiler.GetTotalReservedMemory() / 1024) / 1024) + "mb\nAlloc: " + ((Profiler.GetTotalAllocatedMemory() / 1024) / 1024) + "mb");
+        UITextElement.text = "Mem: " + ((Profiler.GetTotalReservedMemory() / 1024) / 1024) + "mb\nAlloc: " + ((Profiler.GetTotalAllocatedMemory() / 1024) / 1024) + "mb";
     }
 
-    public override BasePerformanceComponentUI UIComponent()
-    {
-        return component;
-    }
+    //public override string NameOfComponent()
+    // {
+    //     return "UI/TextPerformanceComponentUI";
+    // }
 
-    public override string NameOfComponent()
-    {
-        return "UI/TextPerformanceComponentUI";
-    }
-
-    public override void Start(BasePerformanceComponentUI componentUI)
+    public override GameObject InitializeElement()
     {
         Profiler.enabled = true;
-        component = (TextPerformanceComponentUI)componentUI;
-        component.text.fontSize = 11;
-        component.text.resizeTextForBestFit = true;
+        UITextElement.fontSize = 11;
+        UITextElement.resizeTextForBestFit = true;
+
+        return null;
     }
 }

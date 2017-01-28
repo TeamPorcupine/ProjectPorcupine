@@ -13,10 +13,11 @@ using UnityEngine.UI;
 /// <summary>
 /// Just measures the max and min range for FPS.
 /// </summary>
-public class FPSRangePerformanceComponent : BasePerformanceComponent
+public class FPSRangePerformanceComponent : BasePerformanceHUDElement
 {
     private const float FPSMeasurePeriod = 0.5f;
     private const string Display = "Min: {0}\nMax: {1}";
+
     private int fpsAccumulator = 0;
     private float fpsNextPeriod = 0;
 
@@ -24,23 +25,10 @@ public class FPSRangePerformanceComponent : BasePerformanceComponent
     private int lowestFps = 60;
     private int highestFps = 60;
 
-    private TextPerformanceComponentUI component;
-
-    public override int PriorityID()
-    {
-        // By default will be first component shown
-        return 0;
-    }
-
-    public override BasePerformanceComponentUI UIComponent()
-    {
-        return component;
-    }
-
-    public override string NameOfComponent()
-    {
-        return "UI/TextPerformanceComponentUI";
-    }
+    //public override string NameOfComponent()
+    //{
+    //    return "UI/TextPerformanceComponentUI";
+    //}
 
     // The shown FPS will be 0 for the first second until it ticks over correctly
     public override void Update()
@@ -63,16 +51,15 @@ public class FPSRangePerformanceComponent : BasePerformanceComponent
                 highestFps = currentFps;
             }
 
-            component.ChangeText(string.Format(Display, lowestFps, highestFps));
+            //UITextElement.text = string.Format(Display, lowestFps, highestFps);
         }
     }
 
-    public override void Start(BasePerformanceComponentUI componentUI)
+    public override GameObject InitializeElement()
     {
-        component = (TextPerformanceComponentUI)componentUI;
-
         fpsNextPeriod = Time.realtimeSinceStartup + FPSMeasurePeriod;
 
-        component.text.fontSize = 12;
+        return null;
+        //UITextElement.fontSize = 12;
     }
 }

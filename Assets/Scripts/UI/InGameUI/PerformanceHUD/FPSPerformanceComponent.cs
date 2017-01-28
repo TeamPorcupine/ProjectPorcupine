@@ -6,38 +6,29 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// Displays current FPS (over 0.5s period).
 /// </summary>
-public class FPSPerformanceComponent : BasePerformanceComponent
+public class FPSPerformanceComponent : BasePerformanceHUDElement
 {
     private const float FPSMeasurePeriod = 0.5f;
+
     private const string GreenDisplay = "<color=lime>{0}</color>";
     private const string RedDisplay = "<color=red>{0}</color>";
     private const string YellowDisplay = "<color=yellow>{0}</color>";
+
     private int fpsAccumulator = 0;
     private float fpsNextPeriod = 0;
     private int currentFps;
 
-    private TextPerformanceComponentUI component;
-
-    public override int PriorityID()
-    {
-        // By default will be first component shown
-        return 0;
-    }
-
-    public override BasePerformanceComponentUI UIComponent()
-    {
-        return component;
-    }
-
-    public override string NameOfComponent()
-    {
-        return "UI/TextPerformanceComponentUI";
-    }
+    // public override string NameOfComponent()
+    //  {
+    //       return "UI/TextPerformanceComponentUI";
+    //  }
 
     // The shown FPS will be 0 for the first second until it ticks over correctly
     public override void Update()
@@ -55,26 +46,27 @@ public class FPSPerformanceComponent : BasePerformanceComponent
             if (currentFps > 55)
             {
                 // A good area to be at
-                component.ChangeText(string.Format(GreenDisplay, currentFps));
+                //UITextElement.text = string.Format(GreenDisplay, currentFps);
             }
             else if (currentFps >= 30 && currentFps <= 55)
             {
                 // Less preferable but playable
-                component.ChangeText(string.Format(YellowDisplay, currentFps));
+                //UITextElement.text = string.Format(YellowDisplay, currentFps);
             }
             else
             {
                 // Too low, most likely due to an error or major slowdown
-                component.ChangeText(string.Format(RedDisplay, currentFps));
+                //UITextElement.text = string.Format(RedDisplay, currentFps);
             }
         }
     }
 
-    public override void Start(BasePerformanceComponentUI componentUI)
+    public override GameObject InitializeElement()
     {
-        component = (TextPerformanceComponentUI)componentUI;
-        component.text.fontSize = 20;
+        //UITextElement.fontSize = 20;
 
         fpsNextPeriod = Time.realtimeSinceStartup + FPSMeasurePeriod;
+
+        return null;
     }
 }

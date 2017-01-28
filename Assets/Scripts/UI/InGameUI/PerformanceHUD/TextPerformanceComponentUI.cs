@@ -6,21 +6,27 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System;
 using UnityEngine.UI;
 
 /// <summary>
 /// Just holds a simple text UI component that can be access either through the public value "text"
 /// or throught he function call changeText.
 /// </summary>
-public class TextPerformanceComponentUI : BasePerformanceComponentUI
+[MoonSharp.Interpreter.MoonSharpUserData]
+public abstract class BasePerformanceHUDElement : BaseUIElement
 {
     /// <summary>
-    /// The text UI element.
+    /// Update function.
     /// </summary>
-    public Text text;
+    public abstract void Update();
 
-    public void ChangeText(string newText)
+    /// <summary>
+    /// Returns the name of the element.
+    /// Actually implement
+    /// </summary>
+    public override string GetName()
     {
-        text.text = newText;
+        return "";
     }
 }

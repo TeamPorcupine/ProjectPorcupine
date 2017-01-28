@@ -49,19 +49,11 @@ public class PerformanceHUDManager : MonoBehaviour
         // Get new Performance Mode/Group
         currentGroup = PerformanceComponentGroups.groups[CommandSettings.PerformanceHUDMode];
 
-        // Order by ascending using Linq
-        if (currentGroup.disableUI == true)
-        {
-            currentGroup.groupElements = currentGroup.groupElements.OrderBy(c => c.PriorityID()).ToArray();
-        }
-
         // Draw and Begin UI Functionality
-        foreach (BasePerformanceComponent element in currentGroup.groupElements)
+        foreach (BasePerformanceHUDElement element in currentGroup.groupElements)
         {
-            BasePerformanceComponentUI go = ((GameObject)Instantiate(Resources.Load(element.NameOfComponent()))).GetComponent<BasePerformanceComponentUI>();
-            go.gameObject.transform.SetParent(rootObject.transform);
-
-            element.Start(go);
+            //IPerformanceComponent go = ((GameObject)Instantiate(Resources.Load(element.NameOfComponent()))).GetComponent<BasePerformanceComponentUI>();
+            //go.start();
         }
     }
 
@@ -79,6 +71,8 @@ public class PerformanceHUDManager : MonoBehaviour
 
     private void Start()
     {
+        TimeManager.Instance.EveryFrame += Instance_EveryFrame;
+
         // Root should already exist just grab child
         if (rootObject == null)
         {
@@ -92,12 +86,6 @@ public class PerformanceHUDManager : MonoBehaviour
         {
             UnityDebugger.Debugger.Log("Performance", "The current channel was set to index: " + groupSetting);
             currentGroup = PerformanceComponentGroups.groups[groupSetting];
-
-            // Order by ascending using Linq
-            if (currentGroup.disableUI == true)
-            {
-                currentGroup.groupElements = currentGroup.groupElements.OrderBy(c => c.PriorityID()).ToArray();
-            }
         }
         else if (groupSetting > 0 && PerformanceComponentGroups.groups.Length > 0)
         {
@@ -115,10 +103,10 @@ public class PerformanceHUDManager : MonoBehaviour
         DirtyUI();
     }
 
-    private void Update()
+    private void Instance_EveryFrame(float obj)
     {
-        // If we are -1 then its none so disable UI
-        if (currentGroup.disableUI == true)
+        // If we are at group -1, or are already disabled then return
+        if (gameObject.activeInHierarchy == false || currentGroup.disableUI == true)
         {
             // Disable self
             gameObject.SetActive(false);
@@ -127,8 +115,7 @@ public class PerformanceHUDManager : MonoBehaviour
         }
 
         // Update UI
-        // Shouldn't be slower and makes more contextual sense
-        foreach (BasePerformanceComponent element in currentGroup.groupElements)
+        foreach (BasePerformanceHUDElement element in currentGroup.groupElements)
         {
             if (element != null)
             {

@@ -15,7 +15,7 @@ public sealed class PerformanceComponentGroup
     /// <summary>
     /// All the UI Elements.
     /// </summary>
-    public BasePerformanceComponent[] groupElements;
+    public BasePerformanceHUDElement[] groupElements;
 
     /// <summary>
     /// If true disable UI.
@@ -27,7 +27,7 @@ public sealed class PerformanceComponentGroup
     /// </summary>
     public string groupName;
 
-    public PerformanceComponentGroup(BasePerformanceComponent[] elements, bool disableUI, string name)
+    public PerformanceComponentGroup(BasePerformanceHUDElement[] elements, bool disableUI, string name)
     {
         groupElements = elements;
         this.disableUI = disableUI;

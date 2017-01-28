@@ -6,36 +6,29 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System;
+using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// Currently not used but may be used in future is just network.
 /// </summary>
-public class NetworkPerformanceComponent : BasePerformanceComponent
+public class NetworkPerformanceComponent : BasePerformanceHUDElement
 {
-    private TextPerformanceComponentUI component;
-
-    public override int PriorityID()
-    {
-        return 2;
-    }
+    public Text UITextElement { get; set; }
 
     public override void Update()
     {
-        component.ChangeText("0ms");
+        UITextElement.text = "0ms";
     }
 
-    public override BasePerformanceComponentUI UIComponent()
-    {
-        return component;
-    }
+    //  public override string NameOfComponent()
+    //  {
+    //      return "UI/TextPerformanceComponentUI";
+    //   }
 
-    public override string NameOfComponent()
+    public override GameObject InitializeElement()
     {
-        return "UI/TextPerformanceComponentUI";
-    }
-
-    public override void Start(BasePerformanceComponentUI componentUI)
-    {
-        component = (TextPerformanceComponentUI)componentUI;
+        throw new NotImplementedException();
     }
 }

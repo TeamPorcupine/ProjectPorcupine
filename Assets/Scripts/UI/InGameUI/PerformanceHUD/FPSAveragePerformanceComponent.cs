@@ -6,12 +6,14 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// Displays the average FPS over a 30 second period.
 /// </summary>
-public class FPSAveragePerformanceComponent : BasePerformanceComponent
+public class FPSAveragePerformanceComponent : BasePerformanceHUDElement
 {
     private const float FPSMeasurePeriod = 5f;
     private const string Display = "Avg: {0}";
@@ -20,23 +22,10 @@ public class FPSAveragePerformanceComponent : BasePerformanceComponent
     private float fpsFinishPeriod = 0;
     private int currentFps;
 
-    private TextPerformanceComponentUI component;
-
-    public override int PriorityID()
-    {
-        // By default will be first component shown
-        return 0;
-    }
-
-    public override BasePerformanceComponentUI UIComponent()
-    {
-        return component;
-    }
-
-    public override string NameOfComponent()
-    {
-        return "UI/TextPerformanceComponentUI";
-    }
+    //public override string NameOfComponent()
+    //{
+    //    return "UI/TextPerformanceComponentUI";
+    // }
 
     // The shown FPS will be 0 for the first second until it ticks over correctly
     public override void Update()
@@ -51,16 +40,17 @@ public class FPSAveragePerformanceComponent : BasePerformanceComponent
 
             fpsFinishPeriod += FPSMeasurePeriod;
 
-            component.ChangeText(string.Format(Display, currentFps));
+            //UITextElement.text = string.Format(Display, currentFps);
         }
     }
 
-    public override void Start(BasePerformanceComponentUI componentUI)
+    public override GameObject InitializeElement()
     {
-        component = (TextPerformanceComponentUI)componentUI;
-
+        // Build Gameobject
         fpsFinishPeriod = Time.realtimeSinceStartup + FPSMeasurePeriod;
 
-        component.ChangeText("Avg: ...");
+        //UITextElement.text = "Avg: ...";
+
+        return null;
     }
 }
