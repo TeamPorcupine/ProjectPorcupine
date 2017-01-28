@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Categories>
-  <Category Name="General">
+<ComponentGroups>
+  <ComponentGroup Name="General">
     <OptionHeading Name="Autosave">
       <Option Name="Autosave Every" Key="AutosaveInterval" DefaultValue="10" ClassName="AutosaveIntervalNumberField" />
       <Option Name="Max Autosaves" Key="AutosaveFiles" DefaultValue="5" ClassName="AutosaveNumberField" />
@@ -8,14 +8,14 @@
     <OptionHeading Name="Localization">
       <Option Name="Language" Key="localization" DefaultValue="en_US" ClassName="LocalizationComboBox" />
     </OptionHeading>
-  </Category>
-  <Category Name="Sound">
+  </ComponentGroup>
+  <ComponentGroup Name="Sound">
     <OptionHeading Name="Volume">
       <Option Name="Master Volume" Key="masterVolume" DefaultValue="1" ClassName="SoundSlider" />
       <Option Name="Music Volume" Key="DialogBoxSettings_musicVolume" DefaultValue="1" ClassName="SoundSlider" />
     </OptionHeading>
-  </Category>
-  <Category Name="Video">
+  </ComponentGroup>
+  <ComponentGroup Name="Video">
     <OptionHeading Name="Quality Settings">
       <Option Name="UI Skin" Key="UISkin" DefaultValue="0" ClassName="UISkinComboBox" />
       <Option Name="Quality" Key="DialogBoxSettings_qualityDropdown" DefaultValue="2" ClassName="QualityComboBox" />
@@ -25,8 +25,8 @@
       <Option Name="Full Screen" Key="DialogBoxSettings_fullScreenToggle" DefaultValue="true" ClassName="FullScreenToggle" />
       <Option Name="Resolution" Key="DialogBoxSettings_resolutionDropdown" DefaultValue="0" ClassName="ResolutionComboBox" />
     </OptionHeading>
-  </Category>
-  <Category Name="Developer">
+  </ComponentGroup>
+  <ComponentGroup Name="Developer">
     <OptionHeading Name="Developer Console Settings">
       <Option Name="Console Scroll Sensitivity" Key="DialogBoxSettingsDevConsole_scrollSensitivity" DefaultValue="6" ClassName="ScrollSensitivitySlider" />
       <Option Name="Console Time Stamps" Key="DialogBoxSettingsDevConsole_timeStampToggle" DefaultValue="false" ClassName="TimeStampToggle" />
@@ -39,5 +39,5 @@
     <OptionHeading Name="God Mode Settings">
       <Option Name="Developer Mode" Key="DialogBoxSettingsDevConsole_developerModeToggle" DefaultValue="false" ClassName="DeveloperModeToggle" />
     </OptionHeading>
-  </Category>
-</Categories>
+  </ComponentGroup>
+</ComponentGroups>
