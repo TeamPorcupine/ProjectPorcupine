@@ -36,6 +36,10 @@ public static class AtmosphereUtils
 
     public static void MovePercentageOfAtmosphere(AtmosphereComponent source, AtmosphereComponent destination, float ratio)
     {
+        if (ratio < 0 || ratio > 1)
+        {
+            UnityDebugger.Debugger.Log("MovePercentageOfAtmosphere -- Ratio is out of bounds: " + ratio);
+        }
         source.MoveGasTo(destination, ratio * source.GetGasAmount());
     }
 }
