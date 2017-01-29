@@ -544,7 +544,8 @@ namespace ProjectPorcupine.Rooms
                 // so we can just copy the old gas ratios.
                 // 1 is subtracted from size of old room to account for tile being filled by furniture,
                 // this prevents gas from being lost
-                AtmosphereUtils.SplitAtmosphere(oldRoom.Atmosphere, newRoom.Atmosphere, (float)newRoom.TileCount / (oldRoom.TileCount - 1));
+                UnityDebugger.Debugger.Log("Splitting atmo between " + oldRoom.ID + " and " + newRoom.ID + ". " + newRoom.TileCount + " / " + oldRoom.TileCount + " - 1");
+                AtmosphereUtils.MovePercentageOfAtmosphere(oldRoom.Atmosphere, newRoom.Atmosphere, (float)newRoom.TileCount / (oldRoom.TileCount - 1));
             }
 
             // Tell the world that a new room has been formed.

@@ -34,7 +34,7 @@ public static class AtmosphereUtils
         highPressureRoom.Atmosphere.MoveGasTo(lowPressureRoom.Atmosphere, gasMoved);
     }
 
-    public static void SplitAtmosphere(AtmosphereComponent source, AtmosphereComponent destination, float ratio)
+    public static void MovePercentageOfAtmosphere(AtmosphereComponent source, AtmosphereComponent destination, float ratio)
     {
         source.MoveGasTo(destination, ratio * source.GetGasAmount());
     }
