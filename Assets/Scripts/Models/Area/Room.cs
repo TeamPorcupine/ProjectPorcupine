@@ -52,12 +52,12 @@ namespace ProjectPorcupine.Rooms
 
         public float GetGasPressure()
         {
-            return Atmosphere.GetGasAmount() / TileCount;
+            return IsOutsideRoom() ? 0.0f : Atmosphere.GetGasAmount() / TileCount;
         }
 
         public float GetGasPressure(string gasName)
         {
-            return Atmosphere.GetGasAmount(gasName) / TileCount;
+            return IsOutsideRoom() ? 0.0f : Atmosphere.GetGasAmount(gasName) / TileCount;
         }
 
         public Tile FindExitBetween(Room room2)

@@ -18,15 +18,29 @@ using UnityEngine;
 [MoonSharpUserData]
 public class AtmosphereComponent
 {
-    private float totalGas;
     private Dictionary<string, float> gasses;
-
-    private float thermalEnergy;
 
     public AtmosphereComponent()
     {
-        totalGas = 0;
+        TotalGas = 0;
         gasses = new Dictionary<string, float>();
+        ThermalEnergy = 0;
+    }
+
+    public float TotalGas { get; private set; }
+
+    private float thermalEnergy;
+    public float ThermalEnergy
+    {
+        get { return thermalEnergy; }
+        private set
+        {
+            if(float.IsNaN(value))
+            {
+                UnityDebugger.Debugger.LogError("Atmosphere", "Energy being set to " + value);
+            }
+            thermalEnergy = value;
+        }
     }
 
     #region gas
@@ -36,7 +50,7 @@ public class AtmosphereComponent
     /// <returns>The total gas amount.</returns>
     public float GetGasAmount()
     {
-        return totalGas;
+        return TotalGas;
     }
 
     /// <summary>
@@ -56,7 +70,7 @@ public class AtmosphereComponent
     /// <param name="gasName">Name of the gas.</param>
     public float GetGasFraction(string gasName)
     {
-        return GetGasAmount(gasName) / totalGas;
+        return TotalGas != 0 ? GetGasAmount(gasName) / TotalGas : 0;
     }
 
     /// <summary>
@@ -76,8 +90,9 @@ public class AtmosphereComponent
     public void SetGas(string gasName, float value)
     {
         float delta = value - GetGasAmount(gasName);
-        thermalEnergy += delta * GetTemperature();
-        gasses[gasName] = value;
+        ThermalEnergy += delta * GetTemperature();
+        ChangeGas(gasName, delta);
+        ////UnityDebugger.Debugger.Log("Atmosphere", "Setting " + gasName + ". New value is " + GetGasAmount(gasName));
     }
 
     /// <summary>
@@ -96,7 +111,7 @@ public class AtmosphereComponent
 
         ChangeGas(gasName, amount);
 
-        thermalEnergy += amount * temperature;
+        ThermalEnergy += amount * temperature;
     }
 
     /// <summary>
@@ -111,13 +126,13 @@ public class AtmosphereComponent
             return;
         }
 
-        amount = Mathf.Min(totalGas, amount);
+        amount = Mathf.Min(TotalGas, amount);
         foreach (var gasName in GetGasNames())
         {
             ChangeGas(gasName, -amount * GetGasFraction(gasName));
         }
 
-        thermalEnergy -= amount * GetTemperature();
+        ThermalEnergy -= amount * GetTemperature();
     }
 
     /// <summary>
@@ -135,7 +150,7 @@ public class AtmosphereComponent
 
         amount = Mathf.Min(GetGasAmount(gasName), amount);
 
-        thermalEnergy -= amount * GetTemperature();
+        ThermalEnergy -= amount * GetTemperature();
         ChangeGas(gasName, -amount);
     }
 
@@ -152,17 +167,17 @@ public class AtmosphereComponent
             return;
         }
 
-        if (amount < 0)
+        if (amount < 0 || float.IsNaN(amount))
         {
             UnityDebugger.Debugger.LogError("MoveGasTo -- Amount can not be negative: " + amount);
             return;
         }
 
-        amount = Mathf.Min(this.totalGas, amount);
+        amount = Mathf.Min(this.TotalGas, amount);
 
         float thermalDelta = amount * this.GetTemperature();
-        this.thermalEnergy -= thermalDelta;
-        destination.thermalEnergy += thermalDelta;
+        this.ThermalEnergy -= thermalDelta;
+        destination.ThermalEnergy += thermalDelta;
 
         foreach (var gasName in this.GetGasNames())
         {
@@ -183,8 +198,8 @@ public class AtmosphereComponent
         amount = Mathf.Min(this.GetGasAmount(gasName), amount);
 
         float thermalDelta = amount * this.GetTemperature();
-        this.thermalEnergy -= thermalDelta;
-        destination.thermalEnergy += thermalDelta;
+        this.ThermalEnergy -= thermalDelta;
+        destination.ThermalEnergy += thermalDelta;
 
         this.ChangeGas(gasName, -amount);
         destination.ChangeGas(gasName, amount);
@@ -198,7 +213,12 @@ public class AtmosphereComponent
     /// <returns>The temperature.</returns>
     public float GetTemperature()
     {
-        return totalGas.AreEqual(0) ? 0.0f : thermalEnergy / totalGas;
+        float t = TotalGas.IsZero() ? 0.0f : ThermalEnergy / TotalGas;
+        if(float.IsNaN(t))
+        {
+            ////UnityDebugger.Debugger.Log("Atmosphere", "NaN result. Total gas = " + TotalGas + ". Energy = " + ThermalEnergy + ".");
+        }
+        return TotalGas.IsZero() ? 0.0f : ThermalEnergy / TotalGas;
     }
 
     /// <summary>
@@ -207,7 +227,7 @@ public class AtmosphereComponent
     /// <param name="temperature">Temperature.</param>
     public void SetTemperature(float temperature)
     {
-        thermalEnergy = totalGas * temperature;
+        ThermalEnergy = TotalGas * temperature;
     }
 
     /// <summary>
@@ -216,7 +236,7 @@ public class AtmosphereComponent
     /// <param name="amount">Amount.</param>
     public void ChangeEnergy(float amount)
     {
-        thermalEnergy += Mathf.Max(-thermalEnergy, amount);
+        ThermalEnergy += Mathf.Max(-ThermalEnergy, amount);
     }
     #endregion
 
@@ -227,13 +247,17 @@ public class AtmosphereComponent
             gasses[gasName] = 0;
         }
 
-        amount = Mathf.Max(-gasses[gasName], amount);
-        gasses[gasName] += amount;
-        if (gasses[gasName].AreEqual(0))
+        if (gasses[gasName] <= -amount)
         {
+            TotalGas -= gasses[gasName];
             gasses.Remove(gasName);
         }
+        else
+        {
+            TotalGas += amount;
+            gasses[gasName] += amount;
+        }
 
-        totalGas += amount;
+        TotalGas += amount;
     }
 }

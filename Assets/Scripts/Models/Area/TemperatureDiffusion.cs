@@ -52,7 +52,7 @@ public class TemperatureDiffusion
         if (sinksAndSources.Contains(provider) == false)
         {
             sinksAndSources.Add(provider);
-            Debug.Log("Registered sources: " + sinksAndSources.Count);
+            ////Debug.Log("Registered sources: " + sinksAndSources.Count);
         }
     }
 
@@ -61,7 +61,7 @@ public class TemperatureDiffusion
         if (sinksAndSources.Contains(provider))
         {
             sinksAndSources.Remove(provider);
-            Debug.Log("Registered sources: " + sinksAndSources.Count);
+            ////Debug.Log("Registered sources: " + sinksAndSources.Count);
         }
     }
 
@@ -172,7 +172,7 @@ public class TemperatureDiffusion
         {
             foreach (var r2 in diffusion[r1].Keys)
             {
-                Debug.Log(r1.ID + " -> " + r2.ID + " = " + diffusion[r1][r2]);
+                ////Debug.Log(r1.ID + " -> " + r2.ID + " = " + diffusion[r1][r2]);
             }
         }
     }
@@ -263,6 +263,8 @@ public class TemperatureDiffusion
         float efficiency = ModUtils.Clamp01(pressure / furniture.Parameters["pressure_threshold"].ToFloat());
         float energyChangePerSecond = furniture.Parameters["base_heating"].ToFloat() * efficiency;
         float energyChange = energyChangePerSecond * deltaTime;
+
+        UnityDebugger.Debugger.Log("Atmosphere", "Generating heat: " + furniture.Type + " = " + energyChangePerSecond + "(" + pressure + " -> " + efficiency + "%)");
 
         tile.Room.Atmosphere.ChangeEnergy(energyChange);
     }

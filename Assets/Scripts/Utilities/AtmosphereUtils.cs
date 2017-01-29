@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using System;
 using UnityEngine;
 using ProjectPorcupine.Rooms;
@@ -15,7 +16,7 @@ public static class AtmosphereUtils
     public static void EqualizeRooms(Room room1, Room room2, float maxGasToMove)
     {
         Room highPressureRoom, lowPressureRoom;
-        if (room1.GetGasPressure() >= room2.GetGasPressure())
+        if (room1.GetGasPressure() >= room2.GetGasPressure() || room2.IsOutsideRoom())
         {
             highPressureRoom = room1;
             lowPressureRoom = room2;
@@ -27,7 +28,7 @@ public static class AtmosphereUtils
         }
 
         float targetPressure = (room1.Atmosphere.GetGasAmount() + room2.Atmosphere.GetGasAmount()) / (room1.TileCount + room2.TileCount);
-        float gasNeededForTargetPressure = (targetPressure - highPressureRoom.GetGasPressure()) * highPressureRoom.TileCount;
+        float gasNeededForTargetPressure = (highPressureRoom.GetGasPressure() - targetPressure) * highPressureRoom.TileCount;
         float gasMoved = Mathf.Min(maxGasToMove, gasNeededForTargetPressure);
 
         highPressureRoom.Atmosphere.MoveGasTo(lowPressureRoom.Atmosphere, gasMoved);
