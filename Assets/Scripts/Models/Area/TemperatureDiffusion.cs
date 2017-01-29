@@ -33,7 +33,8 @@ public class TemperatureDiffusion
         World.Current.FurnitureManager.Created += OnFurnitureCreated;
         foreach (Furniture furn in World.Current.FurnitureManager)
         {
-            if(furn.RoomEnclosure) {
+            if (furn.RoomEnclosure)
+            {
                 furn.Removed += OnFurnitureRemoved;
             }
         }
@@ -64,7 +65,6 @@ public class TemperatureDiffusion
             ////Debug.Log("Registered sources: " + sinksAndSources.Count);
         }
     }
-
 
     /// <summary>
     /// Public interface to temperature model, returns temperature at x, y.
@@ -130,7 +130,8 @@ public class TemperatureDiffusion
 
     private void OnFurnitureCreated(Furniture furn)
     {
-        if(furn.RoomEnclosure) {
+        if (furn.RoomEnclosure)
+        {
             furn.Removed += OnFurnitureRemoved;
             recomputeOnNextUpdate = true;
         }
@@ -226,7 +227,7 @@ public class TemperatureDiffusion
 
     private void UpdateTemperature(float deltaTime)
     {
-        if(recomputeOnNextUpdate)
+        if (recomputeOnNextUpdate)
         {
             RecomputeDiffusion();
         }

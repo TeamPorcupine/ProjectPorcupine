@@ -29,19 +29,7 @@ public class AtmosphereComponent
 
     public float TotalGas { get; private set; }
 
-    private float thermalEnergy;
-    public float ThermalEnergy
-    {
-        get { return thermalEnergy; }
-        private set
-        {
-            if(float.IsNaN(value))
-            {
-                UnityDebugger.Debugger.LogError("Atmosphere", "Energy being set to " + value);
-            }
-            thermalEnergy = value;
-        }
-    }
+    public float ThermalEnergy { get; private set; }
 
     #region gas
     /// <summary>
@@ -85,8 +73,8 @@ public class AtmosphereComponent
     /// <summary>
     /// Sets the amount of gas of this type to the value. Temperature will stay constant.
     /// </summary>
-    /// <param name="gasName">Gas name.</param>
-    /// <param name="amount">Amount.</param>
+    /// <param name="gasName">The name of the gas whose value is set.</param>
+    /// <param name="amount">The amount of gas to set it to.</param>
     public void SetGas(string gasName, float value)
     {
         float delta = value - GetGasAmount(gasName);
@@ -161,7 +149,7 @@ public class AtmosphereComponent
     /// <param name="amount">Amount of gas to move.</param>
     public void MoveGasTo(AtmosphereComponent destination, float amount)
     {
-        if(destination == null)
+        if (destination == null)
         {
             UnityDebugger.Debugger.LogError("MoveGasTo -- Destination can not be null");
             return;
@@ -214,10 +202,11 @@ public class AtmosphereComponent
     public float GetTemperature()
     {
         float t = TotalGas.IsZero() ? 0.0f : ThermalEnergy / TotalGas;
-        if(float.IsNaN(t))
+        if (float.IsNaN(t))
         {
-            ////UnityDebugger.Debugger.Log("Atmosphere", "NaN result. Total gas = " + TotalGas + ". Energy = " + ThermalEnergy + ".");
+            UnityDebugger.Debugger.Log("Atmosphere", "NaN result. Total gas = " + TotalGas + ". Energy = " + ThermalEnergy + ".");
         }
+
         return TotalGas.IsZero() ? 0.0f : ThermalEnergy / TotalGas;
     }
 
@@ -233,7 +222,7 @@ public class AtmosphereComponent
     /// <summary>
     /// Changes the energy.
     /// </summary>
-    /// <param name="amount">Amount.</param>
+    /// <param name="amount">The amount of energy added or removed from the total.</param>
     public void ChangeEnergy(float amount)
     {
         ThermalEnergy += Mathf.Max(-ThermalEnergy, amount);

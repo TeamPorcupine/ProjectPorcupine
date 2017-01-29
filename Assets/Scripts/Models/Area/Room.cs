@@ -190,7 +190,7 @@ namespace ProjectPorcupine.Rooms
             {
                 string k = gas.Name;
                 float v = (float)gas.Value;
-                Atmosphere.SetGas(k,v);
+                Atmosphere.SetGas(k, v);
             }
         }
 

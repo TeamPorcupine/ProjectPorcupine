@@ -8,8 +8,8 @@
 #endregion
 
 using System;
-using UnityEngine;
 using ProjectPorcupine.Rooms;
+using UnityEngine;
 
 public static class AtmosphereUtils
 {
@@ -40,7 +40,7 @@ public static class AtmosphereUtils
         {
             UnityDebugger.Debugger.Log("MovePercentageOfAtmosphere -- Ratio is out of bounds: " + ratio);
         }
+
         source.MoveGasTo(destination, ratio * source.GetGasAmount());
     }
 }
-    
