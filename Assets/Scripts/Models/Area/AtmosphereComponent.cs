@@ -70,7 +70,7 @@ public class AtmosphereComponent
     /// <param name="gasName">Name of the gas.</param>
     public float GetGasFraction(string gasName)
     {
-        return TotalGas != 0 ? GetGasAmount(gasName) / TotalGas : 0;
+        return TotalGas > 0 ? GetGasAmount(gasName) / TotalGas : 0.0f;
     }
 
     /// <summary>
@@ -257,7 +257,5 @@ public class AtmosphereComponent
             TotalGas += amount;
             gasses[gasName] += amount;
         }
-
-        TotalGas += amount;
     }
 }
