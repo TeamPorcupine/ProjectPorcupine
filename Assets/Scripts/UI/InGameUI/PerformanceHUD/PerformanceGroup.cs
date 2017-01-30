@@ -41,6 +41,7 @@ public class PerformanceGroupReader : IPrototypable
     public void ReadXmlPrototype(XmlReader reader)
     {
         string name = reader.GetAttribute("Name");
+
         bool disableUI = XmlConvert.ToBoolean(reader.GetAttribute("DisableUI").ToLower());
 
         if (name == null)
@@ -52,12 +53,36 @@ public class PerformanceGroupReader : IPrototypable
 
         while (reader.Read())
         {
-            if (reader.Name == "ClassName")
+            if (reader.Name == "Option")
             {
+                reader.MoveToContent();
                 options.Add(reader.GetAttribute("ClassName"));
+            }
+            else if (reader.Name == "ComponentGroup")
+            {
+                if (name != null)
+                {
+                    groups.Add(new PerformanceGroup(name, options.ToArray(), disableUI));
+                }
+
+                name = reader.GetAttribute("Name");
+
+                if (reader.Name == "DisableUI")
+                {
+                    disableUI = XmlConvert.ToBoolean(reader.GetAttribute("DisableUI").ToLower());
+                }
+                else
+                {
+                    disableUI = false;
+                }
+
+                options.Clear();
             }
         }
 
-        groups.Add(new PerformanceGroup(name, options.ToArray(), disableUI));
+        if (name != null)
+        {
+            groups.Add(new PerformanceGroup(name, options.ToArray(), disableUI));
+        }
     }
 }

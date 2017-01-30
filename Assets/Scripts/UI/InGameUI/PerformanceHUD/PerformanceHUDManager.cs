@@ -63,12 +63,9 @@ public class PerformanceHUDManager : MonoBehaviour
             groupPointer = allGroups.First(x => x.Key.name == "none").Key;
         }
 
-        Debug.LogWarning(groupPointer.name);
-
         // Draw and Begin UI Functionality
         foreach (BasePerformanceHUDElement elementName in allGroups[groupPointer])
         {
-            Debug.LogWarning(elementName.GetName());
             GameObject go = elementName.InitializeElement();
             go.transform.SetParent(rootObject.transform);
             go.name = elementName.GetName();
@@ -103,7 +100,7 @@ public class PerformanceHUDManager : MonoBehaviour
             {
                 if (FunctionsManager.PerformanceHUD.HasFunction("Get" + groups[i].elementNames[j]))
                 {
-                    elements[j] = FunctionsManager.SettingsMenu.Call("Get" + groups[i].elementNames[j]).ToObject<BasePerformanceHUDElement>();
+                    elements[j] = FunctionsManager.PerformanceHUD.Call("Get" + groups[i].elementNames[j]).ToObject<BasePerformanceHUDElement>();
                 }
                 else
                 {

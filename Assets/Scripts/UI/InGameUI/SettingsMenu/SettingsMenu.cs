@@ -82,6 +82,7 @@ public class SettingsMenu : MonoBehaviour
                     if (elementCopy != null && elementCopy.valueChanged)
                     {
                         instance.changesTracker.Add(elementCopy);
+                        instance.Apply();
                     }
                 }
             }
@@ -127,6 +128,7 @@ public class SettingsMenu : MonoBehaviour
                     if (instance.options[instance.currentCategory][headingName][i] != null)
                     {
                         heading.AddObjectToRoot(instance.options[instance.currentCategory][headingName][i].InitializeElement());
+                        instance.options[instance.currentCategory][headingName][i].valueChanged = false;
                     }
                 }
             }

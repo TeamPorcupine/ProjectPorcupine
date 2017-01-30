@@ -34,7 +34,7 @@
       <Option Name="Console Font Size" Key="DialogBoxSettingsDevConsole_consoleFontSize" DefaultValue="15" ClassName="FontSizeSlider"></Option>
     </OptionHeading>
     <OptionHeading Name="Utilities">
-      <Option Name="Performance HUD" Key="DialogBoxSettingsDevConsole_performanceGroup" DefaultValue="1" ClassName="PerformanceHUDComboBox" />
+      <Option Name="Performance HUD" Key="DialogBoxSettingsDevConsole_performanceGroup" DefaultValue="none" ClassName="PerformanceHUDComboBox" />
     </OptionHeading>
     <OptionHeading Name="God Mode Settings">
       <Option Name="Developer Mode" Key="DialogBoxSettingsDevConsole_developerModeToggle" DefaultValue="false" ClassName="DeveloperModeToggle" />
