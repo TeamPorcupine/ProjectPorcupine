@@ -36,7 +36,7 @@ public class PerformanceHUDManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Clean and Re-Draw
+    /// Clean and Re-Draw.
     /// </summary>
     public static void DirtyUI()
     {
