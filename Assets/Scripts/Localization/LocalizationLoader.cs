@@ -85,7 +85,7 @@ namespace ProjectPorcupine.Localization
             }
 
             // Update localization from the internet.
-            StartCoroutine(LocalizationDownloader.CheckIfCurrentLocalizationIsUpToDate(delegate { UpdateLocalizationTable(); }));
+            StartCoroutine(LocalizationDownloader.UpdateLocalization(delegate { UpdateLocalizationTable(); }));
 
             // Even though it's ran again in start, UpdateLocalizationTable still needs ran here to actually have the chose language
             // show on start, I don't really know why.

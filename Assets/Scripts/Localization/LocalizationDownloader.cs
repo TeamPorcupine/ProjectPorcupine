@@ -6,403 +6,395 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml;
-using ICSharpCode.SharpZipLib.Zip;
+
+using DiffMatchPatch;
+
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace ProjectPorcupine.Localization
 {
-    /*
-                                                 ,  ,
-                                               / \/ \
-                                              (/ //_ \_
-     .-._                                      \||  .  \
-      \  '-._                            _,:__.-"/---\_ \
- ______/___  '.    .--------------------'~-'--.)__( , )\ \
-`'--.___  _\  /    |             Here        ,'    \)|\ `\|
-     /_.-' _\ \ _:,_          Be Dragons           " ||   (
-   .'__ _.' \'-/,`-~`                                |/
-       '. ___.> /=,|  Abandon hope all ye who enter  |
-        / .-'/_ )  '---------------------------------'
-        )'  ( /(/
-             \\ "
-              '=='
-    */
-
     /// <summary>
-    /// This class makes sure that your localization is up to date. It does that by comparing latest know commit hash
-    /// (which is stored in Application.streamingAssetsPath/Localization/curr.ver) to the latest hash available through
-    /// GitHub. If the hashes don't match or curr.ver doesn't exist a new zip containing
-    /// localization will be downloaded from GitHub repo. Then, the zip is stored in the memory and waits for
-    /// Application.streamingAssetsPath/Localization to be cleaned. When It's empty the zip gets unpacked and saved
-    /// to hard drive using ICSharpCode.SharpZipLib.Zip library. Every GitHub zip download has a folder with
-    /// *ProjectName*-*BranchName* so all of it's content needs to be moved to Application.streamingAssetsPath/Localization.
-    /// After that the folder get's deleted and new curr.ver file is created containing latest hash.
-    /// GitHub's branch name corresponds to World.current.gameVersion, so that the changes in localization
-    /// for version 0.2 won't affect users who haven't updated yet from version 0.1.
+    /// This class makes sure that your localization is up to date.
+    /// If we haven't ever started the program then it first downloads the config file, parses it and then
+    /// downloads the files using rawgit.com's CDN then adds the date in ISO 8601 format to config.xml.
+    /// If we have started ProjectPorcupine then it uses the Github API to check for the latest changes.
+    /// If there are changes, then we download the details of the commits, including the changes of each file.
+    /// We then use Google's DiffMatchPatch to change the files, so that we don't need to re-download the file.
     /// </summary>
     public static class LocalizationDownloader
     {
-        // TODO: Change this to the official repo before PR.
-        private static readonly string LocalizationRepositoryZipLocation = "https://github.com/QuiZr/ProjectPorcupineLocalization/archive/" + GameController.GameVersion + ".zip";
+        // NOTE: Should be moved to the official TeamPorcupine repository.
+        private const string LocalizationRepository = "QuiZr/ProjectPorcupineLocalization/";
 
-        // TODO: Change this to the official repo before PR.
-        private static readonly string LastCommitGithubApiLocation = "https://api.github.com/repos/QuiZr/ProjectPorcupineLocalization/commits/" + GameController.GameVersion;
+        // TODO: Migrate to json or SKON.
+        private const string LocalizationConfigName = "config.xml";
 
+        // NOTE: StreamingAssetsPath is read-only on android and iOS.
         private static readonly string LocalizationFolderPath = Path.Combine(Application.streamingAssetsPath, "Localization");
 
-        // Object for downloading localization data from web.
-        private static WWW www;
+        private static readonly string ConfigPath = Path.Combine(LocalizationFolderPath, LocalizationConfigName);
 
-        /// <summary>
-        /// Check if there are any new updates for localization. TODO: Add a choice for a user to not update it right now.
-        /// </summary>
-        public static IEnumerator CheckIfCurrentLocalizationIsUpToDate(Action onLocalizationDownloadedCallback)
+        public static IEnumerator UpdateLocalization(System.Action onFinished)
         {
-            string currentLocalizationVersion = GetLocalizationVersionFromConfig();
-
-            // Check the latest localization version through the GitHub API.
-            WWW versionChecker = new WWW(LastCommitGithubApiLocation);
-
-            // yield until API response is downloaded
-            yield return versionChecker;
-
-            if (string.IsNullOrEmpty(versionChecker.error) == false)
+            if (!File.Exists(ConfigPath))
             {
-                // This could be a thing when for example user has no internet connection.
-                UnityDebugger.Debugger.LogError("LocalizationDownloader", "Error while checking for localization updates. Are you sure that you're connected to the internet?");
-                UnityDebugger.Debugger.LogError("LocalizationDownloader", versionChecker.error);
-                yield break;
+                // Download all of the localization
+                yield return DownloadLocalization();
+            }
+            else if (Settings.GetSetting("autoUpdateLocalization", true))
+            {
+                // Check if we have any updates to the localization
+                yield return GetChangesSinceDate();
             }
 
-            // Let's try to filter that response and get the latest hash from it.
-            // There is a possibility that the versionChecker.text will be corrupted
-            // (i.e. when you pull the Ethernet plug while downloading so thats why 
-            // a little try-catch block is there.
-            string latestCommitHash = string.Empty;
-            try
-            {
-                latestCommitHash = GetHashOfLastCommitFromAPIResponse(versionChecker.text);
-            }
-            catch (Exception e)
-            {
-                UnityDebugger.Debugger.LogError("LocalizationDownloader", e.Message);
-            }
-
-            if (latestCommitHash != currentLocalizationVersion)
-            {
-                // There are still some updates available. We should probably notify
-                // user about it and offer him an option to download it right now.
-                // For now... Let's just force it >.> Beginners task!
-                UnityDebugger.Debugger.Log("LocalizationDownloader", "There is an update for localization files!");
-                yield return DownloadLocalizationFromWeb(onLocalizationDownloadedCallback);
-
-                // Because config.xml exists in the new downloaded localization, we have to add the version element to it.
-                try
-                {
-                    string configPath = Path.Combine(LocalizationFolderPath, "config.xml");
-                    XmlDocument document = new XmlDocument();
-                    document.Load(configPath);
-                    XmlNode node = document.SelectSingleNode("//config");
-
-                    XmlElement versionElement = document.CreateElement("version");
-                    versionElement.SetAttribute("hash", latestCommitHash);
-                    node.InsertBefore(versionElement, document.SelectSingleNode("//languages"));
-                    document.Save(configPath);
-                }
-                catch (Exception e)
-                {
-                    // Not a big deal:
-                    // Next time the LocalizationDownloader will force an update.
-                    UnityDebugger.Debugger.LogWarning("LocalizationDownloader", "Writing version in config.xml file failed: " + e.Message);
-                    throw;
-                }
-            }
-        }
-
-        // For now Unity's implementation of .net WebClient will do just fine,
-        // especially that it doesn't have problems with downloading from https.
-        private static IEnumerator DownloadLocalizationFromWeb(Action onLocalizationDownloadedCallback)
-        {
-            // If there were some files downloading previously (maybe user tried to download the newest
-            // language pack and mashed a download button?) just cancel them and start a new one.
-            if (www != null)
-            {
-                www.Dispose();
-            }
-
-            UnityDebugger.Debugger.Log("LocalizationDownloader", "Localization files download has started");
-
-            www = new WWW(LocalizationRepositoryZipLocation);
-
-            // Wait for www to download current localization files.
-            yield return www;
-
-            UnityDebugger.Debugger.Log("LocalizationDownloader", "Localization files download has finished!");
-
-            // Almost like a callback call
-            OnDownloadLocalizationComplete(onLocalizationDownloadedCallback);
+            UnityDebugger.Debugger.Log("LocalizationDownloader", "Localization has finished downloading.");
+            onFinished();
         }
 
         /// <summary>
-        /// Callback for DownloadLocalizationFromWeb. 
-        /// It replaces current content of localizationFolderPath with fresh, downloaded one.
+        /// Parses the config file and returns all of the available translations.
+        /// TODO: Migrate config.xml to json or SKON.
         /// </summary>
-        private static void OnDownloadLocalizationComplete(Action onLocalizationDownloadedCallback)
+        private static ArrayList GetTranslations()
         {
-            if (www.isDone == false)
+            ArrayList translations = new ArrayList();
+            XmlReader reader = XmlReader.Create(ConfigPath);
+            while (reader.Read())
             {
-                // This should never happen.
-                UnityDebugger.Debugger.LogError("LocalizationDownloader", "OnDownloadLocalizationComplete got called before www finished downloading.");
-                www.Dispose();
-                return;
-            }
-
-            if (string.IsNullOrEmpty(www.error) == false)
-            {
-                // This could be a thing when for example user has no internet connection.
-                UnityDebugger.Debugger.LogError("LocalizationDownloader", "Error while downloading localizations files.");
-                UnityDebugger.Debugger.LogError("LocalizationDownloader", www.error);
-                return;
-            }
-
-            // Clean the Localization folder and return it's info.
-            DirectoryInfo localizationFolderInfo = ClearLocalizationDirectory();
-
-            // Turn's out that System.IO.Compression.GZipStream is not working in unity:
-            // http://forum.unity3d.com/threads/cant-use-gzipstream-from-c-behaviours.33973/
-            // So I need to use some sort of 3rd party solution.
-
-            // Convert array of downloaded bytes to stream.
-            using (ZipInputStream zipReadStream = new ZipInputStream(new MemoryStream(www.bytes)))
-            {
-                // Unpack zip to the hard drive.
-                ZipEntry theEntry;
-
-                // While there are still files inside zip archive.
-                while ((theEntry = zipReadStream.GetNextEntry()) != null)
+                if (reader.NodeType == XmlNodeType.Element && reader.Name == "language")
                 {
-                    string directoryName = Path.GetDirectoryName(theEntry.Name);
-                    string fileName = Path.GetFileName(theEntry.Name);
-
-                    // If there was a subfolder in zip (which there probably is) create one.
-                    if (string.IsNullOrEmpty(directoryName) == false)
+                    if (reader.HasAttributes)
                     {
-                        string directoryFullPath = Path.Combine(LocalizationFolderPath, directoryName);
-                        if (Directory.Exists(directoryFullPath) == false)
+                        string attribute = reader.GetAttribute("code");
+                        if (attribute != "en_US")
                         {
-                            Directory.CreateDirectory(directoryFullPath);
-                        }
-                    }
-
-                    // Read files from stream to files on HDD.
-                    // 2048 buffer should be plenty.
-                    if (string.IsNullOrEmpty(fileName) == false && !fileName.StartsWith("en_US.lang"))
-                    {
-                        string fullFilePath = Path.Combine(LocalizationFolderPath, theEntry.Name);
-                        using (FileStream fileWriter = File.Create(fullFilePath))
-                        {
-                            int size = 2048;
-                            byte[] fdata = new byte[2048];
-                            while (true)
-                            {
-                                size = zipReadStream.Read(fdata, 0, fdata.Length);
-                                if (size > 0)
-                                {
-                                    fileWriter.Write(fdata, 0, size);
-                                }
-                                else
-                                {
-                                    break;
-                                }
-                            }
+                            translations.Add(attribute);
                         }
                     }
                 }
             }
 
-            // At this point we should have an subfolder in Application.streamingAssetsPath/Localization
-            // called ProjectPorcupineLocalization-*branch name*. Now we need to move all files from that directory
-            // to Application.streamingAssetsPath/Localization.
-            FileInfo[] fileInfo = localizationFolderInfo.GetFiles();
-            foreach (FileInfo file in fileInfo)
-            {
-                if (file.Name != "en_US.lang" && file.Name != "en_US.lang.meta")
-                {
-                    UnityDebugger.Debugger.LogError("LocalizationDownloader", "There should only be en_US.lang and en_US.lang.meta. Instead there is: " + file.Name);
-                }
-            }
-
-            DirectoryInfo[] dirInfo = localizationFolderInfo.GetDirectories();
-            if (dirInfo.Length > 1)
-            {
-                UnityDebugger.Debugger.LogError("LocalizationDownloader", "There should be only one directory");
-            }
-
-            // Move files from ProjectPorcupineLocalization-*branch name* to Application.streamingAssetsPath/Localization.
-            string[] filesToMove = Directory.GetFiles(dirInfo[0].FullName);
-
-            foreach (string file in filesToMove)
-            {
-                string fileName = Path.GetFileName(file);
-                string destFile = Path.Combine(LocalizationFolderPath, fileName);
-                File.Copy(file, destFile, true);
-                File.Delete(file);
-            }
-
-            // Remove ProjectPorcupineLocalization-*branch name*
-            Directory.Delete(dirInfo[0].FullName);
-
-            UnityDebugger.Debugger.Log("LocalizationDownloader", "New localization files successfully downloaded!");
-
-            onLocalizationDownloadedCallback();
+            reader.Close();
+            return translations;
         }
-
-        private static DirectoryInfo ClearLocalizationDirectory()
+        
+        /// <summary>
+        /// Downloads the localization files from the localization repository using rawgit CDN.
+        /// If you don't provide any parameters it will just download all of the files.
+        /// </summary>
+        /// <param name="list">A list of files to download and update.</param>
+        /// <param name="hash">If you want to provide a specific commit hash (sha).</param>
+        private static IEnumerator DownloadLocalization(string[] list = null, string hash = null)
         {
-            DirectoryInfo localizationFolderInfo = new DirectoryInfo(LocalizationFolderPath);
-            foreach (FileInfo file in localizationFolderInfo.GetFiles())
+            if (list == null)
             {
-                // If there are files without that extension then:
-                // a) someone made a change to localization system and didn't update this
-                // b) We are in a wrong directory, so let's hope we didn't delete anything important.
-                if (file.Extension != ".lang" && file.Extension != ".meta" && file.Extension != ".ver" && file.Extension != ".md" && file.Name != "config.xml")
+                // Just going to download everything
+                UnityWebRequest downloadConfig = UnityWebRequest.Get("https://cdn.rawgit.com/" + LocalizationRepository + GameController.GameVersion + "/" + LocalizationConfigName);
+                yield return downloadConfig.Send();
+                if (downloadConfig.isError)
                 {
-                    UnityDebugger.Debugger.LogError("LocalizationDownloader", "SOMETHING WENT HORRIBLY WRONG AT DOWNLOADING LOCALIZATION!");
-                    throw new Exception("SOMETHING WENT HORRIBLY WRONG AT DOWNLOADING LOCALIZATION!");
+                    UnityDebugger.Debugger.LogError("LocalizationDownloader", "Error while downloading localization for the first time. Are you connected to the internet? \n" + downloadConfig.error);
+                    yield break;
                 }
 
-                if (file.Name != "en_US.lang" && file.Name != "en_US.lang.meta")
+                if (File.Exists(ConfigPath))
                 {
-                    file.Delete();
+                    File.Delete(ConfigPath);
+                }
+
+                File.WriteAllBytes(ConfigPath, downloadConfig.downloadHandler.data);
+                
+                // Download the translation files.
+                foreach (string locale in GetTranslations())
+                {
+                    string path = Path.Combine(LocalizationFolderPath, locale + ".lang");
+                    UnityWebRequest www = UnityWebRequest.Get("https://cdn.rawgit.com/" + LocalizationRepository + GameController.GameVersion + "/" + locale + ".lang");
+                    yield return www.Send();
+
+                    if (www.isError)
+                    {
+                        UnityDebugger.Debugger.LogError("LocalizationDownloader", "Error while downloading locale " + locale + " for the first time. Are you connected to the internet? \n" + www.error);
+                        yield break;
+                    }
+
+                    if (File.Exists(path))
+                    {
+                        File.Delete(path);
+                    }
+
+                    File.WriteAllBytes(path, www.downloadHandler.data);
+                }
+
+                WriteLocalizationDate();
+            }
+            else
+            {
+                string url;
+
+                // We need a different url if a hash is provided.
+                if (string.IsNullOrEmpty(hash))
+                {
+                    url = "https://cdn.rawgit.com/" + LocalizationRepository + GameController.GameVersion + "/";
+                }
+                else
+                {
+                    url = "https://cdn.rawgit.com/" + LocalizationRepository + hash + "/";
+                }
+
+                foreach (string file in list)
+                {
+                    string path = Path.Combine(LocalizationFolderPath, file);
+                    UnityWebRequest www = UnityWebRequest.Get(url + file);
+                    yield return www.Send();
+                    
+                    if (www.isError)
+                    {
+                        UnityDebugger.Debugger.LogError("LocalizationDownloader", "Error while downloading file " + file + " using rawgit. Are you sure your connected to the internet? \n" + www.error);
+                        yield break;
+                    }
+
+                    if (File.Exists(path))
+                    {
+                        File.Delete(path);
+                    }
+
+                    File.WriteAllBytes(path, www.downloadHandler.data);
                 }
             }
 
-            foreach (DirectoryInfo dir in localizationFolderInfo.GetDirectories())
-            {
-                dir.Delete();
-            }
-
-            return localizationFolderInfo;
+            yield return null;
         }
 
         /// <summary>
-        /// Reads Application.streamingAssetsPath/Localization/config.xml making sure that Localization folder exists.
+        /// This uses the GitHub api to get all of the commits since a date (recorded in config.xml).
+        /// This is better for when/if we get very large translation files and we don't want to download all of the files when only one is changed.
+        /// TODO: Migrate config.xml to json or SKON.
         /// </summary>
-        private static string GetLocalizationVersionFromConfig()
+        private static IEnumerator GetChangesSinceDate()
         {
-            string localizationConfigFilePath = Path.Combine(LocalizationFolderPath, "config.xml");
-
-            string currentLocalizationVersion = null;
+            string lastDate = string.Empty;
+            XmlReader reader = XmlReader.Create(ConfigPath);
             try
             {
-                XmlReader reader = XmlReader.Create(localizationConfigFilePath);
                 while (reader.Read())
                 {
                     if (reader.NodeType == XmlNodeType.Element && reader.Name == "version")
                     {
                         if (reader.HasAttributes)
                         {
-                            currentLocalizationVersion = reader.GetAttribute("hash");
-                            break;
+                            lastDate = reader.GetAttribute("date");
                         }
                     }
                 }
-
-                reader.Close();
-            }
-            catch (FileNotFoundException)
+            } 
+            catch (XmlException e)
             {
-                // It's fine - we will create that file later.
-                UnityDebugger.Debugger.Log("LocalizationDownloader", localizationConfigFilePath + " file not found, forcing an update.");
+                UnityDebugger.Debugger.LogError("LocalizationDownloader", "XML Error while parsing config.xml. config.xml's XML must be formatted incorrectly. \n" + e);
             }
-            catch (DirectoryNotFoundException)
+            catch (System.Exception e)
             {
-                // This is probably first launch of the game.
-                UnityDebugger.Debugger.Log("LocalizationDownloader", LocalizationFolderPath + " folder not found, creating...");
+                UnityDebugger.Debugger.LogError("LocalizationDownloader", "Error while parsing config.xml. \n" + e);
+            }
 
-                try
+            reader.Close();
+            if (string.IsNullOrEmpty(lastDate))
+            {
+                UnityDebugger.Debugger.LogError("LocalizationDownloader", "Error while trying to get the date of the last update. I'm going to re-download everything.");
+                yield return DownloadLocalization();
+
+                // We re-download everything because most-likely the're using the old version of the config file that includes the hash rather than the date.
+                yield break;
+            }
+
+            // Here is a good example output: https://api.github.com/repos/QuiZr/ProjectPorcupineLocalization/commits?since=2016-10-25T04:15:52Z&sha=Someone_will_come_up_with_a_proper_naming_scheme_later
+            string request = "https://api.github.com/repos/" + LocalizationRepository + "commits?since=" + lastDate + "&sha=" + GameController.GameVersion;
+
+            WWW www = new WWW(request);
+            yield return www;
+                    
+            if (!string.IsNullOrEmpty(www.error))
+            {
+                UnityDebugger.Debugger.LogError("LocalizationDownloader", "Error while downloading commits information using the GitHub API. \n" + www.error);
+                yield break;
+            }
+
+            JArray array = JArray.Parse(www.text);
+            List<string> hashes = array.Select(o => (string)o["sha"]).ToList();
+
+            // We need to reverse the hashes because we want to deal with the oldest changes first.
+            hashes.Reverse();
+
+            foreach (string hash in hashes)
+            {
+                // Example hashRequest: https://api.github.com/repos/QuiZr/ProjectPorcupineLocalization/commits/fde139ae1d8fcf82bb145bbc99ed41763202e28f
+                string hashRequest = "https://api.github.com/repos/" + LocalizationRepository + "commits/" + hash;
+                UnityWebRequest wwwHash = UnityWebRequest.Get(hashRequest);
+                yield return wwwHash.Send();
+                    
+                if (wwwHash.isError)
                 {
-                    Directory.CreateDirectory(LocalizationFolderPath);
+                    UnityDebugger.Debugger.LogError("LocalizationDownloader", "Error while downloading commit " + hash + " using the GitHub API. \n" + wwwHash.error);
+                    yield break;
                 }
-                catch (Exception e)
-                {
-                    // If any exception happen here then we don't have a Localization folder in place
-                    // so we can just throw - we won't do anything good here.
-                    throw e;
-                }
-            }
-            catch (Exception e)
-            {
-                // i.e. UnauthorizedAccessException, NotSupportedException or UnauthorizedAccessException.
-                // Those should never happen and if they do something is really fucked up so we should
-                // probably start a fire, call 911 or at least throw an exception.
-                throw e;
-            }
 
-            return currentLocalizationVersion;
+                GithubCommit commit = JsonConvert.DeserializeObject<GithubCommit>(wwwHash.downloadHandler.text);
+                foreach (GithubFile file in commit.Files)
+                {
+                    string path = Path.Combine(LocalizationFolderPath, file.Filename);
+                    
+                    switch (file.Status)
+                    {
+                        case "removed":
+                            UnityDebugger.Debugger.Log("LocalizationDownloader", "Removing the file " + file.Filename + "from the localization.");
+                            if (!File.Exists(path))
+                            {
+                                UnityDebugger.Debugger.LogError("LocalizationDownloader", "I was going to remove the file " + file.Filename + " from the localization, but it's not even there!");
+                                break;
+                            }
+
+                            File.Delete(path);
+                            break;
+
+                        case "modified":
+                            UnityDebugger.Debugger.Log("LocalizationDownloader", "Patching/modifing the file " + file.Filename + ".");
+
+                            // Let us make sure the file exists before we try to modify it.
+                            if (!File.Exists(path))
+                            {
+                                UnityDebugger.Debugger.LogError("LocalizationDownloader", "Error while patching file " + file.Filename + " for the localization. The file doesn't exist, so I'll download it.");
+                                DownloadLocalization(new string[] { file.Filename }, hash);
+                                break;
+                            }
+
+                            // Patch the file
+                            List<Patch> patches = Patcher.PatchFromText(file.Patch);
+                            object[] patch = Patcher.PatchApply(patches, File.ReadAllText(path));
+
+                            // Let's see if the patch applied correctly.
+                            bool[] boolArray = (bool[])patch[1];
+                            if (boolArray.Length == 0 || !boolArray[0] || !boolArray[1])
+                            {
+                                UnityDebugger.Debugger.LogError("LocalizationDownloader", "Error while patching file " + file.Filename + " for the localization. I'll just download it.");
+                                DownloadLocalization(new string[] { file.Filename }, hash);
+                                yield break;
+                            }
+
+                            File.WriteAllText(path, patch[0].ToString());
+                            break;
+
+                        case "added":
+                            UnityDebugger.Debugger.Log("LocalizationDownloader", "Adding the file " + file.Filename + " to the localization.");
+                            
+                            DownloadLocalization(new string[] { file.Filename }, hash);
+                            break;
+                        
+                        case "renamed":
+                            UnityDebugger.Debugger.Log("LocalizationDownloader", "Renaming the file " + file.Previous_filename + " to " + file.Filename + " to the localization.");
+                            string oldPath = Path.Combine(LocalizationFolderPath, file.Previous_filename);
+                            
+                            // If the file we are trying to rename doesn't exist then we can just download the new file.
+                            if (!File.Exists(oldPath))
+                            {
+                                DownloadLocalization(new string[] { file.Filename }, hash);
+                                break;
+                            }
+                            
+                            // If the file we are trying to rename to already exists, then just delete it.
+                            if (File.Exists(path))
+                            {
+                                File.Delete(path);
+                            }
+                            
+                            // Move, AKA rename the file.
+                            File.Move(oldPath, path);
+                            break;
+
+                        default:
+                            string error  = "Error while parsing Github commit: " + hash + 
+                                                   ". The file " + file.Filename + " has an unkown status of " + file.Status + ".";
+                            UnityDebugger.Debugger.LogError("LocalizationDownloader", error);
+                            yield break;
+                    }
+                }
+            }
         }
 
         /// <summary>
-        /// This is a really wonky way of parsing JSON. I didn't want to include something like
-        /// Json.NET library purely for this functionality but if we will be using it somewhere else
-        /// this need to change. DO NOT TOUCH and this will be fine.
+        /// Writes the current date and time to localization.
+        /// The GitHub api requires the date to be ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ.
+        /// TODO: Migrate config.xml to json or SKON.
         /// </summary>
-        /// <param name="githubApiResponse">GitHub API response.</param>
-        /// <returns></returns>
-        private static string GetHashOfLastCommitFromAPIResponse(string githubApiResponse)
+        private static void WriteLocalizationDate()
         {
-            if (string.IsNullOrEmpty(githubApiResponse))
-            {
-                throw new ArgumentNullException("githubApiResponse");
-            }
+            XmlDocument document = new XmlDocument();
+            document.Load(ConfigPath);
 
-            string hashSearchPattern = "sha\":\"";
+            XmlNode node = document.SelectSingleNode("//config");
+            XmlElement versionElement = document.CreateElement("version");
+           
+            // The GitHub api requires the date to be ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ.
+            versionElement.SetAttribute("date", DateTime.UtcNow.ToString("o"));
+            node.InsertBefore(versionElement, document.SelectSingleNode("//languages"));
+            
+            document.Save(ConfigPath);
+        }
 
-            // Index of the first char of hash. 
-            int index = githubApiResponse.IndexOf(hashSearchPattern);
+        /// <summary>
+        /// A file that was modified in a GitHub commit.
+        /// </summary>
+        private class GithubFile
+        {
+            /// <summary>
+            /// The sha of the file, which is just a string of numbers.
+            /// </summary>
+            public string Sha { get; set; }
 
-            if (index == -1)
-            {
-                // Either the response was damaged or GitHub API returned an error.
-                throw new Exception("Error at parsing JSON - sha\":\" not found.");
-            }
+            /// <summary>
+            /// The name of the file that was modified.
+            /// </summary>
+            public string Filename { get; set; }
 
-            // hashSearchPattern length
-            index += 6;
+            /// <summary>
+            /// The status of the modification. ie, Deleted, modified, Added or Renamed.
+            /// </summary>
+            public string Status { get; set; }
 
-            // + 1 for that while loop first run.
-            if (index + 1 >= githubApiResponse.Length - 1)
-            {
-                // Either the response was damaged or GitHub API returned an error.
-                throw new Exception("Error at parsing JSON - githubApiResponse too short.");
-            }
+            /// <summary>
+            /// The changes done to the file in the format of an Unix patch file.
+            /// </summary>
+            public string Patch { get; set; }
 
-            char currentChar = githubApiResponse[index];
+            /// <summary>
+            /// Only shows up if the status is of the renaming type.
+            /// </summary>
+            public string Previous_filename { get; set; }
+        }
 
-            // Hash of the commit.
-            string hash = string.Empty;
+        /// <summary>
+        /// Based on the GitHub API version 3's json for fetching a list of commits.
+        /// </summary>
+        private class GithubCommit
+        {
+            /// <summary>
+            /// The sha of the commit, which is just a string of numbers.
+            /// </summary>
+            public string Sha { get; set; }
 
-            // Get the commit hash
-            do
-            {
-                hash += currentChar;
-                index++;
-                currentChar = githubApiResponse[index];
-
-                // Check if this is the end of the commit string.
-                if (index + 1 == githubApiResponse.Length - 1)
-                {
-                    // Either the response was damaged or GitHub API returned an error.
-                    throw new Exception("Error at parsing JSON - hash closing tag not found.");
-                }
-            }
-            while (currentChar != '\"');
-
-            return hash;
+            /// <summary>
+            /// The list of files that were changed in the commit.
+            /// </summary>
+            public GithubFile[] Files { get; set; }
         }
     }
 }

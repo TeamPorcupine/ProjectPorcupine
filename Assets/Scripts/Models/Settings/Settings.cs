@@ -20,6 +20,8 @@ public static class Settings
 	'worldWidth' : 101,
 	'worldHeight' : 101,
 	'localization' : 'en_US',
+    'DialogBoxSettings_autoUpdateLocalization' : true,
+	'DialogBoxSettings_performanceGroup' : 1,
 	'DialogBoxSettings_fullScreenToggle' : true,
 	'DialogBoxSettings_qualityDropdown' : 2,
 	'DialogBoxSettings_vSyncDropdown' : 0,
