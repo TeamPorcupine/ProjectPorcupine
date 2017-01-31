@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
@@ -8,6 +8,7 @@
 #endregion
 using System.Text;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class CurrencyDisplay : MonoBehaviour
@@ -17,6 +18,12 @@ public class CurrencyDisplay : MonoBehaviour
 
     private void Start()
     {
+        if (SceneManager.GetActiveScene().name != "_World")
+        {
+            gameObject.SetActive(false);
+            return;
+        }
+
         currencies = World.Current.Wallet.GetCurrencyNames();
     }
 
