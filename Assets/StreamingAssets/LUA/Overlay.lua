@@ -63,7 +63,7 @@ function thermalDiffusivityValueAt(tile, world)
     if tile == nil then
         return 255
     else
-        return math.max(math.min(254*world.temperature.GetThermalDiffusivity(tile.X, tile.Y, tile.Z)))
+        return 255
     end
 end
 
