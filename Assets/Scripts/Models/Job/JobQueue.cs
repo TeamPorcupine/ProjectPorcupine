@@ -131,14 +131,14 @@ public class JobQueue
             {
                 if (CharacterCantReachHelper(job, character))
                 {
-                    UnityDebugger.Debugger.LogError("Character could not find a path to the job site.");
+                    UnityDebugger.Debugger.LogError("JobQueue", "Character could not find a path to the job site.");
                     ReInsertHelper(job);
                     continue;
                 }
                 else if ((job.RequestedItems.Count > 0) && !job.CanGetToInventory(character))
                 {
                     job.AddCharCantReach(character);
-                    UnityDebugger.Debugger.LogError("Character could not find a path to any inventory available.");
+                    UnityDebugger.Debugger.LogError("JobQueue", "Character could not find a path to any inventory available.");
                     ReInsertHelper(job);
                     continue;
                 }

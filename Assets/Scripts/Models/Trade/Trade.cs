@@ -19,7 +19,7 @@ public class Trade
     /// <summary>
     /// Create a trade instance between two trader
     /// Creating a trade will scan the inventory of both trader and assign a trade price to each inventory
-    /// A trade is a simple pivot on 2 Stock in a format easier to display to a humman.
+    /// A trade is a simple pivot on 2 Stock in a format easier to display to a human.
     /// </summary>
     public Trade(Trader player, Trader trader)
     {
@@ -55,7 +55,7 @@ public class Trade
     }
 
     /// <summary>
-    /// Check if both trader in the trade have enougth currency to complete the deal.
+    /// Check if both trader in the trade have enough currency to complete the deal.
     /// </summary>
     /// <returns></returns>
     public bool IsValid()

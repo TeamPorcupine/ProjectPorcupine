@@ -1306,6 +1306,20 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         Rotation = rotation;
     }
 
+    public Tile[] GetAllTiles()
+    {
+        Tile[] tiles = new Tile[Height * Width];
+        for (int x = 0; x < Width; x++)
+        {
+            for (int y = 0; y < Height; y++)
+            {
+                tiles[x + (y * Width)] = World.Current.GetTileAt(Tile.X + x, Tile.Y + y, Tile.Z);
+            }
+        }
+
+        return tiles;
+    }
+
     // Make a copy of the current furniture.  Sub-classed should
     // override this Clone() if a different (sub-classed) copy
     // constructor should be run.
