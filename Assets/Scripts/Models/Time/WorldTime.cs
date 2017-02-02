@@ -5,15 +5,17 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-using System;
+using System.Globalization;
+using ProjectPorcupine.Localization;
 
 
 #endregion
 
+using System;
 using System.Text;
 using UnityEngine;
 
-public struct WorldTime
+public struct WorldTime : IFormattable
 {
     private const int DaysPerQuarter = 15;
     private const int StartingYear = 2999;
@@ -48,7 +50,7 @@ public struct WorldTime
 
         if (day < 1 || day > DaysPerQuarter)
         {
-            Debug.LogError(String.Format("Day component should be an int from 1-{0}. Defaulting to 1.", DaysPerQuarter));
+            Debug.LogError(string.Format("Day component should be an int from 1-{0}. Defaulting to 1.", DaysPerQuarter));
         }
 
         if (quarter < 1 || quarter > 4)
@@ -59,7 +61,7 @@ public struct WorldTime
 
         if (year < 0)
         {
-            Debug.LogError(String.Format("Year component should be an int greater than or equal to {0}. Defaulting to {0}", StartingYear));
+            Debug.LogError(string.Format("Year component should be an int greater than or equal to {0}. Defaulting to {0}", StartingYear));
 
             year = StartingYear;
         }
@@ -250,6 +252,135 @@ public struct WorldTime
         }
     }
 
+    public static WorldTime operator +(WorldTime time1, WorldTime time2)
+    {
+        WorldTime worldTime = new WorldTime(time1.Seconds + time2.Seconds);
+        return worldTime;
+    }
+
+    public static WorldTime operator -(WorldTime time1, WorldTime time2)
+    {
+        WorldTime worldTime = new WorldTime(time1.Seconds - time2.Seconds);
+        return worldTime;
+    }
+
+    public static bool operator <(WorldTime time1, WorldTime time2)
+    {
+        return time1.Seconds < time2.Seconds;
+    }
+
+    public static bool operator <=(WorldTime time1, WorldTime time2)
+    {
+        return time1.Seconds <= time2.Seconds;
+    }
+
+    public static bool operator >(WorldTime time1, WorldTime time2)
+    {
+        return time1.Seconds > time2.Seconds;
+    }
+
+    public static bool operator >=(WorldTime time1, WorldTime time2)
+    {
+        return time1.Seconds >= time2.Seconds;
+    }
+
+    public static bool operator ==(WorldTime time1, WorldTime time2)
+    {
+        return Math.Abs(time1.Seconds - time2.Seconds) < float.Epsilon;
+    }
+
+    public static bool operator !=(WorldTime time1, WorldTime time2)
+    {
+        return Math.Abs(time1.Seconds - time2.Seconds) > float.Epsilon;
+    }
+
+    #region IFormattable implementation
+
+    string IFormattable.ToString(string format, IFormatProvider provider)
+    {
+        if (provider == null)
+        {
+            // This try will always fail with our current language file naming scheme, as it doesn't match up with the standard.
+            // This is in place so that should it be changed, we will automatically be using the chosen language rather than the system standard.
+            try {
+                provider = CultureInfo.GetCultureInfo(LocalizationTable.currentLanguage);
+            }
+            catch (ArgumentException e)
+            {
+                provider = CultureInfo.CurrentCulture;
+            }
+        }
+
+        DateTimeFormatInfo dateTimeFormatInfo = (DateTimeFormatInfo)provider.GetFormat(typeof(DateTimeFormatInfo));
+
+        switch (format)
+        {
+            case "HH":
+                return Hour.ToString("00");
+                break;
+            case "H":
+                return Hour.ToString();
+                break;
+            case "hh":
+                int longhour = Hour;
+                if (longhour >= 12)
+                {
+                    longhour -= 12;
+                }
+
+                if (longhour == 0)
+                {
+                    longhour = 12;
+                }
+
+                return longhour.ToString("00");
+                break;
+            case "h":
+                int shorthour = Hour;
+                if (shorthour >= 12)
+                {
+                    shorthour -= 12;
+                }
+
+                if (shorthour == 0)
+                {
+                    shorthour = 12;
+                }
+
+                return shorthour.ToString();
+                break;
+            case "mm":
+                return Minute.ToString("00");
+                break;
+            case "m":
+                return Minute.ToString();
+                break;
+            case "ss":
+                return Second.ToString("00");
+                break;
+            case "s":
+                return Second.ToString();
+                break;
+            case "tt":
+                return Hour >= 12 ? dateTimeFormatInfo.PMDesignator : dateTimeFormatInfo.AMDesignator;
+            case "q":
+                return Quarter.ToString();
+            case "d":
+                return Day.ToString();
+            case "dd":
+                return Day.ToString("00");
+            case "y":
+                return Year.ToString();
+            case "G":
+                return this.ToString();
+            default:
+                return string.Empty;
+                break;
+        }
+    }
+
+    #endregion
+
     /// <summary>
     /// Returns a string that represents the WorldTime time and date (separated by linebreak).
     /// </summary>
@@ -260,7 +391,8 @@ public struct WorldTime
         // TODO: Optimally, we should have WorldTime as an IFormattable, so the format can be more easily adjusted, and doesn't require
         // separate TimeToString and DateToString methods.
         // Note: overloading is used, rather than defaults so that this plays nicely with Lua, which can't see default parameter values properly.
-        return ToString(true, true);
+        // return ToString(true, true);
+        return string.Format(LocalizationTable.GetLocalization("time_string") + "\n" + LocalizationTable.GetLocalization("date_string"), this);
     }
 
     /// <summary>
@@ -272,10 +404,10 @@ public struct WorldTime
     public string ToString(bool time, bool date)
     {
         StringBuilder sb = new StringBuilder();
-        if(time)
+        if (time)
         {
             int hour = Hour;
-            bool pm = (hour >= 12);
+            bool pm = hour >= 12;
             if (pm)
             {
                 hour -= 12;
@@ -285,6 +417,7 @@ public struct WorldTime
             {
                 hour = 12;
             }
+
             sb.AppendFormat("{0}:{1:00}{2}", hour, Minute, pm ? "pm" : "am");
         }
 
@@ -309,7 +442,6 @@ public struct WorldTime
     {
         return ToString(true, false);
     }
-
 
     /// <summary>
     /// Returns a string that represents the WorldTime date.
@@ -461,48 +593,5 @@ public struct WorldTime
     {
         Year = yearComponent;
         return this;
-    }
-
-    public static WorldTime operator +(WorldTime time1, WorldTime time2)
-    {
-        WorldTime worldTime = new WorldTime(time1.Seconds + time2.Seconds);
-        return worldTime;
-    }
-
-    public static WorldTime operator -(WorldTime time1, WorldTime time2)
-    {
-        WorldTime worldTime = new WorldTime(time1.Seconds - time2.Seconds);
-        return worldTime;
-    }
-
-    public static bool operator <(WorldTime time1, WorldTime time2)
-    {
-        return time1.Seconds < time2.Seconds;
-    }
-
-    public static bool operator <=(WorldTime time1, WorldTime time2)
-    {
-        return time1.Seconds <= time2.Seconds;
-    }
-
-    public static bool operator >(WorldTime time1, WorldTime time2)
-    {
-        return time1.Seconds > time2.Seconds;
-    }
-
-    public static bool operator >=(WorldTime time1, WorldTime time2)
-    {
-        return time1.Seconds >= time2.Seconds;
-    }
-
-    public static bool operator ==(WorldTime time1, WorldTime time2)
-    {
-        
-        return Math.Abs(time1.Seconds - time2.Seconds) < float.Epsilon;
-    }
-
-    public static bool operator !=(WorldTime time1, WorldTime time2)
-    {
-        return Math.Abs(time1.Seconds - time2.Seconds) > float.Epsilon;
     }
 }

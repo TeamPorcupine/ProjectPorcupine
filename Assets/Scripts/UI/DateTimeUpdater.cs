@@ -3,6 +3,7 @@ using System.Collections;
 using System.Text;
 using UnityEngine.UI;
 using System;
+using ProjectPorcupine.Localization;
 
 public class DateTimeUpdater : MonoBehaviour {
     private Text textComponent;
@@ -16,6 +17,9 @@ public class DateTimeUpdater : MonoBehaviour {
 	void Update () {
         TimeManager tm = TimeManager.Instance;
         WorldTime time = tm.WorldTime;
-        textComponent.text = time.ToString();
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine(LocalizationTable.GetLocalization("time_string", time));
+        sb.Append(LocalizationTable.GetLocalization("date_string", time));
+        textComponent.text = sb.ToString();
 	}
 }

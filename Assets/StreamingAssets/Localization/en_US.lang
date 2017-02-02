@@ -141,3 +141,4 @@ height=Height
 width=Width
 depth=Depth
 generate_asteroids=Generate Asteroids
+date_string=Q{0:q} Day {0:d}, {0:y}
