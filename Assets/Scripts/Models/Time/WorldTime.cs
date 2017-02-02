@@ -306,7 +306,6 @@ public struct WorldTime : IFormattable
             }
             catch (ArgumentException)
             {
-                
                 provider = CultureInfo.CurrentCulture;
             }
         }
