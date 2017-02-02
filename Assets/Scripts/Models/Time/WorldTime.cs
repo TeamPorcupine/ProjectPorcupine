@@ -5,14 +5,12 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-using System.Globalization;
-using ProjectPorcupine.Localization;
-
-
 #endregion
 
 using System;
+using System.Globalization;
 using System.Text;
+using ProjectPorcupine.Localization;
 using UnityEngine;
 
 public struct WorldTime : IFormattable
@@ -296,17 +294,19 @@ public struct WorldTime : IFormattable
 
     #region IFormattable implementation
 
-    string IFormattable.ToString(string format, IFormatProvider provider)
+    string IFormattable.ToString(string format, IFormatProvider provider = null)
     {
         if (provider == null)
         {
             // This try will always fail with our current language file naming scheme, as it doesn't match up with the standard.
             // This is in place so that should it be changed, we will automatically be using the chosen language rather than the system standard.
-            try {
+            try 
+            {
                 provider = CultureInfo.GetCultureInfo(LocalizationTable.currentLanguage);
             }
-            catch (ArgumentException e)
+            catch (ArgumentException)
             {
+                
                 provider = CultureInfo.CurrentCulture;
             }
         }
@@ -317,10 +317,8 @@ public struct WorldTime : IFormattable
         {
             case "HH":
                 return Hour.ToString("00");
-                break;
             case "H":
                 return Hour.ToString();
-                break;
             case "hh":
                 int longhour = Hour;
                 if (longhour >= 12)
@@ -334,7 +332,6 @@ public struct WorldTime : IFormattable
                 }
 
                 return longhour.ToString("00");
-                break;
             case "h":
                 int shorthour = Hour;
                 if (shorthour >= 12)
@@ -348,19 +345,14 @@ public struct WorldTime : IFormattable
                 }
 
                 return shorthour.ToString();
-                break;
             case "mm":
                 return Minute.ToString("00");
-                break;
             case "m":
                 return Minute.ToString();
-                break;
             case "ss":
                 return Second.ToString("00");
-                break;
             case "s":
                 return Second.ToString();
-                break;
             case "tt":
                 return Hour >= 12 ? dateTimeFormatInfo.PMDesignator : dateTimeFormatInfo.AMDesignator;
             case "q":
@@ -375,7 +367,6 @@ public struct WorldTime : IFormattable
                 return this.ToString();
             default:
                 return string.Empty;
-                break;
         }
     }
 
@@ -388,11 +379,9 @@ public struct WorldTime : IFormattable
     /// <filterpriority>2</filterpriority>
     public override string ToString()
     {
-        // TODO: Optimally, we should have WorldTime as an IFormattable, so the format can be more easily adjusted, and doesn't require
-        // separate TimeToString and DateToString methods.
         // Note: overloading is used, rather than defaults so that this plays nicely with Lua, which can't see default parameter values properly.
         // return ToString(true, true);
-        return string.Format(LocalizationTable.GetLocalization("time_string") + "\n" + LocalizationTable.GetLocalization("date_string"), this);
+        return ToString(true, true);
     }
 
     /// <summary>
@@ -406,19 +395,7 @@ public struct WorldTime : IFormattable
         StringBuilder sb = new StringBuilder();
         if (time)
         {
-            int hour = Hour;
-            bool pm = hour >= 12;
-            if (pm)
-            {
-                hour -= 12;
-            }
-
-            if (hour == 0)
-            {
-                hour = 12;
-            }
-
-            sb.AppendFormat("{0}:{1:00}{2}", hour, Minute, pm ? "pm" : "am");
+            sb.AppendFormat(LocalizationTable.GetLocalization("time_string", this));
         }
 
         if (time && date)
@@ -428,7 +405,7 @@ public struct WorldTime : IFormattable
 
         if (date)
         {
-            sb.AppendFormat("Q{0} Day {1}, {2}", Quarter, Day, Year);
+            sb.AppendFormat(LocalizationTable.GetLocalization("date_string", this));
         }
 
         return sb.ToString();

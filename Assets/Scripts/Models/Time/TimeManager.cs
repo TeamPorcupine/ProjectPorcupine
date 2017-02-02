@@ -20,6 +20,8 @@ public class TimeManager
 
     private const float GameTickPerSecond = 5;
 
+    private const float RealTimeToWorldTimeFactor = 90;
+
     private static TimeManager instance;
 
     private List<Action> nextFrameActions = new List<Action>();
@@ -34,8 +36,6 @@ public class TimeManager
     private float[] accumulatedTime = new float[FramesInSlowUpdateCycle];
     private int timePos = 0;
 
-    private const float realTimeToWorldTimeFactor = 90;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="TimeManager"/> class.
     /// </summary>
@@ -46,17 +46,8 @@ public class TimeManager
         TotalDeltaTime = 0f;
         TimeScalePosition = 2;
         IsPaused = false;
-
-        // Initialize GameTime to a value equivalent to 8 am
-        //        WorldTime timeTemp = new WorldTime(8,0,0,1,1,2999);
-//        WorldTime timeTemp = new WorldTime();
-//        timeTemp.SetHour(8);
-//        timeTemp.Hour = 8;
-//        Debug.LogWarning(timeTemp.TimeToString());
         WorldTime = new WorldTime().SetHour(8);
 
-//        GameTime += ((3600 * (15 + 24)) / 90)/60;
-//        GameTime += ((3600 * 24) *14)/90/60;
         for (int i = 0; i < slowUpdatablesLists.Length; i++)
         {
             slowUpdatablesLists[i] = new List<IUpdatable>();
@@ -124,15 +115,16 @@ public class TimeManager
     /// <para>Example: <code>WorldTime = WorldTime.SetHour(8).SetMinute(0)</code> will properly change the time to 8:00, leaving everything else the same.</para>
     /// </summary>
     /// <value>The world time.</value>
-    public WorldTime WorldTime {
+    public WorldTime WorldTime 
+    {
         get 
         {
-            return new WorldTime(GameTime * realTimeToWorldTimeFactor);
+            return new WorldTime(GameTime * RealTimeToWorldTimeFactor);
         }
 
         set
         {
-            GameTime = value.Seconds / realTimeToWorldTimeFactor;
+            GameTime = value.Seconds / RealTimeToWorldTimeFactor;
         }
     } 
 
@@ -347,7 +339,6 @@ public class TimeManager
 
     public JToken ToJson()
     {
-
         JValue timeJson = new JValue(GameTime);
 
         return timeJson;

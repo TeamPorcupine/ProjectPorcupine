@@ -1,25 +1,28 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Text;
-using UnityEngine.UI;
-using System;
-using ProjectPorcupine.Localization;
+﻿#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 
-public class DateTimeUpdater : MonoBehaviour {
+using UnityEngine;
+using UnityEngine.UI;
+
+public class DateTimeUpdater : MonoBehaviour 
+{
     private Text textComponent;
-	// Use this for initialization
-	void Start () 
+
+    public void Start()
     {
         textComponent = this.GetComponent<Text>();
-	}
-	
-	// Update is called once per frame
-	void Update () {
+    }
+
+    public void Update() 
+    {
         TimeManager tm = TimeManager.Instance;
         WorldTime time = tm.WorldTime;
-        StringBuilder sb = new StringBuilder();
-        sb.AppendLine(LocalizationTable.GetLocalization("time_string", time));
-        sb.Append(LocalizationTable.GetLocalization("date_string", time));
-        textComponent.text = sb.ToString();
-	}
+        textComponent.text = time.ToString();
+    }
 }
