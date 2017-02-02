@@ -180,6 +180,11 @@ namespace ProjectPorcupine.Buildable.Components
             get { return IsStorage ? Provides.Capacity : 0f; }
         }
 
+        public bool InputCanVary
+        {
+            get { return Requires != null && Requires.CanFluctuate == true; }
+        }
+
         public override bool RequiresSlowUpdate
         {
             get
@@ -196,9 +201,10 @@ namespace ProjectPorcupine.Buildable.Components
         public override bool CanFunction()
         {
             bool hasPower = true;
+
             if (IsConsumer)
             {
-                if (Requires.CanFluctuate)
+                if (InputCanVary)
                 {
                     hasPower = World.Current.PowerNetwork.GetEfficiency(this) > 0f;
                 }
@@ -207,6 +213,8 @@ namespace ProjectPorcupine.Buildable.Components
                     hasPower = World.Current.PowerNetwork.HasPower(this);
                 }
             }
+
+            IsRunning = hasPower;
 
             return hasPower;
         }
@@ -223,14 +231,12 @@ namespace ProjectPorcupine.Buildable.Components
             {
                 areAllParamReqsFulfilled &= StoredAmount > 0;
             }
-
-            IsRunning = areAllParamReqsFulfilled;
-
+            
             // store the actual efficiency for other components to use
             if (IsConsumer && Requires.CanFluctuate)
             {
-                Efficiency = World.Current.PowerNetwork.GetEfficiency(this);
-            }
+                Efficiency = World.Current.PowerNetwork.GetEfficiency(this);                
+            }            
         }
         
         public override IEnumerable<string> GetDescription()
@@ -243,7 +249,7 @@ namespace ProjectPorcupine.Buildable.Components
             {
                 yield return LocalizationTable.GetLocalization("power_input_status", powerColor, Requires.Rate);
 
-                if (Requires.CanFluctuate)
+                if (Requires.CanFluctuate && IsRunning)
                 {
                     yield return string.Format("Electricity: {0:0}%", Efficiency * 100); // TODO: localization
                 }

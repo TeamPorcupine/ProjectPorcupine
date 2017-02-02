@@ -177,6 +177,8 @@ public class PowerNetworkTest
 
         public float OutputRate { get; set; }
 
+        public bool InputCanVary { get; set; }
+
         public void Reconnect()
         {
             throw new NotImplementedException();

@@ -148,25 +148,33 @@ namespace ProjectPorcupine.PowerNetwork
 
         public void Tick()
         {
-            float producents = 0f;
-            float consumers = 0f;
+            float producers = 0f;
+            float consumersVarying = 0f;
+            float consumersStable = 0;
             
             foreach (IPluggable connection in connections)
             {
                 if (connection.IsProducer)
                 {
-                    producents += connection.OutputRate;
+                    producers += connection.OutputRate;
                 }
 
                 if (connection.IsConsumer)
                 {
-                    consumers += connection.InputRate * Efficiency;
+                    if (connection.InputCanVary)
+                    {
+                        consumersVarying += connection.InputRate * Efficiency;
+                    }
+                    else
+                    {
+                        consumersStable += connection.InputRate;
+                    }
                 }
             }
-
-            float currentLevel = producents - consumers;
             
-            if (producents > 0f && currentLevel.IsZero())
+            float currentLevel = producers - consumersVarying - consumersStable;
+
+            if (producers > 0f && currentLevel.IsZero())
             {
                 IsOperating = true;
                 return;
@@ -181,19 +189,27 @@ namespace ProjectPorcupine.PowerNetwork
                 EmptyStorage(ref currentLevel);
             }
 
-            if (currentLevel <= 0f)
+            if (producers > 0)
             {
-                Efficiency -= 0.1f;
+                // for efficiency, take into account only connections with varying input
+                if (producers < consumersVarying)
+                {
+                    Efficiency -= 0.1f;
+                }
+                else
+                {
+                    Efficiency += 0.1f;
+                }
+
+                Efficiency = Mathf.Clamp(Efficiency, 0, 1f);
             }
             else
             {
-                Efficiency += 0.1f;
-            }
+                Efficiency = 0f;
+            }            
 
-            Efficiency = Mathf.Clamp(Efficiency, 0, 1f);
-
-            //IsOperating = producents >= 0.0f;
-            IsOperating = producents > 0f && currentLevel >= 0.0f;
+            // Efficiency == 1f condition prevents flickering of machines without varying input
+            IsOperating = producers > 0f && currentLevel >= 0.0f && Efficiency == 1f;
         }
 
         /// <summary>

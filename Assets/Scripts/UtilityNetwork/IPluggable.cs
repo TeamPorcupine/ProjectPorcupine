@@ -37,6 +37,8 @@ namespace ProjectPorcupine.PowerNetwork
 
         string SubType { get; set; }
 
+        bool InputCanVary { get; }
+
         void Reconnect();
     }
 }

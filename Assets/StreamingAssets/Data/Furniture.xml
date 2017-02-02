@@ -589,7 +589,9 @@
         <JobWorkSpotOffset X="1" Y="0" />
 
         <Component type="PowerConnection">
-            <Requires rate="2" canFluctuate="true"/>
+            <Requires rate="2" canFluctuate="true">
+                <Param name="cur_processed_inv" condition="IsGreaterThanZero" />
+            </Requires>
         </Component>
 
         <Component type="GasConnection">

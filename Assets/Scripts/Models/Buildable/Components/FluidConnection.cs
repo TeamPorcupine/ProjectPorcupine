@@ -155,6 +155,11 @@ namespace ProjectPorcupine.Buildable.Components
             get { return IsStorage ? Provides.Capacity : 0f; }
         }
 
+        public bool InputCanVary
+        {
+            get { return false; }
+        }
+
         public override bool RequiresSlowUpdate
         {
             get
