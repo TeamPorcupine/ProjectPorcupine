@@ -797,11 +797,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
 
         if (orderActions.ContainsKey("Uninstall"))
         {
-            InventoryCommon asInventory = new InventoryCommon();
-            asInventory.type = Type;
-            asInventory.maxStackSize = 1;
-            asInventory.basePrice = 0f;
-            asInventory.category = "crated_furniture";
+            Inventory asInventory = Inventory.CreatePrototype(Type, 1, 0f, "crated_furniture");
             PrototypeManager.Inventory.Add(asInventory);
         }
     }
@@ -857,7 +853,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
 
         // TODO: read this from furniture params
         Dictionary<string, RequestedItem> itemsDict = new Dictionary<string, RequestedItem>();
-        foreach (InventoryCommon inventoryProto in PrototypeManager.Inventory.Values)
+        foreach (Inventory inventoryProto in PrototypeManager.Inventory.Values)
         {
             itemsDict[inventoryProto.type] = new RequestedItem(inventoryProto.type, 1, inventoryProto.maxStackSize);
         }

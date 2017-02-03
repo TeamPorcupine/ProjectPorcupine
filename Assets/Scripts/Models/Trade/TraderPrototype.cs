@@ -157,9 +157,9 @@ public class TraderPrototype : IPrototypable
                 }
                 else if (!string.IsNullOrEmpty(potentialStock.Category))
                 {
-                    List<InventoryCommon> potentialObjects = GetInventoryCommonWithCategory(potentialStock.Category);
+                    List<Inventory> potentialObjects = GetInventoryCommonWithCategory(potentialStock.Category);
 
-                    foreach (InventoryCommon potentialObject in potentialObjects)
+                    foreach (Inventory potentialObject in potentialObjects)
                     {
                         Inventory inventory = new Inventory(
                             potentialObject.type,
@@ -215,7 +215,7 @@ public class TraderPrototype : IPrototypable
         }
     }
 
-    private List<InventoryCommon> GetInventoryCommonWithCategory(string category)
+    private List<Inventory> GetInventoryCommonWithCategory(string category)
     {
         return PrototypeManager.Inventory.Values.Where(i => i.category == category).ToList();
     }
