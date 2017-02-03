@@ -162,7 +162,7 @@ public class TraderPrototype : IPrototypable
                     foreach (Inventory potentialObject in potentialObjects)
                     {
                         Inventory inventory = new Inventory(
-                            potentialObject.type,
+                            potentialObject.Type,
                             Random.Range(potentialStock.MinQuantity, potentialStock.MaxQuantity));
 
                         t.Stock.Add(inventory);
@@ -217,6 +217,6 @@ public class TraderPrototype : IPrototypable
 
     private List<Inventory> GetInventoryCommonWithCategory(string category)
     {
-        return PrototypeManager.Inventory.Values.Where(i => i.category == category).ToList();
+        return PrototypeManager.Inventory.Values.Where(i => i.Category == category).ToList();
     }
 }
