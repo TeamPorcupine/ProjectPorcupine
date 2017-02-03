@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Inventories>
-    <Inventory type="raw_iron" maxStackSize="50" basePrice="0.8" category="inv_cat_raw"/>
-    <Inventory type="ice" maxStackSize="10" basePrice="1.2" category="inv_cat_raw"/>
-    <Inventory type="raw_copper" maxStackSize="50" basePrice="0.8" category="inv_cat_raw"/>
-    <Inventory type="raw_uranium" maxStackSize="20" basePrice="3" category="inv_cat_raw"/>
-    <Inventory type="steel_plate" maxStackSize="50" basePrice="1.5" category="inv_cat_refined"/>
-    <Inventory type="power_cell" maxStackSize="5" basePrice="5" category="inv_cat_crafted"/>
-    <Inventory type="copper_plate" maxStackSize="50" basePrice="1.5" category="inv_cat_refined"/>
-    <Inventory type="copper_wire" maxStackSize="50" basePrice="2" category="inv_cat_refined"/>
+    <Inventory type="raw_iron" maxStackSize="50" basePrice="0.8" category="inv_cat_raw" localizationName="inv_raw_iron" localizationDesc="inv_raw_iron_desc"/>
+    <Inventory type="ice" maxStackSize="10" basePrice="1.2" category="inv_cat_raw" localizationName="inv_ice" localizationDesc="inv_ice_desc"/>
+    <Inventory type="raw_copper" maxStackSize="50" basePrice="0.8" category="inv_cat_raw" localizationName="inv_raw_copper" localizationDesc="inv_raw_copper_desc"/>
+    <Inventory type="raw_uranium" maxStackSize="20" basePrice="3" category="inv_cat_raw" localizationName="inv_raw_uranium" localizationDesc="inv_raw_uranium_desc"/>
+    <Inventory type="steel_plate" maxStackSize="50" basePrice="1.5" category="inv_cat_refined" localizationName="inv_steel_plate" localizationDesc="inv_steel_plate_desc"/>
+    <Inventory type="power_cell" maxStackSize="5" basePrice="5" category="inv_cat_crafted" localizationName="inv_power_cell" localizationDesc="inv_power_cell_desc"/>
+    <Inventory type="copper_plate" maxStackSize="50" basePrice="1.5" category="inv_cat_refined" localizationName="inv_copper_plate" localizationDesc="inv_copper_plate_desc"/>
+    <Inventory type="copper_wire" maxStackSize="50" basePrice="2" category="inv_cat_crafted" localizationName="inv_copper_wire" localizationDesc="inv_copper_wire_desc"/>
 </Inventories>

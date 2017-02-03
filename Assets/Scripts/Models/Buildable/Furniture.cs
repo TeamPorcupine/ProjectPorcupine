@@ -802,6 +802,8 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
             asInventory.maxStackSize = 1;
             asInventory.basePrice = 0f;
             asInventory.category = "crated_furniture";
+            asInventory.LocalizationName = LocalizationCode;
+            asInventory.LocalizationDescription = UnlocalizedDescription;
             PrototypeManager.Inventory.Add(asInventory);
         }
     }

@@ -5,9 +5,13 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+using ProjectPorcupine.Localization;
+
+
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -91,10 +95,10 @@ public class SpawnInventoryController
 
     private void CreateInventoryEntries()
     {
-        foreach (string invName in PrototypeManager.Inventory.Keys)
+        foreach (InventoryCommon inventory in PrototypeManager.Inventory.Values.OrderByDescending(inv => inv.category))
         {
             GameObject inventorySlot_go = new GameObject();
-            inventorySlot_go.name = "Slot - " + invName;
+            inventorySlot_go.name = "Slot - " + inventory.Type;
             inventorySlot_go.layer = LayerMask.NameToLayer("UI");
 
             inventorySlot_go.transform.SetParent(spawnUI.transform);
@@ -106,10 +110,12 @@ public class SpawnInventoryController
 
             inventorySlot_go.AddComponent<Image>();
 
-            string localName = invName;
+            string localName = inventory.LocalizationName;
 
-            CreateTextComponent(inventorySlot_go, invName, TextAnchor.MiddleLeft);
-            CreateButtonComponents(inventorySlot_go, localName, new int[] { 1, 20, 50 });
+            GameObject TextComponent = CreateTextComponent(inventorySlot_go, localName, TextAnchor.MiddleLeft);
+            TextLocalizer textLocalizer = TextComponent.AddComponent<TextLocalizer>();
+            textLocalizer.formatValues = new string[0];
+            CreateButtonComponents(inventorySlot_go, inventory, new int[] { 1, 20, 50 });
 
             LayoutElement layoutElement = inventorySlot_go.AddComponent<LayoutElement>();
             layoutElement.minWidth = 160;
@@ -117,7 +123,7 @@ public class SpawnInventoryController
         }
     }
 
-    private void CreateButtonComponents(GameObject go, string invName, int[] amounts)
+    private void CreateButtonComponents(GameObject go, InventoryCommon inventory, int[] amounts)
     {
         foreach (int amount in amounts)
         {
@@ -140,7 +146,7 @@ public class SpawnInventoryController
             int localAmount = amount;
 
             button.onClick.AddListener(
-                () => OnButtonClick(invName, localAmount));
+                () => OnButtonClick(inventory.type, localAmount));
         }
     }
 

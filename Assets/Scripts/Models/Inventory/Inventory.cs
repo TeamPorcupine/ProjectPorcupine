@@ -58,6 +58,10 @@ public class Inventory : ISelectable, IContextActionProvider
 
     public string Category { get; private set; }
 
+    public string LocalizationName { get; private set; }
+
+    public string LocalizationDescription { get; private set; }
+
     public Tile Tile { get; set; }
 
     // Should this inventory be allowed to be picked up for completing a job?
@@ -178,6 +182,8 @@ public class Inventory : ISelectable, IContextActionProvider
         inventoryJson.Add("BasePrice", BasePrice);
         inventoryJson.Add("Category", Category);
         inventoryJson.Add("Locked", Locked);
+        inventoryJson.Add("LocalizationName", LocalizationName);
+        inventoryJson.Add("LocalizationDesc", LocalizationDescription);
 
         return inventoryJson;
     }
@@ -190,6 +196,8 @@ public class Inventory : ISelectable, IContextActionProvider
         BasePrice = (float)inventoryToken["BasePrice"];
         Category = (string)inventoryToken["Category"];
         Locked = (bool)inventoryToken["Locked"];
+        LocalizationName = (string)inventoryToken["LocalizationName"];
+        LocalizationDescription = (string)inventoryToken["LocalizationDesc"];
     }
 
     public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)

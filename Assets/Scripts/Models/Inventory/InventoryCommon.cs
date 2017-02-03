@@ -20,11 +20,17 @@ public class InventoryCommon : IPrototypable
         get { return type; }
     }
 
+    public string LocalizationName { get; set; }
+
+    public string LocalizationDescription { get; set; }
+
     public void ReadXmlPrototype(XmlReader reader_parent)
     {
         type = reader_parent.GetAttribute("type");
         maxStackSize = int.Parse(reader_parent.GetAttribute("maxStackSize") ?? "50");
         basePrice = float.Parse(reader_parent.GetAttribute("basePrice") ?? "1");
         category = reader_parent.GetAttribute("category");
+        LocalizationName = reader_parent.GetAttribute("localizationName");
+        LocalizationDescription = reader_parent.GetAttribute("localizationDesc");
     }
 }
