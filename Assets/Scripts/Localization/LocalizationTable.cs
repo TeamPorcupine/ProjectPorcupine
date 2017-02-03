@@ -82,6 +82,13 @@ namespace ProjectPorcupine.Localization
                 return string.Format(value, additionalValues);
             }
 
+            // If the key is improperly formatted then try to fix it and retry the lookup.
+            if (key.Contains(" ") || key.Any(c => char.IsUpper(c)))
+            {
+                key = key.Replace(' ', '_').ToLower();
+                GetLocalization(key, fallbackMode, language, additionalValues);
+            }
+
             if (!missingKeysLogged.Contains(key))
             {
                 missingKeysLogged.Add(key);

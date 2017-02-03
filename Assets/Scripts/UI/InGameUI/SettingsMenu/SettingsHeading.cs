@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software,
@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,7 +19,7 @@ public class SettingsHeading : MonoBehaviour
 
     public void SetText(string text)
     {
-        headingText.text = text;
+        headingText.text = LocalizationTable.GetLocalization(text);
     }
 
     public void AddObjectToRoot(GameObject go)

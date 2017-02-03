@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Sprites>
+    <Sprite name="water_generator_off"     x="0" y="0" w="2" h="1" pixelPerUnit="64" />
+    <Sprite name="water_generator_on"     x="2" y="0" w="2" h="1" pixelPerUnit="64" />
+</Sprites>
