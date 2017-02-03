@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
@@ -9,6 +9,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -88,7 +89,7 @@ public class SettingsMenu : MonoBehaviour
             }
         }
 
-        instance.categoryHeading.text = category;
+        instance.categoryHeading.text = LocalizationTable.GetLocalization(category);
         instance.currentCategory = category;
 
         // Clear root
@@ -179,7 +180,7 @@ public class SettingsMenu : MonoBehaviour
             return;
         }
 
-        check.SetPrompt("Are you sure you want to close the menu and cancel all settings?");
+        check.SetPrompt("confirm_settings_menu_close");
         check.SetButtons(new DialogBoxResult[] { DialogBoxResult.Yes, DialogBoxResult.No });
         check.Closed =
             () =>
@@ -324,7 +325,7 @@ public class SettingsMenu : MonoBehaviour
             ColorButton button = Instantiate(categoryPrefab).GetComponent<ColorButton>();
             button.transform.SetParent(categoryRoot.transform);
             button.name = currentName;
-            button.SetText(currentName);
+            button.SetText(LocalizationTable.GetLocalization(currentName));
             options.Add(currentName, new Dictionary<string, BaseSettingsElement[]>());
 
             // This is quite optimised (despite being a forloop on a dictionary), and is only done during start

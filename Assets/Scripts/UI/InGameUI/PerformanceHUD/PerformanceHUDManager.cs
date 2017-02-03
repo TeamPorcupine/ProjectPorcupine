@@ -52,7 +52,10 @@ public class PerformanceHUDManager : MonoBehaviour
         // Clear
         foreach (Transform child in rootObject.transform)
         {
-            Destroy(child.gameObject);
+            if (child.tag == "PerformanceUI")
+            {
+                Destroy(child.gameObject);
+            }
         }
 
         groupPointer = allGroups.FirstOrDefault(x => x.Key.name == CommandSettings.PerformanceHUDMode).Key;

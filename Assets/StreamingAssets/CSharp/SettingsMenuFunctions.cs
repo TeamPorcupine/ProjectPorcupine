@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using DeveloperConsole;
 using ProjectPorcupine.Localization;
 using UnityEngine.UI;
@@ -109,7 +109,7 @@ public class GenericSwitch : BaseSettingsElement
     {
         GameObject element = GetHorizontalBaseElement("Switch", 120, 60, TextAnchor.MiddleLeft);
 
-        Text text = CreateText(option.name + ": ", true);
+        Text text = CreateText(option.name, true);
         text.transform.SetParent(element.transform);
 
         toggleElement = CreateSwitch();
@@ -164,7 +164,7 @@ public class GenericCircleRadio : BaseSettingsElement
     {
         GameObject element = GetHorizontalBaseElement("Circle-Radio", 120, 60, TextAnchor.MiddleLeft);
 
-        Text text = CreateText(option.name + ": ", true);
+        Text text = CreateText(option.name, true);
         text.transform.SetParent(element.transform);
 
         toggleElement = CreateCircleRadio();
@@ -219,7 +219,7 @@ public class GenericSquareRadio : BaseSettingsElement
     {
         GameObject element = GetHorizontalBaseElement("Square-Radio", 120, 60, TextAnchor.MiddleLeft);
 
-        Text text = CreateText(option.name + ": ", true);
+        Text text = CreateText(option.name, true);
         text.transform.SetParent(element.transform);
 
         toggleElement = CreateSquareRadio();
@@ -277,7 +277,7 @@ public class GenericToggle : BaseSettingsElement
     {
         GameObject element = GetHorizontalBaseElement("Toggle", 120, 60, TextAnchor.MiddleLeft);
 
-        Text text = CreateText(option.name + ": ", true);
+        Text text = CreateText(option.name, true);
         text.transform.SetParent(element.transform);
 
         toggleElement = CreateToggle();
@@ -335,7 +335,7 @@ public class GenericInputField : BaseSettingsElement
     {
         GameObject element = GetFluidHorizontalBaseElement("InputField", true, false, TextAnchor.MiddleLeft, 10);
 
-        CreateText(option.name + ": ", true).transform.SetParent(element.transform);
+        CreateText(option.name, true).transform.SetParent(element.transform);
 
         value = getValue();
 
@@ -378,7 +378,7 @@ public class GenericSlider : BaseSettingsElement
 {
     protected Slider sliderElement;
     protected Text textElement;
-    protected string format;
+    protected string localizationKey;
     protected float value;
 
     public override GameObject InitializeElement()
@@ -386,9 +386,9 @@ public class GenericSlider : BaseSettingsElement
         // Note this is just from playing around and finding a nice value
         GameObject element = GetVerticalBaseElement("Slider", 200, 30, TextAnchor.MiddleLeft, 0);
 
-        format = option.name + " ({0:00}): ";
+        localizationKey = option.name;
 
-        textElement = CreateText(string.Format(format, getValue()), true, TextAnchor.MiddleCenter);
+        textElement = CreateText(string.Format(localizationKey, getValue()), true, TextAnchor.MiddleCenter);
         textElement.transform.SetParent(element.transform);
 
         sliderElement = CreateSlider(getValue(), new Vector2(0, 1), false);
@@ -399,7 +399,8 @@ public class GenericSlider : BaseSettingsElement
                 if (v != value)
                 {
                     valueChanged = true;
-                    textElement.text = string.Format(format, v);
+                    textElement.text = LocalizationTable.GetLocalization(localizationKey) + string.Format(" ({0:00}): ", v);
+                    //string.Format(localizationKey, v);
                     value = v;
                 }
             });
@@ -466,7 +467,7 @@ private class GenericComboBox : BaseSettingsElement
     {
         GameObject element = GetVerticalBaseElement("Dropdown", 220, 30, TextAnchor.MiddleCenter, 0);
 
-        CreateText(option.name + ": ", true, TextAnchor.MiddleCenter).transform.SetParent(element.transform);
+        CreateText(option.name, true, TextAnchor.MiddleCenter).transform.SetParent(element.transform);
 
         return element;
     }
@@ -685,11 +686,11 @@ public class SoundSlider : GenericSlider
                 {
                     valueChanged = true;
                     value = v;
-                    textElement.text = string.Format(format, (int)(value * 100));
+                    textElement.text = LocalizationTable.GetLocalization(localizationKey) + string.Format(" ({0:00}): ", (int)(value * 100));
                 }
             });
         sliderElement.onValueChanged.Invoke(sliderElement.value);
-        textElement.text = string.Format(format, (int)(value * 100));
+        textElement.text = LocalizationTable.GetLocalization(localizationKey) + string.Format(" ({0:00}): ", (int)(value * 100));
 
         return go;
     }
