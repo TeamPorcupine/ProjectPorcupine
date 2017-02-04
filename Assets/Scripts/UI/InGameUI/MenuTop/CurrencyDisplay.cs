@@ -18,18 +18,12 @@ public class CurrencyDisplay : MonoBehaviour
 
     private void Start()
     {
-        if (SceneManager.GetActiveScene().name != "_World")
-        {
-            gameObject.SetActive(false);
-            return;
-        }
-
         currencies = World.Current.Wallet.GetCurrencyNames();
     }
 
     // Update is called once per frame
     private void Update()
-    {    
+    {
         StringBuilder content = new StringBuilder();
 
         // Populate the text box
@@ -39,7 +33,7 @@ public class CurrencyDisplay : MonoBehaviour
             content.Append(World.Current.Wallet[currency].Balance);
             content.AppendLine();
         }
-        
+
         text.text = content.ToString();
     }
 }
