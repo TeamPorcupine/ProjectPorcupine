@@ -24,10 +24,10 @@ public abstract class BaseUIElement
     /// <summary>
     /// Always has 220 allocated width.
     /// </summary>
-    protected GameObject GetFluidHorizontalBaseElement(string elementTitle = "", bool stretchX = false, bool stretchY = false, TextAnchor alignment = TextAnchor.MiddleCenter, int spacing = 10, int allocatedHeight = 60)
+    protected GameObject GetFluidHorizontalBaseElement(string elementTitle = "", bool stretchX = false, bool stretchY = false, TextAnchor alignment = TextAnchor.MiddleCenter, int spacing = 10, int allocatedHeight = 60, int allocatedWidth = 220)
     {
         GameObject go = new GameObject(elementTitle == string.Empty ? "Element_" + GetName() : elementTitle);
-        AllocateSpaceForGameObject(go);
+        AllocateSpaceForGameObject(go, allocatedHeight, allocatedWidth);
 
         HorizontalLayoutGroup layout = go.AddComponent<HorizontalLayoutGroup>();
         layout.childForceExpandHeight = stretchY;
@@ -38,10 +38,10 @@ public abstract class BaseUIElement
         return go;
     }
 
-    protected GameObject GetFluidVerticalBaseElement(string elementTitle = "", bool stretchX = false, bool stretchY = false, TextAnchor alignment = TextAnchor.MiddleCenter, int spacing = 10, int allocatedHeight = 60)
+    protected GameObject GetFluidVerticalBaseElement(string elementTitle = "", bool stretchX = false, bool stretchY = false, TextAnchor alignment = TextAnchor.MiddleCenter, int spacing = 10, int allocatedHeight = 60, int allocatedWidth = 220)
     {
         GameObject go = new GameObject(elementTitle == string.Empty ? "Element_" + GetName() : elementTitle);
-        AllocateSpaceForGameObject(go);
+        AllocateSpaceForGameObject(go, allocatedHeight, allocatedWidth);
 
         VerticalLayoutGroup layout = go.AddComponent<VerticalLayoutGroup>();
         layout.childForceExpandHeight = stretchY;
@@ -56,10 +56,10 @@ public abstract class BaseUIElement
     /// Returns a base element, with a grid layout.
     /// </summary>
     /// <returns></returns>
-    protected GameObject GetGridBaseElement(string elementTitle = "", int xSize = 97, int ySize = 37, TextAnchor alignment = TextAnchor.MiddleCenter, int spacingX = 5, int spacingY = 5, int allocatedHeight = 60)
+    protected GameObject GetGridBaseElement(string elementTitle = "", int xSize = 97, int ySize = 37, TextAnchor alignment = TextAnchor.MiddleCenter, int spacingX = 5, int spacingY = 5, int allocatedHeight = 60, int allocatedWidth = 220)
     {
         GameObject go = new GameObject(elementTitle == string.Empty ? "Element_" + GetName() : elementTitle);
-        AllocateSpaceForGameObject(go);
+        AllocateSpaceForGameObject(go, allocatedHeight, allocatedWidth);
 
         GridLayoutGroup layout = go.AddComponent<GridLayoutGroup>();
         layout.childAlignment = alignment;
@@ -73,10 +73,10 @@ public abstract class BaseUIElement
     /// Returns a base element, with a horizontal layout.
     /// </summary>
     /// <returns></returns>
-    protected GameObject GetHorizontalBaseElement(string elementTitle = "", int xSize = 95, int ySize = 80, TextAnchor alignment = TextAnchor.MiddleCenter, int spacing = 10, int allocatedHeight = 60)
+    protected GameObject GetHorizontalBaseElement(string elementTitle = "", int xSize = 95, int ySize = 80, TextAnchor alignment = TextAnchor.MiddleCenter, int spacing = 10, int allocatedHeight = 60, int allocatedWidth = 220)
     {
         GameObject go = new GameObject(elementTitle == string.Empty ? "Element_" + GetName() : elementTitle);
-        AllocateSpaceForGameObject(go);
+        AllocateSpaceForGameObject(go, allocatedHeight, allocatedWidth);
 
         GridLayoutGroup layout = go.AddComponent<GridLayoutGroup>();
         layout.constraint = GridLayoutGroup.Constraint.FixedRowCount;
@@ -92,10 +92,10 @@ public abstract class BaseUIElement
     /// Returns a base element, with a vertical layout.
     /// </summary>
     /// <returns></returns>
-    protected GameObject GetVerticalBaseElement(string elementTitle = "", int xSize = 100, int ySize = 80, TextAnchor alignment = TextAnchor.MiddleCenter, int spacing = 10, int allocatedHeight = 60)
+    protected GameObject GetVerticalBaseElement(string elementTitle = "", int xSize = 100, int ySize = 80, TextAnchor alignment = TextAnchor.MiddleCenter, int spacing = 10, int allocatedHeight = 60, int allocatedWidth = 220)
     {
         GameObject go = new GameObject(elementTitle == string.Empty ? "Element_" + GetName() : elementTitle);
-        AllocateSpaceForGameObject(go);
+        AllocateSpaceForGameObject(go, allocatedHeight, allocatedWidth);
 
         GridLayoutGroup layout = go.AddComponent<GridLayoutGroup>();
         layout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
@@ -107,10 +107,10 @@ public abstract class BaseUIElement
         return go;
     }
 
-    protected void AllocateSpaceForGameObject(GameObject toAllocate, int allocatedHeight = 60)
+    protected void AllocateSpaceForGameObject(GameObject toAllocate, int allocatedHeight = 60, int allocatedWidth = 220)
     {
         LayoutElement baseLayout = toAllocate.AddComponent<LayoutElement>();
-        baseLayout.minWidth = 220;
+        baseLayout.minWidth = allocatedWidth;
         baseLayout.minHeight = allocatedHeight;
     }
 

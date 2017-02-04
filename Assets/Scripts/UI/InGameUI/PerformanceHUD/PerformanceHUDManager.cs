@@ -28,7 +28,33 @@ public class PerformanceHUDManager : MonoBehaviour
     /// <summary>
     /// The root object for the HUD.
     /// </summary>
-    private static GameObject rootObject;
+    private static GameObject rootObject
+    {
+        get
+        {
+            if (rootIndex < rootObjects.Count)
+            {
+                rootIndex++;
+                return rootObjects[rootIndex - 1];
+            }
+            else if (rootIndex > 0)
+            {
+                rootIndex = 0;
+                return rootObjects[rootIndex];
+            }
+            else
+            {
+                return null;
+            }
+        }
+        set
+        {
+            rootObjects.Add(value);
+        }
+    }
+
+    private static int rootIndex = 0;
+    private static List<GameObject> rootObjects = new List<GameObject>();
 
     public static string[] GetNames()
     {
@@ -83,9 +109,10 @@ public class PerformanceHUDManager : MonoBehaviour
         TimeManager.Instance.EveryFrame += Instance_EveryFrame;
 
         // Root should already exist just grab child
-        if (rootObject == null)
+        rootObjects = new List<GameObject>();
+        foreach (Transform child in transform)
         {
-            rootObject = transform.GetChild(0).gameObject;
+            rootObjects.Add(child.gameObject);
         }
 
         // Load Settings

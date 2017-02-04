@@ -41,19 +41,21 @@ public static class PerformanceHUDFunctions
     public class MemoryPerformanceComponent : BasePerformanceHUDElement
     {
         private Text UITextElement;
+        private const string Display = "Mem/Alloc: {0}mb\n{1}mb";
 
         public override void Update()
         {
-            UITextElement.text = "Mem: " + ((Profiler.GetTotalReservedMemory() / 1024) / 1024) + "mb\nAlloc: " + ((Profiler.GetTotalAllocatedMemory() / 1024) / 1024) + "mb";
+            UITextElement.text = string.Format(Display, (Profiler.GetTotalReservedMemory() / 1024) / 1024, (Profiler.GetTotalAllocatedMemory() / 1024) / 1024);
         }
 
         public override GameObject InitializeElement()
         {
             // Build Gameobject
-            GameObject element = GetHorizontalBaseElement("Memory", 40, 40, allocatedHeight: 40);
+            GameObject element = GetHorizontalBaseElement("Memory", 80, 60, allocatedHeight: 60, allocatedWidth: 80, alignment: TextAnchor.MiddleLeft);
 
-            UITextElement = CreateText("Mem: ...", false, TextAnchor.MiddleRight);
+            UITextElement = CreateText("Mem/Alloc: ...", false, TextAnchor.MiddleCenter);
             UITextElement.transform.SetParent(element.transform);
+            UITextElement.fontSize = 14;
 
             return element;
         }
@@ -80,9 +82,9 @@ public static class PerformanceHUDFunctions
         public override GameObject InitializeElement()
         {
             // Build Gameobject
-            GameObject element = GetHorizontalBaseElement("Network", 40, 40, allocatedHeight: 40);
+            GameObject element = GetHorizontalBaseElement("Network", 80, 60, allocatedHeight: 60, allocatedWidth: 80, alignment: TextAnchor.MiddleLeft);
 
-            UITextElement = CreateText("...ms", false, TextAnchor.MiddleRight);
+            UITextElement = CreateText("...ms", false, TextAnchor.MiddleCenter);
             UITextElement.transform.SetParent(element.transform);
 
             return element;
@@ -100,7 +102,7 @@ public static class PerformanceHUDFunctions
     public class FPSAveragePerformanceComponent : BasePerformanceHUDElement
     {
         private const float FPSMeasurePeriod = 5f;
-        private const string Display = "Avg: {0}";
+        private const string Display = "Avg: ";
 
         private int fpsAccumulator = 0;
         private float fpsFinishPeriod = 0;
@@ -121,7 +123,7 @@ public static class PerformanceHUDFunctions
 
                 fpsFinishPeriod += FPSMeasurePeriod;
 
-                UITextElement.text = string.Format(Display, currentFps);
+                UITextElement.text = Display + currentFps;
             }
         }
 
@@ -129,9 +131,9 @@ public static class PerformanceHUDFunctions
         {
             // Build Gameobject
             fpsFinishPeriod = Time.realtimeSinceStartup + FPSMeasurePeriod;
-            GameObject element = GetHorizontalBaseElement("FPS-Average", 40, 40, allocatedHeight: 40);
+            GameObject element = GetHorizontalBaseElement("FPS-Average", 80, 60, allocatedHeight: 60, allocatedWidth: 80, alignment: TextAnchor.MiddleLeft);
 
-            UITextElement = CreateText("Avg: ...", false, TextAnchor.MiddleRight);
+            UITextElement = CreateText("Avg: ...", false, TextAnchor.MiddleCenter);
             UITextElement.transform.SetParent(element.transform);
 
             return element;
@@ -150,20 +152,16 @@ public static class PerformanceHUDFunctions
     {
         private const float FPSMeasurePeriod = 0.5f;
 
-        private const string GreenDisplay = "<color=lime>{0}</color>";
-        private const string RedDisplay = "<color=red>{0}</color>";
-        private const string YellowDisplay = "<color=yellow>{0}</color>";
+        private Color GreenColor = Color.green;
+        private Color RedColor = Color.red;
+        private Color YellowColor = Color.yellow;
 
         private int fpsAccumulator = 0;
         private float fpsNextPeriod = 0;
         private int currentFps;
 
         private Text UITextElement;
-
-        // public override string NameOfComponent()
-        //  {
-        //       return "UI/TextPerformanceComponentUI";
-        //  }
+        private const string Display = "FPS: ";
 
         // The shown FPS will be 0 for the first second until it ticks over correctly
         public override void Update()
@@ -180,19 +178,18 @@ public static class PerformanceHUDFunctions
                 // Colour Changing
                 if (currentFps > 55)
                 {
-                    // A good area to be at
-                    UITextElement.text = string.Format(GreenDisplay, currentFps);
+                    UITextElement.color = GreenColor;
                 }
                 else if (currentFps >= 30 && currentFps <= 55)
                 {
-                    // Less preferable but playable
-                    UITextElement.text = string.Format(YellowDisplay, currentFps);
+                    UITextElement.color = YellowColor;
                 }
                 else
                 {
-                    // Too low, most likely due to an error or major slowdown
-                    UITextElement.text = string.Format(RedDisplay, currentFps);
+                    UITextElement.color = RedColor;
                 }
+
+                UITextElement.text = Display + currentFps;
             }
         }
 
@@ -201,9 +198,9 @@ public static class PerformanceHUDFunctions
             fpsNextPeriod = Time.realtimeSinceStartup + FPSMeasurePeriod;
 
             // Build Gameobject
-            GameObject element = GetHorizontalBaseElement("FPS", 40, 40, allocatedHeight: 40);
+            GameObject element = GetHorizontalBaseElement("FPS", 80, 60, allocatedHeight: 60, allocatedWidth: 80, alignment: TextAnchor.MiddleLeft);
 
-            UITextElement = CreateText("FPS: ...", false, TextAnchor.MiddleRight);
+            UITextElement = CreateText("FPS: ...", false, TextAnchor.MiddleCenter);
             UITextElement.transform.SetParent(element.transform);
             UITextElement.fontSize = 20;
 
@@ -223,7 +220,7 @@ public static class PerformanceHUDFunctions
     public class FPSRangePerformanceComponent : BasePerformanceHUDElement
     {
         private const float FPSMeasurePeriod = 0.5f;
-        private const string Display = "Min: {0}\nMax: {1}";
+        private const string Display = "Min/Max: {0}/{1}";
 
         private int fpsAccumulator = 0;
         private float fpsNextPeriod = 0;
@@ -264,11 +261,10 @@ public static class PerformanceHUDFunctions
             fpsNextPeriod = Time.realtimeSinceStartup + FPSMeasurePeriod;
 
             // Build Gameobject
-            GameObject element = GetHorizontalBaseElement("FPS-Range", 40, 40, allocatedHeight: 60);
+            GameObject element = GetHorizontalBaseElement("FPS-Range", 80, 60, allocatedHeight: 60, allocatedWidth: 80, alignment: TextAnchor.MiddleLeft);
 
-            UITextElement = CreateText("Min: ...\nMax: ...", false, TextAnchor.MiddleRight);
+            UITextElement = CreateText(string.Format(Display, "-", "-"), false, TextAnchor.UpperCenter);
             UITextElement.transform.SetParent(element.transform);
-            UITextElement.fontSize = 12;
 
             return element;
         }

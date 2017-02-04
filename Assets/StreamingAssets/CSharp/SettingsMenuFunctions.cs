@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using DeveloperConsole;
 using ProjectPorcupine.Localization;
 using UnityEngine.UI;
