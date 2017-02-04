@@ -5,13 +5,10 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-using ProjectPorcupine.Localization;
-
-
 #endregion
-using System;
-using System.Collections.Generic;
+
 using System.Linq;
+using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -112,8 +109,8 @@ public class SpawnInventoryController
 
             string localName = inventory.LocalizationName;
 
-            GameObject TextComponent = CreateTextComponent(inventorySlot_go, localName, TextAnchor.MiddleLeft);
-            TextLocalizer textLocalizer = TextComponent.AddComponent<TextLocalizer>();
+            GameObject textComponent = CreateTextComponent(inventorySlot_go, localName, TextAnchor.MiddleLeft);
+            TextLocalizer textLocalizer = textComponent.AddComponent<TextLocalizer>();
             textLocalizer.formatValues = new string[0];
             CreateButtonComponents(inventorySlot_go, inventory, new int[] { 1, 20, 50 });
 
