@@ -95,7 +95,7 @@ public class SpawnInventoryController
 
     private void CreateInventoryEntries()
     {
-        foreach (InventoryCommon inventory in PrototypeManager.Inventory.Values.OrderByDescending(inv => inv.category))
+        foreach (Inventory inventory in PrototypeManager.Inventory.Values.OrderByDescending(inv => inv.Category))
         {
             GameObject inventorySlot_go = new GameObject();
             inventorySlot_go.name = "Slot - " + inventory.Type;
@@ -123,7 +123,7 @@ public class SpawnInventoryController
         }
     }
 
-    private void CreateButtonComponents(GameObject go, InventoryCommon inventory, int[] amounts)
+    private void CreateButtonComponents(GameObject go, Inventory inventory, int[] amounts)
     {
         foreach (int amount in amounts)
         {
@@ -146,7 +146,7 @@ public class SpawnInventoryController
             int localAmount = amount;
 
             button.onClick.AddListener(
-                () => OnButtonClick(inventory.type, localAmount));
+                () => OnButtonClick(inventory.Type, localAmount));
         }
     }
 
