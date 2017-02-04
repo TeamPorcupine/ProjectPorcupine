@@ -164,6 +164,7 @@ public class SpawnInventoryController
         text.alignment = textAnchor;
         text.color = Color.black;
         text.text = invName;
+        text.horizontalOverflow = HorizontalWrapMode.Overflow;
 
         LayoutElement layoutElement = text_go.AddComponent<LayoutElement>();
         layoutElement.minWidth = 100;
