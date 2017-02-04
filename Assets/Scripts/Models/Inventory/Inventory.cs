@@ -10,6 +10,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using MoonSharp.Interpreter;
 using Newtonsoft.Json.Linq;
 
@@ -17,7 +18,7 @@ using Newtonsoft.Json.Linq;
 // or potentially a non-installed copy of furniture (e.g. a cabinet still in the box from Ikea).
 [MoonSharpUserData]
 [System.Diagnostics.DebuggerDisplay("Inventory {ObjectType} {StackSize}/{MaxStackSize}")]
-public class Inventory : ISelectable, IContextActionProvider
+public class Inventory : ISelectable, IContextActionProvider, IPrototypable
 {
     private const float ClaimDuration = 120; // in Seconds
 
@@ -46,6 +47,14 @@ public class Inventory : ISelectable, IContextActionProvider
         StackSize = other.StackSize;
         Locked = other.Locked;
         claims = new List<InventoryClaim>();
+    }
+
+    private Inventory(string type, int maxStackSize, float basePrice, string category)
+    {
+        Type = type;
+        MaxStackSize = maxStackSize;
+        BasePrice = basePrice;
+        Category = category;
     }
 
     public event Action<Inventory> StackSizeChanged;
@@ -92,6 +101,19 @@ public class Inventory : ISelectable, IContextActionProvider
     }
 
     public bool IsSelected { get; set; }
+
+    /// <summary>
+    /// Creates an Inventory to be used as a prototype. Still needs to be added to the PrototypeMap.
+    /// </summary>
+    /// <returns>The prototype.</returns>
+    /// <param name="type">Prototype's Type.</param>
+    /// <param name="maxStackSize">Prototype's Max stack size.</param>
+    /// <param name="basePrice">Prototype's Base price.</param>
+    /// <param name="category">Prototype's Category.</param>
+    public static Inventory CreatePrototype(string type, int maxStackSize, float basePrice, string category)
+    {
+        return new Inventory(type, maxStackSize, basePrice, category);
+    }
 
     public Inventory Clone()
     {
@@ -228,14 +250,22 @@ public class Inventory : ISelectable, IContextActionProvider
         return string.Format("{0} [{1}/{2}]", Type, StackSize, MaxStackSize);
     }
 
+    public void ReadXmlPrototype(XmlReader reader_parent)
+    {
+        Type = reader_parent.GetAttribute("type");
+        MaxStackSize = int.Parse(reader_parent.GetAttribute("maxStackSize") ?? "50");
+        BasePrice = float.Parse(reader_parent.GetAttribute("basePrice") ?? "1");
+        Category = reader_parent.GetAttribute("category");
+    }
+
     private void ImportPrototypeSettings(int defaulMaxStackSize, float defaultBasePrice, string defaultCategory)
     {
         if (PrototypeManager.Inventory.Has(Type))
         {
-            InventoryCommon prototype = PrototypeManager.Inventory.Get(Type);
-            MaxStackSize = prototype.maxStackSize;
-            BasePrice = prototype.basePrice;
-            Category = prototype.category;
+            Inventory prototype = PrototypeManager.Inventory.Get(Type);
+            MaxStackSize = prototype.MaxStackSize;
+            BasePrice = prototype.BasePrice;
+            Category = prototype.Category;
         }
         else
         {
