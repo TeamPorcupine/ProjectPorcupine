@@ -82,8 +82,6 @@ public class PerformanceHUDManager : MonoBehaviour
 
     private void Start()
     {
-        Debug.LogWarning("Cre");
-
         // Root should already exist just grab child
         if (rootObject == null)
         {
