@@ -118,6 +118,9 @@ public class WorldController : MonoBehaviour
         GameObject timeScale = Instantiate(Resources.Load("UI/TimeScale"), canvas.transform, false) as GameObject;
         timeScale.name = "TimeScale";
 
+        GameObject dateTimeDisplay = Instantiate(Resources.Load("UI/DateTimeDisplay"), canvas.transform, false) as GameObject;
+        dateTimeDisplay.name = "DateTimeDisplay";
+
         GameController.Instance.IsModal = false;
 
         // Settings UI is a 'dialog box' (kinda), so it comes here.  
