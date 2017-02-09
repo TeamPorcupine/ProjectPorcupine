@@ -46,15 +46,19 @@ public class Inventory : ISelectable, IContextActionProvider, IPrototypable
         Category = other.Category;
         StackSize = other.StackSize;
         Locked = other.Locked;
+        LocalizationName = other.LocalizationName;
+        LocalizationDescription = other.LocalizationDescription;
         claims = new List<InventoryClaim>();
     }
 
-    private Inventory(string type, int maxStackSize, float basePrice, string category)
+    private Inventory(string type, int maxStackSize, float basePrice, string category, string localizationName, string localizationDesc)
     {
         Type = type;
         MaxStackSize = maxStackSize;
         BasePrice = basePrice;
         Category = category;
+        LocalizationName = localizationName;
+        LocalizationDescription = localizationDesc;
     }
 
     public event Action<Inventory> StackSizeChanged;
@@ -66,6 +70,10 @@ public class Inventory : ISelectable, IContextActionProvider, IPrototypable
     public float BasePrice { get; set; }
 
     public string Category { get; private set; }
+
+    public string LocalizationName { get; private set; }
+
+    public string LocalizationDescription { get; private set; }
 
     public Tile Tile { get; set; }
 
@@ -110,9 +118,9 @@ public class Inventory : ISelectable, IContextActionProvider, IPrototypable
     /// <param name="maxStackSize">Prototype's Max stack size.</param>
     /// <param name="basePrice">Prototype's Base price.</param>
     /// <param name="category">Prototype's Category.</param>
-    public static Inventory CreatePrototype(string type, int maxStackSize, float basePrice, string category)
+    public static Inventory CreatePrototype(string type, int maxStackSize, float basePrice, string category, string localizationName, string localizationDesc)
     {
-        return new Inventory(type, maxStackSize, basePrice, category);
+        return new Inventory(type, maxStackSize, basePrice, category, localizationName, localizationDesc);
     }
 
     public Inventory Clone()
@@ -200,6 +208,8 @@ public class Inventory : ISelectable, IContextActionProvider, IPrototypable
         inventoryJson.Add("BasePrice", BasePrice);
         inventoryJson.Add("Category", Category);
         inventoryJson.Add("Locked", Locked);
+        inventoryJson.Add("LocalizationName", LocalizationName);
+        inventoryJson.Add("LocalizationDesc", LocalizationDescription);
 
         return inventoryJson;
     }
@@ -212,6 +222,8 @@ public class Inventory : ISelectable, IContextActionProvider, IPrototypable
         BasePrice = (float)inventoryToken["BasePrice"];
         Category = (string)inventoryToken["Category"];
         Locked = (bool)inventoryToken["Locked"];
+        LocalizationName = (string)inventoryToken["LocalizationName"];
+        LocalizationDescription = (string)inventoryToken["LocalizationDesc"];
     }
 
     public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
@@ -256,6 +268,8 @@ public class Inventory : ISelectable, IContextActionProvider, IPrototypable
         MaxStackSize = int.Parse(reader_parent.GetAttribute("maxStackSize") ?? "50");
         BasePrice = float.Parse(reader_parent.GetAttribute("basePrice") ?? "1");
         Category = reader_parent.GetAttribute("category");
+        LocalizationName = reader_parent.GetAttribute("localizationName");
+        LocalizationDescription = reader_parent.GetAttribute("localizationDesc");
     }
 
     private void ImportPrototypeSettings(int defaulMaxStackSize, float defaultBasePrice, string defaultCategory)
@@ -266,6 +280,8 @@ public class Inventory : ISelectable, IContextActionProvider, IPrototypable
             MaxStackSize = prototype.MaxStackSize;
             BasePrice = prototype.BasePrice;
             Category = prototype.Category;
+            LocalizationName = prototype.LocalizationName;
+            LocalizationDescription = prototype.LocalizationDescription;
         }
         else
         {

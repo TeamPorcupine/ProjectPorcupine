@@ -797,7 +797,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
 
         if (orderActions.ContainsKey("Uninstall"))
         {
-            Inventory asInventory = Inventory.CreatePrototype(Type, 1, 0f, "crated_furniture");
+            Inventory asInventory = Inventory.CreatePrototype(Type, 1, 0f, "crated_furniture", LocalizationCode, UnlocalizedDescription);
             PrototypeManager.Inventory.Add(asInventory);
         }
     }
