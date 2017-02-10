@@ -9,9 +9,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json;
 using UnityEngine;
-using System.Linq;
 
 public static class Settings
 {
@@ -158,7 +158,7 @@ public static class Settings
 
         if (settingsJsonText != string.Empty)
         {
-            Dictionary<string, string> jsonDictionary = (JsonConvert.DeserializeObject<Dictionary<string, string>>(settingsJsonText));
+            Dictionary<string, string> jsonDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(settingsJsonText);
 
             foreach (string keyName in jsonDictionary.Keys)
             {
