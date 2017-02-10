@@ -26,9 +26,19 @@ public class PerformanceHUDManager : MonoBehaviour
     private static PerformanceGroup groupPointer;
 
     /// <summary>
+    /// What current root are we at.
+    /// </summary>
+    private static int rootIndex = 0;
+
+    /// <summary>
+    /// All of our root objects.
+    /// </summary>
+    private static List<GameObject> rootObjects = new List<GameObject>();
+
+    /// <summary>
     /// The root object for the HUD.
     /// </summary>
-    private static GameObject rootObject
+    private static GameObject RootObject
     {
         get
         {
@@ -47,14 +57,12 @@ public class PerformanceHUDManager : MonoBehaviour
                 return null;
             }
         }
+
         set
         {
             rootObjects.Add(value);
         }
     }
-
-    private static int rootIndex = 0;
-    private static List<GameObject> rootObjects = new List<GameObject>();
 
     public static string[] GetNames()
     {
@@ -67,16 +75,16 @@ public class PerformanceHUDManager : MonoBehaviour
     public static void DirtyUI()
     {
         // Guard
-        if (rootObject == null)
+        if (RootObject == null)
         {
             return;
         }
 
         // Could be improved but its fine
-        rootObject.transform.parent.gameObject.SetActive(true);
+        RootObject.transform.parent.gameObject.SetActive(true);
 
         // Clear
-        foreach (Transform child in rootObject.transform)
+        foreach (Transform child in RootObject.transform)
         {
             if (child.tag == "PerformanceUI")
             {
@@ -96,7 +104,7 @@ public class PerformanceHUDManager : MonoBehaviour
         foreach (BasePerformanceHUDElement elementName in allGroups[groupPointer])
         {
             GameObject go = elementName.InitializeElement();
-            go.transform.SetParent(rootObject.transform);
+            go.transform.SetParent(RootObject.transform);
             go.name = elementName.GetName();
         }
     }
