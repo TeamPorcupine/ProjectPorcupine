@@ -10,6 +10,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using MoonSharp.Interpreter;
 using Newtonsoft.Json.Linq;
 
@@ -17,7 +18,7 @@ using Newtonsoft.Json.Linq;
 // or potentially a non-installed copy of furniture (e.g. a cabinet still in the box from Ikea).
 [MoonSharpUserData]
 [System.Diagnostics.DebuggerDisplay("Inventory {ObjectType} {StackSize}/{MaxStackSize}")]
-public class Inventory : ISelectable, IContextActionProvider
+public class Inventory : ISelectable, IContextActionProvider, IPrototypable
 {
     private const float ClaimDuration = 120; // in Seconds
 
@@ -45,7 +46,19 @@ public class Inventory : ISelectable, IContextActionProvider
         Category = other.Category;
         StackSize = other.StackSize;
         Locked = other.Locked;
+        LocalizationName = other.LocalizationName;
+        LocalizationDescription = other.LocalizationDescription;
         claims = new List<InventoryClaim>();
+    }
+
+    private Inventory(string type, int maxStackSize, float basePrice, string category, string localizationName, string localizationDesc)
+    {
+        Type = type;
+        MaxStackSize = maxStackSize;
+        BasePrice = basePrice;
+        Category = category;
+        LocalizationName = localizationName;
+        LocalizationDescription = localizationDesc;
     }
 
     public event Action<Inventory> StackSizeChanged;
@@ -57,6 +70,10 @@ public class Inventory : ISelectable, IContextActionProvider
     public float BasePrice { get; set; }
 
     public string Category { get; private set; }
+
+    public string LocalizationName { get; private set; }
+
+    public string LocalizationDescription { get; private set; }
 
     public Tile Tile { get; set; }
 
@@ -92,6 +109,19 @@ public class Inventory : ISelectable, IContextActionProvider
     }
 
     public bool IsSelected { get; set; }
+
+    /// <summary>
+    /// Creates an Inventory to be used as a prototype. Still needs to be added to the PrototypeMap.
+    /// </summary>
+    /// <returns>The prototype.</returns>
+    /// <param name="type">Prototype's Type.</param>
+    /// <param name="maxStackSize">Prototype's Max stack size.</param>
+    /// <param name="basePrice">Prototype's Base price.</param>
+    /// <param name="category">Prototype's Category.</param>
+    public static Inventory CreatePrototype(string type, int maxStackSize, float basePrice, string category, string localizationName, string localizationDesc)
+    {
+        return new Inventory(type, maxStackSize, basePrice, category, localizationName, localizationDesc);
+    }
 
     public Inventory Clone()
     {
@@ -178,6 +208,8 @@ public class Inventory : ISelectable, IContextActionProvider
         inventoryJson.Add("BasePrice", BasePrice);
         inventoryJson.Add("Category", Category);
         inventoryJson.Add("Locked", Locked);
+        inventoryJson.Add("LocalizationName", LocalizationName);
+        inventoryJson.Add("LocalizationDesc", LocalizationDescription);
 
         return inventoryJson;
     }
@@ -190,6 +222,8 @@ public class Inventory : ISelectable, IContextActionProvider
         BasePrice = (float)inventoryToken["BasePrice"];
         Category = (string)inventoryToken["Category"];
         Locked = (bool)inventoryToken["Locked"];
+        LocalizationName = (string)inventoryToken["LocalizationName"];
+        LocalizationDescription = (string)inventoryToken["LocalizationDesc"];
     }
 
     public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
@@ -228,14 +262,26 @@ public class Inventory : ISelectable, IContextActionProvider
         return string.Format("{0} [{1}/{2}]", Type, StackSize, MaxStackSize);
     }
 
+    public void ReadXmlPrototype(XmlReader reader_parent)
+    {
+        Type = reader_parent.GetAttribute("type");
+        MaxStackSize = int.Parse(reader_parent.GetAttribute("maxStackSize") ?? "50");
+        BasePrice = float.Parse(reader_parent.GetAttribute("basePrice") ?? "1");
+        Category = reader_parent.GetAttribute("category");
+        LocalizationName = reader_parent.GetAttribute("localizationName");
+        LocalizationDescription = reader_parent.GetAttribute("localizationDesc");
+    }
+
     private void ImportPrototypeSettings(int defaulMaxStackSize, float defaultBasePrice, string defaultCategory)
     {
         if (PrototypeManager.Inventory.Has(Type))
         {
-            InventoryCommon prototype = PrototypeManager.Inventory.Get(Type);
-            MaxStackSize = prototype.maxStackSize;
-            BasePrice = prototype.basePrice;
-            Category = prototype.category;
+            Inventory prototype = PrototypeManager.Inventory.Get(Type);
+            MaxStackSize = prototype.MaxStackSize;
+            BasePrice = prototype.BasePrice;
+            Category = prototype.Category;
+            LocalizationName = prototype.LocalizationName;
+            LocalizationDescription = prototype.LocalizationDescription;
         }
         else
         {

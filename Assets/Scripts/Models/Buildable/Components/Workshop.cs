@@ -350,7 +350,7 @@ namespace ProjectPorcupine.Buildable.Components
 
                     if (reqInputItem.HasHopper)
                     {
-                        desiredAmount = PrototypeManager.Inventory.Get(desiredInv).maxStackSize;
+                        desiredAmount = PrototypeManager.Inventory.Get(desiredInv).MaxStackSize;
                     }
 
                     if (inTile.Inventory != null && inTile.Inventory.Type == reqInputItem.ObjectType &&
