@@ -166,7 +166,7 @@ public class SoundController
             channel.setVolume(curVol * DecibelsToVolume(volChange));
         }
 
-        channel.set3DLevel(SettingsKeyHolder.Locational ? 0.75f : 0f);
+        channel.set3DLevel(SettingsKeyHolder.LocationalSound ? 0.75f : 0f);
         channel.setPaused(false);
     }
 

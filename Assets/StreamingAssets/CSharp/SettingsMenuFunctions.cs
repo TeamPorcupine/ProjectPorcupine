@@ -202,7 +202,8 @@ public class GenericSwitch : BaseSettingsElement
 
     public bool getValue()
     {
-        return Settings.GetSetting(option.key, option.defaultValue.ToLower() == "true" ? true : false);
+        bool temp;
+        return Settings.GetSetting(option.key, out temp) ? temp : option.defaultValue.ToLower() == "true" ? true : false;
     }
 }
 
@@ -257,7 +258,8 @@ public class GenericCircleRadio : BaseSettingsElement
 
     public bool getValue()
     {
-        return Settings.GetSetting(option.key, option.defaultValue.ToLower() == "true" ? true : false);
+        bool temp;
+        return Settings.GetSetting(option.key, out temp) ? temp : option.defaultValue.ToLower() == "true" ? true : false;
     }
 }
 
@@ -312,7 +314,8 @@ public class GenericSquareRadio : BaseSettingsElement
 
     public bool getValue()
     {
-        return Settings.GetSetting(option.key, option.defaultValue.ToLower() == "true" ? true : false);
+        bool temp;
+        return Settings.GetSetting(option.key, out temp) ? temp : option.defaultValue.ToLower() == "true" ? true : false;
     }
 }
 
@@ -370,7 +373,8 @@ public class GenericToggle : BaseSettingsElement
 
     public bool getValue()
     {
-        return Settings.GetSetting(option.key, option.defaultValue.ToLower() == "true" ? true : false);
+        bool temp;
+        return Settings.GetSetting(option.key, out temp) ? temp : option.defaultValue.ToLower() == "true" ? true : false;
     }
 }
 
@@ -421,7 +425,8 @@ public class GenericInputField : BaseSettingsElement
 
     public string getValue()
     {
-        return Settings.GetSetting(option.key, option.defaultValue);
+        string temp;
+        return Settings.GetSetting(option.key, out temp) ? temp : option.defaultValue;
     }
 }
 
@@ -473,7 +478,9 @@ public class GenericSlider : BaseSettingsElement
         float v = 0;
         float.TryParse(option.defaultValue, out v);
 
-        return Settings.GetSetting(option.key, v);
+        float temp;
+
+        return Settings.GetSetting(option.key, out temp) ? temp : v;
     }
 }
 
@@ -540,8 +547,9 @@ public class GenericComboBox : BaseSettingsElement
     {
         int v = 0;
         int.TryParse(option.defaultValue, out v);
+        int temp;
 
-        return Settings.GetSetting(option.key, v);
+        return Settings.GetSetting(option.key, out temp) ? temp : v;
     }
 }
 
@@ -581,7 +589,8 @@ public class LocalizationComboBox : GenericComboBox
         // Tbh this never gets called (like legit never) or rather ever gets used
         // But this is here cause if you ever need to call it for some reason it can come as a number or a string...
         // So this handles both
-        string lang = Settings.GetSetting<string>(option.key, option.defaultValue).Replace("en_US", "English (US)");
+        string lang;
+        lang = (Settings.GetSetting<string>(option.key, out lang) ? lang : option.defaultValue).Replace("en_US", "English (US)");
         int value = -1;
 
         if (int.TryParse(lang, out value) == false)
@@ -771,12 +780,12 @@ public class GameSoundSlider : SoundSlider
 {
     public override void ApplySetting()
     {
-        WorldController.Instance.soundController.SetVolume("game", value);
+        WorldController.Instance.soundController.SetVolume("gameSounds", value);
     }
 
     public override void CancelSetting()
     {
-        WorldController.Instance.soundController.SetVolume("game", getValue());
+        WorldController.Instance.soundController.SetVolume("gameSounds", getValue());
     }
 }
 
@@ -1198,9 +1207,16 @@ public class SoundDeviceComboBox : GenericComboBox
 
     public new string getValue()
     {
-        string defaultGUID = WorldController.Instance.soundController.GetCurrentAudioDriverInfo().guid.ToString();
+        string GUID;
 
-        return Settings.GetSetting(option.key, defaultGUID);
+        if (Settings.GetSetting(option.key, out GUID))
+        {
+            return GUID;
+        }
+        else
+        {
+            return WorldController.Instance.soundController.GetCurrentAudioDriverInfo().guid.ToString();
+        }
     }
 }
 

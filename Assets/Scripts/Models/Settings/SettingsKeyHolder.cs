@@ -9,6 +9,9 @@
 using System;
 using UnityEngine;
 
+// This whole class is a nice one since it'll always ensure a value
+// This means if we change defaults in our program we also need to change them here
+// But it also means that generally it's 'better' code
 // Misc.
 public static partial class SettingsKeyHolder
 {
@@ -16,7 +19,8 @@ public static partial class SettingsKeyHolder
     {
         get
         {
-            return Settings.GetSetting("worldWidth", 101);
+            int temp;
+            return Settings.GetSetting("worldWidth", out temp) ? temp : 101;
         }
 
         set
@@ -29,7 +33,8 @@ public static partial class SettingsKeyHolder
     {
         get
         {
-            return Settings.GetSetting("worldHeight", 101);
+            int temp;
+            return Settings.GetSetting("worldHeight", out temp) ? temp : 101;
         }
 
         set
@@ -42,7 +47,8 @@ public static partial class SettingsKeyHolder
     {
         get
         {
-            return Settings.GetSetting("ZoomLerp", 10);
+            int temp;
+            return Settings.GetSetting("ZoomLerp", out temp) ? temp : 10;
         }
 
         set
@@ -55,7 +61,8 @@ public static partial class SettingsKeyHolder
     {
         get
         {
-            return Settings.GetSetting("ZoomSensitivity", 3);
+            int temp;
+            return Settings.GetSetting("ZoomSensitivity", out temp) ? temp : 3;
         }
 
         set
@@ -68,11 +75,12 @@ public static partial class SettingsKeyHolder
 // General
 public static partial class SettingsKeyHolder
 {
-    public static string Language
+    public static string SelectedLanguage
     {
         get
         {
-            return Settings.GetSetting("general_localization_language", "en_US");
+            string temp;
+            return Settings.GetSetting("general_localization_language", out temp) ? temp : "en_US";
         }
 
         set
@@ -81,11 +89,12 @@ public static partial class SettingsKeyHolder
         }
     }
 
-    public static bool AutoUpdate
+    public static bool AutoUpdateLocalization
     {
         get
         {
-            return Settings.GetSetting("general_localization_autoUpdate", true);
+            bool temp;
+            return Settings.GetSetting("general_localization_autoUpdate", out temp) ? temp : true;
         }
 
         set
@@ -94,11 +103,12 @@ public static partial class SettingsKeyHolder
         }
     }
 
-    public static int Interval
+    public static int AutosaveInterval
     {
         get
         {
-            return Settings.GetSetting("general_autosave_interval", 10);
+            int temp;
+            return Settings.GetSetting("general_autosave_interval", out temp) ? temp : 10;
         }
 
         set
@@ -107,11 +117,12 @@ public static partial class SettingsKeyHolder
         }
     }
 
-    public static int MaxFiles
+    public static int AutosaveMaxFiles
     {
         get
         {
-            return Settings.GetSetting("general_autosave_maxFiles", 5);
+            int temp;
+            return Settings.GetSetting("general_autosave_maxFiles", out temp) ? temp : 5;
         }
 
         set
@@ -124,11 +135,12 @@ public static partial class SettingsKeyHolder
 // Sound
 public static partial class SettingsKeyHolder
 {
-    public static float Master
+    public static float MasterVolume
     {
         get
         {
-            return Settings.GetSetting("sound_volume_master", 1);
+            float temp;
+            return Settings.GetSetting("sound_volume_master", out temp) ? temp : 1;
         }
 
         set
@@ -137,11 +149,12 @@ public static partial class SettingsKeyHolder
         }
     }
 
-    public static float Music
+    public static float MusicVolume
     {
         get
         {
-            return Settings.GetSetting("sound_volume_music", 1);
+            float temp;
+            return Settings.GetSetting("sound_volume_music", out temp) ? temp : 1;
         }
 
         set
@@ -150,11 +163,12 @@ public static partial class SettingsKeyHolder
         }
     }
 
-    public static float Game
+    public static float GameVolume
     {
         get
         {
-            return Settings.GetSetting("sound_volume_game", 1);
+            float temp;
+            return Settings.GetSetting("sound_volume_game", out temp) ? temp : 1;
         }
 
         set
@@ -163,11 +177,12 @@ public static partial class SettingsKeyHolder
         }
     }
 
-    public static float Alerts
+    public static float AlertsVolume
     {
         get
         {
-            return Settings.GetSetting("sound_volume_alerts", 1);
+            float temp;
+            return Settings.GetSetting("sound_volume_alerts", out temp) ? temp : 1;
         }
 
         set
@@ -176,11 +191,12 @@ public static partial class SettingsKeyHolder
         }
     }
 
-    public static float UI
+    public static float UIVolume
     {
         get
         {
-            return Settings.GetSetting("sound_volume_ui", 1);
+            float temp;
+            return Settings.GetSetting("sound_volume_ui", out temp) ? temp : 1;
         }
 
         set
@@ -189,12 +205,12 @@ public static partial class SettingsKeyHolder
         }
     }
 
-    // SettingsMenu TODO: Maybe make it a struct?  Depends on how we interpret this.
-    public static int Device
+    public static int SelectedSoundDevice
     {
         get
         {
-            return Settings.GetSetting("sound_advanced_device", 0);
+            int temp;
+            return Settings.GetSetting("sound_advanced_device", out temp) ? temp : 0;
         }
 
         set
@@ -203,11 +219,12 @@ public static partial class SettingsKeyHolder
         }
     }
 
-    public static bool Locational
+    public static bool LocationalSound
     {
         get
         {
-            return Settings.GetSetting("sound_advanced_locational", true);
+            bool temp;
+            return Settings.GetSetting("sound_advanced_locational", out temp) ? temp : true;
         }
 
         set
@@ -224,7 +241,8 @@ public static partial class SettingsKeyHolder
     {
         get
         {
-            return Settings.GetSetting("video_general_uiSkin", 0);
+            int temp;
+            return Settings.GetSetting("video_general_uiSkin", out temp) ? temp : 0;
         }
 
         set
@@ -237,7 +255,8 @@ public static partial class SettingsKeyHolder
     {
         get
         {
-            return Settings.GetSetting("video_general_quality", 2);
+            int temp;
+            return Settings.GetSetting("video_general_quality", out temp) ? temp : 2;
         }
 
         set
@@ -250,7 +269,8 @@ public static partial class SettingsKeyHolder
     {
         get
         {
-            return Settings.GetSetting("video_general_vsync", 0);
+            int temp;
+            return Settings.GetSetting("video_general_vsync", out temp) ? temp : 0;
         }
 
         set
@@ -263,7 +283,8 @@ public static partial class SettingsKeyHolder
     {
         get
         {
-            return Settings.GetSetting("video_advanced_particles", true);
+            bool temp;
+            return Settings.GetSetting("video_advanced_particles", out temp) ? temp : true;
         }
 
         set
@@ -276,7 +297,8 @@ public static partial class SettingsKeyHolder
     {
         get
         {
-            return Settings.GetSetting("video_advanced_shadows", 0);
+            int temp;
+            return Settings.GetSetting("video_advanced_shadows", out temp) ? temp : 0;
         }
 
         set
@@ -289,7 +311,8 @@ public static partial class SettingsKeyHolder
     {
         get
         {
-            return Settings.GetSetting("video_advanced_anisotropicFiltering", 2);
+            int temp;
+            return Settings.GetSetting("video_advanced_anisotropicFiltering", out temp) ? temp : 2;
         }
 
         set
@@ -302,7 +325,8 @@ public static partial class SettingsKeyHolder
     {
         get
         {
-            return Settings.GetSetting("video_advanced_aa", 0);
+            int temp;
+            return Settings.GetSetting("video_advanced_aa", out temp) ? temp : 0;
         }
 
         set
@@ -315,7 +339,8 @@ public static partial class SettingsKeyHolder
     {
         get
         {
-            return Settings.GetSetting("video_window_mode", true);
+            bool temp;
+            return Settings.GetSetting("video_window_mode", out temp) ? temp : true;
         }
 
         set
@@ -328,7 +353,8 @@ public static partial class SettingsKeyHolder
     {
         get
         {
-            return Settings.GetSetting("video_window_resoultion", 0);
+            int temp;
+            return Settings.GetSetting("video_window_resoultion", out temp) ? temp : 0;
         }
 
         set
@@ -344,7 +370,8 @@ public static partial class SettingsKeyHolder
     {
         get
         {
-            return Settings.GetSetting("developer_general_developerMode", true);
+            bool temp;
+            return Settings.GetSetting("developer_general_developerMode", out temp) ? temp : false;
         }
 
         set
@@ -357,7 +384,8 @@ public static partial class SettingsKeyHolder
     {
         get
         {
-            return Settings.GetSetting("developer_general_loggingLevel", false);
+            bool temp;
+            return Settings.GetSetting("developer_general_loggingLevel", out temp) ? temp : false;
         }
 
         set
@@ -370,7 +398,8 @@ public static partial class SettingsKeyHolder
     {
         get
         {
-            return Settings.GetSetting("developer_console_scrollSensitivity", 6);
+            int temp;
+            return Settings.GetSetting("developer_console_scrollSensitivity", out temp) ? temp : 6;
         }
 
         set
@@ -383,7 +412,8 @@ public static partial class SettingsKeyHolder
     {
         get
         {
-            return Settings.GetSetting("developer_console_enableDevConsole", true);
+            bool temp;
+            return Settings.GetSetting("developer_console_enableDevConsole", out temp) ? temp : true;
         }
 
         set
@@ -396,7 +426,8 @@ public static partial class SettingsKeyHolder
     {
         get
         {
-            return Settings.GetSetting("developer_console_timeStamp", true);
+            bool temp;
+            return Settings.GetSetting("developer_console_timeStamp", out temp) ? temp : true;
         }
 
         set
@@ -409,7 +440,8 @@ public static partial class SettingsKeyHolder
     {
         get
         {
-            return Settings.GetSetting("developer_console_fontSize", 15);
+            int temp;
+            return Settings.GetSetting("developer_console_fontSize", out temp) ? temp : 15;
         }
 
         set
@@ -422,7 +454,8 @@ public static partial class SettingsKeyHolder
     {
         get
         {
-            return Settings.GetSetting("developer_utilities_performanceHUD", 1);
+            int temp;
+            return Settings.GetSetting("developer_utilities_performanceHUD", out temp) ? temp : 1;
         }
 
         set

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 using UnityEngine;
+using System.Linq;
 
 public static class Settings
 {
@@ -35,10 +36,10 @@ public static class Settings
             return defaultValue;
         }
 
-        string setting = GetSetting(key, defaultValue);
-        if (setting != null)
+        string keyValue;
+        if (GetSetting(key, out keyValue))
         {
-            return setting;
+            return keyValue;
         }
 
         settingsDict.Add(key, defaultValue);
@@ -77,13 +78,15 @@ public static class Settings
         }
     }
 
-    public static T GetSetting<T>(string key, T defaultValue)
+    public static bool GetSetting<T>(string key, out T result)
         where T : IConvertible
     {
+        result = default(T);
+
         if (settingsDict == null)
         {
             UnityDebugger.Debugger.LogError("Settings", "Settings Dictionary was not loaded!");
-            return defaultValue;
+            return false;
         }
 
         string value;
@@ -91,18 +94,17 @@ public static class Settings
         {
             try
             {
-                T converted = (T)Convert.ChangeType(value, typeof(T));
-                return converted;
+                result = (T)Convert.ChangeType(value, typeof(T));
+                return true;
             }
             catch (Exception exception)
             {
                 UnityDebugger.Debugger.LogErrorFormat("Settings", "Exception {0} whyle trying to convert {1} to type {2}", exception.Message, value, typeof(T));
-                return defaultValue;
+                return false;
             }
         }
 
-        UnityDebugger.Debugger.LogWarning("Settings", "Attempted to access a setting that was not loaded from Settings.json:\t" + key);
-        return defaultValue;
+        return false;
     }
 
     public static void SaveSettings()
@@ -129,7 +131,9 @@ public static class Settings
 
     public static void LoadSettings()
     {
-        string settingsJsonText;
+        string settingsJsonText = string.Empty;
+
+        SetDefaults();
 
         // Load the settings Json file.
         // First try the user's private settings file in userSettingsFilePath.
@@ -137,9 +141,7 @@ public static class Settings
         // If that doesn't work fall back to the hard coded FallbackSettingJson above.
         if (System.IO.File.Exists(userSettingsFilePath) == false)
         {
-            UnityDebugger.Debugger.Log("Settings", "User settings file could not be found at '" + userSettingsFilePath + "'. Falling back to defaults.");
-
-            settingsJsonText = DefaultSettingsJsonFallback();
+            UnityDebugger.Debugger.Log("Settings", "User settings file could not be found at '" + userSettingsFilePath);
         }
         else
         {
@@ -149,47 +151,41 @@ public static class Settings
             }
             catch (Exception e)
             {
-                UnityDebugger.Debugger.LogWarning("Settings", "User settings file could not be found at '" + userSettingsFilePath + "'. Falling back to defaults.");
+                UnityDebugger.Debugger.LogWarning("Settings", "User settings file could not be found at '" + userSettingsFilePath);
                 UnityDebugger.Debugger.LogWarning("Settings", e.Message);
-
-                settingsJsonText = DefaultSettingsJsonFallback();
             }
         }
 
-        settingsDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(settingsJsonText);
+        if (settingsJsonText != string.Empty)
+        {
+            Dictionary<string, string> jsonDictionary = (JsonConvert.DeserializeObject<Dictionary<string, string>>(settingsJsonText));
+
+            foreach (string keyName in jsonDictionary.Keys)
+            {
+                settingsDict[keyName] = jsonDictionary[keyName];
+            }
+        }
     }
 
-    private static string DefaultSettingsJsonFallback()
+    // This will also load in a base template
+    private static void SetDefaults()
     {
-        string settingsJson = FallbackSettingJson;
+        // This is quite long due to the fact its a dictionary of a dictionary
+        // Only done if it can't find file so it's fine
+        // It just gets the dictionary values, then the next values, then since its a jagged array it then simplifies it
+        SettingsOption[] settingsOptions = PrototypeManager.SettingsCategories.Values
+                                                                         .SelectMany(x => x.categories.Values)
+                                                                         .SelectMany(x => x.Values)
+                                                                         .SelectMany(x => x)
+                                                                         .ToArray();
 
-        if (System.IO.File.Exists(DefaultSettingsFilePath) == false)
+        settingsDict = new Dictionary<string, string>();
+        for (int i = 0; i < settingsOptions.Length; i++)
         {
-            UnityDebugger.Debugger.LogWarning("Settings", "Default settings file could not be found at '" + DefaultSettingsFilePath + "'. Falling back to Settings.cs defaults.");
-
-            try
+            if (settingsOptions[i].defaultValue != null && settingsOptions[i].key != null)
             {
-                System.IO.File.WriteAllText(DefaultSettingsFilePath, FallbackSettingJson);
-            }
-            catch (Exception e)
-            {
-                UnityDebugger.Debugger.LogWarning("Settings", "Default settings file could not be created at '" + DefaultSettingsFilePath + "'.");
-                UnityDebugger.Debugger.LogWarning("Settings", e.Message);
+                settingsDict[settingsOptions[i].key] = settingsOptions[i].defaultValue;
             }
         }
-        else
-        {
-            try
-            {
-                settingsJson = System.IO.File.ReadAllText(DefaultSettingsFilePath);
-            }
-            catch (Exception e)
-            {
-                UnityDebugger.Debugger.LogWarning("Settings", "Settings file at '" + DefaultSettingsFilePath + "' could not be read. Falling back to Settings.cs defaults.");
-                UnityDebugger.Debugger.LogWarning("Settings", e.Message);
-            }
-        }
-
-        return settingsJson;
     }
 }
