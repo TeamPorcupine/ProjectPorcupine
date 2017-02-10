@@ -27,16 +27,7 @@ cancel=Cancel
 filename=Filename
 button_yes=Yes
 button_no=No
-
-furniture=Furniture: {0}
-deconstruct_furniture=Deconstruct Furniture
-mine_furniture=Mine
 new_world=New World
-dummy_message_text=Set message text!!!
-temp_pathfinding_test=Pathfinding Test
-selection_panel_title=Current Selection
-selection_hp={0}/{1}
-build=Build {0}
 
 ##########Furniture##########
 furn_steel_wall=Steel Wall
@@ -155,6 +146,17 @@ hit_points=HitPoints: {0}
 not_applicable_shorthand=N/A
 stat_dexterity=Dexterity: {0}
 stat_strength=Strength: {0}
+generate_asteroids=Generate Asteroids
+time_string={0:h}:{0:mm} {0:tt}
+date_string=Q{0:q} Day {0:d}, {0:y}
+furniture=Furniture: {0}
+deconstruct_furniture=Deconstruct Furniture
+mine_furniture=Mine
+dummy_message_text=Set message text!!!
+temp_pathfinding_test=Pathfinding Test
+selection_panel_title=Current Selection
+selection_hp={0}/{1}
+build=Build {0}
 
 ##########Power##########
 power_grid_status_online=Power Grid: <color={0}>Online</color>
@@ -205,8 +207,3 @@ window_setting=Window Setting
 developer_mode=Developer Mode
 master_volume=Master Volume
 music_volume=Music Volume
-
-
-generate_asteroids=Generate Asteroids
-time_string={0:h}:{0:mm} {0:tt}
-date_string=Q{0:q} Day {0:d}, {0:y}
