@@ -104,6 +104,7 @@ public static class Settings
             }
         }
 
+        UnityDebugger.Debugger.LogError("Settings", "Attempted to access a setting that was not loaded from either the SettingsFile or the Template:\t" + key);
         return false;
     }
 
