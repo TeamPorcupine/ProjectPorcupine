@@ -28,39 +28,31 @@ public class PerformanceHUDManager : MonoBehaviour
     /// <summary>
     /// What current root are we at.
     /// </summary>
-    private static int rootIndex = 0;
+    private static int columnRootIndex = 0;
 
     /// <summary>
     /// All of our root objects.
     /// </summary>
-    private static List<GameObject> rootObjects = new List<GameObject>();
+    private static List<GameObject> columnRootObjects = new List<GameObject>();
 
     /// <summary>
     /// The root object for the HUD.
     /// </summary>
-    private static GameObject RootObject
+    private static GameObject GetColumnRootObject()
     {
-        get
+        if (columnRootIndex < columnRootObjects.Count)
         {
-            if (rootIndex < rootObjects.Count)
-            {
-                rootIndex++;
-                return rootObjects[rootIndex - 1];
-            }
-            else if (rootIndex > 0)
-            {
-                rootIndex = 0;
-                return rootObjects[rootIndex];
-            }
-            else
-            {
-                return null;
-            }
+            columnRootIndex++;
+            return columnRootObjects[columnRootIndex - 1];
         }
-
-        set
+        else if (columnRootIndex > 0)
         {
-            rootObjects.Add(value);
+            columnRootIndex = 0;
+            return columnRootObjects[columnRootIndex];
+        }
+        else
+        {
+            return null;
         }
     }
 
@@ -74,17 +66,19 @@ public class PerformanceHUDManager : MonoBehaviour
     /// </summary>
     public static void DirtyUI()
     {
+        GameObject rootObject = GetColumnRootObject();
+
         // Guard
-        if (RootObject == null)
+        if (rootObject == null)
         {
             return;
         }
 
         // Could be improved but its fine
-        RootObject.transform.parent.gameObject.SetActive(true);
+        rootObject.transform.parent.gameObject.SetActive(true);
 
         // Clear
-        foreach (Transform child in RootObject.transform)
+        foreach (Transform child in rootObject.transform)
         {
             if (child.tag == "PerformanceUI")
             {
@@ -104,7 +98,7 @@ public class PerformanceHUDManager : MonoBehaviour
         foreach (BasePerformanceHUDElement elementName in allGroups[groupPointer])
         {
             GameObject go = elementName.InitializeElement();
-            go.transform.SetParent(RootObject.transform);
+            go.transform.SetParent(rootObject.transform);
             go.name = elementName.GetName();
         }
     }
@@ -117,10 +111,10 @@ public class PerformanceHUDManager : MonoBehaviour
         TimeManager.Instance.EveryFrame += Instance_EveryFrame;
 
         // Root should already exist just grab child
-        rootObjects = new List<GameObject>();
+        columnRootObjects = new List<GameObject>();
         foreach (Transform child in transform)
         {
-            rootObjects.Add(child.gameObject);
+            columnRootObjects.Add(child.gameObject);
         }
 
         // Load Settings
