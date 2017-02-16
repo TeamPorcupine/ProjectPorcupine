@@ -267,7 +267,6 @@ namespace ProjectPorcupine.Localization
                     {
                         if (line.Length < 1 || line[0] == '#')
                         {
-                            Debug.Log("comment");
                             continue;
                         }
 
