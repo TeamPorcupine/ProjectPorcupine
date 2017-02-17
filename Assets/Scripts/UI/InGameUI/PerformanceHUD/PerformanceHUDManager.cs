@@ -35,27 +35,6 @@ public class PerformanceHUDManager : MonoBehaviour
     /// </summary>
     private static List<GameObject> columnRootObjects = new List<GameObject>();
 
-    /// <summary>
-    /// The root object for the HUD.
-    /// </summary>
-    private static GameObject GetColumnRootObject()
-    {
-        if (columnRootIndex < columnRootObjects.Count)
-        {
-            columnRootIndex++;
-            return columnRootObjects[columnRootIndex - 1];
-        }
-        else if (columnRootIndex > 0)
-        {
-            columnRootIndex = 0;
-            return columnRootObjects[columnRootIndex];
-        }
-        else
-        {
-            return null;
-        }
-    }
-
     public static string[] GetNames()
     {
         return allGroups.Keys.Select(x => x.name).ToArray();
@@ -100,6 +79,27 @@ public class PerformanceHUDManager : MonoBehaviour
             GameObject go = elementName.InitializeElement();
             go.transform.SetParent(rootObject.transform);
             go.name = elementName.GetName();
+        }
+    }
+
+    /// <summary>
+    /// The root object for the HUD.
+    /// </summary>
+    private static GameObject GetColumnRootObject()
+    {
+        if (columnRootIndex < columnRootObjects.Count)
+        {
+            columnRootIndex++;
+            return columnRootObjects[columnRootIndex - 1];
+        }
+        else if (columnRootIndex > 0)
+        {
+            columnRootIndex = 0;
+            return columnRootObjects[columnRootIndex];
+        }
+        else
+        {
+            return null;
         }
     }
 
