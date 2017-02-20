@@ -87,6 +87,20 @@ namespace ProjectPorcupine.Buildable.Components
             }
         }
 
+        [XmlIgnore]
+        public bool OutputIsNeeded
+        {
+            get
+            {
+                return FurnitureParams[ParamsDefinitions.OutputNeeded.ParameterName].ToBool();
+            }
+
+            set
+            {
+                FurnitureParams[ParamsDefinitions.OutputNeeded.ParameterName].SetValue(value);
+            }
+        }
+
         [XmlElement("Provides")]
         [JsonProperty("Provides")]
         public Info Provides { get; set; }
@@ -193,6 +207,28 @@ namespace ProjectPorcupine.Buildable.Components
             }
         }
 
+        public bool OutputCanVary
+        {
+            get { return Provides != null && Provides.CanFluctuate == true; }
+        }
+
+        public bool AllRequirementsFulfilled
+        {
+            get
+            {                
+                if (Requires != null)
+                {
+                    return AreParameterConditionsFulfilled(Requires.ParamConditions);
+                }
+                else
+                {
+                    return true;
+                }
+            }
+        }
+
+        //public bool OutputIsNeeded { get; set; }
+
         public override BuildableComponent Clone()
         {
             return new PowerConnection(this);
@@ -231,7 +267,9 @@ namespace ProjectPorcupine.Buildable.Components
             {
                 areAllParamReqsFulfilled &= StoredAmount > 0;
             }
-            
+
+            IsRunning = areAllParamReqsFulfilled;
+
             // store the actual efficiency for other components to use
             if (IsConsumer && Requires.CanFluctuate)
             {
@@ -324,26 +362,6 @@ namespace ProjectPorcupine.Buildable.Components
 
         [Serializable]
         [JsonObject(MemberSerialization.OptOut)]
-        public class Info
-        {
-            [XmlAttribute("rate")]
-            public float Rate { get; set; }
-
-            [XmlAttribute("capacity")]
-            public float Capacity { get; set; }
-
-            [XmlAttribute("capacityThresholds")]
-            public int CapacityThresholds { get; set; }
-
-            [XmlAttribute("canFluctuate")]
-            public bool CanFluctuate { get; set; }
-
-            [XmlElement("Param")]
-            public List<ParameterCondition> ParamConditions { get; set; }            
-        }
-
-        [Serializable]
-        [JsonObject(MemberSerialization.OptOut)]
         public class PowerConnectionParameterDefinitions
         {
             // constants for parameters
@@ -351,6 +369,7 @@ namespace ProjectPorcupine.Buildable.Components
             public const string CurAccumulatorIndexParamName = "pow_accumulator_index";
             public const string CurIsRunningParamName = "pow_is_running";
             public const string CurEfficiencyParamName = "pow_efficiency";
+            public const string CurPowerOutputNeededParamName = "pow_out_needed";
 
             public PowerConnectionParameterDefinitions()
             {
@@ -359,6 +378,7 @@ namespace ProjectPorcupine.Buildable.Components
                 CurrentAcumulatorChargeIndex = new ParameterDefinition(CurAccumulatorIndexParamName);
                 IsRunning = new ParameterDefinition(CurIsRunningParamName);
                 Efficiency = new ParameterDefinition(CurEfficiencyParamName);
+                OutputNeeded = new ParameterDefinition(CurPowerOutputNeededParamName);
             }
 
             public ParameterDefinition CurrentAcumulatorCharge { get; set; }
@@ -368,6 +388,8 @@ namespace ProjectPorcupine.Buildable.Components
             public ParameterDefinition IsRunning { get; set; }
 
             public ParameterDefinition Efficiency { get; set; }
+
+            public ParameterDefinition OutputNeeded { get; set; }
         }
     }
 }

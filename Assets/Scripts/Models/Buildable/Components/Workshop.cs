@@ -72,6 +72,10 @@ namespace ProjectPorcupine.Buildable.Components
         [JsonProperty("ProductionChain")]
         public List<ProductionChain> PossibleProductions { get; set; }
 
+        [XmlElement("Requires")]
+        [JsonProperty("Requires")]
+        public Info Requires { get; set; }
+
         [XmlElement("Efficiency")]
         [JsonProperty("Efficiency")]
         public SourceDataInfo Efficiency { get; set; }
@@ -117,7 +121,15 @@ namespace ProjectPorcupine.Buildable.Components
                 ProductionChain prodChain = GetProductionChainByName(curSetupChainName);
                 //// create possible jobs for factory(hauling input)
                 HaulingJobForInputs(prodChain);
-                canWork = true;
+
+                bool areAllParamReqsFulfilled = true;
+                if (Requires != null)
+                {
+                    areAllParamReqsFulfilled = AreParameterConditionsFulfilled(Requires.ParamConditions);
+                }
+
+                canWork &= areAllParamReqsFulfilled;
+                componentRequirements = Requirements.None;
             }
             else
             {

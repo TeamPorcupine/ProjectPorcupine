@@ -168,6 +168,26 @@ namespace ProjectPorcupine.Buildable.Components
             }
         }
 
+        public bool OutputCanVary
+        {
+            get
+            {
+                // TODO: implement for fluids
+                return false;
+            }
+        }
+
+        public bool OutputIsNeeded { get; set; }
+       
+        public bool AllRequirementsFulfilled
+        {
+            get
+            {
+                // TODO: implement for fluids
+                return true;
+            }
+        }
+
         public override BuildableComponent Clone()
         {
             return new FluidConnection(this);
@@ -273,24 +293,7 @@ namespace ProjectPorcupine.Buildable.Components
             // TODO: Make this not a Universal Connection
             World.Current.FluidNetwork.PlugIn(this);
         }
-
-        [Serializable]
-        [JsonObject(MemberSerialization.OptOut)]
-        public class Info
-        {
-            [XmlAttribute("rate")]
-            public float Rate { get; set; }
-
-            [XmlAttribute("capacity")]
-            public float Capacity { get; set; }
-
-            [XmlAttribute("capacityThresholds")]
-            public int CapacityThresholds { get; set; }
-
-            [XmlElement("Param")]
-            public List<ParameterCondition> ParamConditions { get; set; }            
-        }
-
+        
         [Serializable]
         [JsonObject(MemberSerialization.OptOut)]
         public class FluidConnectionParameterDefinitions

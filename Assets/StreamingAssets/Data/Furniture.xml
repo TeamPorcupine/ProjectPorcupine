@@ -376,13 +376,23 @@
                     <Item objectType="power_cell" amount="1" slotPosX="0" slotPosY="0" hasHopper="false" />
                 </Input>
             </ProductionChain>
+            <Requires>
+                <Param name="pow_out_needed" condition="IsTrue" />
+            </Requires> 
         </Component>
         
         <Component type="PowerConnection">
             <Provides rate="5"/>            
             <Requires>
                 <Param name="cur_processed_inv" condition="IsGreaterThanZero" />
-            </Requires>            
+            </Requires>    
+            <ParameterDefinitions>
+                <CurrentAcumulatorCharge name="pow_accumulator_charge" />
+                <CurrentAcumulatorChargeIndex name="pow_accumulator_index" />
+                <IsRunning name="pow_is_running" />
+                <Efficiency name="pow_efficiency" />
+                <OutputNeeded name="pow_out_needed" />
+            </ParameterDefinitions>
         </Component>        
 
         <GetProgressInfo functionName="PowerGenerator_FuelInfo" />
@@ -589,9 +599,7 @@
         <JobWorkSpotOffset X="1" Y="0" />
 
         <Component type="PowerConnection">
-            <Requires rate="2" canFluctuate="true">
-                <Param name="cur_processed_inv" condition="IsGreaterThanZero" />
-            </Requires>
+            <Requires rate="2" canFluctuate="true" />
         </Component>
 
         <Component type="GasConnection">
@@ -736,10 +744,11 @@
                     <Item objectType="power_cell" amount="1" slotPosX="2" slotPosY="1" />
                 </Output>
             </ProductionChain>
+            <Efficiency fromParameter="pow_efficiency" />
         </Component>
 
         <Component type="PowerConnection">
-            <Requires rate="1" />
+            <Requires rate="2" canFluctuate="true" />
         </Component>
         
         <GetProgressInfo functionName="PowerCellPress_StatusInfo" />

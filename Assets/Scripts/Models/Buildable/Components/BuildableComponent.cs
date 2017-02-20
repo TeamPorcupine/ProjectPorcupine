@@ -54,6 +54,7 @@ namespace ProjectPorcupine.Buildable.Components
         public enum ConditionType
         {
             IsGreaterThanZero,
+            IsLessThanOne,
             IsZero,
             IsTrue,
             IsFalse
@@ -236,6 +237,9 @@ namespace ProjectPorcupine.Buildable.Components
                         case ConditionType.IsGreaterThanZero:
                             partialEval = FurnitureParams[condition.ParameterName].ToFloat() > 0f;
                             break;
+                        case ConditionType.IsLessThanOne:
+                            partialEval = FurnitureParams[condition.ParameterName].ToFloat() < 1f;
+                            break;
                         case ConditionType.IsTrue:
                             partialEval = FurnitureParams[condition.ParameterName].ToBool() == true;
                             break;
@@ -385,6 +389,26 @@ namespace ProjectPorcupine.Buildable.Components
 
             [XmlAttribute("fromFunction")]
             public string FromFunction { get; set; }
+        }
+
+        [Serializable]
+        [JsonObject(MemberSerialization.OptOut)]
+        public class Info
+        {
+            [XmlAttribute("rate")]
+            public float Rate { get; set; }
+
+            [XmlAttribute("capacity")]
+            public float Capacity { get; set; }
+
+            [XmlAttribute("capacityThresholds")]
+            public int CapacityThresholds { get; set; }
+
+            [XmlAttribute("canFluctuate")]
+            public bool CanFluctuate { get; set; }
+
+            [XmlElement("Param")]
+            public List<ParameterCondition> ParamConditions { get; set; }
         }
     }
 }

@@ -179,6 +179,12 @@ public class PowerNetworkTest
 
         public bool InputCanVary { get; set; }
 
+        public bool OutputCanVary { get; set; }
+
+        public bool OutputIsNeeded { get; set; }
+
+        public bool AllRequirementsFulfilled { get; set; }
+
         public void Reconnect()
         {
             throw new NotImplementedException();

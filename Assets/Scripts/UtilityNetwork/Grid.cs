@@ -149,14 +149,16 @@ namespace ProjectPorcupine.PowerNetwork
         public void Tick()
         {
             float producers = 0f;
+            float producersVarying = 0f;
+            float producersStable = 0;
             float consumersVarying = 0f;
             float consumersStable = 0;
             
             foreach (IPluggable connection in connections)
             {
-                if (connection.IsProducer)
+                if (connection.IsProducer && !connection.OutputCanVary)
                 {
-                    producers += connection.OutputRate;
+                    producersStable += connection.OutputRate;
                 }
 
                 if (connection.IsConsumer)
@@ -172,12 +174,31 @@ namespace ProjectPorcupine.PowerNetwork
                 }
             }
             
-            float currentLevel = producers - consumersVarying - consumersStable;
+            float currentLevel = producersStable - consumersVarying - consumersStable;
 
-            if (producers > 0f && currentLevel.IsZero())
+            if (producersStable > 0f && currentLevel.IsZero())
             {
                 IsOperating = true;
                 return;
+            }
+
+            if (currentLevel < 0.0f)
+            {
+                // here check if we can plug in some varying output
+                foreach (IPluggable connection in connections)
+                {
+                    if (connection.IsProducer && connection.OutputCanVary && connection.AllRequirementsFulfilled)
+                    {
+                        connection.OutputIsNeeded = true;
+                        currentLevel += connection.OutputRate;
+                        producersVarying += connection.OutputRate;
+                        //if (currentLevel >= 0f)
+                        //{
+                        //    FillStorage(ref currentLevel);
+                        //    break;
+                        //}
+                    }
+                }
             }
 
             if (currentLevel > 0.0f)
@@ -185,9 +206,11 @@ namespace ProjectPorcupine.PowerNetwork
                 FillStorage(ref currentLevel);
             }
             else
-            {
+            {                
                 EmptyStorage(ref currentLevel);
             }
+
+            producers = producersStable + producersVarying;
 
             if (producers > 0)
             {
