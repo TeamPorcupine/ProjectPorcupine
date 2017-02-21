@@ -76,12 +76,16 @@ util_power_cable=Power Cable
 util_power_cable_desc=Carries power
 util_water_pipe=Water Pipe
 util_water_pipe_desc=Transports water
+
+##########Tiles##########
 tile_Empty=Empty
 tile_Empty_desc=An empty tile.
 tile_Floor=Floor
 tile_Floor_desc=Meets the highest non-skid standards.
 tile_Ladder=Ladder
 tile_Ladder_desc=High-tech space movement system. Effectiveness reduced when held by weak noodle arms.
+
+##########Room Behaviors##########
 roombehavior_airlock=Airlock
 roombehavior_airlock_desc=A room that prevents air from escaping the base.
 
