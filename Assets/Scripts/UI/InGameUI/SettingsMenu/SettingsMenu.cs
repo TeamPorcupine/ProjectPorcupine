@@ -265,7 +265,7 @@ public class SettingsMenu : MonoBehaviour
     // Use this for initialization
     private void Start()
     {
-        // This just makes sure that the localisation is done
+        // This just makes sure that the localization is done
         // It won't always work,
         // especially if slow internet so cross fingers lol, since there is no 'localization finished thing'
         StartCoroutine(LateStart());

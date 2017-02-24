@@ -250,6 +250,27 @@ public struct WorldTime : IFormattable
         }
     }
 
+    public override bool Equals(object obj)
+    {
+        if (obj.Equals(this))
+        {
+            return true;
+        }
+        else if (obj is WorldTime && ((WorldTime)obj) == this)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public override int GetHashCode()
+    {
+        return this.Seconds.GetHashCode();
+    }
+
     public static WorldTime operator +(WorldTime time1, WorldTime time2)
     {
         WorldTime worldTime = new WorldTime(time1.Seconds + time2.Seconds);
@@ -294,13 +315,13 @@ public struct WorldTime : IFormattable
 
     #region IFormattable implementation
 
-    string IFormattable.ToString(string format, IFormatProvider provider = null)
+    string IFormattable.ToString(string format, IFormatProvider provider)
     {
         if (provider == null)
         {
             // This try will always fail with our current language file naming scheme, as it doesn't match up with the standard.
             // This is in place so that should it be changed, we will automatically be using the chosen language rather than the system standard.
-            try 
+            try
             {
                 provider = CultureInfo.GetCultureInfo(LocalizationTable.currentLanguage);
             }

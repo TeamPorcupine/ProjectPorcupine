@@ -28,7 +28,7 @@ public class Need : IPrototypable
     {
         Amount = 0;
         Type = other.Type;
-        LocalisationID = other.LocalisationID;
+        LocalizationID = other.LocalizationID;
         Name = other.Name;
         GrowthRate = other.GrowthRate;
         highToLow = other.highToLow;
@@ -47,7 +47,7 @@ public class Need : IPrototypable
 
     public string Type { get; private set; }
 
-    public string LocalisationID { get; private set; }
+    public string LocalizationID { get; private set; }
 
     public string Name { get; private set; }
 
@@ -104,7 +104,7 @@ public class Need : IPrototypable
         {
             EventActions.Trigger("OnUpdate", this, deltaTime);
         }
-        else 
+        else
         {
             DefaultNeedDecay(deltaTime);
         }
@@ -119,7 +119,7 @@ public class Need : IPrototypable
             {
                 DefaultEmptyNeed();
             }
-        } 
+        }
         else if (Amount > 90f)
         {
             if (EventActions != null)
@@ -187,7 +187,7 @@ public class Need : IPrototypable
                     break;
                 case "Localization":
                     reader.Read();
-                    LocalisationID = reader.ReadContentAsString();
+                    LocalizationID = reader.ReadContentAsString();
                     break;
                 case "Action":
                     XmlReader subtree = reader.ReadSubtree();
@@ -215,7 +215,7 @@ public class Need : IPrototypable
 
     public void DefaultNeedDecay(float deltaTime)
     {
-        Amount += this.GrowthRate  * deltaTime;
+        Amount += this.GrowthRate * deltaTime;
     }
 
     public void DefaultEmptyNeed()

@@ -51,7 +51,7 @@ public class FPSPerformanceComponent : BasePerformanceComponent
 
             fpsNextPeriod += FPSMeasurePeriod;
 
-            // Colour Changing
+            // Color Changing
             if (currentFps > 55)
             {
                 // A good area to be at

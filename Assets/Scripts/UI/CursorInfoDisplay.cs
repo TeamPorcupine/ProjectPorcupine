@@ -63,7 +63,6 @@ public class CursorInfoDisplay
 
     public string GetCurrentBuildRequirements()
     {
-        string temp = string.Empty;
         ProjectPorcupine.OrderActions.Build buildOrder = PrototypeManager.Furniture.Get(bmc.buildModeType).GetOrderAction<ProjectPorcupine.OrderActions.Build>();
         if (buildOrder != null)
         {
