@@ -30,6 +30,9 @@ public abstract class BaseSettingsElement : BaseUIElement
     /// </summary>
     public abstract void CancelSetting();
 
+    /// <summary>
+    /// The name of the settings element.
+    /// </summary>
     public override string GetName()
     {
         return option.name;

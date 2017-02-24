@@ -359,7 +359,7 @@ namespace ProjectPorcupine.Rooms
             foreach (ContextMenuLuaAction contextMenuLuaAction in contextMenuLuaActions)
             {
                 if (!contextMenuLuaAction.DevModeOnly ||
-                    Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false))
+                    SettingsKeyHolder.DeveloperMode)
                 {
                     // TODO The Action could be done via a lambda, but it always uses the same space of memory, thus if 2 actions are performed, the same action will be produced for each.
                     yield return new ContextMenuAction

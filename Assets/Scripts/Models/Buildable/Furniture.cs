@@ -52,10 +52,10 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     private HashSet<string> tileTypeBuildPermissions;
 
     private bool isOperating;
-    
+
     // Need to hold the health value.
     private HealthSystem health;
-    
+
     // Did we have power in the last update?
     private bool prevUpdatePowerOn;
     #endregion
@@ -124,7 +124,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         {
             orderActions.Add(orderAction.Key, orderAction.Value.Clone());
         }
-        
+
         if (other.Animation != null)
         {
             Animation = other.Animation.Clone();
@@ -214,7 +214,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// <value>The event actions that is called on update.</value>
     public EventActions EventActions { get; private set; }
 
-    public Bounds Bounds 
+    public Bounds Bounds
     {
         get
         {
@@ -527,7 +527,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
             Requirements = newRequirements;
             OnIsOperatingChanged(this);
         }
-        
+
         IsOperating = canFunction;
 
         if (canFunction == false)
@@ -727,7 +727,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                 case "DragType":
                     reader.Read();
                     DragType = reader.ReadContentAsString();
-                    break;               
+                    break;
                 case "CanBeBuiltOn":
                     tileTypeBuildPermissions.Add(reader.GetAttribute("tileType"));
                     break;
@@ -797,11 +797,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
 
         if (orderActions.ContainsKey("Uninstall"))
         {
-            InventoryCommon asInventory = new InventoryCommon();
-            asInventory.type = Type;
-            asInventory.maxStackSize = 1;
-            asInventory.basePrice = 0f;
-            asInventory.category = "crated_furniture";
+            Inventory asInventory = Inventory.CreatePrototype(Type, 1, 0f, "crated_furniture", LocalizationCode, UnlocalizedDescription);
             PrototypeManager.Inventory.Add(asInventory);
         }
     }
@@ -813,7 +809,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     public void ReadXmlParams(XmlReader reader)
     {
         Parameters = Parameter.ReadXml(reader);
-    }    
+    }
     #endregion
 
     public object ToJSon()
@@ -857,9 +853,9 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
 
         // TODO: read this from furniture params
         Dictionary<string, RequestedItem> itemsDict = new Dictionary<string, RequestedItem>();
-        foreach (InventoryCommon inventoryProto in PrototypeManager.Inventory.Values)
+        foreach (Inventory inventoryProto in PrototypeManager.Inventory.Values)
         {
-            itemsDict[inventoryProto.type] = new RequestedItem(inventoryProto.type, 1, inventoryProto.maxStackSize);
+            itemsDict[inventoryProto.Type] = new RequestedItem(inventoryProto.Type, 1, inventoryProto.MaxStackSize);
         }
 
         return itemsDict.Values.ToArray();
@@ -867,7 +863,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
 
     public void SetUninstallJob()
     {
-        if (CommandSettings.DeveloperModeToggle)
+        if (SettingsKeyHolder.DeveloperMode)
         {
             Uninstall();
             return;
@@ -881,7 +877,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
             Job job = uninstallOrder.CreateJob(Tile, Type);
             job.OnJobCompleted += (inJob) => Uninstall();
             World.Current.jobQueue.Enqueue(job);
-        }        
+        }
     }
 
     /// <summary>
@@ -966,7 +962,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// </summary>
     public void SetDeconstructJob()
     {
-        if (CommandSettings.DeveloperModeToggle)
+        if (SettingsKeyHolder.DeveloperMode)
         {
             Deconstruct();
             return;
@@ -986,7 +982,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
             Job job = deconstructOrder.CreateJob(Tile, Type);
             job.OnJobCompleted += (inJob) => Deconstruct();
             World.Current.jobQueue.Enqueue(job);
-        }        
+        }
     }
 
     /// <summary>
@@ -1024,7 +1020,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         {
             foreach (OrderAction.InventoryInfo inv in deconstructOrder.Inventory)
             {
-                World.Current.InventoryManager.PlaceInventoryAround(Tile, new Inventory(inv.Type, inv.Amount));               
+                World.Current.InventoryManager.PlaceInventoryAround(Tile, new Inventory(inv.Type, inv.Amount));
             }
         }
 
@@ -1215,7 +1211,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
             return null;
         }
     }
-    
+
     #endregion
 
     #region Context Menu
@@ -1226,7 +1222,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// <returns>Context menu actions.</returns>
     public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
     {
-        if (CommandSettings.DeveloperModeToggle == true || HasTypeTag("Non-deconstructible") == false)
+        if (SettingsKeyHolder.DeveloperMode || HasTypeTag("Non-deconstructible") == false)
         {
             yield return new ContextMenuAction
             {
@@ -1275,7 +1271,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         foreach (ContextMenuLuaAction contextMenuLuaAction in contextMenuLuaActions)
         {
             if (!contextMenuLuaAction.DevModeOnly ||
-                CommandSettings.DeveloperModeToggle)
+                SettingsKeyHolder.DeveloperMode)
             {
                 // TODO The Action could be done via a lambda, but it always uses the same space of memory, thus if 2 actions are performed, the same action will be produced for each.
                 yield return new ContextMenuAction

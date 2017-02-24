@@ -11,7 +11,7 @@ public static class CommandFunctions
     /// </summary>
     public static void SetTimeStamp(bool on)
     {
-        CommandSettings.ShowTimeStamp = on;
+        SettingsKeyHolder.TimeStamps = on;
         DevConsole.Log("Change successful :D", "green");
     }
 
@@ -264,12 +264,12 @@ public static class CommandFunctions
 
     public static void DevMode(bool isOn)
     {
-        CommandSettings.DeveloperModeToggle = isOn;
+        SettingsKeyHolder.DeveloperMode = isOn;
     }
 
     public static void Status()
     {
-        DevConsole.Log("Developer Mode is " + (CommandSettings.DeveloperModeToggle ? "on" : "off"), "yellow");
+        DevConsole.Log("Developer Mode is " + (SettingsKeyHolder.DeveloperMode ? "on" : "off"), "yellow");
         DevConsole.Log("Time is " + (TimeManager.Instance.IsPaused ? "paused" : TimeManager.Instance.TimeScale + "x"), "yellow");
     }
 

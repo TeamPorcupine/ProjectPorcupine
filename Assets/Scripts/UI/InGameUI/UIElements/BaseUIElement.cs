@@ -6,7 +6,9 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using System.Linq;
+using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -117,7 +119,7 @@ public abstract class BaseUIElement
     protected Text CreateText(string withText, bool autoFit = false, TextAnchor alignment = TextAnchor.MiddleLeft)
     {
         Text text = GameObject.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsText")).GetComponent<Text>();
-        text.text = withText;
+        text.text = LocalizationTable.GetLocalization(withText);
         text.alignment = alignment;
 
         if (autoFit == true)

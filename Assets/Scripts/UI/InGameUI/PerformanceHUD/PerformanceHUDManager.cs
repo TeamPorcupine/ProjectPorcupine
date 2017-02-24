@@ -45,27 +45,16 @@ public class PerformanceHUDManager : MonoBehaviour
     /// </summary>
     public static void DirtyUI()
     {
-        GameObject rootObject = GetColumnRootObject();
-
-        // Guard
-        if (rootObject == null)
-        {
-            return;
-        }
-
-        // Could be improved but its fine
-        rootObject.transform.parent.gameObject.SetActive(true);
-
         // Clear
-        foreach (Transform child in rootObject.transform)
+        foreach (Transform rootTransform in columnRootObjects.Select(x => x.transform))
         {
-            if (child.tag == "PerformanceUI")
+            foreach (Transform child in rootTransform)
             {
                 Destroy(child.gameObject);
             }
         }
 
-        groupPointer = allGroups.FirstOrDefault(x => x.Key.name == CommandSettings.PerformanceHUDMode).Key;
+        groupPointer = allGroups.FirstOrDefault(x => x.Key.name == SettingsKeyHolder.PerformanceHUD).Key;
 
         // Set group
         if (groupPointer.name == null)
@@ -76,8 +65,9 @@ public class PerformanceHUDManager : MonoBehaviour
         // Draw and Begin UI Functionality
         foreach (BasePerformanceHUDElement elementName in allGroups[groupPointer])
         {
+            Transform rootTransfer = GetColumnRootObject().transform;
             GameObject go = elementName.InitializeElement();
-            go.transform.SetParent(rootObject.transform);
+            go.transform.SetParent(rootTransfer);
             go.name = elementName.GetName();
         }
     }
@@ -97,9 +87,14 @@ public class PerformanceHUDManager : MonoBehaviour
             columnRootIndex = 0;
             return columnRootObjects[columnRootIndex];
         }
+        else if (columnRootObjects.Count == 0)
+        {
+            throw new System.Exception("Column Root Object Array is empty and the system wants an object");
+        }
         else
         {
-            return null;
+            columnRootIndex++;
+            return GetColumnRootObject();
         }
     }
 

@@ -263,7 +263,7 @@ public static class PerformanceHUDFunctions
             // Build Gameobject
             GameObject element = GetHorizontalBaseElement("FPS-Range", 80, 60, allocatedHeight: 60, allocatedWidth: 80, alignment: TextAnchor.MiddleLeft);
 
-            UITextElement = CreateText(string.Format(Display, "-", "-"), false, TextAnchor.UpperCenter);
+            UITextElement = CreateText(string.Format(Display, "-", "-"), false, TextAnchor.MiddleCenter);
             UITextElement.transform.SetParent(element.transform);
 
             return element;

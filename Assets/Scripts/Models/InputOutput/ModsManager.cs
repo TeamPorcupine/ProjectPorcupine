@@ -152,6 +152,10 @@ public class ModsManager
                     string text = File.ReadAllText(filePath);
                     FunctionsManager.Get(functionsName).LoadScript(text, functionsName, scriptType);
                 }
+                else
+                {
+                    UnityDebugger.Debugger.LogError(folder == "CSharp" ? "CSharp" : "LUA", "file " + filePath + " not found");
+                }
             });
     }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+using System;
+using System.Collections;
 using DeveloperConsole;
 using ProjectPorcupine.Localization;
 using UnityEngine.UI;
@@ -42,6 +43,31 @@ public static class SettingsMenuFunctions
     public static SoundSlider GetSoundSlider()
     {
         return new SoundSlider();
+    }
+
+    public static MasterSoundSlider GetMasterSoundSlider()
+    {
+        return new MasterSoundSlider();
+    }
+
+    public static MusicSoundSlider GetMusicSoundSlider()
+    {
+        return new MusicSoundSlider();
+    }
+
+    public static GameSoundSlider GetGameSoundSlider()
+    {
+        return new GameSoundSlider();
+    }
+
+    public static AlertsSoundSlider GetAlertsSoundSlider()
+    {
+        return new AlertsSoundSlider();
+    }
+
+    public static UISoundSlider GetUISoundSlider()
+    {
+        return new UISoundSlider();
     }
 
     public static UISkinComboBox GetUISkinComboBox()
@@ -98,6 +124,31 @@ public static class SettingsMenuFunctions
     {
         return new DeveloperModeToggle();
     }
+
+    public static SoftParticlesToggle GetSoftParticlesToggle()
+    {
+        return new SoftParticlesToggle();
+    }
+
+    public static AnisotropicFilteringComboBox GetAnisotropicFilteringComboBox()
+    {
+        return new AnisotropicFilteringComboBox();
+    }
+
+    public static ShadowComboBox GetShadowComboBox()
+    {
+        return new ShadowComboBox();
+    }
+
+    public static AAComboBox GetAAComboBox()
+    {
+        return new AAComboBox();
+    }
+
+    public static SoundDeviceComboBox GetSoundDeviceComboBox()
+    {
+        return new SoundDeviceComboBox();
+    }
 }
 
 public class GenericSwitch : BaseSettingsElement
@@ -151,7 +202,8 @@ public class GenericSwitch : BaseSettingsElement
 
     public bool getValue()
     {
-        return Settings.GetSetting(option.key, option.defaultValue.ToLower() == "true" ? true : false);
+        bool temp;
+        return Settings.GetSetting(option.key, out temp) ? temp : option.defaultValue.ToLower() == "true" ? true : false;
     }
 }
 
@@ -206,7 +258,8 @@ public class GenericCircleRadio : BaseSettingsElement
 
     public bool getValue()
     {
-        return Settings.GetSetting(option.key, option.defaultValue.ToLower() == "true" ? true : false);
+        bool temp;
+        return Settings.GetSetting(option.key, out temp) ? temp : option.defaultValue.ToLower() == "true" ? true : false;
     }
 }
 
@@ -261,7 +314,8 @@ public class GenericSquareRadio : BaseSettingsElement
 
     public bool getValue()
     {
-        return Settings.GetSetting(option.key, option.defaultValue.ToLower() == "true" ? true : false);
+        bool temp;
+        return Settings.GetSetting(option.key, out temp) ? temp : option.defaultValue.ToLower() == "true" ? true : false;
     }
 }
 
@@ -319,7 +373,8 @@ public class GenericToggle : BaseSettingsElement
 
     public bool getValue()
     {
-        return Settings.GetSetting(option.key, option.defaultValue.ToLower() == "true" ? true : false);
+        bool temp;
+        return Settings.GetSetting(option.key, out temp) ? temp : option.defaultValue.ToLower() == "true" ? true : false;
     }
 }
 
@@ -370,7 +425,8 @@ public class GenericInputField : BaseSettingsElement
 
     public string getValue()
     {
-        return Settings.GetSetting(option.key, option.defaultValue);
+        string temp;
+        return Settings.GetSetting(option.key, out temp) ? temp : option.defaultValue;
     }
 }
 
@@ -378,17 +434,17 @@ public class GenericSlider : BaseSettingsElement
 {
     protected Slider sliderElement;
     protected Text textElement;
-    protected string localizationKey;
+    protected string format = "({0:00})";
     protected float value;
 
     public override GameObject InitializeElement()
     {
         // Note this is just from playing around and finding a nice value
-        GameObject element = GetVerticalBaseElement("Slider", 200, 30, TextAnchor.MiddleLeft, 0);
+        GameObject element = GetVerticalBaseElement("Slider", 200, 20, TextAnchor.MiddleLeft, 0, 40);
 
-        localizationKey = option.name;
+        format = "({0:00}) ";
 
-        textElement = CreateText(string.Format(localizationKey, getValue()), true, TextAnchor.MiddleCenter);
+        textElement = CreateText(string.Format(format, getValue()) + LocalizationTable.GetLocalization(option.name), true, TextAnchor.MiddleCenter);
         textElement.transform.SetParent(element.transform);
 
         sliderElement = CreateSlider(getValue(), new Vector2(0, 1), false);
@@ -399,8 +455,7 @@ public class GenericSlider : BaseSettingsElement
                 if (v != value)
                 {
                     valueChanged = true;
-                    textElement.text = LocalizationTable.GetLocalization(localizationKey) + string.Format(" ({0:00}): ", v);
-                    //string.Format(localizationKey, v);
+                    textElement.text = string.Format(format, v) + LocalizationTable.GetLocalization(option.name);
                     value = v;
                 }
             });
@@ -423,12 +478,14 @@ public class GenericSlider : BaseSettingsElement
         float v = 0;
         float.TryParse(option.defaultValue, out v);
 
-        return Settings.GetSetting(option.key, v);
+        float temp;
+
+        return Settings.GetSetting(option.key, out temp) ? temp : v;
     }
 }
 
 // This class is just to help you create your own dropdown class
-private class GenericComboBox : BaseSettingsElement
+public class GenericComboBox : BaseSettingsElement
 {
     protected Dropdown dropdownElement;
     protected int selectedValue;
@@ -490,8 +547,9 @@ private class GenericComboBox : BaseSettingsElement
     {
         int v = 0;
         int.TryParse(option.defaultValue, out v);
+        int temp;
 
-        return Settings.GetSetting(option.key, v);
+        return Settings.GetSetting(option.key, out temp) ? temp : v;
     }
 }
 
@@ -532,12 +590,13 @@ public class LocalizationComboBox : GenericComboBox
         }
     }
 
-    public int getValue()
+    public new int getValue()
     {
         // Tbh this never gets called (like legit never) or rather ever gets used
         // But this is here cause if you ever need to call it for some reason it can come as a number or a string...
         // So this handles both
-        string lang = Settings.GetSetting<string>(option.key, option.defaultValue).Replace("en_US", "English (US)");
+        string lang;
+        lang = (Settings.GetSetting<string>(option.key, out lang) ? lang : option.defaultValue).Replace("en_US", "English (US)");
         int value = -1;
 
         if (int.TryParse(lang, out value) == false)
@@ -657,7 +716,7 @@ public class ResolutionComboBox : GenericComboBox
     public override void CancelSetting()
     {
         Resolution resolution = ((ResolutionOption)dropdownElement.options[selectedValue]).Resolution;
-        Screen.SetResolution(resolution.width, resolution.height, Settings.GetSetting("fullScreenToggle", true), resolution.refreshRate);
+        Screen.SetResolution(resolution.width, resolution.height, SettingsKeyHolder.Fullscreen, resolution.refreshRate);
     }
 
     public override void ApplySetting()
@@ -665,7 +724,7 @@ public class ResolutionComboBox : GenericComboBox
         Settings.SetSetting(option.key, selectedValue);
 
         Resolution resolution = selectedOption.Resolution;
-        Screen.SetResolution(resolution.width, resolution.height, Settings.GetSetting("fullScreenToggle", true), resolution.refreshRate);
+        Screen.SetResolution(resolution.width, resolution.height, SettingsKeyHolder.Fullscreen, resolution.refreshRate);
     }
 }
 
@@ -686,13 +745,79 @@ public class SoundSlider : GenericSlider
                 {
                     valueChanged = true;
                     value = v;
-                    textElement.text = LocalizationTable.GetLocalization(localizationKey) + string.Format(" ({0:00}): ", (int)(value * 100));
+                    textElement.text = string.Format(format, (int)(value * 100)) + LocalizationTable.GetLocalization(option.name);
                 }
             });
+
         sliderElement.onValueChanged.Invoke(sliderElement.value);
-        textElement.text = LocalizationTable.GetLocalization(localizationKey) + string.Format(" ({0:00}): ", (int)(value * 100));
+        textElement.text = string.Format(format, (int)(value * 100)) + LocalizationTable.GetLocalization(option.name);
 
         return go;
+    }
+}
+
+public class MasterSoundSlider : SoundSlider
+{
+    public override void ApplySetting()
+    {
+        WorldController.Instance.soundController.SetVolume("master", value);
+    }
+
+    public override void CancelSetting()
+    {
+        WorldController.Instance.soundController.SetVolume("master", getValue());
+    }
+}
+
+public class MusicSoundSlider : SoundSlider
+{
+    public override void ApplySetting()
+    {
+        WorldController.Instance.soundController.SetVolume("music", value);
+    }
+
+    public override void CancelSetting()
+    {
+        WorldController.Instance.soundController.SetVolume("music", getValue());
+    }
+}
+
+public class GameSoundSlider : SoundSlider
+{
+    public override void ApplySetting()
+    {
+        WorldController.Instance.soundController.SetVolume("gameSounds", value);
+    }
+
+    public override void CancelSetting()
+    {
+        WorldController.Instance.soundController.SetVolume("gameSounds", getValue());
+    }
+}
+
+public class AlertsSoundSlider : SoundSlider
+{
+    public override void ApplySetting()
+    {
+        WorldController.Instance.soundController.SetVolume("alerts", value);
+    }
+
+    public override void CancelSetting()
+    {
+        WorldController.Instance.soundController.SetVolume("alerts", getValue());
+    }
+}
+
+public class UISoundSlider : SoundSlider
+{
+    public override void ApplySetting()
+    {
+        WorldController.Instance.soundController.SetVolume("UI", value);
+    }
+
+    public override void CancelSetting()
+    {
+        WorldController.Instance.soundController.SetVolume("UI", getValue());
     }
 }
 
@@ -825,7 +950,6 @@ public class AutosaveIntervalNumberField : AutosaveNumberField
     }
 }
 
-// This seems to be a placeholder (so I'll just make it a place holder)
 public class UISkinComboBox : GenericComboBox
 {
     public override GameObject InitializeElement()
@@ -857,6 +981,264 @@ public class UISkinComboBox : GenericComboBox
         base.CancelSetting();
 
         // Undo Skin
+    }
+}
+
+public class AnisotropicFilteringComboBox : GenericComboBox
+{
+    public override GameObject InitializeElement()
+    {
+        GameObject go = DropdownHelperFromText(new string[] { "Disable", "Enable", "Force Enable" }, getValue());
+
+        dropdownElement.onValueChanged.AddListener(
+        (int v) =>
+        {
+            if (v != selectedValue)
+            {
+                valueChanged = true;
+                selectedValue = v;
+            }
+        });
+
+        return go;
+    }
+
+    public override void ApplySetting()
+    {
+        base.ApplySetting();
+
+        ApplyAFSeting(selectedValue);
+    }
+
+    public void ApplyAFSeting(int value)
+    {
+        switch (value)
+        {
+            case 0:
+                QualitySettings.anisotropicFiltering = AnisotropicFiltering.Disable;
+                break;
+            case 1:
+                QualitySettings.anisotropicFiltering = AnisotropicFiltering.Enable;
+                break;
+            case 2:
+                QualitySettings.anisotropicFiltering = AnisotropicFiltering.ForceEnable;
+                break;
+        }
+    }
+
+    public override void CancelSetting()
+    {
+        base.CancelSetting();
+
+        ApplyAFSeting(getValue());
+    }
+}
+
+public class AAComboBox : GenericComboBox
+{
+    public override GameObject InitializeElement()
+    {
+        GameObject go = DropdownHelperFromText(new string[] { "Disabled", "2x Multi-Sampling", "4x Multi-Sampling", "8x Multi-Sampling" }, getValue());
+
+        dropdownElement.onValueChanged.AddListener(
+        (int v) =>
+        {
+            if (v != selectedValue)
+            {
+                valueChanged = true;
+                selectedValue = v;
+            }
+        });
+
+        return go;
+    }
+
+    public override void ApplySetting()
+    {
+        base.ApplySetting();
+
+        ApplyAA(selectedValue);
+    }
+
+    // I was going to do a power trick (2^x, with edge case 0), but C# reflection doesn't allow imported types (for some reason)
+    // So this is a good comprimise
+    public void ApplyAA(int value)
+    {
+        switch (value)
+        {
+            case 0:
+                QualitySettings.antiAliasing = 0;
+                break;
+            case 1:
+                QualitySettings.antiAliasing = 2;
+                break;
+            case 2:
+                QualitySettings.antiAliasing = 4;
+                break;
+            case 3:
+                QualitySettings.antiAliasing = 8;
+                break;
+        }
+    }
+
+    public override void CancelSetting()
+    {
+        base.CancelSetting();
+
+        ApplyAA(getValue());
+    }
+}
+
+public class ShadowComboBox : GenericComboBox
+{
+    public override GameObject InitializeElement()
+    {
+        GameObject go = DropdownHelperFromText(new string[] { "Very High", "High", "Medium", "Low", "Disabled" }, getValue());
+
+        dropdownElement.onValueChanged.AddListener(
+        (int v) =>
+        {
+            if (v != selectedValue)
+            {
+                valueChanged = true;
+                selectedValue = v;
+            }
+        });
+
+        return go;
+    }
+
+    public override void ApplySetting()
+    {
+        base.ApplySetting();
+
+        ApplyShadowSetting(selectedValue);
+    }
+
+    // When update to 5.5+ add shadows = ShadowQuality (with 0, 1 being all, 2 and 3 being hardOnly, and 4 being disabled)
+    // That's why there is repetition
+    public void ApplyShadowSetting(int value)
+    {
+        switch (value)
+        {
+            case 0:
+                QualitySettings.shadowResolution = ShadowResolution.VeryHigh;
+                break;
+            case 1:
+                QualitySettings.shadowResolution = ShadowResolution.High;
+                break;
+            case 2:
+                QualitySettings.shadowResolution = ShadowResolution.Medium;
+                break;
+            case 3:
+                QualitySettings.shadowResolution = ShadowResolution.Low;
+                break;
+            case 4:
+                QualitySettings.shadowResolution = ShadowResolution.Low;
+                break;
+        }
+    }
+
+    public override void CancelSetting()
+    {
+        base.CancelSetting();
+        ApplyShadowSetting(getValue());
+    }
+}
+
+public class SoundDeviceComboBox : GenericComboBox
+{
+    private DriverDropdownOption selectedOption;
+
+    private class DriverDropdownOption : Dropdown.OptionData
+    {
+        public string driverInfo { get; set; }
+    }
+
+    public override GameObject InitializeElement()
+    {
+        GameObject go = DropdownHelperFromOptionData(CreateDeviceDropdown(), WorldController.Instance.soundController.GetCurrentAudioDriver());
+
+        dropdownElement.onValueChanged.AddListener(
+        (int v) =>
+        {
+            if (v != selectedValue)
+            {
+                valueChanged = true;
+                selectedOption = (DriverDropdownOption)dropdownElement.options[v];
+                selectedValue = v;
+            }
+        });
+
+        return go;
+    }
+
+    private Dropdown.OptionData[] CreateDeviceDropdown()
+    {
+        Dropdown.OptionData[] options = new Dropdown.OptionData[WorldController.Instance.soundController.GetDriverCount()];
+
+        for (int i = 0; i < Screen.resolutions.Length; i++)
+        {
+            DriverInfo info = WorldController.Instance.soundController.GetDriverInfo(i);
+
+            options[i] = new DriverDropdownOption
+            {
+                text = info.name.ToString(),
+                driverInfo = info.guid.ToString()
+            };
+        }
+
+        return options;
+    }
+
+    public override void ApplySetting()
+    {
+        base.ApplySetting();
+
+        if (selectedOption != null)
+        {
+            WorldController.Instance.soundController.SetAudioDriver(selectedOption.driverInfo);
+        }
+    }
+
+    public override void CancelSetting()
+    {
+        base.CancelSetting();
+
+        if (selectedOption != null)
+        {
+            WorldController.Instance.soundController.SetAudioDriver(getValue());
+        }
+    }
+
+    public new string getValue()
+    {
+        string GUID;
+
+        if (Settings.GetSetting(option.key, out GUID))
+        {
+            return GUID;
+        }
+        else
+        {
+            return WorldController.Instance.soundController.GetCurrentAudioDriverInfo().guid.ToString();
+        }
+    }
+}
+
+// Enable at 5.5+, since the option doesn't exist earlier
+public class SoftParticlesToggle : GenericToggle
+{
+    public override void ApplySetting()
+    {
+        base.ApplySetting();
+        // QualitySettings.softParticles = isOn;
+    }
+
+    public override void CancelSetting()
+    {
+        base.CancelSetting();
+        // QualitySettings.softParticles = getValue();
     }
 }
 
@@ -980,14 +1362,15 @@ public class PerformanceHUDComboBox : GenericComboBox
 
     public string getValue()
     {
-        return Settings.GetSetting(option.key, option.defaultValue);
+        string temp;
+
+        return Settings.GetSetting(option.key, out temp) ? temp : option.defaultValue;
     }
 
     public override void ApplySetting()
     {
         Settings.SetSetting(option.key, groupNames[selectedValue]);
         PerformanceHUDManager.DirtyUI();
-        Debug.LogWarning(groupNames[selectedValue]);
     }
 
     public override void CancelSetting()
