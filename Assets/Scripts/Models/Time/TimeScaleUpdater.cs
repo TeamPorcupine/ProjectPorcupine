@@ -120,7 +120,7 @@ public class TimeScaleUpdater : MonoBehaviour
         sliderBackground = slider.GetComponentsInChildren<Image>();
     }
 
-    // Initalisz
+    // Initalise
     private void OnEnable()
     {
         if (TimeManager.Instance == null)

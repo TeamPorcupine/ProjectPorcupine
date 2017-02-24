@@ -13,7 +13,7 @@ public static class OverlayFunctions
         int gridIndex = 0;
 
         Utility ut = tile.Utilities.Values.FirstOrDefault(x => x.HasTypeTag("Power"));
-        if (ut !=null && ut.Grid != null)
+        if (ut != null && ut.Grid != null)
         {
             gridIndex = world.PowerNetwork.FindId(ut.Grid) + 1;
         }

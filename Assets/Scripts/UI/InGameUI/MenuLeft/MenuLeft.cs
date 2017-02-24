@@ -22,7 +22,7 @@ public class MenuLeft : MonoBehaviour
 
         AddMenu("ConstructionMenu", "ConstructionMenu", typeof(ConstructionMenu));
         AddMenu("OrderMenu", "ConstructionMenu", typeof(OrderMenu));
-        
+
         GameMenuManager.Instance.AddMenuItem("menu_construction", OnButtonConstruction, 0);
         GameMenuManager.Instance.AddMenuItem("menu_orders", OnButtonOrder, 1);
     }
@@ -52,7 +52,7 @@ public class MenuLeft : MonoBehaviour
 
             if (CurrentlyOpen.name == "ConstructionMenu" || CurrentlyOpen.name == "OrderMenu")
             {
-                WorldController.Instance.spawnInventoryController.SetUIVisibility(Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false));
+                WorldController.Instance.spawnInventoryController.SetUIVisibility(SettingsKeyHolder.DeveloperMode);
             }
 
             WorldController.Instance.soundController.OnButtonSFX();

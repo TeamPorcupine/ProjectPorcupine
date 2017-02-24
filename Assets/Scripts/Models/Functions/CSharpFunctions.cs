@@ -81,7 +81,7 @@ public class CSharpFunctions : IFunctions
             var resAssembly = GetCompiledAssembly(scriptName);
 
             if (resAssembly == null)
-            {         
+            {
                 evaluator.Compile(text + GetConnectionPointClassDeclaration(scriptName));
                 resAssembly = GetCompiledAssembly(scriptName);
             }

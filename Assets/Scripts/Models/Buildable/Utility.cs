@@ -370,13 +370,13 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
         // be assigned to a tile.  So just read extra data.
         Parameters = Parameter.ReadXml(reader);
     }
-    
+
     /// <summary>
     /// Sets up a job to deconstruct the utility.
     /// </summary>
     public void SetDeconstructJob()
     {
-        if (Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false))
+        if (SettingsKeyHolder.DeveloperMode)
         {
             Deconstruct();
             return;
@@ -396,7 +396,7 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
             Job job = deconstructOrder.CreateJob(Tile, Type);
             job.OnJobCompleted += (inJob) => Deconstruct();
             World.Current.jobQueue.Enqueue(job);
-        }        
+        }
     }
 
     /// <summary>
@@ -539,7 +539,7 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
         foreach (ContextMenuLuaAction contextMenuLuaAction in contextMenuLuaActions)
         {
             if (!contextMenuLuaAction.DevModeOnly ||
-                Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false))
+                SettingsKeyHolder.DeveloperMode)
             {
                 // TODO The Action could be done via a lambda, but it always uses the same space of memory, thus if 2 actions are performed, the same action will be produced for each.
                 yield return new ContextMenuAction
