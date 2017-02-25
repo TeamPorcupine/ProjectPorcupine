@@ -134,6 +134,20 @@ public class WorldController : MonoBehaviour
             settingsMenu.SetActive(true);
         }
 
+        // Instantiate menu top.
+        GameObject menuTop = (GameObject)Instantiate(Resources.Load("UI/MenuTop"));
+        menuTop.name = "MenuTop";
+        menuTop.transform.SetParent(FindObjectOfType<UIMenuController>().parent, false);
+
+        // Enable performanceHUD
+        GameObject performanceHUD = menuTop.GetComponent<PerformanceHUDManager>().gameObject;
+        performanceHUD.SetActive(true);
+
+        // Enable currency display
+        GameObject currencyDisplay = (GameObject)Instantiate(Resources.Load("UI/CurrencyDisplay"));
+        currencyDisplay.name = "CurrencyDisplay";
+        currencyDisplay.transform.SetParent(menuTop.transform, false);
+
         // This will place it after context menu (and the inventory menu) and settings menu
         dialogBoxManager = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
         dialogBoxManager.transform.SetAsLastSibling();

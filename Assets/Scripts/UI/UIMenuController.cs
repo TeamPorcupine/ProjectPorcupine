@@ -12,7 +12,7 @@ using UnityEngine;
 public class UIMenuController : MonoBehaviour
 {
     // This is the parent of the menus.
-    private Transform parent;
+    public Transform parent;
 
     // Use this for initialization.
     private void Awake()
@@ -21,7 +21,7 @@ public class UIMenuController : MonoBehaviour
         parent = this.gameObject.transform;
 
         // Add the menus.
-        AddMenu("MenuTop");
+        // We don't do menu top here because some things are constantly applied some aren't.
         AddMenu("GameMenu");
         AddMenu("MenuLeft");
         AddMenu("Headlines");
