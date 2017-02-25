@@ -184,7 +184,6 @@ namespace ProjectPorcupine.Pathfinding
         public static Room FindNearestRoom(Tile start)
         {
             Path_AStar tileResolver = new Path_AStar(World.Current, start, GoalHasRoomEvaluator(), DijkstraDistance());
-            // List<Tile> pathToRoom = tileResolver.GetList();
 
             if (tileResolver.Length() >= 1)
             {

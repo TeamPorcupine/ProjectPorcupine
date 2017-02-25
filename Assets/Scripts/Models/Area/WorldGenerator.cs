@@ -55,8 +55,6 @@ public class WorldGenerator
         world.ResizeWorld(width, height, depth);
 
         Random.InitState(seed);
-        // int offsetX = Random.Range(0, 10000);
-        // int offsetY = Random.Range(0, 10000);
 
         sumOfAllWeightedChances = asteroidInfo.Resources.Select(x => x.WeightedChance).Sum();
 

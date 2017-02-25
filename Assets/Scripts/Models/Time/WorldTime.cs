@@ -250,27 +250,6 @@ public struct WorldTime : IFormattable
         }
     }
 
-    public override bool Equals(object obj)
-    {
-        if (obj.Equals(this))
-        {
-            return true;
-        }
-        else if (obj is WorldTime && ((WorldTime)obj) == this)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    public override int GetHashCode()
-    {
-        return this.Seconds.GetHashCode();
-    }
-
     public static WorldTime operator +(WorldTime time1, WorldTime time2)
     {
         WorldTime worldTime = new WorldTime(time1.Seconds + time2.Seconds);
@@ -313,9 +292,35 @@ public struct WorldTime : IFormattable
         return Math.Abs(time1.Seconds - time2.Seconds) > float.Epsilon;
     }
 
+    public override bool Equals(object obj)
+    {
+        if (obj.Equals(this))
+        {
+            return true;
+        }
+        else if (obj is WorldTime && ((WorldTime)obj) == this)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public override int GetHashCode()
+    {
+        return this.Seconds.GetHashCode();
+    }
+
     #region IFormattable implementation
 
-    string IFormattable.ToString(string format, IFormatProvider provider)
+    public string ToString(string format)
+    {
+        return this.ToString(format, null);
+    }
+
+    public string ToString(string format, IFormatProvider provider)
     {
         if (provider == null)
         {
