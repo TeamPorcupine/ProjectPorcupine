@@ -94,6 +94,11 @@ namespace ProjectPorcupine.Localization
 
         private void Start()
         {
+            if (LocalizationTable.initialized)
+            {
+                return;
+            }
+
             // UpdateLocalizationTable needs to run after everything with TextLocalizer components have set their callbacks, so we run in start.
             UpdateLocalizationTable();
         }
