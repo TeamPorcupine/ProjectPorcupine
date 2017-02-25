@@ -90,7 +90,7 @@ public class CameraController
 
         if (Camera.main.orthographicSize != zoomTarget)
         {
-            float target = Mathf.Lerp(Camera.main.orthographicSize, zoomTarget, Settings.GetSetting("ZoomLerp", 3) * Time.deltaTime);
+            float target = Mathf.Lerp(Camera.main.orthographicSize, zoomTarget, SettingsKeyHolder.ZoomLerp * Time.deltaTime);
             Camera.main.orthographicSize = Mathf.Clamp(target, 3f, 25f);
             SyncCameras();
         }
@@ -98,7 +98,7 @@ public class CameraController
         if (Vector3.Distance(Camera.main.transform.position, positionTarget) > 0.1f && presetBeingApplied)
         {
             // The ZoomLerp interpolation value is used here so that the moving and zooming of the camera when appliyng a preset take the same amount of time
-            Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, positionTarget, Settings.GetSetting("ZoomLerp", 3) * Time.deltaTime);
+            Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, positionTarget, SettingsKeyHolder.ZoomLerp * Time.deltaTime);
         }
         else
         {
@@ -130,7 +130,7 @@ public class CameraController
 
     public void ChangeZoom(float amount)
     {
-        zoomTarget = Camera.main.orthographicSize - (Settings.GetSetting("ZoomSensitivity", 3) * (Camera.main.orthographicSize * amount));
+        zoomTarget = Camera.main.orthographicSize - (SettingsKeyHolder.ZoomSensitivity * (Camera.main.orthographicSize * amount));
     }
 
     public void ChangeLayer(int newLayer)
