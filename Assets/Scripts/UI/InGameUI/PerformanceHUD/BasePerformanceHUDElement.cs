@@ -6,13 +6,18 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using UnityEngine;
-
-// Just so we can implement other UIs in the future (other than just TextPerformanceComponentUI)
+using System;
+using UnityEngine.UI;
 
 /// <summary>
-/// Just a base class for UI elements to subclass from.
+/// Just holds a simple text UI component that can be access either through the public value "text"
+/// or throught he function call changeText.
 /// </summary>
-public abstract class BasePerformanceComponentUI : MonoBehaviour
+[MoonSharp.Interpreter.MoonSharpUserData]
+public abstract class BasePerformanceHUDElement : BaseUIElement
 {
+    /// <summary>
+    /// Update function.
+    /// </summary>
+    public abstract void Update();
 }

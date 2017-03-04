@@ -28,6 +28,7 @@ public class FunctionsManager
         actions.Add("DevConsole", new Functions());
         actions.Add("ModDialogBox", new Functions());
         actions.Add("SettingsMenu", new Functions());
+        actions.Add("PerformanceHUD", new Functions());
     }
 
     /// <summary>
@@ -127,6 +128,15 @@ public class FunctionsManager
     public static Functions SettingsMenu
     {
         get { return Get("SettingsMenu"); }
+    }
+
+    /// <summary>
+    /// Gets the PerformanceHUD Functions.
+    /// </summary>
+    /// <value>The PerformanceHUD Functions.</value>
+    public static Functions PerformanceHUD
+    {
+        get { return Get("PerformanceHUD"); }
     }
 
     /// <summary>

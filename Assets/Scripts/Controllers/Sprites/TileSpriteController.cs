@@ -93,7 +93,7 @@ public class TileSpriteController : BaseSpriteController<Tile>
             }
         }
         else
-        { 
+        {
             ChangeTileSprite(tile_go, tile.Type.Type);
         }
 

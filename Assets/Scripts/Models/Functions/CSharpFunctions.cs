@@ -68,12 +68,14 @@ public class CSharpFunctions : IFunctions
         {
             evaluator = new Evaluator(new CompilerContext(new CompilerSettings(), CompilationResult));
 
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+            for (int i = 0; i < assemblies.Length; i++)
             {
                 // skip System.Core to prevent ambigious error when using System.Linq in scripts
-                if (!assembly.FullName.Contains("System.Core"))
+                if (!assemblies[i].FullName.Contains("System.Core"))
                 {
-                    evaluator.ReferenceAssembly(assembly);
+                    evaluator.ReferenceAssembly(assemblies[i]);
                 }
             }
 
@@ -81,7 +83,7 @@ public class CSharpFunctions : IFunctions
             var resAssembly = GetCompiledAssembly(scriptName);
 
             if (resAssembly == null)
-            {         
+            {
                 evaluator.Compile(text + GetConnectionPointClassDeclaration(scriptName));
                 resAssembly = GetCompiledAssembly(scriptName);
             }

@@ -161,7 +161,7 @@ public class Character : ISelectable, IContextActionProvider, IUpdatable
         }
     }
 
-    public Bounds Bounds 
+    public Bounds Bounds
     {
         get
         {
@@ -348,7 +348,7 @@ public class Character : ISelectable, IContextActionProvider, IUpdatable
                 else
                 {
                     // TODO: Lack of job states should be more interesting. Maybe go to the pub and have a pint?
-                    SetState(new IdleState(this));            
+                    SetState(new IdleState(this));
                 }
             }
         }
