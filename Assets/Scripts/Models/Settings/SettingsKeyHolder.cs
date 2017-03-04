@@ -450,12 +450,12 @@ public static partial class SettingsKeyHolder
         }
     }
 
-    public static int PerformanceHUD
+    public static string PerformanceHUD
     {
         get
         {
-            int temp;
-            return Settings.GetSetting("developer_utilities_performanceHUD", out temp) ? temp : 1;
+            string temp;
+            return Settings.GetSetting("developer_utilities_performanceHUD", out temp) ? temp : "none";
         }
 
         set

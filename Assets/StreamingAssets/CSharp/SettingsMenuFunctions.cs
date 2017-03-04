@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using DeveloperConsole;
 using ProjectPorcupine.Localization;
@@ -575,13 +575,19 @@ public class LocalizationComboBox : GenericComboBox
 
     public override void CancelSetting()
     {
-        LocalizationTable.SetLocalization(getValue());
+        if (LocalizationTable.currentLanguage != LocalizationTable.GetLanguages()[getValue()])
+        {
+            LocalizationTable.SetLocalization(getValue());
+        }
     }
 
     public override void ApplySetting()
     {
-        Settings.SetSetting(option.key, LocalizationTable.GetLanguages()[selectedValue]);
-        LocalizationTable.SetLocalization(selectedValue);
+        if (LocalizationTable.currentLanguage != LocalizationTable.GetLanguages()[selectedValue])
+        {
+            Settings.SetSetting(option.key, LocalizationTable.GetLanguages()[selectedValue]);
+            LocalizationTable.SetLocalization(selectedValue);
+        }
     }
 
     public new int getValue()
@@ -1321,16 +1327,25 @@ public class TimeStampToggle : GenericToggle
 
 public class PerformanceHUDComboBox : GenericComboBox
 {
+    string[] groupNames;
+
     public override GameObject InitializeElement()
     {
-        string[] groupNames = new string[PerformanceComponentGroups.groups.Length];
+        groupNames = PerformanceHUDManager.GetNames();
 
-        for (int i = 0; i < PerformanceComponentGroups.groups.Length; i++)
+        int locationOfVariable = 0;
+        string value = getValue();
+
+        for (int i = 0; i < groupNames.Length; i++)
         {
-            groupNames[i] = PerformanceComponentGroups.groups[i].groupName;
+            if (groupNames[i] == value)
+            {
+                locationOfVariable = i;
+                break;
+            }
         }
 
-        GameObject go = DropdownHelperFromText(groupNames, getValue());
+        GameObject go = DropdownHelperFromText(groupNames, locationOfVariable);
 
         dropdownElement.onValueChanged.AddListener(
         (int v) =>
@@ -1345,15 +1360,21 @@ public class PerformanceHUDComboBox : GenericComboBox
         return go;
     }
 
+    public string getValue()
+    {
+        string temp;
+
+        return Settings.GetSetting(option.key, out temp) ? temp : option.defaultValue;
+    }
+
     public override void ApplySetting()
     {
-        base.ApplySetting();
+        Settings.SetSetting(option.key, groupNames[selectedValue]);
         PerformanceHUDManager.DirtyUI();
     }
 
     public override void CancelSetting()
     {
-        base.CancelSetting();
         PerformanceHUDManager.DirtyUI();
     }
 }
