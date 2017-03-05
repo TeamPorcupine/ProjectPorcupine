@@ -265,6 +265,11 @@ namespace ProjectPorcupine.Localization
 
                     foreach (string line in lines)
                     {
+                        if (line.Length < 1 || line[0] == '#')
+                        {
+                            continue;
+                        }
+
                         string[] keyValuePair = line.Split(new char[] { '=' }, 2);
 
                         if (keyValuePair.Length != 2)

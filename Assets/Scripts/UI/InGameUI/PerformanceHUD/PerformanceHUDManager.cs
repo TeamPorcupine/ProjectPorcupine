@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -17,111 +18,134 @@ public class PerformanceHUDManager : MonoBehaviour
     /// <summary>
     /// The current group/mode to display.
     /// </summary>
-    private static PerformanceComponentGroup currentGroup;
+    public static Dictionary<PerformanceGroup, BasePerformanceHUDElement[]> allGroups;
 
     /// <summary>
-    /// The root object for the HUD.
+    /// What group are we currently at.
     /// </summary>
-    private static GameObject rootObject;
+    private static PerformanceGroup groupPointer;
 
     /// <summary>
-    /// Clean and Re-Draw
-    /// Can be static cause it shouldn't matter.
+    /// What current root are we at.
+    /// </summary>
+    private static int columnRootIndex = 0;
+
+    /// <summary>
+    /// All of our root objects.
+    /// </summary>
+    private static List<GameObject> columnRootObjects = new List<GameObject>();
+
+    public static string[] GetNames()
+    {
+        return allGroups.Keys.Select(x => x.name).ToArray();
+    }
+
+    /// <summary>
+    /// Clean and Re-Draw.
     /// </summary>
     public static void DirtyUI()
     {
-        // Guard
-        if (rootObject == null)
-        {
-            return;
-        }
-
-        // Could be improved but its fine
-        rootObject.transform.parent.gameObject.SetActive(true);
-
         // Clear
-        foreach (Transform child in rootObject.transform)
+        foreach (Transform rootTransform in columnRootObjects.Select(x => x.transform))
         {
-            if (child.tag == "PerformanceUI")
+            foreach (Transform child in rootTransform)
             {
                 Destroy(child.gameObject);
             }
         }
 
-        // Draw
-        // Get new Performance Mode/Group
-        currentGroup = PerformanceComponentGroups.groups[SettingsKeyHolder.PerformanceHUD];
+        groupPointer = allGroups.FirstOrDefault(x => x.Key.name == SettingsKeyHolder.PerformanceHUD).Key;
 
-        // Order by ascending using Linq
-        if (currentGroup.disableUI == true)
+        // Set group
+        if (groupPointer.name == null)
         {
-            currentGroup.groupElements = currentGroup.groupElements.OrderBy(c => c.PriorityID()).ToArray();
+            groupPointer = allGroups.First(x => x.Key.name == "none").Key;
         }
 
         // Draw and Begin UI Functionality
-        foreach (BasePerformanceComponent element in currentGroup.groupElements)
+        foreach (BasePerformanceHUDElement elementName in allGroups[groupPointer])
         {
-            BasePerformanceComponentUI go = ((GameObject)Instantiate(Resources.Load(element.NameOfComponent()))).GetComponent<BasePerformanceComponentUI>();
-            go.gameObject.transform.SetParent(rootObject.transform);
-
-            element.Start(go);
+            Transform rootTransfer = GetColumnRootObject().transform;
+            GameObject go = elementName.InitializeElement();
+            go.transform.SetParent(rootTransfer);
+            go.name = elementName.GetName();
         }
     }
 
-    // Setup the groups
-    private void Awake()
+    /// <summary>
+    /// The root object for the HUD.
+    /// </summary>
+    private static GameObject GetColumnRootObject()
     {
-        PerformanceComponentGroups.groups = new PerformanceComponentGroup[]
+        if (columnRootIndex < columnRootObjects.Count)
         {
-            PerformanceComponentGroups.None,
-            PerformanceComponentGroups.Basic,
-            PerformanceComponentGroups.Extended,
-            PerformanceComponentGroups.Verbose
-        };
-    }
-
-    private void Start()
-    {
-        // Root should already exist just grab child
-        if (rootObject == null)
-        {
-            rootObject = transform.GetChild(0).gameObject;
+            columnRootIndex++;
+            return columnRootObjects[columnRootIndex - 1];
         }
-
-        int groupSetting = SettingsKeyHolder.PerformanceHUD;
-
-        // Just a guard statement essentially
-        if (PerformanceComponentGroups.groups.Length > groupSetting)
+        else if (columnRootIndex > 0)
         {
-            UnityDebugger.Debugger.Log("Performance", "The current channel was set to index: " + groupSetting);
-            currentGroup = PerformanceComponentGroups.groups[groupSetting];
-
-            // Order by ascending using Linq
-            if (currentGroup.disableUI == true)
-            {
-                currentGroup.groupElements = currentGroup.groupElements.OrderBy(c => c.PriorityID()).ToArray();
-            }
+            columnRootIndex = 0;
+            return columnRootObjects[columnRootIndex];
         }
-        else if (groupSetting > 0 && PerformanceComponentGroups.groups.Length > 0)
+        else if (columnRootObjects.Count == 0)
         {
-            // If so then just set to first option (normally none)
-            UnityDebugger.Debugger.LogError("Performance", "Index out of range: Current group is set to 0" + groupSetting);
+            throw new System.Exception("Column Root Object Array is empty and the system wants an object");
         }
         else
         {
-            // Else set to none (none is a readonly so it should always exist)
-            UnityDebugger.Debugger.LogError("Performance", "Array Empty: The PerformanceComponentGroups.groups array is empty");
-            currentGroup = PerformanceComponentGroups.None;
+            columnRootIndex++;
+            return GetColumnRootObject();
+        }
+    }
+
+    /// <summary>
+    /// Assign variables, and hookup to API.
+    /// </summary>
+    private void Start()
+    {
+        TimeManager.Instance.EveryFrame += Instance_EveryFrame;
+
+        // Root should already exist just grab child
+        columnRootObjects = new List<GameObject>();
+        foreach (Transform child in transform)
+        {
+            columnRootObjects.Add(child.gameObject);
+        }
+
+        // Load Settings
+        allGroups = new Dictionary<PerformanceGroup, BasePerformanceHUDElement[]>();
+
+        PerformanceGroup[] groups = PrototypeManager.PerformanceHUD.Values.SelectMany(x => x.groups).ToArray();
+
+        allGroups.Add(new PerformanceGroup("none", new string[0], true), new BasePerformanceHUDElement[0]);
+
+        for (int i = 0; i < groups.Length; i++)
+        {
+            BasePerformanceHUDElement[] elements = new BasePerformanceHUDElement[groups[i].elementNames.Length];
+
+            for (int j = 0; j < groups[i].elementNames.Length; j++)
+            {
+                if (FunctionsManager.PerformanceHUD.HasFunction("Get" + groups[i].elementNames[j]))
+                {
+                    elements[j] = FunctionsManager.PerformanceHUD.Call("Get" + groups[i].elementNames[j]).ToObject<BasePerformanceHUDElement>();
+                }
+                else
+                {
+                    Debug.LogWarning("Get" + groups[i].elementNames[j] + "() Doesn't exist");
+                }
+            }
+
+            allGroups.Add(groups[i], elements);
         }
 
         // Setup UI
         DirtyUI();
     }
 
-    private void Update()
+    private void Instance_EveryFrame(float obj)
     {
-        // If we are -1 then its none so disable UI
-        if (currentGroup.disableUI == true)
+        // If we are at group -1, or are already disabled then return
+        if (gameObject.activeInHierarchy == false && groupPointer.disableUI == true)
         {
             // Disable self
             gameObject.SetActive(false);
@@ -130,8 +154,7 @@ public class PerformanceHUDManager : MonoBehaviour
         }
 
         // Update UI
-        // Shouldn't be slower and makes more contextual sense
-        foreach (BasePerformanceComponent element in currentGroup.groupElements)
+        foreach (BasePerformanceHUDElement element in allGroups[groupPointer])
         {
             if (element != null)
             {

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ComponentGroups>
+  <ComponentGroup Name="Basic" DisableUI="false">
+    <Option ClassName="FPSPerformanceComponent"/>
+  </ComponentGroup>
+  <ComponentGroup Name="Extended" DisableUI="false">
+    <Option ClassName="FPSPerformanceComponent"/>
+    <Option ClassName="FPSRangePerformanceComponent"/>
+    <Option ClassName="FPSAveragePerformanceComponent"/>
+  </ComponentGroup>
+  <ComponentGroup Name="Verbose" DisableUI="false">
+    <Option ClassName="FPSPerformanceComponent"/>
+    <Option ClassName="FPSRangePerformanceComponent"/>
+    <Option ClassName="FPSAveragePerformanceComponent"/>
+    <Option ClassName="MemoryPerformanceComponent"/>
+  </ComponentGroup>
+</ComponentGroups>

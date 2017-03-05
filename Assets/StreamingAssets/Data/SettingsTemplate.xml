@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Categories>
   <Category Name="general">
     <OptionHeading Name="autosave">
@@ -52,7 +52,7 @@
       <Option Name="font_size" Key="developer_console_fontSize" DefaultValue="15" ClassName="FontSizeSlider"></Option>
     </OptionHeading>
     <OptionHeading Name="utilities">
-      <Option Name="performance_hud" Key="developer_utilities_performanceHUD" DefaultValue="1" ClassName="PerformanceHUDComboBox" />
+      <Option Name="performance_hud" Key="developer_utilities_performanceHUD" DefaultValue="none" ClassName="PerformanceHUDComboBox" />
     </OptionHeading>
   </Category>
 </Categories>
