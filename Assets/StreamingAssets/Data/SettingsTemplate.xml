@@ -12,11 +12,21 @@
   </Category>
   <Category Name="sound">
     <OptionHeading Name="volume">
-      <Option Name="master_volume" Key="sound_volume_master" DefaultValue="1" ClassName="MasterSoundSlider" />
-      <Option Name="music_volume" Key="sound_volume_music" DefaultValue="1" ClassName="MusicSoundSlider" />
-      <Option Name="game_volume" Key="sound_volume_game" DefaultValue="1" ClassName="GameSoundSlider" />
-      <Option Name="alert_volume" Key="sound_volume_alerts" DefaultValue="1" ClassName="AlertsSoundSlider" />
-      <Option Name="ui_volume" Key="sound_volume_ui" DefaultValue="1" ClassName="UISoundSlider" />
+      <Option Name="master_volume" Key="sound_volume_master" DefaultValue="1" ClassName="SoundSlider">
+        <CustomOptions SoundChannel="master"/>
+      </Option>
+      <Option Name="music_volume" Key="sound_volume_music" DefaultValue="1" ClassName="SoundSlider">
+        <CustomOptions SoundChannel="music"/>
+      </Option>
+      <Option Name="game_volume" Key="sound_volume_game" DefaultValue="1" ClassName="SoundSlider">
+        <CustomOptions SoundChannel="gameSounds"/>
+      </Option>
+      <Option Name="alert_volume" Key="sound_volume_alerts" DefaultValue="1" ClassName="SoundSlider">
+        <CustomOptions SoundChannel="alerts"/>
+      </Option>
+      <Option Name="ui_volume" Key="sound_volume_ui" DefaultValue="1" ClassName="SoundSlider">
+        <CustomOptions SoundChannel="UI"/>
+      </Option>
     </OptionHeading>
     <OptionHeading Name="advanced">
       <Option Name="sound_device" Key="sound_advanced_device" DefaultValue="0" ClassName="SoundDeviceComboBox" />

@@ -128,8 +128,9 @@ public class SettingsMenu : MonoBehaviour
                 {
                     if (instance.options[instance.currentCategory][headingName][i] != null)
                     {
-                        heading.AddObjectToRoot(instance.options[instance.currentCategory][headingName][i].InitializeElement());
-                        instance.options[instance.currentCategory][headingName][i].valueChanged = false;
+                        BaseSettingsElement element = instance.options[instance.currentCategory][headingName][i];
+                        heading.AddObjectToRoot(element.InitializeElement());
+                        element.valueChanged = false;
                     }
                 }
             }
@@ -339,6 +340,7 @@ public class SettingsMenu : MonoBehaviour
                     {
                         options[currentName][keyValuePair.Key][i] = FunctionsManager.SettingsMenu.Call("Get" + keyValuePair.Value[i].className).ToObject<BaseSettingsElement>();
                         options[currentName][keyValuePair.Key][i].option = keyValuePair.Value[i];
+                        options[currentName][keyValuePair.Key][i].optionData = keyValuePair.Value[i].options;
                     }
                     else if (keyValuePair.Value[i].name != null)
                     {

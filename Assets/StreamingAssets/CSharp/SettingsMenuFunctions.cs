@@ -45,31 +45,6 @@ public static class SettingsMenuFunctions
         return new SoundSlider();
     }
 
-    public static MasterSoundSlider GetMasterSoundSlider()
-    {
-        return new MasterSoundSlider();
-    }
-
-    public static MusicSoundSlider GetMusicSoundSlider()
-    {
-        return new MusicSoundSlider();
-    }
-
-    public static GameSoundSlider GetGameSoundSlider()
-    {
-        return new GameSoundSlider();
-    }
-
-    public static AlertsSoundSlider GetAlertsSoundSlider()
-    {
-        return new AlertsSoundSlider();
-    }
-
-    public static UISoundSlider GetUISoundSlider()
-    {
-        return new UISoundSlider();
-    }
-
     public static UISkinComboBox GetUISkinComboBox()
     {
         return new UISkinComboBox();
@@ -434,7 +409,7 @@ public class GenericSlider : BaseSettingsElement
 {
     protected Slider sliderElement;
     protected Text textElement;
-    protected string format = "({0:00})";
+    protected string format = "({0:0.##}) ";
     protected float value;
 
     public override GameObject InitializeElement()
@@ -442,12 +417,23 @@ public class GenericSlider : BaseSettingsElement
         // Note this is just from playing around and finding a nice value
         GameObject element = GetVerticalBaseElement("Slider", 200, 20, TextAnchor.MiddleLeft, 0, 40);
 
-        format = "({0:00}) ";
-
         textElement = CreateText(string.Format(format, getValue()) + LocalizationTable.GetLocalization(option.name), true, TextAnchor.MiddleCenter);
         textElement.transform.SetParent(element.transform);
 
-        sliderElement = CreateSlider(getValue(), new Vector2(0, 1), false);
+        float minValue;
+        float maxValue;
+
+        if (GetOption<float>("MinimumValue", out minValue) == false)
+        {
+            minValue = 0;
+        }
+
+        if (GetOption<float>("MaximumValue", out maxValue) == false)
+        {
+            maxValue = 1;
+        }
+
+        sliderElement = CreateSlider(getValue(), new Vector2(minValue, maxValue), false);
         sliderElement.transform.SetParent(element.transform);
         sliderElement.onValueChanged.AddListener(
             (float v) =>
@@ -735,7 +721,6 @@ public class SoundSlider : GenericSlider
         GameObject go = base.InitializeElement();
 
         // Set it from 0 - 100 (still reflective of 0-1, but shows from 0 - 100)
-
         // We want to apply our own listener
         sliderElement.onValueChanged.RemoveAllListeners();
         sliderElement.onValueChanged.AddListener(
@@ -754,70 +739,24 @@ public class SoundSlider : GenericSlider
 
         return go;
     }
-}
 
-public class MasterSoundSlider : SoundSlider
-{
     public override void ApplySetting()
     {
-        WorldController.Instance.soundController.SetVolume("master", value);
+        string options;
+        if (GetOption<string>("SoundChannel", out options))
+        {
+            Settings.SetSetting(option.key, value);
+            WorldController.Instance.soundController.SetVolume(options, value);
+        }
     }
 
     public override void CancelSetting()
     {
-        WorldController.Instance.soundController.SetVolume("master", getValue());
-    }
-}
-
-public class MusicSoundSlider : SoundSlider
-{
-    public override void ApplySetting()
-    {
-        WorldController.Instance.soundController.SetVolume("music", value);
-    }
-
-    public override void CancelSetting()
-    {
-        WorldController.Instance.soundController.SetVolume("music", getValue());
-    }
-}
-
-public class GameSoundSlider : SoundSlider
-{
-    public override void ApplySetting()
-    {
-        WorldController.Instance.soundController.SetVolume("gameSounds", value);
-    }
-
-    public override void CancelSetting()
-    {
-        WorldController.Instance.soundController.SetVolume("gameSounds", getValue());
-    }
-}
-
-public class AlertsSoundSlider : SoundSlider
-{
-    public override void ApplySetting()
-    {
-        WorldController.Instance.soundController.SetVolume("alerts", value);
-    }
-
-    public override void CancelSetting()
-    {
-        WorldController.Instance.soundController.SetVolume("alerts", getValue());
-    }
-}
-
-public class UISoundSlider : SoundSlider
-{
-    public override void ApplySetting()
-    {
-        WorldController.Instance.soundController.SetVolume("UI", value);
-    }
-
-    public override void CancelSetting()
-    {
-        WorldController.Instance.soundController.SetVolume("UI", getValue());
+        string options;
+        if (GetOption<string>("SoundChannel", out options))
+        {
+            WorldController.Instance.soundController.SetVolume(options, getValue());
+        }
     }
 }
 

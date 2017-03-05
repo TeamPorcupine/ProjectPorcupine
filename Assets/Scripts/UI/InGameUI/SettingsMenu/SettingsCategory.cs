@@ -7,7 +7,9 @@
 // ====================================================
 #endregion
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
+using System.Xml.Linq;
 
 /// <summary>
 /// For XML reader.
@@ -18,13 +20,15 @@ public struct SettingsOption
     public string key;
     public string defaultValue;
     public string className;
+    public Dictionary<string, string> options;
 
-    public SettingsOption(string name, string key, string defaultValue, string className)
+    public SettingsOption(string name, string key, string defaultValue, string className, XmlReader options = null)
     {
         this.name = name;
         this.key = key;
         this.defaultValue = defaultValue;
         this.className = className;
+        this.options = XDocument.Load(options).Descendants("CustomOptions").Attributes().ToDictionary(kvp => kvp.Name.ToString(), kvp => kvp.Value);
     }
 
     /// <summary>
@@ -36,6 +40,7 @@ public struct SettingsOption
         key = reader.GetAttribute("Key");
         defaultValue = reader.GetAttribute("DefaultValue");
         className = reader.GetAttribute("ClassName");
+        options = XDocument.Load(reader.ReadSubtree()).Descendants("CustomOptions").Attributes().ToDictionary(kvp => kvp.Name.ToString(), kvp => kvp.Value);
     }
 }
 
@@ -77,7 +82,7 @@ public class SettingsCategory : IPrototypable
             {
                 case "OptionHeading":
                     // Assign then switch over
-                    if (name != null && currentHeading != null && currentHeading != string.Empty)
+                    if (name != null && currentHeading != null && currentHeading != string.Empty && options.Count > 0)
                     {
                         categories[name].Add(currentHeading, options.ToArray());
                     }
@@ -89,14 +94,10 @@ public class SettingsCategory : IPrototypable
                     options.Add(new SettingsOption(reader));
                     break;
                 case "Category":
-                    if (options.Count > 0 && name != null && currentHeading != null)
+                    // Assign then clear
+                    if (name != null && currentHeading != null && currentHeading != string.Empty && options.Count > 0)
                     {
-                        // Assign then clear
-                        if (name != null && currentHeading != null && currentHeading != string.Empty)
-                        {
-                            categories[name].Add(currentHeading, options.ToArray());
-                        }
-
+                        categories[name].Add(currentHeading, options.ToArray());
                         options.Clear();
                     }
 
@@ -111,7 +112,7 @@ public class SettingsCategory : IPrototypable
             }
         }
 
-        if (name != null && currentHeading != null && currentHeading != string.Empty)
+        if (name != null && currentHeading != null && currentHeading != string.Empty && options.Count > 0)
         {
             categories[name].Add(currentHeading, options.ToArray());
         }

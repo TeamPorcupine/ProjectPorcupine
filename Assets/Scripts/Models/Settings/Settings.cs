@@ -99,7 +99,7 @@ public static class Settings
             }
             catch (Exception exception)
             {
-                UnityDebugger.Debugger.LogErrorFormat("Settings", "Exception {0} whyle trying to convert {1} to type {2}", exception.Message, value, typeof(T));
+                UnityDebugger.Debugger.LogErrorFormat("Settings", "Exception {0} while trying to convert {1} to type {2}", exception.Message, value, typeof(T));
                 return false;
             }
         }

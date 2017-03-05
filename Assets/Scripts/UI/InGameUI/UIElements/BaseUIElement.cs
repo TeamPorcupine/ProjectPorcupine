@@ -7,7 +7,9 @@
 // ====================================================
 #endregion
 
+using System;
 using System.Linq;
+using System.Collections.Generic;
 using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,9 +25,39 @@ public abstract class BaseUIElement
     /// </summary>
     public abstract GameObject InitializeElement();
 
+    public Dictionary<string, string> optionData = new Dictionary<string, string>();
+
     /// <summary>
-    /// Always has 220 allocated width.
+    /// Will tries to read data as the type given.
     /// </summary>
+    /// <returns> Whether or not the parse passed. </returns>
+    public bool GetOption<T>(string key, out T result)
+        where T : IConvertible
+    {
+        result = default(T);
+
+        if (optionData == null)
+        {
+            return false;
+        }
+
+        string value;
+        if (optionData.TryGetValue(key, out value))
+        {
+            try
+            {
+                result = (T)Convert.ChangeType(value, typeof(T));
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
     protected GameObject GetFluidHorizontalBaseElement(string elementTitle = "", bool stretchX = false, bool stretchY = false, TextAnchor alignment = TextAnchor.MiddleCenter, int spacing = 10, int allocatedHeight = 60, int allocatedWidth = 220)
     {
         GameObject go = new GameObject(elementTitle == string.Empty ? "Element_" + GetName() : elementTitle);
