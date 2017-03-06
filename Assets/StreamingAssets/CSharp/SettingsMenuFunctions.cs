@@ -115,6 +115,11 @@ public static class SettingsMenuFunctions
         return new FontSizeSlider();
     }
 
+    public static UIScaleSlider GetUIScaleSlider()
+    {
+        return new UIScaleSlider();
+    }
+
     public static PerformanceHUDComboBox GetPerformanceHUDComboBox()
     {
         return new PerformanceHUDComboBox();
@@ -725,6 +730,38 @@ public class ResolutionComboBox : GenericComboBox
 
         Resolution resolution = selectedOption.Resolution;
         Screen.SetResolution(resolution.width, resolution.height, SettingsKeyHolder.Fullscreen, resolution.refreshRate);
+    }
+}
+
+public class UIScaleSlider : GenericSlider
+{
+    public override GameObject InitializeElement()
+    {
+        GameObject go = base.InitializeElement();
+
+        // Set it from 0 - 100 (still reflective of 0-1, but shows from 0 - 100)
+        format = "({0:0.#}) ";
+
+        sliderElement.minValue = .5f;
+        sliderElement.maxValue = 2f;
+        sliderElement.value = getValue();
+        // We want to apply our own listener
+        sliderElement.onValueChanged.RemoveAllListeners();
+        sliderElement.onValueChanged.AddListener(
+            (float v) =>
+            {
+                if (v != value)
+                {
+                    valueChanged = true;
+                    value = v;
+                    textElement.text = string.Format(format, value) + LocalizationTable.GetLocalization(option.name);
+                }
+            });
+
+        sliderElement.onValueChanged.Invoke(sliderElement.value);
+        textElement.text = string.Format(format, value) + LocalizationTable.GetLocalization(option.name);
+
+        return go;
     }
 }
 

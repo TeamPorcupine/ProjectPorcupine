@@ -59,7 +59,7 @@ public class UIRescaler : MonoBehaviour
 
     public void Update()
     {
-        if (lastScreenWidth != Screen.width)
+//        if (lastScreenWidth != Screen.width)
         {
             lastScreenWidth = Screen.width;
             AdjustScale();
@@ -68,6 +68,7 @@ public class UIRescaler : MonoBehaviour
 
     private void AdjustScale()
     {
+        Settings.GetSetting("ui_scale", out scale);
         this.GetComponent<CanvasScaler>().scaleFactor = (Screen.width / 1920f) * (dpi / 96) * scale;
     }
 }
