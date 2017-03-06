@@ -763,6 +763,12 @@ public class UIScaleSlider : GenericSlider
 
         return go;
     }
+	
+    public override void ApplySetting()
+    {
+		base.ApplySetting();
+		sliderElement.GetComponentInParent<UIRescaler>().AdjustScale();
+	}
 }
 
 public class SoundSlider : GenericSlider
