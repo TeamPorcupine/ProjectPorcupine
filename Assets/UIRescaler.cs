@@ -16,7 +16,7 @@ public class UIRescaler : MonoBehaviour
     private const float MaxScale = 2f;
     private const float MinScale = .5f;
 
-    private int lastScreenWidth = 0;
+    private int lastScreenHeight = 0;
     private float scale = 1f;
 
     public float Scale 
@@ -45,16 +45,16 @@ public class UIRescaler : MonoBehaviour
 
     public void Start()
     {
-        lastScreenWidth = Screen.width;
+        lastScreenHeight = Screen.height;
 
         AdjustScale();
     }
 
     public void Update()
     {
-//        if (lastScreenWidth != Screen.width)
+        if (lastScreenHeight != Screen.height)
         {
-            lastScreenWidth = Screen.width;
+            lastScreenHeight = Screen.height;
             AdjustScale();
         }
     }
