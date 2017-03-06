@@ -340,7 +340,7 @@ public class SettingsMenu : MonoBehaviour
                     {
                         options[currentName][keyValuePair.Key][i] = FunctionsManager.SettingsMenu.Call("Get" + keyValuePair.Value[i].className).ToObject<BaseSettingsElement>();
                         options[currentName][keyValuePair.Key][i].option = keyValuePair.Value[i];
-                        options[currentName][keyValuePair.Key][i].optionData = keyValuePair.Value[i].options;
+                        options[currentName][keyValuePair.Key][i].parameterData = keyValuePair.Value[i].options;
                     }
                     else if (keyValuePair.Value[i].name != null)
                     {

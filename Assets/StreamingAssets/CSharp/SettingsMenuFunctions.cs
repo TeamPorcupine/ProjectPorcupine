@@ -70,24 +70,14 @@ public static class SettingsMenuFunctions
         return new ResolutionComboBox();
     }
 
-    public static ScrollSensitivitySlider GetScrollSensitivitySlider()
+    public static DeveloperConsoleSlider GetDeveloperConsoleSlider()
     {
-        return new ScrollSensitivitySlider();
-    }
-
-    public static TimeStampToggle GetTimeStampToggle()
-    {
-        return new TimeStampToggle();
+        return new DeveloperConsoleSlider();
     }
 
     public static DeveloperConsoleToggle GetDeveloperConsoleToggle()
     {
         return new DeveloperConsoleToggle();
-    }
-
-    public static FontSizeSlider GetFontSizeSlider()
-    {
-        return new FontSizeSlider();
     }
 
     public static PerformanceHUDComboBox GetPerformanceHUDComboBox()
@@ -420,20 +410,11 @@ public class GenericSlider : BaseSettingsElement
         textElement = CreateText(string.Format(format, getValue()) + LocalizationTable.GetLocalization(option.name), true, TextAnchor.MiddleCenter);
         textElement.transform.SetParent(element.transform);
 
-        float minValue;
-        float maxValue;
+        float minValue = this.parameterData.ContainsKey("MinimumValue") ? this.parameterData["MinimumValue"].ToFloat() : 0;
+        float maxValue = this.parameterData.ContainsKey("MaximumValue") ? this.parameterData["MaximumValue"].ToFloat() : 1;
+        bool wholeNumbers = this.parameterData.ContainsKey("WholeNumbers") ? this.parameterData["WholeNumbers"].ToBool() : false;
 
-        if (GetOption<float>("MinimumValue", out minValue) == false)
-        {
-            minValue = 0;
-        }
-
-        if (GetOption<float>("MaximumValue", out maxValue) == false)
-        {
-            maxValue = 1;
-        }
-
-        sliderElement = CreateSlider(getValue(), new Vector2(minValue, maxValue), false);
+        sliderElement = CreateSlider(getValue(), new Vector2(minValue, maxValue), wholeNumbers);
         sliderElement.transform.SetParent(element.transform);
         sliderElement.onValueChanged.AddListener(
             (float v) =>
@@ -742,20 +723,18 @@ public class SoundSlider : GenericSlider
 
     public override void ApplySetting()
     {
-        string options;
-        if (GetOption<string>("SoundChannel", out options))
+        if (this.parameterData.ContainsKey("SoundChannel"))
         {
             Settings.SetSetting(option.key, value);
-            WorldController.Instance.soundController.SetVolume(options, value);
+            WorldController.Instance.soundController.SetVolume(this.parameterData["SoundChannel"].ToString(), value);
         }
     }
 
     public override void CancelSetting()
     {
-        string options;
-        if (GetOption<string>("SoundChannel", out options))
+        if (this.parameterData.ContainsKey("SoundChannel"))
         {
-            WorldController.Instance.soundController.SetVolume(options, getValue());
+            WorldController.Instance.soundController.SetVolume(this.parameterData["SoundChannel"].ToString(), getValue());
         }
     }
 }
@@ -775,49 +754,8 @@ public class FullScreenToggle : GenericToggle
     }
 }
 
-public class ScrollSensitivitySlider : GenericSlider
+public class DeveloperConsoleSlider : GenericSlider
 {
-    public override GameObject InitializeElement()
-    {
-        GameObject go = base.InitializeElement();
-
-        sliderElement.maxValue = 15;
-        sliderElement.minValue = 5;
-        sliderElement.wholeNumbers = true;
-        sliderElement.value = getValue();
-        sliderElement.onValueChanged.Invoke(sliderElement.value);
-
-        return go;
-    }
-
-    public override void ApplySetting()
-    {
-        base.ApplySetting();
-        DeveloperConsole.DevConsole.DirtySettings();
-    }
-
-    public override void CancelSetting()
-    {
-        base.CancelSetting();
-        DeveloperConsole.DevConsole.DirtySettings();
-    }
-}
-
-public class FontSizeSlider : GenericSlider
-{
-    public override GameObject InitializeElement()
-    {
-        GameObject go = base.InitializeElement();
-
-        sliderElement.maxValue = 20;
-        sliderElement.minValue = 12;
-        sliderElement.wholeNumbers = true;
-        sliderElement.value = getValue();
-        sliderElement.onValueChanged.Invoke(sliderElement.value);
-
-        return go;
-    }
-
     public override void ApplySetting()
     {
         base.ApplySetting();
@@ -1246,21 +1184,6 @@ public class DeveloperModeToggle : GenericSwitch
         {
             WorldController.Instance.spawnInventoryController.SetUIVisibility(isOn);
         }
-    }
-}
-
-public class TimeStampToggle : GenericToggle
-{
-    public override void ApplySetting()
-    {
-        base.ApplySetting();
-        DeveloperConsole.DevConsole.DirtySettings();
-    }
-
-    public override void CancelSetting()
-    {
-        base.CancelSetting();
-        DeveloperConsole.DevConsole.DirtySettings();
     }
 }
 

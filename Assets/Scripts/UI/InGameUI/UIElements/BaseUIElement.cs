@@ -7,9 +7,7 @@
 // ====================================================
 #endregion
 
-using System;
 using System.Linq;
-using System.Collections.Generic;
 using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,6 +15,15 @@ using UnityEngine.UI;
 // Every specific UI element comes from this
 public abstract class BaseUIElement
 {
+    /// <summary>
+    /// Internal option data.
+    /// </summary>
+    public Parameter parameterData;
+
+    /// <summary>
+    /// Returns the name of this object for internal reasons.
+    /// Mainly for error debugging and/or gameobject name.
+    /// </summary>
     public abstract string GetName();
 
     /// <summary>
@@ -24,39 +31,6 @@ public abstract class BaseUIElement
     /// Pass it back basically.
     /// </summary>
     public abstract GameObject InitializeElement();
-
-    public Dictionary<string, string> optionData = new Dictionary<string, string>();
-
-    /// <summary>
-    /// Will tries to read data as the type given.
-    /// </summary>
-    /// <returns> Whether or not the parse passed. </returns>
-    public bool GetOption<T>(string key, out T result)
-        where T : IConvertible
-    {
-        result = default(T);
-
-        if (optionData == null)
-        {
-            return false;
-        }
-
-        string value;
-        if (optionData.TryGetValue(key, out value))
-        {
-            try
-            {
-                result = (T)Convert.ChangeType(value, typeof(T));
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        return false;
-    }
 
     protected GameObject GetFluidHorizontalBaseElement(string elementTitle = "", bool stretchX = false, bool stretchY = false, TextAnchor alignment = TextAnchor.MiddleCenter, int spacing = 10, int allocatedHeight = 60, int allocatedWidth = 220)
     {

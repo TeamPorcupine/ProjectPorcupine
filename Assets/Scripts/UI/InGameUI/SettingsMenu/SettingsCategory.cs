@@ -20,15 +20,15 @@ public struct SettingsOption
     public string key;
     public string defaultValue;
     public string className;
-    public Dictionary<string, string> options;
+    public Parameter options;
 
-    public SettingsOption(string name, string key, string defaultValue, string className, XmlReader options = null)
+    public SettingsOption(string name, string key, string defaultValue, string className, Parameter parameter = null)
     {
         this.name = name;
         this.key = key;
         this.defaultValue = defaultValue;
         this.className = className;
-        this.options = XDocument.Load(options).Descendants("CustomOptions").Attributes().ToDictionary(kvp => kvp.Name.ToString(), kvp => kvp.Value);
+        this.options = parameter;
     }
 
     /// <summary>
@@ -40,7 +40,7 @@ public struct SettingsOption
         key = reader.GetAttribute("Key");
         defaultValue = reader.GetAttribute("DefaultValue");
         className = reader.GetAttribute("ClassName");
-        options = XDocument.Load(reader.ReadSubtree()).Descendants("CustomOptions").Attributes().ToDictionary(kvp => kvp.Name.ToString(), kvp => kvp.Value);
+        this.options = (reader != null && reader.ReadToDescendant("Params")) ? Parameter.ReadXml(reader) : new Parameter();
     }
 }
 
