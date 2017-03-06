@@ -742,9 +742,10 @@ public class UIScaleSlider : GenericSlider
         // Set it from 0 - 100 (still reflective of 0-1, but shows from 0 - 100)
         format = "({0:0.#}) ";
 
-        sliderElement.minValue = .5f;
-        sliderElement.maxValue = 2f;
-        sliderElement.value = getValue();
+		sliderElement.wholeNumbers = true;
+        sliderElement.minValue = 5;
+        sliderElement.maxValue = 20;
+        sliderElement.value = getValue() * 10;
         // We want to apply our own listener
         sliderElement.onValueChanged.RemoveAllListeners();
         sliderElement.onValueChanged.AddListener(
@@ -754,19 +755,19 @@ public class UIScaleSlider : GenericSlider
                 {
                     valueChanged = true;
                     value = v;
-                    textElement.text = string.Format(format, value) + LocalizationTable.GetLocalization(option.name);
+                    textElement.text = string.Format(format, value / 10) + LocalizationTable.GetLocalization(option.name);
                 }
             });
 
         sliderElement.onValueChanged.Invoke(sliderElement.value);
-        textElement.text = string.Format(format, value) + LocalizationTable.GetLocalization(option.name);
+        textElement.text = string.Format(format, value / 10) + LocalizationTable.GetLocalization(option.name);
 
         return go;
     }
 	
     public override void ApplySetting()
     {
-		base.ApplySetting();
+        Settings.SetSetting(option.key, value / 10);
 		sliderElement.GetComponentInParent<UIRescaler>().AdjustScale();
 	}
 }
