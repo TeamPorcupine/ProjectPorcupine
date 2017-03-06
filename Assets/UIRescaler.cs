@@ -17,7 +17,6 @@ public class UIRescaler : MonoBehaviour
     private const float MinScale = .5f;
 
     private int lastScreenWidth = 0;
-    private float dpi;
     private float scale = 1f;
 
     public float Scale 
@@ -47,12 +46,6 @@ public class UIRescaler : MonoBehaviour
     public void Start()
     {
         lastScreenWidth = Screen.width;
-        dpi = Screen.dpi;
-        if (dpi.AreEqual(0f)) 
-        {
-            // Screen dpi may sometimes not be able to get the correct dpi, so we choose a reasonable default in that case.
-            dpi = 96f;
-        }
 
         AdjustScale();
     }
@@ -69,6 +62,6 @@ public class UIRescaler : MonoBehaviour
     private void AdjustScale()
     {
         Settings.GetSetting("ui_scale", out scale);
-        this.GetComponent<CanvasScaler>().scaleFactor = (Screen.width / 1920f) * (dpi / 96) * scale;
+        this.GetComponent<CanvasScaler>().scaleFactor = (Screen.height / 720f) * scale;
     }
 }
