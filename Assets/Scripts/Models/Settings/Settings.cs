@@ -110,6 +110,24 @@ public static class Settings
         return false;
     }
 
+    public static string GetSetting(string key)
+    {
+        if (settingsDict == null)
+        {
+            UnityDebugger.Debugger.LogError("Settings", "Settings Dictionary was not loaded!");
+            return null;
+        }
+
+        string value;
+        if (settingsDict.TryGetValue(key, out value))
+        {
+            return value;
+        }
+
+        UnityDebugger.Debugger.LogError("Settings", "Attempted to access a setting that was not loaded from either the SettingsFile or the Template:\t" + key);
+        return null;
+    }
+
     public static void SaveSettings()
     {
         UnityDebugger.Debugger.Log("Settings", "Settings have changed, so there are settings to save!");
