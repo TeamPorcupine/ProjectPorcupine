@@ -10,9 +10,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using MoonSharp.Interpreter;
 using Newtonsoft.Json;
 using UnityEngine;
 
+[MoonSharpUserData]
 public static class Settings
 {
     private static readonly string DefaultSettingsFilePath = System.IO.Path.Combine(
