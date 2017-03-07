@@ -136,24 +136,9 @@ public abstract class BaseUIElement
         return text;
     }
 
-    protected Toggle CreateSwitch()
+    protected Toggle CreateToggle(string type)
     {
-        return GameObject.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsSwitch")).GetComponent<Toggle>();
-    }
-
-    protected Toggle CreateToggle()
-    {
-        return GameObject.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsToggle")).GetComponent<Toggle>();
-    }
-
-    protected Toggle CreateCircleRadio()
-    {
-        return GameObject.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsRadio")).GetComponent<Toggle>();
-    }
-
-    protected Toggle CreateSquareRadio()
-    {
-        return GameObject.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsSquareRadio")).GetComponent<Toggle>();
+        return GameObject.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/Settings" + type)).GetComponent<Toggle>();
     }
 
     protected InputField CreateInputField(string withText)
