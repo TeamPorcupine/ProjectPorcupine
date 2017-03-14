@@ -10,9 +10,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using MoonSharp.Interpreter;
 using Newtonsoft.Json;
 using UnityEngine;
 
+[MoonSharpUserData]
 public static class Settings
 {
     private static readonly string DefaultSettingsFilePath = System.IO.Path.Combine(
@@ -106,6 +108,24 @@ public static class Settings
 
         UnityDebugger.Debugger.LogError("Settings", "Attempted to access a setting that was not loaded from either the SettingsFile or the Template:\t" + key);
         return false;
+    }
+
+    public static string GetSetting(string key)
+    {
+        if (settingsDict == null)
+        {
+            UnityDebugger.Debugger.LogError("Settings", "Settings Dictionary was not loaded!");
+            return null;
+        }
+
+        string value;
+        if (settingsDict.TryGetValue(key, out value))
+        {
+            return value;
+        }
+
+        UnityDebugger.Debugger.LogError("Settings", "Attempted to access a setting that was not loaded from either the SettingsFile or the Template:\t" + key);
+        return null;
     }
 
     public static void SaveSettings()
