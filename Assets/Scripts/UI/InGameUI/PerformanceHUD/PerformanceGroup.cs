@@ -12,14 +12,16 @@ using System.Xml;
 public struct PerformanceGroup
 {
     public string name;
-    public string[] elementNames;
+    public string[] elementData;
+    public Parameter[] parameterData;
     public bool disableUI;
 
-    public PerformanceGroup(string name, string[] elementNames, bool disableUI)
+    public PerformanceGroup(string name, string[] elementData, Parameter[] parameterData, bool disableUI)
     {
         this.name = name;
-        this.elementNames = elementNames;
+        this.elementData = elementData;
         this.disableUI = disableUI;
+        this.parameterData = parameterData;
     }
 }
 
@@ -49,20 +51,27 @@ public class PerformanceGroupReader : IPrototypable
             name = string.Empty;
         }
 
-        List<string> options = new List<string>();
+        List<string> elementData = new List<string>();
+        List<Parameter> parameterData = new List<Parameter>();
 
         while (reader.Read())
         {
             if (reader.Name == "Option")
             {
                 reader.MoveToContent();
-                options.Add(reader.GetAttribute("ClassName"));
+                string className = reader.GetAttribute("ClassName");
+
+                if (string.IsNullOrEmpty(className) == false)
+                {
+                    elementData.Add(reader.GetAttribute("ClassName"));
+                    parameterData.Add(reader != null && reader.ReadToDescendant("Params") ? Parameter.ReadXml(reader) : new Parameter());
+                }
             }
             else if (reader.Name == "ComponentGroup")
             {
                 if (name != null)
                 {
-                    groups.Add(new PerformanceGroup(name, options.ToArray(), disableUI));
+                    groups.Add(new PerformanceGroup(name, elementData.ToArray(), parameterData.ToArray(), disableUI));
                 }
 
                 name = reader.GetAttribute("Name");
@@ -76,13 +85,14 @@ public class PerformanceGroupReader : IPrototypable
                     disableUI = false;
                 }
 
-                options.Clear();
+                elementData.Clear();
+                parameterData.Clear();
             }
         }
 
         if (name != null)
         {
-            groups.Add(new PerformanceGroup(name, options.ToArray(), disableUI));
+            groups.Add(new PerformanceGroup(name, elementData.ToArray(), parameterData.ToArray(), disableUI));
         }
     }
 }

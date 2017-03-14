@@ -20,11 +20,6 @@ public static class PerformanceHUDFunctions
         return new FPSPerformanceComponent();
     }
 
-    public static FPSAveragePerformanceComponent GetFPSAveragePerformanceComponent()
-    {
-        return new FPSAveragePerformanceComponent();
-    }
-
     public static NetworkPerformanceComponent GetNetworkPerformanceComponent()
     {
         return new NetworkPerformanceComponent();
@@ -97,60 +92,13 @@ public static class PerformanceHUDFunctions
     }
 
     /// <summary>
-    /// Displays the average FPS over a 30 second period.
-    /// </summary>
-    public class FPSAveragePerformanceComponent : BasePerformanceHUDElement
-    {
-        private const float FPSMeasurePeriod = 5f;
-        private const string Display = "Avg: ";
-
-        private int fpsAccumulator = 0;
-        private float fpsFinishPeriod = 0;
-        private int currentFps;
-
-        private Text UITextElement;
-
-        // The shown FPS will be 0 for the first second until it ticks over correctly
-        public override void Update()
-        {
-            // measure average frames per second
-            fpsAccumulator++;
-            if (Time.realtimeSinceStartup > fpsFinishPeriod)
-            {
-                currentFps = (int)(fpsAccumulator / FPSMeasurePeriod);
-
-                fpsAccumulator = 0;
-
-                fpsFinishPeriod += FPSMeasurePeriod;
-
-                UITextElement.text = Display + currentFps;
-            }
-        }
-
-        public override GameObject InitializeElement()
-        {
-            // Build Gameobject
-            fpsFinishPeriod = Time.realtimeSinceStartup + FPSMeasurePeriod;
-            GameObject element = GetHorizontalBaseElement("FPS-Average", 80, 60, allocatedHeight: 60, allocatedWidth: 80, alignment: TextAnchor.MiddleLeft);
-
-            UITextElement = CreateText("Avg: ...", false, TextAnchor.MiddleCenter);
-            UITextElement.transform.SetParent(element.transform);
-
-            return element;
-        }
-
-        public override string GetName()
-        {
-            return "FPSAveragePerformanceComponent";
-        }
-    }
-
-    /// <summary>
-    /// Displays current FPS (over 0.5s period).
+    /// Displays current FPS (over a certain period).
     /// </summary>
     public class FPSPerformanceComponent : BasePerformanceHUDElement
     {
-        private const float FPSMeasurePeriod = 0.5f;
+        private float FPSMeasurePeriod = 0.5f;
+        private string display = "FPS: ";
+        private bool displayColor = true;
 
         private Color GreenColor = Color.green;
         private Color RedColor = Color.red;
@@ -158,10 +106,10 @@ public static class PerformanceHUDFunctions
 
         private int fpsAccumulator = 0;
         private float fpsNextPeriod = 0;
-        private int currentFps;
+        private int currentFps = 0;
 
         private Text UITextElement;
-        private const string Display = "FPS: ";
+
 
         // The shown FPS will be 0 for the first second until it ticks over correctly
         public override void Update()
@@ -176,31 +124,40 @@ public static class PerformanceHUDFunctions
                 fpsNextPeriod += FPSMeasurePeriod;
 
                 // Colour Changing
-                if (currentFps > 55)
+                if (displayColor)
                 {
-                    UITextElement.color = GreenColor;
-                }
-                else if (currentFps >= 30 && currentFps <= 55)
-                {
-                    UITextElement.color = YellowColor;
-                }
-                else
-                {
-                    UITextElement.color = RedColor;
+                    if (currentFps > 55)
+                    {
+                        UITextElement.color = GreenColor;
+                    }
+                    else if (currentFps >= 30 && currentFps <= 55)
+                    {
+                        UITextElement.color = YellowColor;
+                    }
+                    else
+                    {
+                        UITextElement.color = RedColor;
+                    }
                 }
 
-                UITextElement.text = Display + currentFps;
+                UITextElement.text = display + currentFps;
             }
         }
 
         public override GameObject InitializeElement()
         {
+            FPSMeasurePeriod = this.parameterData.ContainsKey("MeasurePeriod") ? this.parameterData["MeasurePeriod"].ToFloat() : 0.5f;
+            display = this.parameterData.ContainsKey("DisplayText") ? this.parameterData["DisplayText"].ToString() : "FPS: ";
+            displayColor = this.parameterData.ContainsKey("DisplayColor") ? this.parameterData["DisplayColor"].ToBool() : true;
+
             fpsNextPeriod = Time.realtimeSinceStartup + FPSMeasurePeriod;
 
             // Build Gameobject
             GameObject element = GetHorizontalBaseElement("FPS", 80, 60, allocatedHeight: 60, allocatedWidth: 80, alignment: TextAnchor.MiddleLeft);
 
-            UITextElement = CreateText("FPS: ...", false, TextAnchor.MiddleCenter);
+            UITextElement = CreateText(display + "...", false, TextAnchor.MiddleCenter);
+            UITextElement.text = display + currentFps;
+
             UITextElement.transform.SetParent(element.transform);
             UITextElement.fontSize = 20;
 

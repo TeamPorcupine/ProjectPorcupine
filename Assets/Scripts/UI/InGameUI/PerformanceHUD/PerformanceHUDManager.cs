@@ -117,25 +117,28 @@ public class PerformanceHUDManager : MonoBehaviour
 
         PerformanceGroup[] groups = PrototypeManager.PerformanceHUD.Values.SelectMany(x => x.groups).ToArray();
 
-        allGroups.Add(new PerformanceGroup("none", new string[0], true), new BasePerformanceHUDElement[0]);
+        allGroups.Add(new PerformanceGroup("none", new string[0], new Parameter[0], true), new BasePerformanceHUDElement[0]);
+        List<BasePerformanceHUDElement> elements = new List<BasePerformanceHUDElement>();
 
+        // Convert the dictionary of specialised elements to a more generalised format
         for (int i = 0; i < groups.Length; i++)
         {
-            BasePerformanceHUDElement[] elements = new BasePerformanceHUDElement[groups[i].elementNames.Length];
-
-            for (int j = 0; j < groups[i].elementNames.Length; j++)
+            for (int j = 0; j < groups[i].elementData.Length; j++)
             {
-                if (FunctionsManager.PerformanceHUD.HasFunction("Get" + groups[i].elementNames[j]))
+                if (FunctionsManager.PerformanceHUD.HasFunction("Get" + groups[i].elementData[j]))
                 {
-                    elements[j] = FunctionsManager.PerformanceHUD.Call("Get" + groups[i].elementNames[j]).ToObject<BasePerformanceHUDElement>();
+                    BasePerformanceHUDElement element = FunctionsManager.PerformanceHUD.Call("Get" + groups[i].elementData[j]).ToObject<BasePerformanceHUDElement>();
+                    element.parameterData = groups[i].parameterData[j];
+                    elements.Add(element);
                 }
                 else
                 {
-                    Debug.LogWarning("Get" + groups[i].elementNames[j] + "() Doesn't exist");
+                    Debug.LogWarning("Get" + groups[i] + groups[i].elementData[j] + "() Doesn't exist");
                 }
             }
 
-            allGroups.Add(groups[i], elements);
+            allGroups.Add(groups[i], elements.ToArray());
+            elements.Clear();
         }
 
         // Setup UI

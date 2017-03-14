@@ -15,6 +15,15 @@ using UnityEngine.UI;
 // Every specific UI element comes from this
 public abstract class BaseUIElement
 {
+    /// <summary>
+    /// Internal option data.
+    /// </summary>
+    public Parameter parameterData;
+
+    /// <summary>
+    /// Returns the name of this object for internal reasons.
+    /// Mainly for error debugging and/or gameobject name.
+    /// </summary>
     public abstract string GetName();
 
     /// <summary>
@@ -23,9 +32,6 @@ public abstract class BaseUIElement
     /// </summary>
     public abstract GameObject InitializeElement();
 
-    /// <summary>
-    /// Always has 220 allocated width.
-    /// </summary>
     protected GameObject GetFluidHorizontalBaseElement(string elementTitle = "", bool stretchX = false, bool stretchY = false, TextAnchor alignment = TextAnchor.MiddleCenter, int spacing = 10, int allocatedHeight = 60, int allocatedWidth = 220)
     {
         GameObject go = new GameObject(elementTitle == string.Empty ? "Element_" + GetName() : elementTitle);
@@ -130,24 +136,9 @@ public abstract class BaseUIElement
         return text;
     }
 
-    protected Toggle CreateSwitch()
+    protected Toggle CreateToggle(string type)
     {
-        return GameObject.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsSwitch")).GetComponent<Toggle>();
-    }
-
-    protected Toggle CreateToggle()
-    {
-        return GameObject.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsToggle")).GetComponent<Toggle>();
-    }
-
-    protected Toggle CreateCircleRadio()
-    {
-        return GameObject.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsRadio")).GetComponent<Toggle>();
-    }
-
-    protected Toggle CreateSquareRadio()
-    {
-        return GameObject.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsSquareRadio")).GetComponent<Toggle>();
+        return GameObject.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/Settings" + type)).GetComponent<Toggle>();
     }
 
     protected InputField CreateInputField(string withText)

@@ -115,9 +115,9 @@ public class TimeManager
     /// <para>Example: <code>WorldTime = WorldTime.SetHour(8).SetMinute(0)</code> will properly change the time to 8:00, leaving everything else the same.</para>
     /// </summary>
     /// <value>The world time.</value>
-    public WorldTime WorldTime 
+    public WorldTime WorldTime
     {
-        get 
+        get
         {
             return new WorldTime(GameTime * RealTimeToWorldTimeFactor);
         }
@@ -126,7 +126,7 @@ public class TimeManager
         {
             GameTime = value.Seconds / RealTimeToWorldTimeFactor;
         }
-    } 
+    }
 
     // Current position in that array.
     // Public so TimeScaleUpdater can easily get a position appropriate to an image.
@@ -173,7 +173,7 @@ public class TimeManager
     /// </summary>
     /// <param name="time">Time since last frame.</param>
     public void Update(float time)
-    {   
+    {
         float deltaTime = time * TimeScale;
 
         // Systems that update every frame.
