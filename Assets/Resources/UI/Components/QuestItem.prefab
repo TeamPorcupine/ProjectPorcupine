@@ -58,6 +58,8 @@ GameObject:
   - 114: {fileID: 114000012546263802}
   - 114: {fileID: 114000012203566418}
   - 114: {fileID: 114000010617629678}
+  - 114: {fileID: 114000013935797010}
+  - 114: {fileID: 114000012354133912}
   m_Layer: 5
   m_Name: QuestItem
   m_TagString: Untagged
@@ -290,6 +292,17 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &114000012354133912
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000011337798844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d9d9b4ba7df5664b97950a2c6fbf394, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114000012414203538
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -410,6 +423,17 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Tile
+--- !u!114 &114000013935797010
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000011337798844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d9d9b4ba7df5664b97950a2c6fbf394, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114000014074064690
 MonoBehaviour:
   m_ObjectHideFlags: 1
