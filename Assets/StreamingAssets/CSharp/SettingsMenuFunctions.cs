@@ -25,49 +25,14 @@ public static class SettingsMenuFunctions
         return new GenericSlider();
     }
 
-    public static AutosaveIntervalNumberField GetAutosaveIntervalNumberField()
+    public static AutosaveIntervalInputField GetAutosaveIntervalInputField()
     {
-        return new AutosaveIntervalNumberField();
-    }
-
-    public static AutosaveNumberField GetAutosaveNumberField()
-    {
-        return new AutosaveNumberField();
+        return new AutosaveIntervalInputField();
     }
 
     public static LocalizationComboBox GetLocalizationComboBox()
     {
         return new LocalizationComboBox();
-    }
-
-    public static SoundSlider GetSoundSlider()
-    {
-        return new SoundSlider();
-    }
-
-    public static MasterSoundSlider GetMasterSoundSlider()
-    {
-        return new MasterSoundSlider();
-    }
-
-    public static MusicSoundSlider GetMusicSoundSlider()
-    {
-        return new MusicSoundSlider();
-    }
-
-    public static GameSoundSlider GetGameSoundSlider()
-    {
-        return new GameSoundSlider();
-    }
-
-    public static AlertsSoundSlider GetAlertsSoundSlider()
-    {
-        return new AlertsSoundSlider();
-    }
-
-    public static UISoundSlider GetUISoundSlider()
-    {
-        return new UISoundSlider();
     }
 
     public static UISkinComboBox GetUISkinComboBox()
@@ -85,54 +50,14 @@ public static class SettingsMenuFunctions
         return new VSyncComboBox();
     }
 
-    public static FullScreenToggle GetFullScreenToggle()
-    {
-        return new FullScreenToggle();
-    }
-
     public static ResolutionComboBox GetResolutionComboBox()
     {
         return new ResolutionComboBox();
     }
 
-    public static ScrollSensitivitySlider GetScrollSensitivitySlider()
-    {
-        return new ScrollSensitivitySlider();
-    }
-
-    public static TimeStampToggle GetTimeStampToggle()
-    {
-        return new TimeStampToggle();
-    }
-
-    public static DeveloperConsoleToggle GetDeveloperConsoleToggle()
-    {
-        return new DeveloperConsoleToggle();
-    }
-
-    public static FontSizeSlider GetFontSizeSlider()
-    {
-        return new FontSizeSlider();
-    }
-
-    public static UIScaleSlider GetUIScaleSlider()
-    {
-        return new UIScaleSlider();
-    }
-
     public static PerformanceHUDComboBox GetPerformanceHUDComboBox()
     {
         return new PerformanceHUDComboBox();
-    }
-
-    public static DeveloperModeToggle GetDeveloperModeToggle()
-    {
-        return new DeveloperModeToggle();
-    }
-
-    public static SoftParticlesToggle GetSoftParticlesToggle()
-    {
-        return new SoftParticlesToggle();
     }
 
     public static AnisotropicFilteringComboBox GetAnisotropicFilteringComboBox()
@@ -154,173 +79,40 @@ public static class SettingsMenuFunctions
     {
         return new SoundDeviceComboBox();
     }
-}
 
-public class GenericSwitch : BaseSettingsElement
-{
-    protected bool isOn;
-    protected Toggle toggleElement;
-
-    public override GameObject InitializeElement()
+    public static DeveloperConsoleSlider GetDeveloperConsoleSlider()
     {
-        GameObject element = GetHorizontalBaseElement("Switch", 120, 60, TextAnchor.MiddleLeft);
-
-        Text text = CreateText(option.name, true);
-        text.transform.SetParent(element.transform);
-
-        toggleElement = CreateSwitch();
-        toggleElement.transform.SetParent(element.transform);
-
-        isOn = getValue();
-        toggleElement.isOn = isOn;
-
-        toggleElement.onValueChanged.AddListener(
-            (bool v) =>
-            {
-                if (v != isOn)
-                {
-                    valueChanged = true;
-                    isOn = v;
-                }
-            });
-
-        LayoutElement layout = toggleElement.gameObject.AddComponent<LayoutElement>();
-        layout.ignoreLayout = true;
-
-        RectTransform rTransform = toggleElement.GetComponent<RectTransform>();
-        rTransform.sizeDelta = new Vector2(60, 30);
-        rTransform.anchorMax = new Vector2(0.5f, 0.5f);
-        rTransform.anchorMin = new Vector2(0.5f, 0.5f);
-        rTransform.localPosition = new Vector3(45, 0, 0);
-
-        return element;
+        return new DeveloperConsoleSlider();
     }
 
-    public override void CancelSetting()
+    public static UIScaleSlider GetUIScaleSlider()
     {
+        return new UIScaleSlider();
     }
 
-    public override void ApplySetting()
+    public static SoundSlider GetSoundSlider()
     {
-        Settings.SetSetting(option.key, isOn);
+        return new SoundSlider();
     }
 
-    public bool getValue()
+    public static DeveloperConsoleToggle GetDeveloperConsoleToggle()
     {
-        bool temp;
-        return Settings.GetSetting(option.key, out temp) ? temp : option.defaultValue.ToLower() == "true" ? true : false;
-    }
-}
-
-public class GenericCircleRadio : BaseSettingsElement
-{
-    protected bool isOn;
-    protected Toggle toggleElement;
-
-    public override GameObject InitializeElement()
-    {
-        GameObject element = GetHorizontalBaseElement("Circle-Radio", 120, 60, TextAnchor.MiddleLeft);
-
-        Text text = CreateText(option.name, true);
-        text.transform.SetParent(element.transform);
-
-        toggleElement = CreateCircleRadio();
-        toggleElement.transform.SetParent(element.transform);
-
-        isOn = getValue();
-        toggleElement.isOn = isOn;
-
-        toggleElement.onValueChanged.AddListener(
-            (bool v) =>
-            {
-                if (v != isOn)
-                {
-                    valueChanged = true;
-                    isOn = v;
-                }
-            });
-
-        LayoutElement layout = toggleElement.gameObject.AddComponent<LayoutElement>();
-        layout.ignoreLayout = true;
-
-        RectTransform rTransform = toggleElement.GetComponent<RectTransform>();
-        rTransform.sizeDelta = new Vector2(40, 40);
-        rTransform.anchorMax = new Vector2(0.5f, 0.5f);
-        rTransform.anchorMin = new Vector2(0.5f, 0.5f);
-        rTransform.localPosition = new Vector3(45, 0, 0);
-
-        return element;
+        return new DeveloperConsoleToggle();
     }
 
-    public override void CancelSetting()
+    public static FullScreenToggle GetFullScreenToggle()
     {
+        return new FullScreenToggle();
     }
 
-    public override void ApplySetting()
+    public static DeveloperModeToggle GetDeveloperModeToggle()
     {
-        Settings.SetSetting(option.key, isOn);
+        return new DeveloperModeToggle();
     }
 
-    public bool getValue()
+    public static SoftParticlesToggle GetSoftParticlesToggle()
     {
-        bool temp;
-        return Settings.GetSetting(option.key, out temp) ? temp : option.defaultValue.ToLower() == "true" ? true : false;
-    }
-}
-
-public class GenericSquareRadio : BaseSettingsElement
-{
-    protected bool isOn;
-    protected Toggle toggleElement;
-
-    public override GameObject InitializeElement()
-    {
-        GameObject element = GetHorizontalBaseElement("Square-Radio", 120, 60, TextAnchor.MiddleLeft);
-
-        Text text = CreateText(option.name, true);
-        text.transform.SetParent(element.transform);
-
-        toggleElement = CreateSquareRadio();
-        toggleElement.transform.SetParent(element.transform);
-
-        isOn = getValue();
-        toggleElement.isOn = isOn;
-
-        toggleElement.onValueChanged.AddListener(
-            (bool v) =>
-            {
-                if (v != isOn)
-                {
-                    valueChanged = true;
-                    isOn = v;
-                }
-            });
-
-        LayoutElement layout = toggleElement.gameObject.AddComponent<LayoutElement>();
-        layout.ignoreLayout = true;
-
-        RectTransform rTransform = toggleElement.GetComponent<RectTransform>();
-        rTransform.sizeDelta = new Vector2(40, 40);
-        rTransform.anchorMax = new Vector2(0.5f, 0.5f);
-        rTransform.anchorMin = new Vector2(0.5f, 0.5f);
-        rTransform.localPosition = new Vector3(45, 0, 0);
-
-        return element;
-    }
-
-    public override void CancelSetting()
-    {
-    }
-
-    public override void ApplySetting()
-    {
-        Settings.SetSetting(option.key, isOn);
-    }
-
-    public bool getValue()
-    {
-        bool temp;
-        return Settings.GetSetting(option.key, out temp) ? temp : option.defaultValue.ToLower() == "true" ? true : false;
+        return new SoftParticlesToggle();
     }
 }
 
@@ -334,12 +126,13 @@ public class GenericToggle : BaseSettingsElement
 
     public override GameObject InitializeElement()
     {
-        GameObject element = GetHorizontalBaseElement("Toggle", 120, 60, TextAnchor.MiddleLeft);
+        string type = this.parameterData.ContainsKey("Type") ? this.parameterData["Type"].ToString() : "Toggle";
+        GameObject element = GetHorizontalBaseElement(type, 120, 60, TextAnchor.MiddleLeft);
 
         Text text = CreateText(option.name, true);
         text.transform.SetParent(element.transform);
 
-        toggleElement = CreateToggle();
+        toggleElement = CreateToggle(type);
         toggleElement.transform.SetParent(element.transform);
 
         isOn = getValue();
@@ -359,7 +152,7 @@ public class GenericToggle : BaseSettingsElement
         layout.ignoreLayout = true;
 
         RectTransform rTransform = toggleElement.GetComponent<RectTransform>();
-        rTransform.sizeDelta = new Vector2(40, 40);
+        rTransform.sizeDelta = type == "Switch" ? new Vector2(60, 30) : new Vector2(40, 40);
         rTransform.anchorMax = new Vector2(0.5f, 0.5f);
         rTransform.anchorMin = new Vector2(0.5f, 0.5f);
         rTransform.localPosition = new Vector3(45, 0, 0);
@@ -403,20 +196,75 @@ public class GenericInputField : BaseSettingsElement
         fieldElement.transform.SetParent(element.transform);
         fieldElement.textComponent.alignment = TextAnchor.MiddleCenter;
         fieldElement.onValueChanged.AddListener(
-        (string v) =>
-        {
-            if (v != value)
+            (string v) =>
             {
-                valueChanged = true;
-                value = v;
-            }
-        });
+                if (v != value)
+                {
+                    valueChanged = true;
+                    value = v;
+                }
+            });
 
         LayoutElement layout = fieldElement.gameObject.AddComponent<LayoutElement>();
         layout.minWidth = 60;
         layout.minHeight = 30;
 
+        string verification = this.parameterData.ContainsKey("Verification") ? this.parameterData["Verification"].ToString() : "Standard";
+
+        switch (verification)
+        {
+            case "PositiveInteger":
+                fieldElement.onValidateInput += ValidateInputForPositiveNumber;
+                break;
+            case "Integer":
+                fieldElement.contentType = InputField.ContentType.IntegerNumber;
+                break;
+            case "Alphanumeric":
+                fieldElement.contentType = InputField.ContentType.Alphanumeric;
+                break;
+            case "Decimal":
+                fieldElement.contentType = InputField.ContentType.DecimalNumber;
+                break;
+            case "Pin":
+                fieldElement.contentType = InputField.ContentType.Pin;
+                break;
+            case "Password":
+                fieldElement.contentType = InputField.ContentType.Password;
+                break;
+            case "Name":
+                fieldElement.contentType = InputField.ContentType.Name;
+                break;
+            case "EmailAddress":
+                fieldElement.contentType = InputField.ContentType.EmailAddress;
+                break;
+            case "Autocorrected":
+                fieldElement.contentType = InputField.ContentType.Autocorrected;
+                break;
+        }
+
         return element;
+    }
+
+    public char ValidateInputForPositiveNumber(string text, int charIndex, char addedChar)
+    {
+        char output = addedChar;
+
+        if (addedChar != '1'
+            && addedChar != '2'
+            && addedChar != '3'
+            && addedChar != '4'
+            && addedChar != '5'
+            && addedChar != '6'
+            && addedChar != '7'
+            && addedChar != '8'
+            && addedChar != '9'
+            && addedChar != '0')
+        {
+            //return a null character
+            output = '\0';
+        }
+
+        return output;
     }
 
     public override void CancelSetting()
@@ -439,7 +287,7 @@ public class GenericSlider : BaseSettingsElement
 {
     protected Slider sliderElement;
     protected Text textElement;
-    protected string format = "({0:00})";
+    protected string format = "({0:0.##}) ";
     protected float value;
 
     public override GameObject InitializeElement()
@@ -447,12 +295,14 @@ public class GenericSlider : BaseSettingsElement
         // Note this is just from playing around and finding a nice value
         GameObject element = GetVerticalBaseElement("Slider", 200, 20, TextAnchor.MiddleLeft, 0, 40);
 
-        format = "({0:00}) ";
-
         textElement = CreateText(string.Format(format, getValue()) + LocalizationTable.GetLocalization(option.name), true, TextAnchor.MiddleCenter);
         textElement.transform.SetParent(element.transform);
 
-        sliderElement = CreateSlider(getValue(), new Vector2(0, 1), false);
+        float minValue = this.parameterData.ContainsKey("MinimumValue") ? this.parameterData["MinimumValue"].ToFloat() : 0;
+        float maxValue = this.parameterData.ContainsKey("MaximumValue") ? this.parameterData["MaximumValue"].ToFloat() : 1;
+        bool wholeNumbers = this.parameterData.ContainsKey("WholeNumbers") ? this.parameterData["WholeNumbers"].ToBool() : false;
+
+        sliderElement = CreateSlider(getValue(), new Vector2(minValue, maxValue), wholeNumbers);
         sliderElement.transform.SetParent(element.transform);
         sliderElement.onValueChanged.AddListener(
             (float v) =>
@@ -558,6 +408,8 @@ public class GenericComboBox : BaseSettingsElement
     }
 }
 
+#region CustomLogic
+
 public class LocalizationComboBox : GenericComboBox
 {
     public override GameObject InitializeElement()
@@ -622,14 +474,14 @@ public class QualityComboBox : GenericComboBox
         GameObject go = DropdownHelperFromText(new string[] { "Low", "Med", "High" }, getValue());
 
         dropdownElement.onValueChanged.AddListener(
-        (int v) =>
-        {
-            if (v != selectedValue)
+            (int v) =>
             {
-                valueChanged = true;
-                selectedValue = v;
-            }
-        });
+                if (v != selectedValue)
+                {
+                    valueChanged = true;
+                    selectedValue = v;
+                }
+            });
 
         count = dropdownElement.options.Count;
 
@@ -659,341 +511,6 @@ public class QualityComboBox : GenericComboBox
     }
 }
 
-public class ResolutionComboBox : GenericComboBox
-{
-    private ResolutionOption selectedOption;
-
-    private class ResolutionOption : Dropdown.OptionData
-    {
-        public Resolution Resolution { get; set; }
-    }
-
-    public override GameObject InitializeElement()
-    {
-        selectedValue = getValue();
-        GameObject go = DropdownHelperFromOptionData(CreateResolutionDropdown(), selectedValue);
-        dropdownElement.onValueChanged.AddListener(
-            (int v) =>
-            {
-                if (v != selectedValue)
-                {
-                    valueChanged = true;
-                    selectedOption = (ResolutionOption)dropdownElement.options[v];
-                    selectedValue = v;
-                }
-            });
-
-        return go;
-    }
-
-    /// <summary>
-    /// Create the differents option for the resolution dropdown.
-    /// </summary>
-    private Dropdown.OptionData[] CreateResolutionDropdown()
-    {
-        Dropdown.OptionData[] options = new Dropdown.OptionData[Screen.resolutions.Length + 1];
-        options[0] = new ResolutionOption
-        {
-            text = string.Format(
-                "{0} x {1} @ {2}",
-                Screen.currentResolution.width,
-                Screen.currentResolution.height,
-                Screen.currentResolution.refreshRate),
-            Resolution = Screen.currentResolution
-        };
-
-        for (int i = 0; i < Screen.resolutions.Length; i++)
-        {
-            options[i + 1] = new ResolutionOption
-            {
-                text = string.Format(
-                    "{0} x {1} @ {2}",
-                    Screen.resolutions[i].width,
-                    Screen.resolutions[i].height,
-                    Screen.resolutions[i].refreshRate),
-                Resolution = Screen.resolutions[i]
-            };
-        }
-
-        return options;
-    }
-
-    public override void CancelSetting()
-    {
-        Resolution resolution = ((ResolutionOption)dropdownElement.options[selectedValue]).Resolution;
-        Screen.SetResolution(resolution.width, resolution.height, SettingsKeyHolder.Fullscreen, resolution.refreshRate);
-    }
-
-    public override void ApplySetting()
-    {
-        Settings.SetSetting(option.key, selectedValue);
-
-        Resolution resolution = selectedOption.Resolution;
-        Screen.SetResolution(resolution.width, resolution.height, SettingsKeyHolder.Fullscreen, resolution.refreshRate);
-    }
-}
-
-public class UIScaleSlider : GenericSlider
-{
-    public override GameObject InitializeElement()
-    {
-        GameObject go = base.InitializeElement();
-
-        // Set it from 0 - 100 (still reflective of 0-1, but shows from 0 - 100)
-        format = "({0:0.#}) ";
-
-		sliderElement.wholeNumbers = true;
-        sliderElement.minValue = 5;
-        sliderElement.maxValue = 20;
-        sliderElement.value = getValue() * 10;
-        // We want to apply our own listener
-        sliderElement.onValueChanged.RemoveAllListeners();
-        sliderElement.onValueChanged.AddListener(
-            (float v) =>
-            {
-                if (v != value)
-                {
-                    valueChanged = true;
-                    value = v;
-                    textElement.text = string.Format(format, value / 10) + LocalizationTable.GetLocalization(option.name);
-                }
-            });
-
-        sliderElement.onValueChanged.Invoke(sliderElement.value);
-        textElement.text = string.Format(format, value / 10) + LocalizationTable.GetLocalization(option.name);
-
-        return go;
-    }
-	
-    public override void ApplySetting()
-    {
-        Settings.SetSetting(option.key, value / 10);
-		sliderElement.GetComponentInParent<UIRescaler>().AdjustScale();
-	}
-}
-
-public class SoundSlider : GenericSlider
-{
-    public override GameObject InitializeElement()
-    {
-        GameObject go = base.InitializeElement();
-
-        // Set it from 0 - 100 (still reflective of 0-1, but shows from 0 - 100)
-
-        // We want to apply our own listener
-        sliderElement.onValueChanged.RemoveAllListeners();
-        sliderElement.onValueChanged.AddListener(
-            (float v) =>
-            {
-                if (v != value)
-                {
-                    valueChanged = true;
-                    value = v;
-                    textElement.text = string.Format(format, (int)(value * 100)) + LocalizationTable.GetLocalization(option.name);
-                }
-            });
-
-        sliderElement.onValueChanged.Invoke(sliderElement.value);
-        textElement.text = string.Format(format, (int)(value * 100)) + LocalizationTable.GetLocalization(option.name);
-
-        return go;
-    }
-}
-
-public class MasterSoundSlider : SoundSlider
-{
-    public override void ApplySetting()
-    {
-        WorldController.Instance.soundController.SetVolume("master", value);
-    }
-
-    public override void CancelSetting()
-    {
-        WorldController.Instance.soundController.SetVolume("master", getValue());
-    }
-}
-
-public class MusicSoundSlider : SoundSlider
-{
-    public override void ApplySetting()
-    {
-        WorldController.Instance.soundController.SetVolume("music", value);
-    }
-
-    public override void CancelSetting()
-    {
-        WorldController.Instance.soundController.SetVolume("music", getValue());
-    }
-}
-
-public class GameSoundSlider : SoundSlider
-{
-    public override void ApplySetting()
-    {
-        WorldController.Instance.soundController.SetVolume("gameSounds", value);
-    }
-
-    public override void CancelSetting()
-    {
-        WorldController.Instance.soundController.SetVolume("gameSounds", getValue());
-    }
-}
-
-public class AlertsSoundSlider : SoundSlider
-{
-    public override void ApplySetting()
-    {
-        WorldController.Instance.soundController.SetVolume("alerts", value);
-    }
-
-    public override void CancelSetting()
-    {
-        WorldController.Instance.soundController.SetVolume("alerts", getValue());
-    }
-}
-
-public class UISoundSlider : SoundSlider
-{
-    public override void ApplySetting()
-    {
-        WorldController.Instance.soundController.SetVolume("UI", value);
-    }
-
-    public override void CancelSetting()
-    {
-        WorldController.Instance.soundController.SetVolume("UI", getValue());
-    }
-}
-
-public class FullScreenToggle : GenericToggle
-{
-    public override void ApplySetting()
-    {
-        base.ApplySetting();
-        Screen.fullScreen = isOn;
-    }
-
-    public override void CancelSetting()
-    {
-        base.CancelSetting();
-        Screen.fullScreen = getValue();
-    }
-}
-
-public class ScrollSensitivitySlider : GenericSlider
-{
-    public override GameObject InitializeElement()
-    {
-        GameObject go = base.InitializeElement();
-
-        sliderElement.maxValue = 15;
-        sliderElement.minValue = 5;
-        sliderElement.wholeNumbers = true;
-        sliderElement.value = getValue();
-        sliderElement.onValueChanged.Invoke(sliderElement.value);
-
-        return go;
-    }
-
-    public override void ApplySetting()
-    {
-        base.ApplySetting();
-        DeveloperConsole.DevConsole.DirtySettings();
-    }
-
-    public override void CancelSetting()
-    {
-        base.CancelSetting();
-        DeveloperConsole.DevConsole.DirtySettings();
-    }
-}
-
-public class FontSizeSlider : GenericSlider
-{
-    public override GameObject InitializeElement()
-    {
-        GameObject go = base.InitializeElement();
-
-        sliderElement.maxValue = 20;
-        sliderElement.minValue = 12;
-        sliderElement.wholeNumbers = true;
-        sliderElement.value = getValue();
-        sliderElement.onValueChanged.Invoke(sliderElement.value);
-
-        return go;
-    }
-
-    public override void ApplySetting()
-    {
-        base.ApplySetting();
-        DeveloperConsole.DevConsole.DirtySettings();
-    }
-
-    public override void CancelSetting()
-    {
-        base.CancelSetting();
-        DeveloperConsole.DevConsole.DirtySettings();
-    }
-}
-
-/// <summary>
-/// Will only accept numbers that are positive.
-/// </summary>
-public class AutosaveNumberField : GenericInputField
-{
-    public override GameObject InitializeElement()
-    {
-        GameObject go = base.InitializeElement();
-
-        fieldElement.onValidateInput += ValidateInput;
-
-        return go;
-    }
-
-    public char ValidateInput(string text, int charIndex, char addedChar)
-    {
-        char output = addedChar;
-
-        if (addedChar != '1'
-          && addedChar != '2'
-          && addedChar != '3'
-          && addedChar != '4'
-          && addedChar != '5'
-          && addedChar != '6'
-          && addedChar != '7'
-          && addedChar != '8'
-          && addedChar != '9'
-          && addedChar != '0')
-        {
-            //return a null character
-            output = '\0';
-        }
-
-        return output;
-    }
-}
-
-public class AutosaveIntervalNumberField : AutosaveNumberField
-{
-    public override void ApplySetting()
-    {
-        base.ApplySetting();
-        if (WorldController.Instance != null)
-        {
-            WorldController.Instance.autosaveManager.SetAutosaveInterval(int.Parse(value));
-        }
-    }
-
-    public override void CancelSetting()
-    {
-        base.CancelSetting();
-        if (WorldController.Instance != null)
-        {
-            WorldController.Instance.autosaveManager.SetAutosaveInterval(int.Parse(getValue()));
-        }
-    }
-}
-
 public class UISkinComboBox : GenericComboBox
 {
     public override GameObject InitializeElement()
@@ -1001,14 +518,14 @@ public class UISkinComboBox : GenericComboBox
         GameObject go = DropdownHelperFromText(new string[] { "Light" }, getValue());
 
         dropdownElement.onValueChanged.AddListener(
-        (int v) =>
-        {
-            if (v != selectedValue)
+            (int v) =>
             {
-                valueChanged = true;
-                selectedValue = v;
-            }
-        });
+                if (v != selectedValue)
+                {
+                    valueChanged = true;
+                    selectedValue = v;
+                }
+            });
 
         return go;
     }
@@ -1016,14 +533,12 @@ public class UISkinComboBox : GenericComboBox
     public override void ApplySetting()
     {
         base.ApplySetting();
-
         // Apply Skin
     }
 
     public override void CancelSetting()
     {
         base.CancelSetting();
-
         // Undo Skin
     }
 }
@@ -1035,14 +550,14 @@ public class AnisotropicFilteringComboBox : GenericComboBox
         GameObject go = DropdownHelperFromText(new string[] { "Disable", "Enable", "Force Enable" }, getValue());
 
         dropdownElement.onValueChanged.AddListener(
-        (int v) =>
-        {
-            if (v != selectedValue)
+            (int v) =>
             {
-                valueChanged = true;
-                selectedValue = v;
-            }
-        });
+                if (v != selectedValue)
+                {
+                    valueChanged = true;
+                    selectedValue = v;
+                }
+            });
 
         return go;
     }
@@ -1050,7 +565,6 @@ public class AnisotropicFilteringComboBox : GenericComboBox
     public override void ApplySetting()
     {
         base.ApplySetting();
-
         ApplyAFSeting(selectedValue);
     }
 
@@ -1073,7 +587,6 @@ public class AnisotropicFilteringComboBox : GenericComboBox
     public override void CancelSetting()
     {
         base.CancelSetting();
-
         ApplyAFSeting(getValue());
     }
 }
@@ -1085,14 +598,14 @@ public class AAComboBox : GenericComboBox
         GameObject go = DropdownHelperFromText(new string[] { "Disabled", "2x Multi-Sampling", "4x Multi-Sampling", "8x Multi-Sampling" }, getValue());
 
         dropdownElement.onValueChanged.AddListener(
-        (int v) =>
-        {
-            if (v != selectedValue)
+            (int v) =>
             {
-                valueChanged = true;
-                selectedValue = v;
-            }
-        });
+                if (v != selectedValue)
+                {
+                    valueChanged = true;
+                    selectedValue = v;
+                }
+            });
 
         return go;
     }
@@ -1100,7 +613,6 @@ public class AAComboBox : GenericComboBox
     public override void ApplySetting()
     {
         base.ApplySetting();
-
         ApplyAA(selectedValue);
     }
 
@@ -1128,7 +640,6 @@ public class AAComboBox : GenericComboBox
     public override void CancelSetting()
     {
         base.CancelSetting();
-
         ApplyAA(getValue());
     }
 }
@@ -1140,14 +651,14 @@ public class ShadowComboBox : GenericComboBox
         GameObject go = DropdownHelperFromText(new string[] { "Very High", "High", "Medium", "Low", "Disabled" }, getValue());
 
         dropdownElement.onValueChanged.AddListener(
-        (int v) =>
-        {
-            if (v != selectedValue)
+            (int v) =>
             {
-                valueChanged = true;
-                selectedValue = v;
-            }
-        });
+                if (v != selectedValue)
+                {
+                    valueChanged = true;
+                    selectedValue = v;
+                }
+            });
 
         return go;
     }
@@ -1155,7 +666,6 @@ public class ShadowComboBox : GenericComboBox
     public override void ApplySetting()
     {
         base.ApplySetting();
-
         ApplyShadowSetting(selectedValue);
     }
 
@@ -1204,15 +714,15 @@ public class SoundDeviceComboBox : GenericComboBox
         GameObject go = DropdownHelperFromOptionData(CreateDeviceDropdown(), WorldController.Instance.soundController.GetCurrentAudioDriver());
 
         dropdownElement.onValueChanged.AddListener(
-        (int v) =>
-        {
-            if (v != selectedValue)
+            (int v) =>
             {
-                valueChanged = true;
-                selectedOption = (DriverDropdownOption)dropdownElement.options[v];
-                selectedValue = v;
-            }
-        });
+                if (v != selectedValue)
+                {
+                    valueChanged = true;
+                    selectedOption = (DriverDropdownOption)dropdownElement.options[v];
+                    selectedValue = v;
+                }
+            });
 
         return go;
     }
@@ -1226,10 +736,10 @@ public class SoundDeviceComboBox : GenericComboBox
             DriverInfo info = WorldController.Instance.soundController.GetDriverInfo(i);
 
             options[i] = new DriverDropdownOption
-            {
-                text = info.name.ToString(),
-                driverInfo = info.guid.ToString()
-            };
+                {
+                    text = info.name.ToString(),
+                    driverInfo = info.guid.ToString()
+                };
         }
 
         return options;
@@ -1270,22 +780,6 @@ public class SoundDeviceComboBox : GenericComboBox
     }
 }
 
-// Enable at 5.5+, since the option doesn't exist earlier
-public class SoftParticlesToggle : GenericToggle
-{
-    public override void ApplySetting()
-    {
-        base.ApplySetting();
-        // QualitySettings.softParticles = isOn;
-    }
-
-    public override void CancelSetting()
-    {
-        base.CancelSetting();
-        // QualitySettings.softParticles = getValue();
-    }
-}
-
 public class VSyncComboBox : GenericComboBox
 {
     public override GameObject InitializeElement()
@@ -1293,14 +787,14 @@ public class VSyncComboBox : GenericComboBox
         GameObject go = DropdownHelperFromText(new string[] { "Disabled", "Every frame", "Every second frame" }, getValue());
 
         dropdownElement.onValueChanged.AddListener(
-        (int v) =>
-        {
-            if (v != selectedValue)
+            (int v) =>
             {
-                valueChanged = true;
-                selectedValue = v;
-            }
-        });
+                if (v != selectedValue)
+                {
+                    valueChanged = true;
+                    selectedValue = v;
+                }
+            });
 
         return go;
     }
@@ -1315,57 +809,6 @@ public class VSyncComboBox : GenericComboBox
     {
         base.CancelSetting();
         QualitySettings.vSyncCount = getValue();
-    }
-}
-
-public class DeveloperConsoleToggle : GenericSwitch
-{
-    public override void ApplySetting()
-    {
-        base.ApplySetting();
-        DeveloperConsole.DevConsole.DirtySettings();
-    }
-
-    public override void CancelSetting()
-    {
-        base.CancelSetting();
-        DeveloperConsole.DevConsole.DirtySettings();
-    }
-}
-
-public class DeveloperModeToggle : GenericSwitch
-{
-    public override void ApplySetting()
-    {
-        base.ApplySetting();
-        if (WorldController.Instance != null)
-        {
-            WorldController.Instance.spawnInventoryController.SetUIVisibility(isOn);
-        }
-    }
-
-    public override void CancelSetting()
-    {
-        base.CancelSetting();
-        if (WorldController.Instance != null)
-        {
-            WorldController.Instance.spawnInventoryController.SetUIVisibility(isOn);
-        }
-    }
-}
-
-public class TimeStampToggle : GenericToggle
-{
-    public override void ApplySetting()
-    {
-        base.ApplySetting();
-        DeveloperConsole.DevConsole.DirtySettings();
-    }
-
-    public override void CancelSetting()
-    {
-        base.CancelSetting();
-        DeveloperConsole.DevConsole.DirtySettings();
     }
 }
 
@@ -1392,14 +835,14 @@ public class PerformanceHUDComboBox : GenericComboBox
         GameObject go = DropdownHelperFromText(groupNames, locationOfVariable);
 
         dropdownElement.onValueChanged.AddListener(
-        (int v) =>
-        {
-            if (v != selectedValue)
+            (int v) =>
             {
-                valueChanged = true;
-                selectedValue = v;
-            }
-        });
+                if (v != selectedValue)
+                {
+                    valueChanged = true;
+                    selectedValue = v;
+                }
+            });
 
         return go;
     }
@@ -1422,3 +865,250 @@ public class PerformanceHUDComboBox : GenericComboBox
         PerformanceHUDManager.DirtyUI();
     }
 }
+
+public class ResolutionComboBox : GenericComboBox
+{
+    private ResolutionOption selectedOption;
+
+    private class ResolutionOption : Dropdown.OptionData
+    {
+        public Resolution Resolution { get; set; }
+    }
+
+    public override GameObject InitializeElement()
+    {
+        selectedValue = getValue();
+        GameObject go = DropdownHelperFromOptionData(CreateResolutionDropdown(), selectedValue);
+        dropdownElement.onValueChanged.AddListener(
+            (int v) =>
+            {
+                if (v != selectedValue)
+                {
+                    valueChanged = true;
+                    selectedOption = (ResolutionOption)dropdownElement.options[v];
+                    selectedValue = v;
+                }
+            });
+
+        return go;
+    }
+
+    /// <summary>
+    /// Create the differents option for the resolution dropdown.
+    /// </summary>
+    private Dropdown.OptionData[] CreateResolutionDropdown()
+    {
+        Dropdown.OptionData[] options = new Dropdown.OptionData[Screen.resolutions.Length + 1];
+        options[0] = new ResolutionOption
+            {
+                text = string.Format(
+                    "{0} x {1} @ {2}",
+                    Screen.currentResolution.width,
+                    Screen.currentResolution.height,
+                    Screen.currentResolution.refreshRate),
+                Resolution = Screen.currentResolution
+            };
+
+        for (int i = 0; i < Screen.resolutions.Length; i++)
+        {
+            options[i + 1] = new ResolutionOption
+                {
+                    text = string.Format(
+                        "{0} x {1} @ {2}",
+                        Screen.resolutions[i].width,
+                        Screen.resolutions[i].height,
+                        Screen.resolutions[i].refreshRate),
+                    Resolution = Screen.resolutions[i]
+                };
+        }
+
+        return options;
+    }
+
+    public override void CancelSetting()
+    {
+        Resolution resolution = ((ResolutionOption)dropdownElement.options[getValue()]).Resolution;
+        Screen.SetResolution(resolution.width, resolution.height, SettingsKeyHolder.Fullscreen, resolution.refreshRate);
+    }
+
+    public override void ApplySetting()
+    {
+        Settings.SetSetting(option.key, selectedValue);
+
+        Resolution resolution = selectedOption.Resolution;
+        Screen.SetResolution(resolution.width, resolution.height, SettingsKeyHolder.Fullscreen, resolution.refreshRate);
+    }
+}
+
+public class DeveloperConsoleSlider : GenericSlider
+{
+    public override void ApplySetting()
+    {
+        base.ApplySetting();
+        DeveloperConsole.DevConsole.DirtySettings();
+    }
+
+    public override void CancelSetting()
+    {
+        base.CancelSetting();
+        DeveloperConsole.DevConsole.DirtySettings();
+    }
+}
+
+public class UIScaleSlider : GenericSlider
+{
+    public override GameObject InitializeElement()
+    {
+        GameObject go = base.InitializeElement();
+
+        // Set it from 0 - 100 (still reflective of 0-1, but shows from 0 - 100)
+        format = "({0:0.#}) ";
+
+        sliderElement.wholeNumbers = true;
+        sliderElement.minValue = 5;
+        sliderElement.maxValue = 20;
+        sliderElement.value = getValue() * 10;
+        // We want to apply our own listener
+        sliderElement.onValueChanged.RemoveAllListeners();
+        sliderElement.onValueChanged.AddListener(
+            (float v) =>
+            {
+                if (v != value)
+                {
+                    valueChanged = true;
+                    value = v;
+                    textElement.text = string.Format(format, value / 10) + LocalizationTable.GetLocalization(option.name);
+                }
+            });
+
+        sliderElement.onValueChanged.Invoke(sliderElement.value);
+        textElement.text = string.Format(format, value / 10) + LocalizationTable.GetLocalization(option.name);
+
+        return go;
+    }
+
+    public override void ApplySetting()
+    {
+        Settings.SetSetting(option.key, value / 10);
+        sliderElement.GetComponentInParent<UIRescaler>().AdjustScale();
+    }
+}
+
+public class SoundSlider : GenericSlider
+{
+    public override GameObject InitializeElement()
+    {
+        GameObject go = base.InitializeElement();
+        sliderElement.value = getValue() * 100.0f;
+        return go;
+    }
+
+    public override void ApplySetting()
+    {
+        if (this.parameterData.ContainsKey("SoundChannel"))
+        {
+            Settings.SetSetting(option.key, sliderElement.normalizedValue);
+            WorldController.Instance.soundController.SetVolume(this.parameterData["SoundChannel"].ToString(), sliderElement.normalizedValue);
+        }
+    }
+
+    public override void CancelSetting()
+    {
+        if (this.parameterData.ContainsKey("SoundChannel"))
+        {
+            WorldController.Instance.soundController.SetVolume(this.parameterData["SoundChannel"].ToString(), getValue());
+        }
+    }
+}
+
+/// <summary>
+/// Custom Logic For Autosave
+/// </summary>
+public class AutosaveIntervalInputField : GenericInputField
+{
+    public override void ApplySetting()
+    {
+        base.ApplySetting();
+        if (WorldController.Instance != null)
+        {
+            WorldController.Instance.autosaveManager.SetAutosaveInterval(int.Parse(value));
+        }
+    }
+
+    public override void CancelSetting()
+    {
+        base.CancelSetting();
+        if (WorldController.Instance != null)
+        {
+            WorldController.Instance.autosaveManager.SetAutosaveInterval(int.Parse(getValue()));
+        }
+    }
+}
+
+public class FullScreenToggle : GenericToggle
+{
+    public override void ApplySetting()
+    {
+        base.ApplySetting();
+        Screen.fullScreen = isOn;
+    }
+
+    public override void CancelSetting()
+    {
+        base.CancelSetting();
+        Screen.fullScreen = getValue();
+    }
+}
+
+// Enable at 5.5+, since the option doesn't exist earlier
+public class SoftParticlesToggle : GenericToggle
+{
+    public override void ApplySetting()
+    {
+        base.ApplySetting();
+        // QualitySettings.softParticles = isOn;
+    }
+
+    public override void CancelSetting()
+    {
+        base.CancelSetting();
+        // QualitySettings.softParticles = getValue();
+    }
+}
+
+public class DeveloperConsoleToggle : GenericToggle
+{
+    public override void ApplySetting()
+    {
+        base.ApplySetting();
+        DeveloperConsole.DevConsole.DirtySettings();
+    }
+
+    public override void CancelSetting()
+    {
+        base.CancelSetting();
+        DeveloperConsole.DevConsole.DirtySettings();
+    }
+}
+
+public class DeveloperModeToggle : GenericToggle
+{
+    public override void ApplySetting()
+    {
+        base.ApplySetting();
+        if (WorldController.Instance != null)
+        {
+            WorldController.Instance.spawnInventoryController.SetUIVisibility(isOn);
+        }
+    }
+
+    public override void CancelSetting()
+    {
+        base.CancelSetting();
+        if (WorldController.Instance != null)
+        {
+            WorldController.Instance.spawnInventoryController.SetUIVisibility(getValue());
+        }
+    }
+}
+#endregion

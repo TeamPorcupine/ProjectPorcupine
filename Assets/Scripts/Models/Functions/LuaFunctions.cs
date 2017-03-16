@@ -43,6 +43,7 @@ public class LuaFunctions : IFunctions
         RegisterGlobal(typeof(Scheduler.ScheduledEvent));
         RegisterGlobal(typeof(ProjectPorcupine.Jobs.RequestedItem));
         RegisterGlobal(typeof(DeveloperConsole.DevConsole));
+        RegisterGlobal(typeof(Settings));
     }
 
     public bool HasFunction(string name)
