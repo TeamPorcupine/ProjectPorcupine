@@ -51,11 +51,6 @@ public class Temperature
     private int sizeZ;
 
     /// <summary>
-    /// Time since last update.
-    /// </summary>
-    private float elapsed = 0f;
-
-    /// <summary>
     /// We switch between two "states" of temperatrue, because we reuqire a tempoerary array containing the old value.
     /// </summary>
     private int offset = 0;
@@ -104,7 +99,7 @@ public class Temperature
         // TODO: This need to be implemented.
         sinksAndSources[provider] = (float deltaTime) =>
         {
-                UpdateTemperature(provider, deltaTime);
+            UpdateTemperature(provider, deltaTime);
         };
     }
 
@@ -222,7 +217,7 @@ public class Temperature
     {
         if (temp >= 0 && temp < Mathf.Infinity)
         {
-                return true;
+            return true;
         }
         else
         {
@@ -350,7 +345,7 @@ public class Temperature
 
                     // If this tile has an object that gives off heat AND is hotter than the surrounding tiles, skip it.
                     // TODO: Add the second part of the above statement.
-                   if (tile.Furniture != null && tile.Furniture.Parameters.ContainsKey("base_heating"))
+                    if (tile.Furniture != null && tile.Furniture.Parameters.ContainsKey("base_heating"))
                     {
                         continue;
                     }
@@ -402,16 +397,16 @@ public class Temperature
                     }
 
                     // Add a little bit more flow to the temperature.
-                    float value = temp_curr[index];
+                    // float value = temp_curr[index];
 
                     // FINE tune the below number. ".005" has a huge effect.
-//                    value +=  value;
+                    //                    value +=  value;
 
                     // Because of the added flow just above, we need to make sure we don't overshoot the tempertures surrounding this tile.
-//                    if (value < adjacentOldTemps.Max())
-//                    {
-//                        temp_curr[index] = value;
-//                    }
+                    //                    if (value < adjacentOldTemps.Max())
+                    //                    {
+                    //                        temp_curr[index] = value;
+                    //                    }
                 }
             }
         }

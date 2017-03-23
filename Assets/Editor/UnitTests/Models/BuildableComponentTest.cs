@@ -19,7 +19,7 @@ public class BuildableComponentTest
 {
     [Test]
     public void TestComponentCreationFromXml()
-    {        
+    {
         string inputXML = @"<Component type='Workshop' >
         <ProductionChain name = 'Power Cell Pressing' processingTime = '5' >
          <Input>
@@ -34,7 +34,7 @@ public class BuildableComponentTest
 
         XmlReader reader = new XmlTextReader(new StringReader(inputXML));
         reader.Read();
-                
+
         BuildableComponent component = ProjectPorcupine.Buildable.Components.BuildableComponent.Deserialize(reader);
 
         Assert.NotNull(component);
@@ -117,8 +117,8 @@ public class BuildableComponentTest
 
         //// serialize
         string workshopJson = SerializeObjectToJson(workshop);
-        StringReader sr = new StringReader(workshopJson);
 
+        // StringReader sr = new StringReader(workshopJson);
         // if you want to dump file to disk for visual check, uncomment this
         ////File.WriteAllText("Workshop.json", workshopJson);
 
@@ -161,8 +161,8 @@ public class BuildableComponentTest
 
         // serialize
         string gasConnectionJson = SerializeObjectToJson(gasConnection);
-        StringReader sr = new StringReader(gasConnectionJson);
 
+        // StringReader sr = new StringReader(gasConnectionJson);
         // if you want to dump file to disk for visual check, uncomment this
         ////File.WriteAllText("GasConnection.json", gasConnectionJson);
 
@@ -251,7 +251,7 @@ public class BuildableComponentTest
 
         // serialize
         string visualsJson = SerializeObjectToJson(visuals);
-       
+
         // if you want to dump file to disk for visual check, uncomment this
         ////File.WriteAllText("Animator.json", visualsJson);
 

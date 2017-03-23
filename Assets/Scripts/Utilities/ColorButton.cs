@@ -11,7 +11,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 /// <summary>
-/// This is holds the original and the selected colours for the colorButton.
+/// This is holds the original and the selected colors for the colorButton.
 /// </summary>
 [System.Serializable]
 public struct ButtonUpdateColorBlock
@@ -25,7 +25,7 @@ public struct ButtonUpdateColorBlock
 
 /// <summary>
 /// Just a nice extension.
-/// This will allow you to set colours that will happen automatically when clicked.
+/// This will allow you to set colors that will happen automatically when clicked.
 /// They will have to be unselected via a public method.
 /// </summary>
 [RequireComponent(typeof(Button))]

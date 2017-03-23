@@ -17,8 +17,8 @@ using UnityEngine;
 [MoonSharpUserData]
 public static class Settings
 {
-    private static readonly string DefaultSettingsFilePath = System.IO.Path.Combine(
-        Application.streamingAssetsPath, System.IO.Path.Combine("Settings", "Settings.json"));
+    //// Disabled cause not currently used, if used in future undisable
+    //// private static readonly string DefaultSettingsFilePath = System.IO.Path.Combine(Application.streamingAssetsPath, System.IO.Path.Combine("Settings", "Settings.json"));
 
     private static Dictionary<string, string> settingsDict;
 

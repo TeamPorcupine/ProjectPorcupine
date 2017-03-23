@@ -425,7 +425,7 @@ public class Character : ISelectable, IContextActionProvider, IUpdatable
 
         foreach (Need n in Needs)
         {
-            yield return LocalizationTable.GetLocalization(n.LocalisationID, n.DisplayAmount);
+            yield return LocalizationTable.GetLocalization(n.LocalizationID, n.DisplayAmount);
         }
 
         foreach (Stat stat in stats.Values)
