@@ -20,6 +20,7 @@ GameObject:
   m_Component:
   - 224: {fileID: 224000013769853932}
   - 114: {fileID: 114000010705991186}
+  - 114: {fileID: 114000010407120946}
   m_Layer: 5
   m_Name: SettingsSlider
   m_TagString: Untagged
@@ -136,6 +137,17 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114000010407120946
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000012222472366}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d9d9b4ba7df5664b97950a2c6fbf394, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114000010705991186
 MonoBehaviour:
   m_ObjectHideFlags: 1

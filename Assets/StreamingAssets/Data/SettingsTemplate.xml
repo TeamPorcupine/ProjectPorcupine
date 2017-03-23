@@ -16,6 +16,7 @@
     <OptionHeading Name="localization">
       <Option Name="language" Key="general_localization_language" DefaultValue="en_US" ClassName="LocalizationComboBox" />
       <Option Name="auto_update_language" Key="general_localization_autoUpdate" DefaultValue="true" ClassName="GenericToggle" />
+	  <Option Name="ui_scale" Key="ui_scale" DefaultValue="1" ClassName="UIScaleSlider" />
     </OptionHeading>
   </Category>
   <Category Name="sound">

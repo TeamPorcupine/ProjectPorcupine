@@ -57,6 +57,7 @@ GameObject:
   - 222: {fileID: 222000012738706156}
   - 114: {fileID: 114000011913635658}
   - 114: {fileID: 114000010141881724}
+  - 114: {fileID: 114000011250756422}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -120,6 +121,17 @@ MonoBehaviour:
   localizeInStart: 1
   text: {fileID: 0}
   defaultText: 
+--- !u!114 &114000011250756422
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000013691832882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d9d9b4ba7df5664b97950a2c6fbf394, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114000011913635658
 MonoBehaviour:
   m_ObjectHideFlags: 1

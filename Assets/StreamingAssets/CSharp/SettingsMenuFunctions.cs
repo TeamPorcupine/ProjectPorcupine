@@ -85,6 +85,11 @@ public static class SettingsMenuFunctions
         return new DeveloperConsoleSlider();
     }
 
+    public static UIScaleSlider GetUIScaleSlider()
+    {
+        return new UIScaleSlider();
+    }
+
     public static SoundSlider GetSoundSlider()
     {
         return new SoundSlider();
@@ -191,14 +196,14 @@ public class GenericInputField : BaseSettingsElement
         fieldElement.transform.SetParent(element.transform);
         fieldElement.textComponent.alignment = TextAnchor.MiddleCenter;
         fieldElement.onValueChanged.AddListener(
-        (string v) =>
-        {
-            if (v != value)
+            (string v) =>
             {
-                valueChanged = true;
-                value = v;
-            }
-        });
+                if (v != value)
+                {
+                    valueChanged = true;
+                    value = v;
+                }
+            });
 
         LayoutElement layout = fieldElement.gameObject.AddComponent<LayoutElement>();
         layout.minWidth = 60;
@@ -245,15 +250,15 @@ public class GenericInputField : BaseSettingsElement
         char output = addedChar;
 
         if (addedChar != '1'
-          && addedChar != '2'
-          && addedChar != '3'
-          && addedChar != '4'
-          && addedChar != '5'
-          && addedChar != '6'
-          && addedChar != '7'
-          && addedChar != '8'
-          && addedChar != '9'
-          && addedChar != '0')
+            && addedChar != '2'
+            && addedChar != '3'
+            && addedChar != '4'
+            && addedChar != '5'
+            && addedChar != '6'
+            && addedChar != '7'
+            && addedChar != '8'
+            && addedChar != '9'
+            && addedChar != '0')
         {
             //return a null character
             output = '\0';
@@ -469,14 +474,14 @@ public class QualityComboBox : GenericComboBox
         GameObject go = DropdownHelperFromText(new string[] { "Low", "Med", "High" }, getValue());
 
         dropdownElement.onValueChanged.AddListener(
-        (int v) =>
-        {
-            if (v != selectedValue)
+            (int v) =>
             {
-                valueChanged = true;
-                selectedValue = v;
-            }
-        });
+                if (v != selectedValue)
+                {
+                    valueChanged = true;
+                    selectedValue = v;
+                }
+            });
 
         count = dropdownElement.options.Count;
 
@@ -513,14 +518,14 @@ public class UISkinComboBox : GenericComboBox
         GameObject go = DropdownHelperFromText(new string[] { "Light" }, getValue());
 
         dropdownElement.onValueChanged.AddListener(
-        (int v) =>
-        {
-            if (v != selectedValue)
+            (int v) =>
             {
-                valueChanged = true;
-                selectedValue = v;
-            }
-        });
+                if (v != selectedValue)
+                {
+                    valueChanged = true;
+                    selectedValue = v;
+                }
+            });
 
         return go;
     }
@@ -545,14 +550,14 @@ public class AnisotropicFilteringComboBox : GenericComboBox
         GameObject go = DropdownHelperFromText(new string[] { "Disable", "Enable", "Force Enable" }, getValue());
 
         dropdownElement.onValueChanged.AddListener(
-        (int v) =>
-        {
-            if (v != selectedValue)
+            (int v) =>
             {
-                valueChanged = true;
-                selectedValue = v;
-            }
-        });
+                if (v != selectedValue)
+                {
+                    valueChanged = true;
+                    selectedValue = v;
+                }
+            });
 
         return go;
     }
@@ -593,14 +598,14 @@ public class AAComboBox : GenericComboBox
         GameObject go = DropdownHelperFromText(new string[] { "Disabled", "2x Multi-Sampling", "4x Multi-Sampling", "8x Multi-Sampling" }, getValue());
 
         dropdownElement.onValueChanged.AddListener(
-        (int v) =>
-        {
-            if (v != selectedValue)
+            (int v) =>
             {
-                valueChanged = true;
-                selectedValue = v;
-            }
-        });
+                if (v != selectedValue)
+                {
+                    valueChanged = true;
+                    selectedValue = v;
+                }
+            });
 
         return go;
     }
@@ -646,14 +651,14 @@ public class ShadowComboBox : GenericComboBox
         GameObject go = DropdownHelperFromText(new string[] { "Very High", "High", "Medium", "Low", "Disabled" }, getValue());
 
         dropdownElement.onValueChanged.AddListener(
-        (int v) =>
-        {
-            if (v != selectedValue)
+            (int v) =>
             {
-                valueChanged = true;
-                selectedValue = v;
-            }
-        });
+                if (v != selectedValue)
+                {
+                    valueChanged = true;
+                    selectedValue = v;
+                }
+            });
 
         return go;
     }
@@ -709,15 +714,15 @@ public class SoundDeviceComboBox : GenericComboBox
         GameObject go = DropdownHelperFromOptionData(CreateDeviceDropdown(), WorldController.Instance.soundController.GetCurrentAudioDriver());
 
         dropdownElement.onValueChanged.AddListener(
-        (int v) =>
-        {
-            if (v != selectedValue)
+            (int v) =>
             {
-                valueChanged = true;
-                selectedOption = (DriverDropdownOption)dropdownElement.options[v];
-                selectedValue = v;
-            }
-        });
+                if (v != selectedValue)
+                {
+                    valueChanged = true;
+                    selectedOption = (DriverDropdownOption)dropdownElement.options[v];
+                    selectedValue = v;
+                }
+            });
 
         return go;
     }
@@ -731,10 +736,10 @@ public class SoundDeviceComboBox : GenericComboBox
             DriverInfo info = WorldController.Instance.soundController.GetDriverInfo(i);
 
             options[i] = new DriverDropdownOption
-            {
-                text = info.name.ToString(),
-                driverInfo = info.guid.ToString()
-            };
+                {
+                    text = info.name.ToString(),
+                    driverInfo = info.guid.ToString()
+                };
         }
 
         return options;
@@ -782,14 +787,14 @@ public class VSyncComboBox : GenericComboBox
         GameObject go = DropdownHelperFromText(new string[] { "Disabled", "Every frame", "Every second frame" }, getValue());
 
         dropdownElement.onValueChanged.AddListener(
-        (int v) =>
-        {
-            if (v != selectedValue)
+            (int v) =>
             {
-                valueChanged = true;
-                selectedValue = v;
-            }
-        });
+                if (v != selectedValue)
+                {
+                    valueChanged = true;
+                    selectedValue = v;
+                }
+            });
 
         return go;
     }
@@ -830,14 +835,14 @@ public class PerformanceHUDComboBox : GenericComboBox
         GameObject go = DropdownHelperFromText(groupNames, locationOfVariable);
 
         dropdownElement.onValueChanged.AddListener(
-        (int v) =>
-        {
-            if (v != selectedValue)
+            (int v) =>
             {
-                valueChanged = true;
-                selectedValue = v;
-            }
-        });
+                if (v != selectedValue)
+                {
+                    valueChanged = true;
+                    selectedValue = v;
+                }
+            });
 
         return go;
     }
@@ -895,26 +900,26 @@ public class ResolutionComboBox : GenericComboBox
     {
         Dropdown.OptionData[] options = new Dropdown.OptionData[Screen.resolutions.Length + 1];
         options[0] = new ResolutionOption
-        {
-            text = string.Format(
-                "{0} x {1} @ {2}",
-                Screen.currentResolution.width,
-                Screen.currentResolution.height,
-                Screen.currentResolution.refreshRate),
-            Resolution = Screen.currentResolution
-        };
+            {
+                text = string.Format(
+                    "{0} x {1} @ {2}",
+                    Screen.currentResolution.width,
+                    Screen.currentResolution.height,
+                    Screen.currentResolution.refreshRate),
+                Resolution = Screen.currentResolution
+            };
 
         for (int i = 0; i < Screen.resolutions.Length; i++)
         {
             options[i + 1] = new ResolutionOption
-            {
-                text = string.Format(
-                    "{0} x {1} @ {2}",
-                    Screen.resolutions[i].width,
-                    Screen.resolutions[i].height,
-                    Screen.resolutions[i].refreshRate),
-                Resolution = Screen.resolutions[i]
-            };
+                {
+                    text = string.Format(
+                        "{0} x {1} @ {2}",
+                        Screen.resolutions[i].width,
+                        Screen.resolutions[i].height,
+                        Screen.resolutions[i].refreshRate),
+                    Resolution = Screen.resolutions[i]
+                };
         }
 
         return options;
@@ -947,6 +952,45 @@ public class DeveloperConsoleSlider : GenericSlider
     {
         base.CancelSetting();
         DeveloperConsole.DevConsole.DirtySettings();
+    }
+}
+
+public class UIScaleSlider : GenericSlider
+{
+    public override GameObject InitializeElement()
+    {
+        GameObject go = base.InitializeElement();
+
+        // Set it from 0 - 100 (still reflective of 0-1, but shows from 0 - 100)
+        format = "({0:0.#}) ";
+
+        sliderElement.wholeNumbers = true;
+        sliderElement.minValue = 5;
+        sliderElement.maxValue = 20;
+        sliderElement.value = getValue() * 10;
+        // We want to apply our own listener
+        sliderElement.onValueChanged.RemoveAllListeners();
+        sliderElement.onValueChanged.AddListener(
+            (float v) =>
+            {
+                if (v != value)
+                {
+                    valueChanged = true;
+                    value = v;
+                    textElement.text = string.Format(format, value / 10) + LocalizationTable.GetLocalization(option.name);
+                }
+            });
+
+        sliderElement.onValueChanged.Invoke(sliderElement.value);
+        textElement.text = string.Format(format, value / 10) + LocalizationTable.GetLocalization(option.name);
+
+        return go;
+    }
+
+    public override void ApplySetting()
+    {
+        Settings.SetSetting(option.key, value / 10);
+        sliderElement.GetComponentInParent<UIRescaler>().AdjustScale();
     }
 }
 
