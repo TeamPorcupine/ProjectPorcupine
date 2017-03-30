@@ -1210,7 +1210,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 224000012735617032}
   m_Direction: 0
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1775,7 +1775,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 224000011215375926}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2476,10 +2476,10 @@ RectTransform:
   - {fileID: 224000010143726118}
   m_Father: {fileID: 224000013598409594}
   m_RootOrder: 0
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.27124023, y: 0.053863525}
-  m_SizeDelta: {x: -3.5423584, y: -0.032226562}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0.77124023, y: 0.053863525}
+  m_SizeDelta: {x: 1175.4576, y: 555.9678}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224000011215375926
 RectTransform:
@@ -2684,7 +2684,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0.000000007450581, y: -352.99902}
+  m_SizeDelta: {x: 0.000000007450581, y: -352.64594}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224000012475216578
 RectTransform:
@@ -2928,10 +2928,10 @@ RectTransform:
   - {fileID: 224000011115446418}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_AnchorMin: {x: 0.089307, y: 0.0645674}
-  m_AnchorMax: {x: 0.91, y: 0.93688637}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0.5}
+  m_SizeDelta: {x: 1182, y: 555}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224000013794509604
 RectTransform:
@@ -2949,7 +2949,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0.000061035156, y: 0}
-  m_SizeDelta: {x: -754.69214, y: -341.5498}
+  m_SizeDelta: {x: -754.4686, y: -341.19565}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224000014024927718
 RectTransform:
