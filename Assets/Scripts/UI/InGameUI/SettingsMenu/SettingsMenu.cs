@@ -71,6 +71,17 @@ public class SettingsMenu : MonoBehaviour
             return;
         }
 
+        RectTransform rectTransform = instance.mainRoot.GetComponent<RectTransform>();
+        if (rectTransform.sizeDelta.x > Screen.width * 0.8f)
+        {
+            rectTransform.sizeDelta = new Vector2(Screen.width * 0.8f, rectTransform.sizeDelta.y);
+        }
+
+        if (rectTransform.sizeDelta.y > Screen.height * 0.8f)
+        {
+            rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, Screen.height * 0.8f);
+        }
+
         // Optimisation for saving
         if (instance.currentCategory != string.Empty && instance.currentCategory != category && instance.options.ContainsKey(instance.currentCategory))
         {
