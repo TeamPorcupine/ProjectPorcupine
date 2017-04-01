@@ -11,7 +11,6 @@ using System.Linq;
 using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
-using System;
 
 // Every specific UI element comes from this
 public abstract class BaseUIElement
