@@ -40,6 +40,7 @@ public static class PerformanceHUDFunctions
 
         public override void Update()
         {
+            base.Update();
             UITextElement.text = string.Format(Display, (Profiler.GetTotalReservedMemory() / 1024) / 1024, (Profiler.GetTotalAllocatedMemory() / 1024) / 1024);
         }
 
@@ -71,6 +72,7 @@ public static class PerformanceHUDFunctions
 
         public override void Update()
         {
+            base.Update();
             UITextElement.text = "0ms";
         }
 
@@ -114,6 +116,8 @@ public static class PerformanceHUDFunctions
         // The shown FPS will be 0 for the first second until it ticks over correctly
         public override void Update()
         {
+            base.Update();
+
             // measure average frames per second
             fpsAccumulator++;
             if (Time.realtimeSinceStartup > fpsNextPeriod)
@@ -191,6 +195,8 @@ public static class PerformanceHUDFunctions
         // The shown FPS will be 0 for the first second until it ticks over correctly
         public override void Update()
         {
+            base.Update();
+
             // measure average frames per second
             fpsAccumulator++;
             if (Time.realtimeSinceStartup > fpsNextPeriod)

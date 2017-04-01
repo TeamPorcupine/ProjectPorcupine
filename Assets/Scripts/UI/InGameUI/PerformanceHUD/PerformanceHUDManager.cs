@@ -129,6 +129,7 @@ public class PerformanceHUDManager : MonoBehaviour
                 {
                     BasePerformanceHUDElement element = FunctionsManager.PerformanceHUD.Call("Get" + groups[i].elementData[j]).ToObject<BasePerformanceHUDElement>();
                     element.parameterData = groups[i].parameterData[j];
+                    element.InitializeLUA();
                     elements.Add(element);
                 }
                 else

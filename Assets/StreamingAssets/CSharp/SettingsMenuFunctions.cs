@@ -160,12 +160,14 @@ public class GenericToggle : BaseSettingsElement
         return element;
     }
 
-    public override void CancelSetting()
+    public void CancelSetting()
     {
+        base.CancelSetting();
     }
 
-    public override void ApplySetting()
+    public void ApplySetting()
     {
+        base.ApplySetting();
         Settings.SetSetting(option.key, isOn);
     }
 
@@ -269,10 +271,12 @@ public class GenericInputField : BaseSettingsElement
 
     public override void CancelSetting()
     {
+        base.CancelSetting();
     }
 
     public override void ApplySetting()
     {
+        base.ApplySetting();
         Settings.SetSetting(option.key, value);
     }
 
@@ -321,10 +325,12 @@ public class GenericSlider : BaseSettingsElement
 
     public override void CancelSetting()
     {
+        base.CancelSetting();
     }
 
     public override void ApplySetting()
     {
+        base.ApplySetting();
         Settings.SetSetting(option.key, value);
     }
 
@@ -391,10 +397,12 @@ public class GenericComboBox : BaseSettingsElement
 
     public override void CancelSetting()
     {
+        base.CancelSetting();
     }
 
     public override void ApplySetting()
     {
+        base.ApplySetting();
         Settings.SetSetting(option.key, selectedValue);
     }
 
@@ -432,6 +440,7 @@ public class LocalizationComboBox : GenericComboBox
 
     public override void CancelSetting()
     {
+        base.CancelSetting();
         if (LocalizationTable.currentLanguage != LocalizationTable.GetLanguages()[getValue()])
         {
             LocalizationTable.SetLocalization(getValue());
@@ -440,6 +449,7 @@ public class LocalizationComboBox : GenericComboBox
 
     public override void ApplySetting()
     {
+        base.ApplySetting();
         if (LocalizationTable.currentLanguage != LocalizationTable.GetLanguages()[selectedValue])
         {
             Settings.SetSetting(option.key, LocalizationTable.GetLanguages()[selectedValue]);
@@ -490,11 +500,13 @@ public class QualityComboBox : GenericComboBox
 
     public override void CancelSetting()
     {
+        base.CancelSetting();
         ApplyQuality(count, getValue());
     }
 
     public override void ApplySetting()
     {
+        base.ApplySetting();
         Settings.SetSetting(option.key, selectedValue);
         ApplyQuality(count, selectedValue);
     }
@@ -736,10 +748,10 @@ public class SoundDeviceComboBox : GenericComboBox
             DriverInfo info = WorldController.Instance.soundController.GetDriverInfo(i);
 
             options[i] = new DriverDropdownOption
-                {
-                    text = info.name.ToString(),
-                    driverInfo = info.guid.ToString()
-                };
+            {
+                text = info.name.ToString(),
+                driverInfo = info.guid.ToString()
+            };
         }
 
         return options;
@@ -856,12 +868,14 @@ public class PerformanceHUDComboBox : GenericComboBox
 
     public override void ApplySetting()
     {
+        base.ApplySetting();
         Settings.SetSetting(option.key, groupNames[selectedValue]);
         PerformanceHUDManager.DirtyUI();
     }
 
     public override void CancelSetting()
     {
+        base.CancelSetting();
         PerformanceHUDManager.DirtyUI();
     }
 }
@@ -900,26 +914,26 @@ public class ResolutionComboBox : GenericComboBox
     {
         Dropdown.OptionData[] options = new Dropdown.OptionData[Screen.resolutions.Length + 1];
         options[0] = new ResolutionOption
-            {
-                text = string.Format(
+        {
+            text = string.Format(
                     "{0} x {1} @ {2}",
                     Screen.currentResolution.width,
                     Screen.currentResolution.height,
                     Screen.currentResolution.refreshRate),
-                Resolution = Screen.currentResolution
-            };
+            Resolution = Screen.currentResolution
+        };
 
         for (int i = 0; i < Screen.resolutions.Length; i++)
         {
             options[i + 1] = new ResolutionOption
-                {
-                    text = string.Format(
+            {
+                text = string.Format(
                         "{0} x {1} @ {2}",
                         Screen.resolutions[i].width,
                         Screen.resolutions[i].height,
                         Screen.resolutions[i].refreshRate),
-                    Resolution = Screen.resolutions[i]
-                };
+                Resolution = Screen.resolutions[i]
+            };
         }
 
         return options;
@@ -927,12 +941,15 @@ public class ResolutionComboBox : GenericComboBox
 
     public override void CancelSetting()
     {
+        base.CancelSetting();
         Resolution resolution = ((ResolutionOption)dropdownElement.options[getValue()]).Resolution;
         Screen.SetResolution(resolution.width, resolution.height, SettingsKeyHolder.Fullscreen, resolution.refreshRate);
     }
 
     public override void ApplySetting()
     {
+        base.ApplySetting();
+
         Settings.SetSetting(option.key, selectedValue);
 
         Resolution resolution = selectedOption.Resolution;
@@ -989,6 +1006,8 @@ public class UIScaleSlider : GenericSlider
 
     public override void ApplySetting()
     {
+        base.ApplySetting();
+
         Settings.SetSetting(option.key, value / 10);
         sliderElement.GetComponentInParent<UIRescaler>().AdjustScale();
     }
@@ -1005,6 +1024,7 @@ public class SoundSlider : GenericSlider
 
     public override void ApplySetting()
     {
+        base.ApplySetting();
         if (this.parameterData.ContainsKey("SoundChannel"))
         {
             Settings.SetSetting(option.key, sliderElement.normalizedValue);
@@ -1014,6 +1034,7 @@ public class SoundSlider : GenericSlider
 
     public override void CancelSetting()
     {
+        base.CancelSetting();
         if (this.parameterData.ContainsKey("SoundChannel"))
         {
             WorldController.Instance.soundController.SetVolume(this.parameterData["SoundChannel"].ToString(), getValue());
