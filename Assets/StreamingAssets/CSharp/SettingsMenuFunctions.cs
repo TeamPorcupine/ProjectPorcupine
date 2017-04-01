@@ -160,14 +160,12 @@ public class GenericToggle : BaseSettingsElement
         return element;
     }
 
-    public void CancelSetting()
+    public override void CancelSetting()
     {
-        base.CancelSetting();
     }
 
-    public void ApplySetting()
+    public override void ApplySetting()
     {
-        base.ApplySetting();
         Settings.SetSetting(option.key, isOn);
     }
 
@@ -271,12 +269,10 @@ public class GenericInputField : BaseSettingsElement
 
     public override void CancelSetting()
     {
-        base.CancelSetting();
     }
 
     public override void ApplySetting()
     {
-        base.ApplySetting();
         Settings.SetSetting(option.key, value);
     }
 
@@ -325,12 +321,10 @@ public class GenericSlider : BaseSettingsElement
 
     public override void CancelSetting()
     {
-        base.CancelSetting();
     }
 
     public override void ApplySetting()
     {
-        base.ApplySetting();
         Settings.SetSetting(option.key, value);
     }
 
@@ -397,12 +391,10 @@ public class GenericComboBox : BaseSettingsElement
 
     public override void CancelSetting()
     {
-        base.CancelSetting();
     }
 
     public override void ApplySetting()
     {
-        base.ApplySetting();
         Settings.SetSetting(option.key, selectedValue);
     }
 
@@ -1112,24 +1104,4 @@ public class DeveloperConsoleToggle : GenericToggle
     }
 }
 
-public class DeveloperModeToggle : GenericToggle
-{
-    public override void ApplySetting()
-    {
-        base.ApplySetting();
-        if (WorldController.Instance != null)
-        {
-            WorldController.Instance.spawnInventoryController.SetUIVisibility(isOn);
-        }
-    }
-
-    public override void CancelSetting()
-    {
-        base.CancelSetting();
-        if (WorldController.Instance != null)
-        {
-            WorldController.Instance.spawnInventoryController.SetUIVisibility(getValue());
-        }
-    }
-}
 #endregion

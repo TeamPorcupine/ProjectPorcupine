@@ -4,61 +4,61 @@
     <OptionHeading Name="autosave">
       <Option Name="autosave_every" Key="general_autosave_interval" DefaultValue="10" ClassName="AutosaveIntervalInputField">
         <Params>
-          <Param name="Verification" value="PositiveInteger"/>
+          <Param name="Verification" value="PositiveInteger" />
         </Params>
       </Option>
       <Option Name="max_autosaves" Key="general_autosave_maxFiles" DefaultValue="5" ClassName="GenericInputField">
         <Params>
-          <Param name="Verification" value="PositiveInteger"/>
+          <Param name="Verification" value="PositiveInteger" />
         </Params>
       </Option>
     </OptionHeading>
     <OptionHeading Name="localization">
       <Option Name="language" Key="general_localization_language" DefaultValue="en_US" ClassName="LocalizationComboBox" />
       <Option Name="auto_update_language" Key="general_localization_autoUpdate" DefaultValue="true" ClassName="GenericToggle" />
-	  <Option Name="ui_scale" Key="ui_scale" DefaultValue="1" ClassName="UIScaleSlider" />
+      <Option Name="ui_scale" Key="ui_scale" DefaultValue="1" ClassName="UIScaleSlider" />
     </OptionHeading>
   </Category>
   <Category Name="sound">
     <OptionHeading Name="volume">
       <Option Name="master_volume" Key="sound_volume_master" DefaultValue="1" ClassName="SoundSlider">
         <Params>
-          <Param name="SoundChannel" value="master"/>
-          <Param name="MinimumValue" value="0"/>
-          <Param name="MaximumValue" value="100"/>
-          <Param name="WholeNumbers" value="true"/>
+          <Param name="SoundChannel" value="master" />
+          <Param name="MinimumValue" value="0" />
+          <Param name="MaximumValue" value="100" />
+          <Param name="WholeNumbers" value="true" />
         </Params>
       </Option>
       <Option Name="music_volume" Key="sound_volume_music" DefaultValue="1" ClassName="SoundSlider">
         <Params>
-          <Param name="SoundChannel" value="music"/>
-          <Param name="MinimumValue" value="0"/>
-          <Param name="MaximumValue" value="100"/>
-          <Param name="WholeNumbers" value="true"/>
+          <Param name="SoundChannel" value="music" />
+          <Param name="MinimumValue" value="0" />
+          <Param name="MaximumValue" value="100" />
+          <Param name="WholeNumbers" value="true" />
         </Params>
       </Option>
       <Option Name="game_volume" Key="sound_volume_game" DefaultValue="1" ClassName="SoundSlider">
         <Params>
-          <Param name="SoundChannel" value="gameSounds"/>
-          <Param name="MinimumValue" value="0"/>
-          <Param name="MaximumValue" value="100"/>
-          <Param name="WholeNumbers" value="true"/>
+          <Param name="SoundChannel" value="gameSounds" />
+          <Param name="MinimumValue" value="0" />
+          <Param name="MaximumValue" value="100" />
+          <Param name="WholeNumbers" value="true" />
         </Params>
       </Option>
       <Option Name="alert_volume" Key="sound_volume_alerts" DefaultValue="1" ClassName="SoundSlider">
         <Params>
-          <Param name="SoundChannel" value="alerts"/>
-          <Param name="MinimumValue" value="0"/>
-          <Param name="MaximumValue" value="100"/>
-          <Param name="WholeNumbers" value="true"/>
+          <Param name="SoundChannel" value="alerts" />
+          <Param name="MinimumValue" value="0" />
+          <Param name="MaximumValue" value="100" />
+          <Param name="WholeNumbers" value="true" />
         </Params>
       </Option>
       <Option Name="ui_volume" Key="sound_volume_ui" DefaultValue="1" ClassName="SoundSlider">
         <Params>
-          <Param name="SoundChannel" value="UI"/>
-          <Param name="MinimumValue" value="0"/>
-          <Param name="MaximumValue" value="100"/>
-          <Param name="WholeNumbers" value="true"/>
+          <Param name="SoundChannel" value="UI" />
+          <Param name="MinimumValue" value="0" />
+          <Param name="MaximumValue" value="100" />
+          <Param name="WholeNumbers" value="true" />
         </Params>
       </Option>
     </OptionHeading>
@@ -86,9 +86,10 @@
   </Category>
   <Category Name="developer">
     <OptionHeading Name="general">
-      <Option Name="developer_mode" Key="developer_general_developerMode" DefaultValue="false" ClassName="DeveloperModeToggle">
+      <Option Name="developer_mode" Key="developer_general_developerMode" DefaultValue="false" ClassName="GenericToggle">
         <Params>
-          <Param name="Type" value="Switch"/>
+          <Param name="Type" value="Switch" />
+          <Param name="LUAInitializeFunction" value="InitDevMode" />
         </Params>
       </Option>
       <Option Name="logging_level" Key="developer_general_loggingLevel" DefaultValue="false" ClassName="GenericToggle" />
@@ -96,22 +97,22 @@
     <OptionHeading Name="console">
       <Option Name="scroll_sensitivity" Key="developer_console_scrollSensitivity" DefaultValue="6" ClassName="DeveloperConsoleSlider">
         <Params>
-          <Param name="WholeNumbers" value="true"/>
-          <Param name="MinimumValue" value="5"/>
-          <Param name="MaximumValue" value="15"/>
+          <Param name="WholeNumbers" value="true" />
+          <Param name="MinimumValue" value="5" />
+          <Param name="MaximumValue" value="15" />
         </Params>
       </Option>
-      <Option Name="time_stamps" Key="developer_console_timeStamp" DefaultValue="false" ClassName="DeveloperConsoleToggle"/>
+      <Option Name="time_stamps" Key="developer_console_timeStamp" DefaultValue="false" ClassName="DeveloperConsoleToggle" />
       <Option Name="console_enable" Key="developer_console_enableDevConsole" DefaultValue="true" ClassName="DeveloperConsoleToggle">
         <Params>
-          <Param name="Type" value="Switch"/>
+          <Param name="Type" value="Switch" />
         </Params>
       </Option>
       <Option Name="font_size" Key="developer_console_fontSize" DefaultValue="15" ClassName="DeveloperConsoleSlider">
         <Params>
-          <Param name="WholeNumbers" value="true"/>
-          <Param name="MinimumValue" value="12"/>
-          <Param name="MaximumValue" value="20"/>
+          <Param name="WholeNumbers" value="true" />
+          <Param name="MinimumValue" value="12" />
+          <Param name="MaximumValue" value="20" />
         </Params>
       </Option>
     </OptionHeading>

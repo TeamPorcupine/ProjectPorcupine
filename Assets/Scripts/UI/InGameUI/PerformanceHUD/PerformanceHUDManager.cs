@@ -163,6 +163,7 @@ public class PerformanceHUDManager : MonoBehaviour
             if (element != null)
             {
                 element.Update();
+                element.UpdateLUA();
             }
         }
     }

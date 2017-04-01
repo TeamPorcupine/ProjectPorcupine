@@ -16,8 +16,6 @@ using UnityEngine.UI;
 [MoonSharp.Interpreter.MoonSharpUserData]
 public abstract class BaseSettingsElement : BaseUIElement
 {
-    public delegate void EmptyFunction();
-
     public SettingsOption option;
 
     public bool valueChanged;
@@ -26,13 +24,13 @@ public abstract class BaseSettingsElement : BaseUIElement
     /// Apply your setting.  You can use variables in this.
     /// Do a setting.setSetting beforehand.
     /// </summary>
-    public event EmptyFunction ApplySettingHandler;
+    public event EventHandler ApplySettingHandler;
 
     /// <summary>
     /// Undo your setting.  You should do a setting.getSetting call
     /// To get the latest setting info.
     /// </summary>
-    public event EmptyFunction CancelSettingHandler;
+    public event EventHandler CancelSettingHandler;
 
     /// <summary>
     /// LUA Initializer.
@@ -45,23 +43,27 @@ public abstract class BaseSettingsElement : BaseUIElement
         }
     }
 
-    public virtual void ApplySetting()
+    public abstract void ApplySetting();
+
+    public abstract void CancelSetting();
+
+    public void ApplySettingLUA()
     {
         // Please C# 4.6
-        EmptyFunction invoker = ApplySettingHandler;
+        EventHandler invoker = ApplySettingHandler;
         if (invoker != null)
         {
-            invoker();
+            invoker(this, null);
         }
     }
 
-    public virtual void CancelSetting()
+    public void CancelSettingLUA()
     {
         // Please C# 4.6
-        EmptyFunction invoker = CancelSettingHandler;
+        EventHandler invoker = CancelSettingHandler;
         if (invoker != null)
         {
-            invoker();
+            invoker(this, null);
         }
     }
 

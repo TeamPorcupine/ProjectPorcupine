@@ -147,6 +147,7 @@ public class SettingsMenu : MonoBehaviour
         for (int i = 0; i < changesTracker.Count; i++)
         {
             changesTracker[i].ApplySetting();
+            changesTracker[i].ApplySettingLUA();
         }
     }
 
@@ -200,6 +201,7 @@ public class SettingsMenu : MonoBehaviour
                         for (int i = 0; i < changesTracker.Count; i++)
                         {
                             changesTracker[i].CancelSetting();
+                            changesTracker[i].CancelSettingLUA();
                         }
 
                         GameController.Instance.IsModal = false;

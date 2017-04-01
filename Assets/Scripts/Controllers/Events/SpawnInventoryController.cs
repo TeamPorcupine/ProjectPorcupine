@@ -12,6 +12,7 @@ using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
 
+[MoonSharp.Interpreter.MoonSharpUserData]
 public class SpawnInventoryController
 {
     private GameObject spawnUI;
@@ -54,7 +55,7 @@ public class SpawnInventoryController
         // You can't spawn on occupied tiles
         if (t.Furniture != null)
         {
-            return; 
+            return;
         }
 
         if (t.Inventory == null || t.Inventory.Type == InventoryToBuild)

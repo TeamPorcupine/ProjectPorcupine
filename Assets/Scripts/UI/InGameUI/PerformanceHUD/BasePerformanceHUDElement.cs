@@ -20,10 +20,12 @@ public abstract class BasePerformanceHUDElement : BaseUIElement
     public delegate void EmptyFunction();
     public event EmptyFunction UpdateHandler;
 
+    public abstract void Update();
+
     /// <summary>
     /// Update function.
     /// </summary>
-    public virtual void Update()
+    public void UpdateLUA()
     {
         EmptyFunction invoker = UpdateHandler;
         if (invoker != null)
