@@ -17,8 +17,7 @@ using UnityEngine.UI;
 [MoonSharp.Interpreter.MoonSharpUserData]
 public abstract class BasePerformanceHUDElement : BaseUIElement
 {
-    public delegate void EmptyFunction();
-    public event EmptyFunction UpdateHandler;
+    public event EventHandler UpdateHandler;
 
     public abstract void Update();
 
@@ -27,10 +26,10 @@ public abstract class BasePerformanceHUDElement : BaseUIElement
     /// </summary>
     public void UpdateLUA()
     {
-        EmptyFunction invoker = UpdateHandler;
+        EventHandler invoker = UpdateHandler;
         if (invoker != null)
         {
-            invoker();
+            invoker(this, null);
         }
     }
 
