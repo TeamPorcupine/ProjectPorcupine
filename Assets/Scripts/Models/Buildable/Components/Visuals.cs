@@ -82,9 +82,9 @@ namespace ProjectPorcupine.Buildable.Components
                             ParentFurniture.Animation.SetFrameIndex(frmIdx);
                         }
                     }
-                    else if (anim.Requires.ParamConditions != null)
+                    else if (anim.RunConditions.ParamConditions != null)
                     {
-                        if (AreParameterConditionsFulfilled(anim.Requires.ParamConditions))
+                        if (AreParameterConditionsFulfilled(anim.RunConditions.ParamConditions))
                         {
                             ChangeAnimation(anim.Name);
                             break;

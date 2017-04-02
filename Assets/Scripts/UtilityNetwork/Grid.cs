@@ -146,6 +146,19 @@ namespace ProjectPorcupine.PowerNetwork
             connections.Remove(connection);
         }
 
+        public bool HasAnyProducer()
+        {
+            foreach (IPluggable connection in connections)
+            {
+                if (connection.IsProducer)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public void Tick()
         {
             float producers = 0f;
@@ -156,12 +169,12 @@ namespace ProjectPorcupine.PowerNetwork
             
             foreach (IPluggable connection in connections)
             {
-                if (connection.IsProducer && !connection.OutputCanVary)
+                if (connection.IsProducer && connection.AllRequirementsFulfilled)
                 {
                     producersStable += connection.OutputRate;
                 }
 
-                if (connection.IsConsumer)
+                if (connection.IsConsumer && connection.AllRequirementsFulfilled)
                 {
                     if (connection.InputCanVary)
                     {
@@ -182,21 +195,34 @@ namespace ProjectPorcupine.PowerNetwork
                 return;
             }
 
+            // if there is power shortage, check if you can get power from 'on demand' producers
             if (currentLevel < 0.0f)
             {
+                float curLevelWithVaryingOutput = currentLevel;
+
                 // here check if we can plug in some varying output
+                // can't use connection.IsProducer as it's hooked on IsRunning already
                 foreach (IPluggable connection in connections)
                 {
-                    if (connection.IsProducer && connection.OutputCanVary && connection.AllRequirementsFulfilled)
+                    if (connection.OutputCanVary) 
                     {
                         connection.OutputIsNeeded = true;
-                        currentLevel += connection.OutputRate;
-                        producersVarying += connection.OutputRate;
-                        //if (currentLevel >= 0f)
-                        //{
-                        //    FillStorage(ref currentLevel);
-                        //    break;
-                        //}
+                    }
+                }
+            }
+            else
+            {
+                // there is more power than needed, check if you can shut down some 'on demand' producers
+                float curLevelWithVaryingOutput = currentLevel;
+                foreach (IPluggable connection in connections)
+                {
+                    if (connection.IsProducer && connection.OutputCanVary && connection.OutputIsNeeded && connection.AllRequirementsFulfilled)
+                    {
+                        curLevelWithVaryingOutput -= connection.OutputRate;
+                        if (curLevelWithVaryingOutput >= 0)
+                        {
+                            connection.OutputIsNeeded = false;
+                        }
                     }
                 }
             }

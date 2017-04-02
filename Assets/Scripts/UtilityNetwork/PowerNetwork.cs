@@ -143,6 +143,13 @@ namespace ProjectPorcupine.PowerNetwork
             grid.Unplug(connection);
         }
 
+        public bool IsConnected(IPluggable connection)
+        {
+            Grid grid;
+            IsPluggedIn(connection, out grid);
+            return grid != null && grid.HasAnyProducer();
+        }
+
         public bool HasPower(IPluggable connection)
         {
             Grid grid;
@@ -155,7 +162,7 @@ namespace ProjectPorcupine.PowerNetwork
             float efficiency = 0f;
             Grid grid;
             IsPluggedIn(connection, out grid);
-            if(grid != null)
+            if (grid != null)
             {
                 efficiency = grid.Efficiency;
             }

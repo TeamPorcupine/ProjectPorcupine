@@ -231,19 +231,19 @@
         
         <Component type="Visuals">
             <UseAnimation name="idle">
-                <Requires>
+                <RunConditions>
                     <Param name="pow_is_running" condition="IsFalse" />
-                </Requires>
+                </RunConditions>
             </UseAnimation>
             <UseAnimation name="running">
-                <Requires>
+                <RunConditions>
                     <Param name="pow_is_running" condition="IsTrue" />
-                </Requires>
+                </RunConditions>
             </UseAnimation>
         </Component>
 		
         <Component type="PowerConnection">
-            <Requires rate="1" canFluctuate="true"/>
+            <Requires rate="1" canUseVariableEffiency="true"/>
             <ParameterDefinitions>
                 <CurrentAcumulatorCharge name="pow_accumulator_charge" />
                 <CurrentAcumulatorChargeIndex name="pow_accumulator_index" />
@@ -353,14 +353,14 @@
         <Component type="Visuals">
             <DefaultSpriteName value="fission_reactor_1" />
             <UseAnimation name="idle">
-                <Requires>
-                    <Param name="cur_processed_inv" condition="IsZero" />
-                </Requires>
+                <RunConditions>
+                    <Param name="workshop_is_running" condition="IsFalse" />
+                </RunConditions>
             </UseAnimation>
             <UseAnimation name="running">
-                <Requires>
-                    <Param name="cur_processed_inv" condition="IsGreaterThanZero" />
-                </Requires>
+                <RunConditions>
+                    <Param name="workshop_is_running" condition="IsTrue" />
+                </RunConditions>
             </UseAnimation>
         </Component>
 
@@ -368,7 +368,8 @@
             <ParameterDefinitions>
                 <CurrentProcessingTime name="cur_processing_time" />
                 <MaxProcessingTime name="max_processing_time" />
-                <IsProcessing name="cur_processed_inv" />
+                <InputProcessed name="cur_processed_inv" />
+                <IsRunning name="workshop_is_running" />
                 <CurrentProductionChainName name="cur_production_chain" />
             </ParameterDefinitions>
             <ProductionChain name="Power generation" processingTime="60">
@@ -376,16 +377,20 @@
                     <Item objectType="power_cell" amount="1" slotPosX="0" slotPosY="0" hasHopper="false" />
                 </Input>
             </ProductionChain>
-            <Requires>
+            <RunConditions>
                 <Param name="pow_out_needed" condition="IsTrue" />
-            </Requires> 
+            </RunConditions>
+            <HaulConditions>
+                <Param name="pow_out_needed" condition="IsTrue" />
+            </HaulConditions>
         </Component>
         
         <Component type="PowerConnection">
-            <Provides rate="5"/>            
-            <Requires>
-                <Param name="cur_processed_inv" condition="IsGreaterThanZero" />
-            </Requires>    
+            <Provides rate="5" canUseVariableEffiency="true">    
+            </Provides>  
+            <RunConditions>
+                <Param name="workshop_is_running" condition="IsTrue" />
+            </RunConditions>    
             <ParameterDefinitions>
                 <CurrentAcumulatorCharge name="pow_accumulator_charge" />
                 <CurrentAcumulatorChargeIndex name="pow_accumulator_index" />
@@ -437,7 +442,7 @@
             <ParameterDefinitions>
                 <CurrentProcessingTime name="cur_processing_time" />
                 <MaxProcessingTime name="max_processing_time" />
-                <IsProcessing name="cur_processed_inv" />
+                <InputProcessed name="cur_processed_inv" />
                 <CurrentProductionChainName name="cur_production_chain" />
             </ParameterDefinitions>
             <ProductionChain name="Ice melting" processingTime="60">
@@ -450,23 +455,23 @@
         <Component type="Visuals">
             <DefaultSpriteName value="water_generator_off" />
             <UseAnimation name="idle">
-                <Requires>
+                <RunConditions>
                     <Param name="cur_processed_inv" condition="IsZero" />
-                </Requires>
+                </RunConditions>
             </UseAnimation>
             <UseAnimation name="running">
-                <Requires>
+                <RunConditions>
                     <Param name="cur_processed_inv" condition="IsGreaterThanZero" />
-                </Requires>
+                </RunConditions>
             </UseAnimation>
         </Component>
         
         <Component type="FluidConnection">
 			<FluidType>water</FluidType>
             <Provides rate="5"/>
-            <Requires>
+            <RunConditions>
                 <Param name="cur_processed_inv" condition="IsGreaterThanZero" />
-            </Requires>
+            </RunConditions>
         </Component>
 
         <GetProgressInfo functionName="WaterGenerator_StatusInfo" />
@@ -599,7 +604,10 @@
         <JobWorkSpotOffset X="1" Y="0" />
 
         <Component type="PowerConnection">
-            <Requires rate="2" canFluctuate="true" />
+            <Requires rate="2" canUseVariableEffiency="true"/>  
+            <RunConditions>
+                <Param name="cur_processed_inv" condition="IsGreaterThanZero" /> 
+            </RunConditions>
         </Component>
 
         <Component type="GasConnection">
@@ -610,7 +618,7 @@
             <ParameterDefinitions>
                 <CurrentProcessingTime name="cur_processing_time" />
                 <MaxProcessingTime name="max_processing_time" />
-                <IsProcessing name="cur_processed_inv" />
+                <InputProcessed name="cur_processed_inv" />
                 <CurrentProductionChainName name="cur_production_chain" />
             </ParameterDefinitions>
             <ProductionChain name="Copper smelting" processingTime="3">
@@ -634,14 +642,14 @@
 
         <Component type="Visuals">
             <UseAnimation name="idle">
-                <Requires>
+                <RunConditions>
                     <Param name="cur_processed_inv" condition="IsZero" />
-                </Requires>
+                </RunConditions>
             </UseAnimation>
             <UseAnimation name="running">
-                <Requires>
+                <RunConditions>
                     <Param name="cur_processed_inv" condition="IsGreaterThanZero" />
-                </Requires>
+                </RunConditions>
             </UseAnimation>
         </Component>
 
@@ -732,7 +740,7 @@
             <ParameterDefinitions>
                 <CurrentProcessingTime name="cur_processing_time" />
                 <MaxProcessingTime name="max_processing_time" />
-                <IsProcessing name="cur_processed_inv" />
+                <InputProcessed name="cur_processed_inv" />
                 <CurrentProductionChainName name="cur_production_chain" />
             </ParameterDefinitions>
             <ProductionChain name="Power Cell Pressing" processingTime="5">
@@ -748,7 +756,7 @@
         </Component>
 
         <Component type="PowerConnection">
-            <Requires rate="2" canFluctuate="true" />
+            <Requires rate="2" canUseVariableEffiency="true" />
         </Component>
         
         <GetProgressInfo functionName="PowerCellPress_StatusInfo" />

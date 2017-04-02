@@ -38,23 +38,24 @@ namespace ProjectPorcupine.PowerNetwork
         string SubType { get; set; }
 
         /// <summary>
-        /// Input can be less than 100% for machine to work - efficiency
+        /// Input can be less than 100% for machine to work - efficiency.
         /// </summary>
         bool InputCanVary { get; }
 
         /// <summary>
-        /// Output varies depending on other conditions (fuel present, ... )
+        /// Output varies depending on other conditions (fuel present, ... ).
+        /// Output on demand.
         /// </summary>
         bool OutputCanVary { get; }
 
         /// <summary>
-        /// To inform component that its output is needed
+        /// To inform component that its output is needed.
         /// </summary>
         bool OutputIsNeeded { get; set; }
 
         /// <summary>
-        /// Flag to inform Pluggable system if can work - all conditions met (fuel present, ... )
-        /// Used in combination with OutputCanVary (InputCanVary) and OutputIsNeeded
+        /// Flag to inform Pluggable system if can work - all conditions met (fuel present, ... ).
+        /// Used in combination with OutputCanVary (InputCanVary) and OutputIsNeeded.
         /// </summary>
         bool AllRequirementsFulfilled { get; }
         

@@ -207,6 +207,17 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     public bool VerticalDoor { get; set; }
 
     /// <summary>
+    /// Checks whether furniturehas some custom progress info.
+    /// </summary>
+    public bool HasCustomProgressReport
+    {
+        get
+        {
+            return !string.IsNullOrEmpty(getProgressInfoNameAction);
+        }
+    }
+
+    /// <summary>
     /// Gets the EventAction for the current furniture.
     /// These actions are called when an event is called. They get passed the furniture
     /// they belong to, plus a deltaTime (which defaults to 0).

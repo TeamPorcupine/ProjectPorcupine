@@ -12,10 +12,10 @@ using System.Linq;
 using System.Reflection;
 using System.Xml;
 using System.Xml.Serialization;
+using MoonSharp.Interpreter;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-using MoonSharp.Interpreter;
 
 namespace ProjectPorcupine.Buildable.Components
 {
@@ -334,17 +334,9 @@ namespace ProjectPorcupine.Buildable.Components
             [XmlAttribute("valuebasedParamerName")]
             public string ValueBasedParamerName { get; set; }
 
-            public ParameterConditions Requires { get; set; }
+            public Conditions RunConditions { get; set; }
         }
-
-        [Serializable]
-        [JsonObject(MemberSerialization.OptOut)]
-        public class ParameterConditions
-        {
-            [XmlElement("Param")]
-            public List<ParameterCondition> ParamConditions { get; set; }
-        }
-
+        
         [Serializable]
         [JsonObject(MemberSerialization.OptOut)]
         public class ParameterCondition
@@ -404,9 +396,14 @@ namespace ProjectPorcupine.Buildable.Components
             [XmlAttribute("capacityThresholds")]
             public int CapacityThresholds { get; set; }
 
-            [XmlAttribute("canFluctuate")]
-            public bool CanFluctuate { get; set; }
+            [XmlAttribute("canUseVariableEffiency")]
+            public bool CanUseVariableEfficiency { get; set; }            
+        }
 
+        [Serializable]
+        [JsonObject(MemberSerialization.OptOut)]
+        public class Conditions
+        {
             [XmlElement("Param")]
             public List<ParameterCondition> ParamConditions { get; set; }
         }

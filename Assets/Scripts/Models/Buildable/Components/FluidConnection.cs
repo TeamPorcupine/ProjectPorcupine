@@ -33,6 +33,7 @@ namespace ProjectPorcupine.Buildable.Components
             ParamsDefinitions = other.ParamsDefinitions;
             Provides = other.Provides;
             Requires = other.Requires;
+            RunConditions = other.RunConditions;
             SubType = other.SubType;
 
             Reconnecting += OnReconnecting;
@@ -81,6 +82,10 @@ namespace ProjectPorcupine.Buildable.Components
         [XmlElement("Requires")]
         [JsonProperty("Requires")]
         public Info Requires { get; set; }
+
+        [XmlElement("RunConditions")]
+        [JsonProperty("RunConditions")]
+        public Conditions RunConditions { get; set; }
 
         [XmlIgnore]
         public float StoredAmount
@@ -207,9 +212,9 @@ namespace ProjectPorcupine.Buildable.Components
         public override void FixedFrequencyUpdate(float deltaTime)
         {
             bool areAllParamReqsFulfilled = true;
-            if (Requires != null)
+            if (RunConditions != null)
             {
-                areAllParamReqsFulfilled = AreParameterConditionsFulfilled(Requires.ParamConditions);
+                areAllParamReqsFulfilled = AreParameterConditionsFulfilled(RunConditions.ParamConditions);
             }
 
             if (IsStorage)
