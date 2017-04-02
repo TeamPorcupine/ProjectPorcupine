@@ -178,7 +178,7 @@ namespace ProjectPorcupine.PowerNetwork
                 {
                     if (connection.InputCanVary)
                     {
-                        consumersVarying += connection.InputRate * Efficiency;
+                        consumersVarying += connection.InputRate;
                     }
                     else
                     {
@@ -238,27 +238,29 @@ namespace ProjectPorcupine.PowerNetwork
 
             producers = producersStable + producersVarying;
 
-            if (producers > 0)
+            Efficiency = 1f;
+
+            // calculate immediate efficiency
+            if (currentLevel < 0 && consumersVarying > 0)
             {
-                // for efficiency, take into account only connections with varying input
-                if (producers < consumersVarying)
+                float curLevelWithoutVary = currentLevel + consumersVarying;
+
+                // if there is enough power when discarting varying consumers, calculate efficiency for them 
+                if (curLevelWithoutVary > 0)
                 {
-                    Efficiency -= 0.1f;
+                    float efficiency = curLevelWithoutVary / consumersVarying;
+
+                    Efficiency = Mathf.Clamp(efficiency, 0, 1f);
+                    currentLevel = 0f;
                 }
                 else
                 {
-                    Efficiency += 0.1f;
+                    Efficiency = 0f;
                 }
-
-                Efficiency = Mathf.Clamp(Efficiency, 0, 1f);
             }
-            else
-            {
-                Efficiency = 0f;
-            }            
-
+            
             // Efficiency == 1f condition prevents flickering of machines without varying input
-            IsOperating = producers > 0f && currentLevel >= 0.0f && Efficiency == 1f;
+            IsOperating = currentLevel >= 0.0f && Efficiency == 1f;
         }
 
         /// <summary>

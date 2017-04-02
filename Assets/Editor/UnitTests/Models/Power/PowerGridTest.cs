@@ -356,7 +356,10 @@ public class PowerGridTest
 
         public bool OutputIsNeeded { get; set; }
 
-        public bool AllRequirementsFulfilled { get; set; }
+        public bool AllRequirementsFulfilled
+        {
+            get { return true; }
+        }
 
         public void Reconnect()
         {

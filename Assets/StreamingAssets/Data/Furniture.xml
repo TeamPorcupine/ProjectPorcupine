@@ -688,10 +688,6 @@
             <Inventory type="steel_plate" amount="1" />
         </OrderAction>
 
-        <Component type="Visuals">
-            <DefaultSpriteName value="Heater" />
-        </Component>
-
         <OrderAction type="Uninstall">
             <Job time="1" />
         </OrderAction>

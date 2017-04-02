@@ -32,6 +32,7 @@ namespace ProjectPorcupine.Buildable.Components
             PossibleProductions = other.PossibleProductions;
             RunConditions = other.RunConditions;
             HaulConditions = other.HaulConditions;
+            Efficiency = other.Efficiency;
         }
 
         [XmlElement("ParameterDefinitions")]
