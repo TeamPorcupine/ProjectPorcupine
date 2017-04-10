@@ -56,7 +56,7 @@ The original tutorial project files, which feature no community-contributed code
 are licensed under the MIT License and can be found here:
  * <http://quill18.com/porcupine/project_files/>
  
-Audio engine : FMOD by Firelight Technologies
+Audio engine : [FMOD](http://www.fmod.com/) by Firelight Technologies
 
 Logger: Based on UnityDebugger by Valian (at <https://github.com/Valian/UnityDebugger>), modified source code available at <https://github.com/koosemose/UnityDebugger>
 
