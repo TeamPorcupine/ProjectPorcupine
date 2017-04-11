@@ -116,10 +116,15 @@ public class ModsManager
         LoadFunctions("CommandFunctions.cs", "DevConsole");
         LoadFunctions("ConsoleCommands.lua", "DevConsole");
 
-        // We are only allowing the settings menu to be in C# due to class requirements
-        LoadFunctions("SettingsMenuFunctions.cs", "SettingsMenu");
         LoadPrototypes("ConsoleCommands.xml", PrototypeManager.DevConsole.LoadPrototypes);
         LoadPrototypes("SettingsTemplate.xml", PrototypeManager.SettingsCategories.LoadPrototypes);
+        LoadPrototypes("PerformanceHUDTemplate.xml", PrototypeManager.PerformanceHUD.LoadPrototypes);
+
+        LoadFunctions("SettingsMenuFunctions.cs", "SettingsMenu");
+        LoadFunctions("SettingsMenuCommands.lua", "SettingsMenu");
+
+        LoadFunctions("PerformanceHUDFunctions.cs", "PerformanceHUD");
+        LoadFunctions("PerfanceHUDCommands.lua", "PerformanceHUD");
     }
 
     /// <summary>
@@ -148,6 +153,10 @@ public class ModsManager
                 {
                     string text = File.ReadAllText(filePath);
                     FunctionsManager.Get(functionsName).LoadScript(text, functionsName, scriptType);
+                }
+                else
+                {
+                    UnityDebugger.Debugger.LogError(folder == "CSharp" ? "CSharp" : "LUA", "file " + filePath + " not found");
                 }
             });
     }

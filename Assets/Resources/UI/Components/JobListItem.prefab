@@ -11,6 +11,7 @@ GameObject:
   - 114: {fileID: 114000011180822494}
   - 222: {fileID: 222000013378982534}
   - 114: {fileID: 114000010318403776}
+  - 114: {fileID: 114000012657899036}
   m_Layer: 5
   m_Name: JobListItem
   m_TagString: Untagged
@@ -196,6 +197,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentColor: {r: 0, g: 0, b: 0, a: 0}
+--- !u!114 &114000012657899036
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 117544}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d9d9b4ba7df5664b97950a2c6fbf394, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114000013548480896
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -111,7 +111,7 @@ public sealed class InventorySpriteController : BaseSpriteController<Inventory>
 
         inventoryGameObject.transform.SetParent(objectParent.transform, true);
 
-        SpriteRenderer sr = SetSprite(inventoryGameObject, inventory);
+        SetSprite(inventoryGameObject, inventory);
 
         if (inventory.MaxStackSize > 1)
         {

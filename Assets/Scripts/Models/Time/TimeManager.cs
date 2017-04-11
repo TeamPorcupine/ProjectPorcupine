@@ -11,6 +11,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 public class TimeManager
@@ -18,6 +19,8 @@ public class TimeManager
     private const int FramesInSlowUpdateCycle = 10;
 
     private const float GameTickPerSecond = 5;
+
+    private const float RealTimeToWorldTimeFactor = 90;
 
     private static TimeManager instance;
 
@@ -43,6 +46,7 @@ public class TimeManager
         TotalDeltaTime = 0f;
         TimeScalePosition = 2;
         IsPaused = false;
+        WorldTime = new WorldTime().SetHour(8);
 
         for (int i = 0; i < slowUpdatablesLists.Length; i++)
         {
@@ -104,6 +108,26 @@ public class TimeManager
     /// <value>The game time.</value>
     public float GameTime { get; private set; } // TODO: Implement saving and loading game time, so time is persistent across loads.
 
+    /// <summary>
+    /// <para>Gets or sets the world time.</para>
+    /// <para>Assigning to WorldTime will adjust GameTime appropriately, however, using the Set and Add methods directly
+    /// on WorldTime will not work. To adjust WorldTime assign a new WorldTime, or assign immediately after adjusting.</para>
+    /// <para>Example: <code>WorldTime = WorldTime.SetHour(8).SetMinute(0)</code> will properly change the time to 8:00, leaving everything else the same.</para>
+    /// </summary>
+    /// <value>The world time.</value>
+    public WorldTime WorldTime
+    {
+        get
+        {
+            return new WorldTime(GameTime * RealTimeToWorldTimeFactor);
+        }
+
+        set
+        {
+            GameTime = value.Seconds / RealTimeToWorldTimeFactor;
+        }
+    }
+
     // Current position in that array.
     // Public so TimeScaleUpdater can easily get a position appropriate to an image.
     public int TimeScalePosition { get; private set; }
@@ -149,7 +173,7 @@ public class TimeManager
     /// </summary>
     /// <param name="time">Time since last frame.</param>
     public void Update(float time)
-    {   
+    {
         float deltaTime = time * TimeScale;
 
         // Systems that update every frame.
@@ -303,6 +327,21 @@ public class TimeManager
     public void RunNextFrame(Action action)
     {
         nextFrameActions.Add(action);
+    }
+
+    public void FromJson(JToken timeToken)
+    {
+        if (timeToken != null)
+        {
+            GameTime = (float)timeToken;
+        }
+    }
+
+    public JToken ToJson()
+    {
+        JValue timeJson = new JValue(GameTime);
+
+        return timeJson;
     }
 
     /// <summary>

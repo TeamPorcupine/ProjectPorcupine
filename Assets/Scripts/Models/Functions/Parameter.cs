@@ -115,7 +115,7 @@ public class Parameter
             string k = subReader.GetAttribute("name");
 
             // Sometimes the look will get stuck on a Whitespace or an EndElement and error, so continue to next loop if we encounter one
-            if (subReader.NodeType == XmlNodeType.Whitespace || subReader.NodeType == XmlNodeType.EndElement)
+            if (subReader.NodeType == XmlNodeType.Whitespace || subReader.NodeType == XmlNodeType.EndElement || string.IsNullOrEmpty(k))
             {
                 continue;
             }

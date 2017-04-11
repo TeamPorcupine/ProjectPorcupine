@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ComponentGroups>
+  <ComponentGroup Name="Basic" DisableUI="false">
+    <Option ClassName="FPSPerformanceComponent"/>
+  </ComponentGroup>
+  <ComponentGroup Name="Extended" DisableUI="false">
+    <Option ClassName="FPSPerformanceComponent"/>
+    <Option ClassName="FPSRangePerformanceComponent"/>
+    <Option ClassName="FPSPerformanceComponent">
+      <Params>
+        <Param name="MeasurePeriod" value="5"/>
+        <Param name="DisplayText" value="AVG: "/>
+        <Param name="DisplayColor" value="false"/>
+      </Params>
+    </Option>
+  </ComponentGroup>
+  <ComponentGroup Name="Verbose" DisableUI="false">
+    <Option ClassName="FPSPerformanceComponent"/>
+    <Option ClassName="FPSRangePerformanceComponent"/>
+    <Option ClassName="FPSPerformanceComponent">
+      <Params>
+        <Param name="MeasurePeriod" value="5"/>
+        <Param name="DisplayText" value="AVG: "/>
+        <Param name="DisplayColor" value="false"/>
+      </Params>
+    </Option>
+    <Option ClassName="MemoryPerformanceComponent"/>
+  </ComponentGroup>
+</ComponentGroups>

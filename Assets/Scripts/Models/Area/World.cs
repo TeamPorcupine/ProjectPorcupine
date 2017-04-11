@@ -323,6 +323,7 @@ public class World
         worldJson.Add("CameraData", CameraData.ToJson());
         worldJson.Add("Skybox", skybox.name);
         worldJson.Add("Wallet", Wallet.ToJson());
+        worldJson.Add("Time", TimeManager.Instance.ToJson());
         worldJson.Add("Scheduler", Scheduler.Scheduler.Current.ToJson());
         return worldJson;
     }
@@ -358,6 +359,7 @@ public class World
         CameraData.FromJson(worldJson["CameraData"]);
         LoadSkybox((string)worldJson["Skybox"]);
         Wallet.FromJson(worldJson["Wallet"]);
+        TimeManager.Instance.FromJson(worldJson["Time"]);
         Scheduler.Scheduler.Current.FromJson(worldJson["Scheduler"]);
 
         tileGraph = new Path_TileGraph(this);

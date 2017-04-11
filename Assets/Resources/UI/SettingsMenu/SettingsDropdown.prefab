@@ -88,6 +88,7 @@ GameObject:
   - 222: {fileID: 222000013032223076}
   - 114: {fileID: 114000014179489124}
   - 114: {fileID: 114000010358411874}
+  - 114: {fileID: 114000013719909410}
   m_Layer: 5
   m_Name: SettingsDropdown
   m_TagString: Untagged
@@ -592,6 +593,17 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114000013719909410
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000011237016840}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d9d9b4ba7df5664b97950a2c6fbf394, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114000013956353114
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -637,7 +649,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0.6838235, b: 0.6838235, a: 1}
+  m_Color: {r: 0.6509804, g: 0.90196085, b: 0.90196085, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:

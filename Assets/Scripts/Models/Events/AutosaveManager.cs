@@ -34,7 +34,7 @@ public class AutosaveManager
             scheduler = Scheduler.Scheduler.Current;
         }
 
-        AutosaveInterval = Settings.GetSetting<int>("AutosaveInterval", 2); // in minutes
+        AutosaveInterval = SettingsKeyHolder.AutosaveInterval;
 
         // autosaves disabled if AutosaveInterval <= 0
         if (AutosaveInterval > 0)
@@ -95,7 +95,8 @@ public class AutosaveManager
         string saveDirectoryPath = GameController.Instance.FileSaveBasePath();
         DirectoryInfo saveDir = new DirectoryInfo(saveDirectoryPath);
         FileInfo[] saveGames = saveDir.GetFiles(AutosaveBaseName + "*.sav").OrderByDescending(f => f.LastWriteTime).ToArray();
-        if (saveGames.Length >= Settings.GetSetting<int>("AutosaveFiles", 5))
+
+        if (saveGames.Length >= SettingsKeyHolder.AutosaveMaxFiles)
         {
             // Get list of files in save location
             fileName = Path.GetFileNameWithoutExtension(saveGames.Last().Name);

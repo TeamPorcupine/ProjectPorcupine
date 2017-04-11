@@ -24,6 +24,7 @@ GameObject:
   - 114: {fileID: 114000013521423838}
   - 114: {fileID: 114000011852658578}
   - 114: {fileID: 114000010215954120}
+  - 114: {fileID: 114000011399251584}
   m_Layer: 5
   m_Name: SettingsButton
   m_TagString: Untagged
@@ -74,7 +75,7 @@ MonoBehaviour:
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
-    m_HighlightedSprite: {fileID: 21300006, guid: 8ed11db9bdff2784d87323bcd4032852,
+    m_HighlightedSprite: {fileID: 21300010, guid: 8ed11db9bdff2784d87323bcd4032852,
       type: 3}
     m_PressedSprite: {fileID: 21300014, guid: 8ed11db9bdff2784d87323bcd4032852, type: 3}
     m_DisabledSprite: {fileID: 21300006, guid: 8ed11db9bdff2784d87323bcd4032852, type: 3}
@@ -90,6 +91,17 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!114 &114000011399251584
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000011889461486}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d9d9b4ba7df5664b97950a2c6fbf394, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114000011728363504
 MonoBehaviour:
   m_ObjectHideFlags: 1

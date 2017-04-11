@@ -106,7 +106,7 @@ public class WorldController : MonoBehaviour
         KeyboardManager.Instance.RegisterInputAction("DevMode", KeyboardMappedInputType.KeyDown, ChangeDevMode);
 
         // Hiding Dev Mode spawn inventory controller if devmode is off.
-        spawnInventoryController.SetUIVisibility(Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false));
+        spawnInventoryController.SetUIVisibility(SettingsKeyHolder.DeveloperMode);
 
         cameraController.Initialize();
 
@@ -117,6 +117,9 @@ public class WorldController : MonoBehaviour
 
         GameObject timeScale = Instantiate(Resources.Load("UI/TimeScale"), canvas.transform, false) as GameObject;
         timeScale.name = "TimeScale";
+
+        GameObject dateTimeDisplay = Instantiate(Resources.Load("UI/DateTimeDisplay"), canvas.transform, false) as GameObject;
+        dateTimeDisplay.name = "DateTimeDisplay";
 
         GameController.Instance.IsModal = false;
 
@@ -174,9 +177,9 @@ public class WorldController : MonoBehaviour
     /// </summary>
     public void ChangeDevMode()
     {
-        bool developerMode = !Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false);
-        Settings.SetSetting("DialogBoxSettingsDevConsole_developerModeToggle", developerMode);
-        spawnInventoryController.SetUIVisibility(developerMode);
+        bool mode = !SettingsKeyHolder.DeveloperMode;
+        SettingsKeyHolder.DeveloperMode = mode;
+        spawnInventoryController.SetUIVisibility(mode);
         ///FurnitureBuildMenu.instance.RebuildMenuButtons(developerMode);
     }
 

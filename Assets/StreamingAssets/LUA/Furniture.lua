@@ -409,9 +409,10 @@ end
 function PowerGenerator_FuelInfo(furniture)
     local curBurn = furniture.Parameters["cur_processing_time"].ToFloat()
 	local maxBurn = furniture.Parameters["max_processing_time"].ToFloat()
+	local invProc = furniture.Parameters["cur_processed_inv"].ToInt()
 
 	local perc = 0
-	if (maxBurn != 0) then
+	if (maxBurn != 0 and invProc > 0) then
 		perc = 100 - (curBurn * 100 / maxBurn)
 		if (perc <= 0) then
 			perc = 0

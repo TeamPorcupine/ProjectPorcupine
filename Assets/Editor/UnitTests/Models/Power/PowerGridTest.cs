@@ -350,6 +350,17 @@ public class PowerGridTest
 
         public float OutputRate { get; set; }
 
+        public bool InputCanVary { get; set; }
+
+        public bool OutputCanVary { get; set; }
+
+        public bool OutputIsNeeded { get; set; }
+
+        public bool AllRequirementsFulfilled
+        {
+            get { return true; }
+        }
+
         public void Reconnect()
         {
             throw new NotImplementedException();

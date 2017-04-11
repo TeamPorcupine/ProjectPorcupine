@@ -38,6 +38,10 @@ namespace ProjectPorcupine.Buildable.Components
         [JsonProperty("Requires")]
         public List<GasInfo> Requires { get; set; }
 
+        [XmlElement("Efficiency")]
+        [JsonProperty("Efficiency")]
+        public SourceDataInfo Efficiency { get; set; }
+
         public override bool RequiresSlowUpdate
         {
             get
@@ -75,6 +79,12 @@ namespace ProjectPorcupine.Buildable.Components
 
         public override void FixedFrequencyUpdate(float deltaTime)
         {
+            float efficiency = 1f;
+            if (Efficiency != null)
+            {
+                efficiency = RetrieveFloatFor(Efficiency, ParentFurniture);
+            }
+
             if (Provides != null && Provides.Count > 0)
             {
                 Room room = ParentFurniture.Tile.Room;
@@ -85,9 +95,13 @@ namespace ProjectPorcupine.Buildable.Components
                     if ((provGas.Rate > 0 && curGasPressure < provGas.MaxLimit) ||
                         (provGas.Rate < 0 && curGasPressure > provGas.MinLimit))
                     {
+<<<<<<< HEAD
                         // TODO Impose a max limit to avoid rounding errors
                         // TODO Implement gas networks as their own AtmosphereComponent so temperature is consistent
                         room.Atmosphere.CreateGas(provGas.Gas, provGas.Rate * deltaTime, 0.0f);
+=======
+                        room.ChangeGas(provGas.Gas, provGas.Rate * deltaTime * efficiency, provGas.MaxLimit);
+>>>>>>> 5c5988baee12e4fc5bd583d86aebc03221324c94
                     }
                 }
             }

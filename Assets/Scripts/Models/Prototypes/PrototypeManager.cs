@@ -20,7 +20,7 @@ public class PrototypeManager
     /// </summary>
     public PrototypeManager()
     {
-        Inventory = new PrototypeMap<InventoryCommon>("Inventories", "Inventory");
+        Inventory = new PrototypeMap<Inventory>("Inventories", "Inventory");
         TileType = new PrototypeMap<TileType>("Tiles", "Tile");
         Furniture = new PrototypeMap<Furniture>("Furnitures", "Furniture");
         Utility = new PrototypeMap<Utility>("Utilities", "Utility");
@@ -37,6 +37,7 @@ public class PrototypeManager
         Ship = new PrototypeMap<Ship>("Ships", "Ship");
         DevConsole = new PrototypeMap<DeveloperConsole.CommandPrototype>("ConsoleCommands", "ConsoleCommand");
         SettingsCategories = new PrototypeMap<SettingsCategory>("Categories", "Category");
+        PerformanceHUD = new PrototypeMap<PerformanceGroupReader>("ComponentGroups", "ComponentGroup");
     }
 
     /// <summary>
@@ -50,13 +51,13 @@ public class PrototypeManager
     /// </summary>
     /// <value>The furniture prototype map.</value>
     public static PrototypeMap<Furniture> Furniture { get; private set; }
-  
+
     /// <summary>
     /// Gets the utility prototype map.
     /// </summary>
     /// <value>The utility prototype map.</value>
     public static PrototypeMap<Utility> Utility { get; private set; }
-    
+
     /// Gets the roomBehavior prototype map.
     /// </summary>
     /// <value>The roomBehavior prototype map.</value>
@@ -66,7 +67,7 @@ public class PrototypeManager
     /// Gets the inventory prototype map.
     /// </summary>
     /// <value>The inventory prototype map.</value>
-    public static PrototypeMap<InventoryCommon> Inventory { get; private set; }
+    public static PrototypeMap<Inventory> Inventory { get; private set; }
 
     /// <summary>
     /// Gets the need prototype map.
@@ -133,6 +134,12 @@ public class PrototypeManager
     /// </summary>
     /// <value>The SettingsCategory prototype map.</value>
     public static PrototypeMap<SettingsCategory> SettingsCategories { get; private set; }
+
+    /// <summary>
+    /// Gets the PerformanceHUD prototype map.
+    /// </summary>
+    /// <value>The PerformanceHUD prototype map.</value>
+    public static PrototypeMap<PerformanceGroupReader> PerformanceHUD { get; private set; }
 
     /// <summary>
     /// Gets the ship prototype map.

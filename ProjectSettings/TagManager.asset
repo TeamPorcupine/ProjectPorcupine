@@ -6,6 +6,7 @@ TagManager:
   tags:
   - DeleteButton
   - AreYouSureDelete
+  - PerformanceUI
   layers:
   - Default
   - TransparentFX

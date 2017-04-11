@@ -55,8 +55,6 @@ public class WorldGenerator
         world.ResizeWorld(width, height, depth);
 
         Random.InitState(seed);
-        int offsetX = Random.Range(0, 10000);
-        int offsetY = Random.Range(0, 10000);
 
         sumOfAllWeightedChances = asteroidInfo.Resources.Select(x => x.WeightedChance).Sum();
 
@@ -112,10 +110,10 @@ public class WorldGenerator
             {
                 float currentFarthestTotalDistance = 0f;
                 int currentFarthestPointIndex = 0;
-                for (int j = 0; j < workingPoints.Count; j++) 
+                for (int j = 0; j < workingPoints.Count; j++)
                 {
                     float closestDistance = Mathf.Infinity;
-                    for (int k = 0; i < finalPoints.Count; k++) 
+                    for (int k = 0; i < finalPoints.Count; k++)
                     {
                         float thisDistance = Vector3.Distance(finalPoints[k], workingPoints[j]);
                         if (thisDistance < closestDistance)
@@ -193,7 +191,7 @@ public class WorldGenerator
                     {
                         Resource inv = asteroidInfo.Resources[i];
 
-                        int weight = inv.WeightedChance; 
+                        int weight = inv.WeightedChance;
                         currentweight += weight;
 
                         if (randomweight <= currentweight)

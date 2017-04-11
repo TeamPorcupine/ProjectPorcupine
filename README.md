@@ -1,6 +1,4 @@
 # ProjectPorcupine [![Build Status](https://travis-ci.org/TeamPorcupine/ProjectPorcupine.svg?branch=master)](https://travis-ci.org/TeamPorcupine/ProjectPorcupine)
-## Project Porcupine will remain on Unity 5.4, till a more stable version of 5.5 is released.  
-We __won't__ be migrating to Unity 5.5 on January the 1st of 2017, we will remain on Unity 5.4 (for now).
 
 ### Project Porcupine: A Base-Building Game...in Space!
 
@@ -58,7 +56,7 @@ The original tutorial project files, which feature no community-contributed code
 are licensed under the MIT License and can be found here:
  * <http://quill18.com/porcupine/project_files/>
  
-Audio engine : FMOD by Firelight Technologies
+Audio engine : [FMOD](http://www.fmod.com/) by Firelight Technologies
 
 Logger: Based on UnityDebugger by Valian (at <https://github.com/Valian/UnityDebugger>), modified source code available at <https://github.com/koosemose/UnityDebugger>
 
@@ -68,7 +66,7 @@ Please check the [CONTRIBUTING.md](CONTRIBUTING.md) file for contribution instru
 
 For further information, such as Roadmaps, explanations of systems and features, Standards and Conventions, and all your Git needs and troubleshooting see the [Wiki](https://github.com/TeamPorcupine/ProjectPorcupine/wiki)
 
-Make sure that you are using Unity 5.4.2 [Windows] (https://unity3d.com/get-unity/download?thank-you=update&download_nid=43049&os=Win) | [Mac] (https://unity3d.com/get-unity/download?thank-you=update&download_nid=43049&os=Mac)
+Make sure that you are using Unity 5.4.2 [Windows](https://unity3d.com/get-unity/download?thank-you=update&download_nid=43049&os=Win) | [Mac](https://unity3d.com/get-unity/download?thank-you=update&download_nid=43049&os=Mac)
 
 ## Community
 

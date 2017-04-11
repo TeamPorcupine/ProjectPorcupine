@@ -4,14 +4,14 @@
 PlayerSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 8
-  productGUID: d47c56fa7a965d94bb2fa20022bfe436
+  productGUID: a44c61a7145014d4887e10bfaafa0a17
   AndroidProfiler: 0
   defaultScreenOrientation: 4
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: Team Porcupine
-  productName: Project Porcupine
+  companyName: DefaultCompany
+  productName: ProjectPorcupine
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenStyle: 0
@@ -29,7 +29,6 @@ PlayerSettings:
   m_StackTraceTypes: 010000000100000001000000010000000100000001000000
   iosShowActivityIndicatorOnLoading: -1
   androidShowActivityIndicatorOnLoading: -1
-  tizenShowActivityIndicatorOnLoading: -1
   iosAppInBackgroundBehavior: 0
   displayResolutionDialog: 1
   iosAllowHTTPDownload: 1
@@ -45,7 +44,6 @@ PlayerSettings:
   runInBackground: 0
   captureSingleScreen: 0
   Override IPod Music: 0
-  muteOtherAudioSources: 0
   Prepare IOS For Recording: 0
   submitAnalytics: 1
   usePlayerLog: 1
@@ -107,7 +105,7 @@ PlayerSettings:
   AndroidMinSdkVersion: 9
   AndroidPreferredInstallLocation: 1
   aotOptions: 
-  apiCompatibilityLevel: 1
+  apiCompatibilityLevel: 2
   stripEngineCode: 1
   iPhoneStrippingLevel: 0
   iPhoneScriptCallOptimization: 0
@@ -125,7 +123,6 @@ PlayerSettings:
   iPhoneTargetOSVersion: 24
   tvOSSdkVersion: 0
   tvOSTargetOSVersion: 900
-  tvOSRequireExtendedGameController: 0
   uIPrerenderedIcon: 0
   uIRequiresPersistentWiFi: 0
   uIRequiresFullScreen: 1
@@ -146,7 +143,6 @@ PlayerSettings:
   tvOSSmallIconLayers: []
   tvOSLargeIconLayers: []
   tvOSTopShelfImageLayers: []
-  tvOSTopShelfImageWideLayers: []
   iOSLaunchScreenType: 0
   iOSLaunchScreenPortrait: {fileID: 0}
   iOSLaunchScreenLandscape: {fileID: 0}
@@ -166,10 +162,6 @@ PlayerSettings:
   iOSLaunchScreeniPadCustomXibPath: 
   iOSDeviceRequirements: []
   iOSURLSchemes: []
-  appleDeveloperTeamID: 
-  iOSManualSigningProvisioningProfileID: 
-  tvOSManualSigningProvisioningProfileID: 
-  appleEnableAutomaticSigning: 0
   AndroidTargetDevice: 0
   AndroidSplashScreenScale: 0
   androidSplashScreen: {fileID: 0}
@@ -184,13 +176,7 @@ PlayerSettings:
     banner: {fileID: 0}
   androidGamepadSupportLevel: 0
   resolutionDialogBanner: {fileID: 0}
-  m_BuildTargetIcons:
-  - m_BuildTarget: 
-    m_Icons:
-    - serializedVersion: 2
-      m_Icon: {fileID: 2800000, guid: ddeb037e579424d458112cd4c3e5b183, type: 3}
-      m_Width: 128
-      m_Height: 128
+  m_BuildTargetIcons: []
   m_BuildTargetBatching: []
   m_BuildTargetGraphicsAPIs: []
   webPlayerTemplate: APPLICATION:Default
@@ -211,15 +197,12 @@ PlayerSettings:
   wiiUSystemHeapSize: 128
   wiiUTVStartupScreen: {fileID: 0}
   wiiUGamePadStartupScreen: {fileID: 0}
-  wiiUDrcBufferDisabled: 0
   wiiUProfilerLibPath: 
   actionOnDotNetUnhandledException: 1
   enableInternalProfiler: 0
   logObjCUncaughtExceptions: 1
   enableCrashReportAPI: 0
-  cameraUsageDescription: 
   locationUsageDescription: 
-  microphoneUsageDescription: 
   XboxTitleId: 
   XboxImageXexPath: 
   XboxSpaPath: 
@@ -259,8 +242,7 @@ PlayerSettings:
   ps4AppType: 0
   ps4ParamSfxPath: 
   ps4VideoOutPixelFormat: 0
-  ps4VideoOutInitialWidth: 1920
-  ps4VideoOutReprojectionRate: 120
+  ps4VideoOutResolution: 4
   ps4PronunciationXMLPath: 
   ps4PronunciationSIGPath: 
   ps4BackgroundImagePath: 
@@ -289,12 +271,9 @@ PlayerSettings:
   ps4pnFriends: 1
   ps4pnGameCustomData: 1
   playerPrefsSupport: 0
-  ps4UseResolutionFallback: 0
-  restrictedAudioUsageRights: 0
   ps4ReprojectionSupport: 0
   ps4UseAudio3dBackend: 0
   ps4SocialScreenEnabled: 0
-  ps4ScriptOptimizationLevel: 3
   ps4Audio3dVirtualSpeakerCount: 14
   ps4attribCpuUsage: 0
   ps4PatchPkgPath: 
@@ -307,9 +286,6 @@ PlayerSettings:
   ps4attribShareSupport: 0
   ps4attribExclusiveVR: 0
   ps4disableAutoHideSplash: 0
-  ps4videoRecordingFeaturesUsed: 0
-  ps4contentSearchFeaturesUsed: 0
-  ps4attribEyeToEyeDistanceSettingVR: 0
   ps4IncludedModules: []
   monoEnv: 
   psp2Splashimage: {fileID: 0}
@@ -361,14 +337,7 @@ PlayerSettings:
   psp2UseDebugIl2cppLibs: 0
   psmSplashimage: {fileID: 0}
   spritePackerPolicy: 
-  scriptingDefineSymbols:
-    1: CROSS_PLATFORM_INPUT
-    2: CROSS_PLATFORM_INPUT
-    4: CROSS_PLATFORM_INPUT;MOBILE_INPUT
-    7: CROSS_PLATFORM_INPUT;MOBILE_INPUT
-    14: MOBILE_INPUT
-    17: MOBILE_INPUT
-    20: MOBILE_INPUT
+  scriptingDefineSymbols: {}
   metroPackageName: ProjectPorcupine
   metroPackageVersion: 
   metroCertificatePath: 
@@ -437,110 +406,13 @@ PlayerSettings:
   XboxOneAllowedProductIds: []
   XboxOnePersistentLocalStorageSize: 0
   intPropertyNames:
-  - Android::ScriptingBackend
-  - Standalone::ScriptingBackend
   - WebPlayer::ScriptingBackend
-  - iOS::Architecture
-  - iOS::ScriptingBackend
-  Android::ScriptingBackend: 0
-  Standalone::ScriptingBackend: 0
   WebPlayer::ScriptingBackend: 0
-  iOS::Architecture: 2
-  iOS::ScriptingBackend: 1
   boolPropertyNames:
-  - Android::VR::enable
-  - Metro::VR::enable
-  - N3DS::VR::enable
-  - PS3::VR::enable
-  - PS4::VR::enable
-  - PSM::VR::enable
-  - PSP2::VR::enable
-  - SamsungTV::VR::enable
-  - Standalone::VR::enable
-  - Tizen::VR::enable
-  - WebGL::VR::enable
-  - WebPlayer::VR::enable
-  - WiiU::VR::enable
-  - Xbox360::VR::enable
-  - XboxOne::VR::enable
   - XboxOne::enus
-  - iOS::VR::enable
-  - tvOS::VR::enable
-  Android::VR::enable: 0
-  Metro::VR::enable: 0
-  N3DS::VR::enable: 0
-  PS3::VR::enable: 0
-  PS4::VR::enable: 0
-  PSM::VR::enable: 0
-  PSP2::VR::enable: 0
-  SamsungTV::VR::enable: 0
-  Standalone::VR::enable: 0
-  Tizen::VR::enable: 0
-  WebGL::VR::enable: 0
-  WebPlayer::VR::enable: 0
-  WiiU::VR::enable: 0
-  Xbox360::VR::enable: 0
-  XboxOne::VR::enable: 0
   XboxOne::enus: 1
-  iOS::VR::enable: 0
-  tvOS::VR::enable: 0
-  stringPropertyNames:
-  - Analytics_ServiceEnabled::Analytics_ServiceEnabled
-  - Build_ServiceEnabled::Build_ServiceEnabled
-  - Collab_ServiceEnabled::Collab_ServiceEnabled
-  - ErrorHub_ServiceEnabled::ErrorHub_ServiceEnabled
-  - Game_Performance_ServiceEnabled::Game_Performance_ServiceEnabled
-  - Hub_ServiceEnabled::Hub_ServiceEnabled
-  - Purchasing_ServiceEnabled::Purchasing_ServiceEnabled
-  - UNet_ServiceEnabled::UNet_ServiceEnabled
-  - Unity_Ads_ServiceEnabled::Unity_Ads_ServiceEnabled
-  Analytics_ServiceEnabled::Analytics_ServiceEnabled: False
-  Build_ServiceEnabled::Build_ServiceEnabled: False
-  Collab_ServiceEnabled::Collab_ServiceEnabled: False
-  ErrorHub_ServiceEnabled::ErrorHub_ServiceEnabled: False
-  Game_Performance_ServiceEnabled::Game_Performance_ServiceEnabled: False
-  Hub_ServiceEnabled::Hub_ServiceEnabled: False
-  Purchasing_ServiceEnabled::Purchasing_ServiceEnabled: False
-  UNet_ServiceEnabled::UNet_ServiceEnabled: False
-  Unity_Ads_ServiceEnabled::Unity_Ads_ServiceEnabled: False
-  vectorPropertyNames:
-  - Android::VR::enabledDevices
-  - Metro::VR::enabledDevices
-  - N3DS::VR::enabledDevices
-  - PS3::VR::enabledDevices
-  - PS4::VR::enabledDevices
-  - PSM::VR::enabledDevices
-  - PSP2::VR::enabledDevices
-  - SamsungTV::VR::enabledDevices
-  - Standalone::VR::enabledDevices
-  - Tizen::VR::enabledDevices
-  - WebGL::VR::enabledDevices
-  - WebPlayer::VR::enabledDevices
-  - WiiU::VR::enabledDevices
-  - Xbox360::VR::enabledDevices
-  - XboxOne::VR::enabledDevices
-  - iOS::VR::enabledDevices
-  - tvOS::VR::enabledDevices
-  Android::VR::enabledDevices:
-  - Oculus
-  Metro::VR::enabledDevices: []
-  N3DS::VR::enabledDevices: []
-  PS3::VR::enabledDevices: []
-  PS4::VR::enabledDevices:
-  - PlayStationVR
-  PSM::VR::enabledDevices: []
-  PSP2::VR::enabledDevices: []
-  SamsungTV::VR::enabledDevices: []
-  Standalone::VR::enabledDevices:
-  - Oculus
-  Tizen::VR::enabledDevices: []
-  WebGL::VR::enabledDevices: []
-  WebPlayer::VR::enabledDevices: []
-  WiiU::VR::enabledDevices: []
-  Xbox360::VR::enabledDevices: []
-  XboxOne::VR::enabledDevices: []
-  iOS::VR::enabledDevices: []
-  tvOS::VR::enabledDevices: []
+  stringPropertyNames: []
+  vectorPropertyNames: []
   cloudProjectId: 
   projectName: 
   organizationId: 

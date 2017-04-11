@@ -6,11 +6,13 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System;
-using System.Collections.Generic;
+
+using System.Linq;
+using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
 
+[MoonSharp.Interpreter.MoonSharpUserData]
 public class SpawnInventoryController
 {
     private GameObject spawnUI;
@@ -53,7 +55,7 @@ public class SpawnInventoryController
         // You can't spawn on occupied tiles
         if (t.Furniture != null)
         {
-            return; 
+            return;
         }
 
         if (t.Inventory == null || t.Inventory.Type == InventoryToBuild)
@@ -91,10 +93,10 @@ public class SpawnInventoryController
 
     private void CreateInventoryEntries()
     {
-        foreach (string invName in PrototypeManager.Inventory.Keys)
+        foreach (Inventory inventory in PrototypeManager.Inventory.Values.OrderByDescending(inv => inv.Category))
         {
             GameObject inventorySlot_go = new GameObject();
-            inventorySlot_go.name = "Slot - " + invName;
+            inventorySlot_go.name = "Slot - " + inventory.Type;
             inventorySlot_go.layer = LayerMask.NameToLayer("UI");
 
             inventorySlot_go.transform.SetParent(spawnUI.transform);
@@ -106,10 +108,12 @@ public class SpawnInventoryController
 
             inventorySlot_go.AddComponent<Image>();
 
-            string localName = invName;
+            string localName = inventory.LocalizationName;
 
-            CreateTextComponent(inventorySlot_go, invName, TextAnchor.MiddleLeft);
-            CreateButtonComponents(inventorySlot_go, localName, new int[] { 1, 20, 50 });
+            GameObject textComponent = CreateTextComponent(inventorySlot_go, localName, TextAnchor.MiddleLeft);
+            TextLocalizer textLocalizer = textComponent.AddComponent<TextLocalizer>();
+            textLocalizer.formatValues = new string[0];
+            CreateButtonComponents(inventorySlot_go, inventory, new int[] { 1, 20, 50 });
 
             LayoutElement layoutElement = inventorySlot_go.AddComponent<LayoutElement>();
             layoutElement.minWidth = 160;
@@ -117,7 +121,7 @@ public class SpawnInventoryController
         }
     }
 
-    private void CreateButtonComponents(GameObject go, string invName, int[] amounts)
+    private void CreateButtonComponents(GameObject go, Inventory inventory, int[] amounts)
     {
         foreach (int amount in amounts)
         {
@@ -140,7 +144,7 @@ public class SpawnInventoryController
             int localAmount = amount;
 
             button.onClick.AddListener(
-                () => OnButtonClick(invName, localAmount));
+                () => OnButtonClick(inventory.Type, localAmount));
         }
     }
 
@@ -161,6 +165,7 @@ public class SpawnInventoryController
         text.alignment = textAnchor;
         text.color = Color.black;
         text.text = invName;
+        text.horizontalOverflow = HorizontalWrapMode.Overflow;
 
         LayoutElement layoutElement = text_go.AddComponent<LayoutElement>();
         layoutElement.minWidth = 100;

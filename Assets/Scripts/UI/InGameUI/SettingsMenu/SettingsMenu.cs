@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
@@ -9,6 +9,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -70,6 +71,17 @@ public class SettingsMenu : MonoBehaviour
             return;
         }
 
+        RectTransform rectTransform = instance.mainRoot.GetComponent<RectTransform>();
+        if (rectTransform.sizeDelta.x > Screen.width * 0.8f)
+        {
+            rectTransform.sizeDelta = new Vector2(Screen.width * 0.8f, rectTransform.sizeDelta.y);
+        }
+
+        if (rectTransform.sizeDelta.y > Screen.height * 0.8f)
+        {
+            rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, Screen.height * 0.8f);
+        }
+
         // Optimisation for saving
         if (instance.currentCategory != string.Empty && instance.currentCategory != category && instance.options.ContainsKey(instance.currentCategory))
         {
@@ -82,12 +94,13 @@ public class SettingsMenu : MonoBehaviour
                     if (elementCopy != null && elementCopy.valueChanged)
                     {
                         instance.changesTracker.Add(elementCopy);
+                        instance.Apply();
                     }
                 }
             }
         }
 
-        instance.categoryHeading.text = category;
+        instance.categoryHeading.text = LocalizationTable.GetLocalization(category);
         instance.currentCategory = category;
 
         // Clear root
@@ -126,7 +139,9 @@ public class SettingsMenu : MonoBehaviour
                 {
                     if (instance.options[instance.currentCategory][headingName][i] != null)
                     {
-                        heading.AddObjectToRoot(instance.options[instance.currentCategory][headingName][i].InitializeElement());
+                        BaseSettingsElement element = instance.options[instance.currentCategory][headingName][i];
+                        heading.AddObjectToRoot(element.InitializeElement());
+                        element.valueChanged = false;
                     }
                 }
             }
@@ -143,6 +158,7 @@ public class SettingsMenu : MonoBehaviour
         for (int i = 0; i < changesTracker.Count; i++)
         {
             changesTracker[i].ApplySetting();
+            changesTracker[i].ApplySettingLUA();
         }
     }
 
@@ -177,7 +193,7 @@ public class SettingsMenu : MonoBehaviour
             return;
         }
 
-        check.SetPrompt("Are you sure you want to close the menu and cancel all settings?");
+        check.SetPrompt("confirm_settings_menu_close");
         check.SetButtons(new DialogBoxResult[] { DialogBoxResult.Yes, DialogBoxResult.No });
         check.Closed =
             () =>
@@ -196,6 +212,7 @@ public class SettingsMenu : MonoBehaviour
                         for (int i = 0; i < changesTracker.Count; i++)
                         {
                             changesTracker[i].CancelSetting();
+                            changesTracker[i].CancelSettingLUA();
                         }
 
                         GameController.Instance.IsModal = false;
@@ -264,7 +281,7 @@ public class SettingsMenu : MonoBehaviour
     // Use this for initialization
     private void Start()
     {
-        // This just makes sure that the localisation is done
+        // This just makes sure that the localization is done
         // It won't always work,
         // especially if slow internet so cross fingers lol, since there is no 'localization finished thing'
         StartCoroutine(LateStart());
@@ -322,7 +339,7 @@ public class SettingsMenu : MonoBehaviour
             ColorButton button = Instantiate(categoryPrefab).GetComponent<ColorButton>();
             button.transform.SetParent(categoryRoot.transform);
             button.name = currentName;
-            button.SetText(currentName);
+            button.SetText(LocalizationTable.GetLocalization(currentName));
             options.Add(currentName, new Dictionary<string, BaseSettingsElement[]>());
 
             // This is quite optimised (despite being a forloop on a dictionary), and is only done during start
@@ -334,8 +351,11 @@ public class SettingsMenu : MonoBehaviour
                 {
                     if (FunctionsManager.SettingsMenu.HasFunction("Get" + keyValuePair.Value[i].className))
                     {
-                        options[currentName][keyValuePair.Key][i] = FunctionsManager.SettingsMenu.Call("Get" + keyValuePair.Value[i].className).ToObject<BaseSettingsElement>();
-                        options[currentName][keyValuePair.Key][i].option = keyValuePair.Value[i];
+                        BaseSettingsElement element = FunctionsManager.SettingsMenu.Call("Get" + keyValuePair.Value[i].className).ToObject<BaseSettingsElement>();
+                        element.option = keyValuePair.Value[i];
+                        element.parameterData = keyValuePair.Value[i].options;
+                        element.InitializeLUA();
+                        options[currentName][keyValuePair.Key][i] = element;
                     }
                     else if (keyValuePair.Value[i].name != null)
                     {

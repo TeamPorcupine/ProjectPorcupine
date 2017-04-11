@@ -183,8 +183,8 @@ public class BuildModeController
                 job.buildablePrototype = furnitureToBuild;
 
                 // Add the job to the queue or build immediately if in Dev mode
-                if (CommandSettings.DeveloperModeToggle)
-                {                    
+                if (SettingsKeyHolder.DeveloperMode)
+                {
                     World.Current.FurnitureManager.PlaceFurniture(furnitureToBuild, job.tile);
                 }
                 else
@@ -257,7 +257,7 @@ public class BuildModeController
                 job.buildablePrototype = PrototypeManager.Utility.Get(utilityType);
 
                 // Add the job to the queue or build immediately if in dev mode
-                if (CommandSettings.DeveloperModeToggle)
+                if (SettingsKeyHolder.DeveloperMode)
                 {
                     World.Current.UtilityManager.PlaceUtility(job.Type, job.tile, true);
                 }
@@ -294,7 +294,7 @@ public class BuildModeController
                 buildingJob.tile = tile;
 
                 // Add the job to the queue or build immediately if in Dev mode
-                if (CommandSettings.DeveloperModeToggle)
+                if (SettingsKeyHolder.DeveloperMode)
                 {
                     buildingJob.tile.SetTileType(buildingJob.JobTileType);
                 }
@@ -308,13 +308,13 @@ public class BuildModeController
         }
         else if (buildMode == BuildMode.DECONSTRUCT)
         {
-            bool canDeconstructAll = CommandSettings.DeveloperModeToggle;
+            bool canDeconstructAll = SettingsKeyHolder.DeveloperMode;
 
             if (tile.Furniture != null && (canDeconstructAll || tile.Furniture.HasTypeTag("Non-deconstructible") == false))
             {
                 // check if this is a WALL neighbouring a pressured and pressureless environment, and if so, bail
                 if (IsTilePartOfPressuredRoom(tile))
-                {                    
+                {
                     return;
                 }
 
@@ -347,7 +347,7 @@ public class BuildModeController
                         }
 
                         Job job = mineAction.CreateJob(tile, null);
-                        if (CommandSettings.DeveloperModeToggle)
+                        if (SettingsKeyHolder.DeveloperMode)
                         {
                             // complete job right away, needs buildable
                             job.buildable = tile.Furniture;
