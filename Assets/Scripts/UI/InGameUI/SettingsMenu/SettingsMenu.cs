@@ -158,6 +158,7 @@ public class SettingsMenu : MonoBehaviour
         for (int i = 0; i < changesTracker.Count; i++)
         {
             changesTracker[i].ApplySetting();
+            changesTracker[i].ApplySettingLUA();
         }
     }
 
@@ -211,6 +212,7 @@ public class SettingsMenu : MonoBehaviour
                         for (int i = 0; i < changesTracker.Count; i++)
                         {
                             changesTracker[i].CancelSetting();
+                            changesTracker[i].CancelSettingLUA();
                         }
 
                         GameController.Instance.IsModal = false;
@@ -349,9 +351,11 @@ public class SettingsMenu : MonoBehaviour
                 {
                     if (FunctionsManager.SettingsMenu.HasFunction("Get" + keyValuePair.Value[i].className))
                     {
-                        options[currentName][keyValuePair.Key][i] = FunctionsManager.SettingsMenu.Call("Get" + keyValuePair.Value[i].className).ToObject<BaseSettingsElement>();
-                        options[currentName][keyValuePair.Key][i].option = keyValuePair.Value[i];
-                        options[currentName][keyValuePair.Key][i].parameterData = keyValuePair.Value[i].options;
+                        BaseSettingsElement element = FunctionsManager.SettingsMenu.Call("Get" + keyValuePair.Value[i].className).ToObject<BaseSettingsElement>();
+                        element.option = keyValuePair.Value[i];
+                        element.parameterData = keyValuePair.Value[i].options;
+                        element.InitializeLUA();
+                        options[currentName][keyValuePair.Key][i] = element;
                     }
                     else if (keyValuePair.Value[i].name != null)
                     {

@@ -17,8 +17,30 @@ using UnityEngine.UI;
 [MoonSharp.Interpreter.MoonSharpUserData]
 public abstract class BasePerformanceHUDElement : BaseUIElement
 {
+    public event EventHandler UpdateHandler;
+
+    public abstract void Update();
+
     /// <summary>
     /// Update function.
     /// </summary>
-    public abstract void Update();
+    public void UpdateLUA()
+    {
+        EventHandler invoker = UpdateHandler;
+        if (invoker != null)
+        {
+            invoker(this, null);
+        }
+    }
+
+    /// <summary>
+    /// LUA Initializer.
+    /// </summary>
+    public void InitializeLUA()
+    {
+        if (parameterData.ContainsKey("LUAInitializeFunction"))
+        {
+            FunctionsManager.PerformanceHUD.Call(parameterData["LUAInitializeFunction"].ToString(), this);
+        }
+    }
 }

@@ -120,9 +120,11 @@ public class ModsManager
         LoadPrototypes("SettingsTemplate.xml", PrototypeManager.SettingsCategories.LoadPrototypes);
         LoadPrototypes("PerformanceHUDTemplate.xml", PrototypeManager.PerformanceHUD.LoadPrototypes);
 
-        // We are only allowing the settings menu to be in C# due to class requirements
         LoadFunctions("SettingsMenuFunctions.cs", "SettingsMenu");
+        LoadFunctions("SettingsMenuCommands.lua", "SettingsMenu");
+
         LoadFunctions("PerformanceHUDFunctions.cs", "PerformanceHUD");
+        LoadFunctions("PerfanceHUDCommands.lua", "PerformanceHUD");
     }
 
     /// <summary>

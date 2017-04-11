@@ -91,9 +91,10 @@
   </Category>
   <Category Name="developer">
     <OptionHeading Name="general">
-      <Option Name="developer_mode" Key="developer_general_developerMode" DefaultValue="false" ClassName="DeveloperModeToggle">
+      <Option Name="developer_mode" Key="developer_general_developerMode" DefaultValue="false" ClassName="GenericToggle">
         <Params>
           <Param name="Type" value="Switch" />
+          <Param name="LUAInitializeFunction" value="InitDevMode" />
         </Params>
       </Option>
       <Option Name="logging_level" Key="developer_general_loggingLevel" DefaultValue="false" ClassName="GenericToggle" />
