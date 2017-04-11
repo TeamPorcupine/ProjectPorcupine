@@ -108,6 +108,7 @@ public class BuildableComponentTest
 
         Assert.NotNull(deserializedWorkshop);
         Assert.AreEqual("Raw Iron", deserializedWorkshop.PossibleProductions[0].Input[0].ObjectType);
+        Assert.IsNotNull(deserializedWorkshop.RunConditions);
     }
 
     [Test]
@@ -197,8 +198,8 @@ public class BuildableComponentTest
         Assert.NotNull(deserializedPowerConnection);
 
         Assert.AreEqual(10f, deserializedPowerConnection.Provides.Rate);
-        Assert.AreEqual(0f, deserializedPowerConnection.Requires.Rate);
-        Assert.AreEqual(1, deserializedPowerConnection.Requires.ParamConditions.Count);
+        Assert.AreEqual("cur_processed_inv", deserializedPowerConnection.RunConditions.ParamConditions[0].ParameterName);
+        Assert.AreEqual(1, deserializedPowerConnection.RunConditions.ParamConditions.Count);
     }
 
     [Test]
@@ -218,8 +219,8 @@ public class BuildableComponentTest
         Assert.NotNull(deserializedPowerConnection);
 
         Assert.AreEqual(10f, deserializedPowerConnection.Provides.Rate);
-        Assert.AreEqual(0f, deserializedPowerConnection.Requires.Rate);
-        Assert.AreEqual(1, deserializedPowerConnection.Requires.ParamConditions.Count);
+        Assert.AreEqual("cur_processed_inv", deserializedPowerConnection.RunConditions.ParamConditions[0].ParameterName);
+        Assert.AreEqual(1, deserializedPowerConnection.RunConditions.ParamConditions.Count);
     }
 
     [Test]
@@ -281,7 +282,7 @@ public class BuildableComponentTest
                 new BuildableComponent.UseAnimation()
                 {
                     Name = "idle",
-                    Requires = new BuildableComponent.ParameterConditions()
+                    RunConditions = new BuildableComponent.Conditions()
                     {
                         ParamConditions = new System.Collections.Generic.List<BuildableComponent.ParameterCondition>()
                         {
@@ -296,7 +297,7 @@ public class BuildableComponentTest
                 new BuildableComponent.UseAnimation()
                 {
                     Name = "running",
-                    Requires = new BuildableComponent.ParameterConditions()
+                    RunConditions = new BuildableComponent.Conditions()
                     {
                         ParamConditions = new System.Collections.Generic.List<BuildableComponent.ParameterCondition>()
                         {
@@ -364,6 +365,17 @@ public class BuildableComponentTest
 
         workshop.PossibleProductions.Add(chain2);
 
+        workshop.RunConditions = new BuildableComponent.Conditions()
+        {
+            ParamConditions = new System.Collections.Generic.List<BuildableComponent.ParameterCondition>()
+            {
+                new BuildableComponent.ParameterCondition()
+                {
+                    ParameterName = "test", Condition = BuildableComponent.ConditionType.IsTrue
+                }
+            }
+        };
+
         workshop.ParamsDefinitions = new Workshop.WorkShopParameterDefinitions();
         return workshop;
     }
@@ -394,8 +406,8 @@ public class BuildableComponentTest
     {
         return new PowerConnection
         {
-            Provides = new PowerConnection.Info() { Rate = 10.0f, Capacity = 100.0f },
-            Requires = new PowerConnection.Info()
+            Provides = new PowerConnection.Info() { Rate = 10.0f, Capacity = 100.0f },            
+            RunConditions = new BuildableComponent.Conditions()
             {
                 ParamConditions = new System.Collections.Generic.List<BuildableComponent.ParameterCondition>()
                 {

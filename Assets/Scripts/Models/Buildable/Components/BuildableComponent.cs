@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 using System.Xml;
 using System.Xml.Serialization;
+using MoonSharp.Interpreter;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -53,6 +54,7 @@ namespace ProjectPorcupine.Buildable.Components
         public enum ConditionType
         {
             IsGreaterThanZero,
+            IsLessThanOne,
             IsZero,
             IsTrue,
             IsFalse
@@ -235,6 +237,9 @@ namespace ProjectPorcupine.Buildable.Components
                         case ConditionType.IsGreaterThanZero:
                             partialEval = FurnitureParams[condition.ParameterName].ToFloat() > 0f;
                             break;
+                        case ConditionType.IsLessThanOne:
+                            partialEval = FurnitureParams[condition.ParameterName].ToFloat() < 1f;
+                            break;
                         case ConditionType.IsTrue:
                             partialEval = FurnitureParams[condition.ParameterName].ToBool() == true;
                             break;
@@ -248,6 +253,52 @@ namespace ProjectPorcupine.Buildable.Components
             }
 
             return conditionsFulFilled;
+        }
+
+        protected string RetrieveStringFor(SourceDataInfo sourceDataInfo, Furniture furniture)
+        {
+            string retString = null;
+            if (sourceDataInfo != null)
+            {
+                if (!string.IsNullOrEmpty(sourceDataInfo.Value))
+                {
+                    retString = sourceDataInfo.Value;
+                }
+                else if (!string.IsNullOrEmpty(sourceDataInfo.FromFunction))
+                {
+                    DynValue ret = FunctionsManager.Furniture.Call(sourceDataInfo.FromFunction, furniture);
+                    retString = ret.String;
+                }
+                else if (!string.IsNullOrEmpty(sourceDataInfo.FromParameter))
+                {
+                    retString = furniture.Parameters[sourceDataInfo.FromParameter].ToString();
+                }
+            }
+
+            return retString;
+        }
+
+        protected float RetrieveFloatFor(SourceDataInfo sourceDataInfo, Furniture furniture)
+        {
+            float retFloat = 0f;
+            if (sourceDataInfo != null)
+            {
+                if (!string.IsNullOrEmpty(sourceDataInfo.Value))
+                {
+                    retFloat = float.Parse(sourceDataInfo.Value);
+                }
+                else if (!string.IsNullOrEmpty(sourceDataInfo.FromFunction))
+                {
+                    DynValue ret = FunctionsManager.Furniture.Call(sourceDataInfo.FromFunction, furniture);
+                    retFloat = (float)ret.Number;
+                }
+                else if (!string.IsNullOrEmpty(sourceDataInfo.FromParameter))
+                {
+                    retFloat = furniture.Parameters[sourceDataInfo.FromParameter].ToFloat();
+                }
+            }
+
+            return retFloat;
         }
 
         private static Dictionary<string, System.Type> FindComponentsInAssembly()
@@ -283,17 +334,9 @@ namespace ProjectPorcupine.Buildable.Components
             [XmlAttribute("valuebasedParamerName")]
             public string ValueBasedParamerName { get; set; }
 
-            public ParameterConditions Requires { get; set; }
+            public Conditions RunConditions { get; set; }
         }
-
-        [Serializable]
-        [JsonObject(MemberSerialization.OptOut)]
-        public class ParameterConditions
-        {
-            [XmlElement("Param")]
-            public List<ParameterCondition> ParamConditions { get; set; }
-        }
-
+        
         [Serializable]
         [JsonObject(MemberSerialization.OptOut)]
         public class ParameterCondition
@@ -324,6 +367,45 @@ namespace ProjectPorcupine.Buildable.Components
 
             [XmlAttribute("type")]
             public string Type { get; set; }
+        }
+
+        [Serializable]
+        [JsonObject(MemberSerialization.OptOut)]
+        public class SourceDataInfo
+        {
+            [XmlAttribute("value")]
+            public string Value { get; set; }
+
+            [XmlAttribute("fromParameter")]
+            public string FromParameter { get; set; }
+
+            [XmlAttribute("fromFunction")]
+            public string FromFunction { get; set; }
+        }
+
+        [Serializable]
+        [JsonObject(MemberSerialization.OptOut)]
+        public class Info
+        {
+            [XmlAttribute("rate")]
+            public float Rate { get; set; }
+
+            [XmlAttribute("capacity")]
+            public float Capacity { get; set; }
+
+            [XmlAttribute("capacityThresholds")]
+            public int CapacityThresholds { get; set; }
+
+            [XmlAttribute("canUseVariableEffiency")]
+            public bool CanUseVariableEfficiency { get; set; }            
+        }
+
+        [Serializable]
+        [JsonObject(MemberSerialization.OptOut)]
+        public class Conditions
+        {
+            [XmlElement("Param")]
+            public List<ParameterCondition> ParamConditions { get; set; }
         }
     }
 }

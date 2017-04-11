@@ -33,6 +33,7 @@ namespace ProjectPorcupine.Buildable.Components
             ParamsDefinitions = other.ParamsDefinitions;
             Provides = other.Provides;
             Requires = other.Requires;
+            RunConditions = other.RunConditions;
 
             Reconnecting += OnReconnecting;
         }
@@ -73,6 +74,48 @@ namespace ProjectPorcupine.Buildable.Components
             }
         }
 
+        [XmlIgnore]
+        public bool IsConnected
+        {
+            get
+            {
+                return FurnitureParams[ParamsDefinitions.IsConnected.ParameterName].ToBool();
+            }
+
+            set
+            {
+                FurnitureParams[ParamsDefinitions.IsConnected.ParameterName].SetValue(value);
+            }
+        }
+
+        [XmlIgnore]
+        public float Efficiency
+        {
+            get
+            {
+                return FurnitureParams[ParamsDefinitions.Efficiency.ParameterName].ToFloat();
+            }
+
+            set
+            {
+                FurnitureParams[ParamsDefinitions.Efficiency.ParameterName].SetValue(value);
+            }
+        }
+
+        [XmlIgnore]
+        public bool OutputIsNeeded
+        {
+            get
+            {
+                return FurnitureParams[ParamsDefinitions.OutputNeeded.ParameterName].ToBool();
+            }
+
+            set
+            {
+                FurnitureParams[ParamsDefinitions.OutputNeeded.ParameterName].SetValue(value);
+            }
+        }
+
         [XmlElement("Provides")]
         [JsonProperty("Provides")]
         public Info Provides { get; set; }
@@ -80,6 +123,10 @@ namespace ProjectPorcupine.Buildable.Components
         [XmlElement("Requires")]
         [JsonProperty("Requires")]
         public Info Requires { get; set; }
+
+        [XmlElement("RunConditions")]
+        [JsonProperty("RunConditions")]
+        public Conditions RunConditions { get; set; }
         
         [XmlIgnore]
         public float StoredAmount
@@ -162,6 +209,11 @@ namespace ProjectPorcupine.Buildable.Components
             get { return IsStorage ? Provides.Capacity : 0f; }
         }
 
+        public bool InputCanVary
+        {
+            get { return Requires != null && Requires.CanUseVariableEfficiency == true; }
+        }
+
         public override bool RequiresSlowUpdate
         {
             get
@@ -170,6 +222,26 @@ namespace ProjectPorcupine.Buildable.Components
             }
         }
 
+        public bool OutputCanVary
+        {
+            get { return Provides != null && Provides.CanUseVariableEfficiency == true; }
+        }
+
+        public bool AllRequirementsFulfilled
+        {
+            get
+            {                
+                if (RunConditions != null)
+                {
+                    return AreParameterConditionsFulfilled(RunConditions.ParamConditions);
+                }
+                else
+                {
+                    return true;
+                }
+            }
+        }
+        
         public override BuildableComponent Clone()
         {
             return new PowerConnection(this);
@@ -177,21 +249,36 @@ namespace ProjectPorcupine.Buildable.Components
 
         public override bool CanFunction()
         {
-            bool hasPower = true;
+            bool canFunction = true;
+
             if (IsConsumer)
             {
-                hasPower = World.Current.PowerNetwork.HasPower(this);
+                if (InputCanVary)
+                {
+                    canFunction = World.Current.PowerNetwork.GetEfficiency(this) > 0f;
+                }
+                else
+                {
+                    canFunction = World.Current.PowerNetwork.HasPower(this);
+                }
             }
 
-            return hasPower;
+            IsRunning = canFunction;
+
+            bool isConnected = World.Current.PowerNetwork.IsConnected(this);
+            IsConnected = isConnected;
+
+            canFunction |= isConnected;
+
+            return canFunction;
         }
 
         public override void FixedFrequencyUpdate(float deltaTime)
         {
             bool areAllParamReqsFulfilled = true;
-            if (Requires != null)
+            if (RunConditions != null)
             {
-                areAllParamReqsFulfilled = AreParameterConditionsFulfilled(Requires.ParamConditions);
+                areAllParamReqsFulfilled = AreParameterConditionsFulfilled(RunConditions.ParamConditions);
             }
 
             if (IsStorage)
@@ -200,25 +287,44 @@ namespace ProjectPorcupine.Buildable.Components
             }
 
             IsRunning = areAllParamReqsFulfilled;
+
+            // store the actual efficiency for other components to use
+            if (IsConsumer && Requires.CanUseVariableEfficiency)
+            {
+                Efficiency = World.Current.PowerNetwork.GetEfficiency(this);                
+            }            
         }
         
         public override IEnumerable<string> GetDescription()
         {           
-            string powerColor = IsRunning ? "lime" : "red";
-            string status = IsRunning ? "online" : "offline";
-            yield return LocalizationTable.GetLocalization("power_grid_status_" + status, powerColor);
+            string powerColor = IsConnected ? "lime" : "red";
+            string status = IsConnected ? "connected" : "not connected";
+            yield return string.Format("Power grid: <color={0}>{1}</color>", powerColor, status); // TODO: localization 
 
-            if (IsConsumer && Requires != null)
+            if (IsConsumer)
             {
                 yield return LocalizationTable.GetLocalization("power_input_status", powerColor, Requires.Rate);
+
+                if (Requires.CanUseVariableEfficiency && IsRunning)
+                {
+                    yield return string.Format("Electricity: {0:0}%", Efficiency * 100); // TODO: localization
+                }
             }
 
-            if (IsProducer && Requires != null)
+            if (IsProducer)
             {
-                yield return LocalizationTable.GetLocalization("power_output_status", powerColor, Requires.Rate);
+                if (OutputCanVary)
+                {
+                    status = OutputIsNeeded ? "demand" : "idle";
+                    yield return string.Format("Status: {0}", status); // TODO: localization
+                }
+                else
+                {
+                    yield return LocalizationTable.GetLocalization("power_output_status", powerColor, Provides.Rate);
+                }
             }
 
-            if (IsStorage && Provides != null)
+            if (IsStorage)
             {
                 yield return LocalizationTable.GetLocalization("power_accumulated_fraction", StoredAmount, Provides.Capacity);
             }
@@ -254,7 +360,13 @@ namespace ProjectPorcupine.Buildable.Components
                 }
             }
 
+            if (OutputCanVary)
+            {
+                OutputIsNeeded = false;
+            }
+
             IsRunning = false;
+            Efficiency = 1f;
 
             OnReconnecting();
 
@@ -281,36 +393,25 @@ namespace ProjectPorcupine.Buildable.Components
 
         [Serializable]
         [JsonObject(MemberSerialization.OptOut)]
-        public class Info
-        {
-            [XmlAttribute("rate")]
-            public float Rate { get; set; }
-
-            [XmlAttribute("capacity")]
-            public float Capacity { get; set; }
-
-            [XmlAttribute("capacityThresholds")]
-            public int CapacityThresholds { get; set; }
-
-            [XmlElement("Param")]
-            public List<ParameterCondition> ParamConditions { get; set; }            
-        }
-
-        [Serializable]
-        [JsonObject(MemberSerialization.OptOut)]
         public class PowerConnectionParameterDefinitions
         {
             // constants for parameters
             public const string CurAccumulatorChargeParamName = "pow_accumulator_charge";
             public const string CurAccumulatorIndexParamName = "pow_accumulator_index";
             public const string CurIsRunningParamName = "pow_is_running";
-            
+            public const string CurIsConnectedParamName = "pow_is_connected";
+            public const string CurEfficiencyParamName = "pow_efficiency";
+            public const string CurPowerOutputNeededParamName = "pow_out_needed";
+
             public PowerConnectionParameterDefinitions()
             {
                 // defaults
                 CurrentAcumulatorCharge = new ParameterDefinition(CurAccumulatorChargeParamName);
                 CurrentAcumulatorChargeIndex = new ParameterDefinition(CurAccumulatorIndexParamName);
                 IsRunning = new ParameterDefinition(CurIsRunningParamName);
+                IsConnected = new ParameterDefinition(CurIsConnectedParamName);
+                Efficiency = new ParameterDefinition(CurEfficiencyParamName);
+                OutputNeeded = new ParameterDefinition(CurPowerOutputNeededParamName);
             }
 
             public ParameterDefinition CurrentAcumulatorCharge { get; set; }
@@ -318,6 +419,12 @@ namespace ProjectPorcupine.Buildable.Components
             public ParameterDefinition CurrentAcumulatorChargeIndex { get; set; }
 
             public ParameterDefinition IsRunning { get; set; }
+
+            public ParameterDefinition IsConnected { get; set; }
+
+            public ParameterDefinition Efficiency { get; set; }
+
+            public ParameterDefinition OutputNeeded { get; set; }
         }
     }
 }
