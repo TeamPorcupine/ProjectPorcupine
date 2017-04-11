@@ -161,9 +161,9 @@ public class TemperatureDiffusion
                         Tile[] neighbours = tile.GetNeighbours(true, false, true);
 
                         AddDiffusionFromSource(tile.Furniture, tile.North(), neighbours[5], tile.South(), neighbours[6]);
-                        AddDiffusionFromSource(tile.Furniture, tile.East(),  neighbours[6], tile.West(),  neighbours[7]);
+                        AddDiffusionFromSource(tile.Furniture, tile.East(), neighbours[6], tile.West(), neighbours[7]);
                         AddDiffusionFromSource(tile.Furniture, tile.South(), neighbours[7], tile.North(), neighbours[4]);
-                        AddDiffusionFromSource(tile.Furniture, tile.West(),  neighbours[4], tile.East(),  neighbours[5]);
+                        AddDiffusionFromSource(tile.Furniture, tile.West(), neighbours[4], tile.East(), neighbours[5]);
                     }
                 }
             }

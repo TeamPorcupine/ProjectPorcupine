@@ -95,13 +95,9 @@ namespace ProjectPorcupine.Buildable.Components
                     if ((provGas.Rate > 0 && curGasPressure < provGas.MaxLimit) ||
                         (provGas.Rate < 0 && curGasPressure > provGas.MinLimit))
                     {
-<<<<<<< HEAD
                         // TODO Impose a max limit to avoid rounding errors
                         // TODO Implement gas networks as their own AtmosphereComponent so temperature is consistent
                         room.Atmosphere.CreateGas(provGas.Gas, provGas.Rate * deltaTime, 0.0f);
-=======
-                        room.ChangeGas(provGas.Gas, provGas.Rate * deltaTime * efficiency, provGas.MaxLimit);
->>>>>>> 5c5988baee12e4fc5bd583d86aebc03221324c94
                     }
                 }
             }

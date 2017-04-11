@@ -4,14 +4,14 @@
 PlayerSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 8
-  productGUID: a44c61a7145014d4887e10bfaafa0a17
+  productGUID: d47c56fa7a965d94bb2fa20022bfe436
   AndroidProfiler: 0
   defaultScreenOrientation: 4
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: DefaultCompany
-  productName: ProjectPorcupine
+  companyName: Team Porcupine
+  productName: Project Porcupine
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenStyle: 0
@@ -105,7 +105,7 @@ PlayerSettings:
   AndroidMinSdkVersion: 9
   AndroidPreferredInstallLocation: 1
   aotOptions: 
-  apiCompatibilityLevel: 2
+  apiCompatibilityLevel: 1
   stripEngineCode: 1
   iPhoneStrippingLevel: 0
   iPhoneScriptCallOptimization: 0
@@ -176,7 +176,13 @@ PlayerSettings:
     banner: {fileID: 0}
   androidGamepadSupportLevel: 0
   resolutionDialogBanner: {fileID: 0}
-  m_BuildTargetIcons: []
+  m_BuildTargetIcons:
+  - m_BuildTarget: 
+    m_Icons:
+    - serializedVersion: 2
+      m_Icon: {fileID: 2800000, guid: ddeb037e579424d458112cd4c3e5b183, type: 3}
+      m_Width: 128
+      m_Height: 128
   m_BuildTargetBatching: []
   m_BuildTargetGraphicsAPIs: []
   webPlayerTemplate: APPLICATION:Default
@@ -337,7 +343,14 @@ PlayerSettings:
   psp2UseDebugIl2cppLibs: 0
   psmSplashimage: {fileID: 0}
   spritePackerPolicy: 
-  scriptingDefineSymbols: {}
+  scriptingDefineSymbols:
+    1: CROSS_PLATFORM_INPUT
+    2: CROSS_PLATFORM_INPUT
+    4: CROSS_PLATFORM_INPUT;MOBILE_INPUT
+    7: CROSS_PLATFORM_INPUT;MOBILE_INPUT
+    14: MOBILE_INPUT
+    17: MOBILE_INPUT
+    20: MOBILE_INPUT
   metroPackageName: ProjectPorcupine
   metroPackageVersion: 
   metroCertificatePath: 
@@ -406,13 +419,110 @@ PlayerSettings:
   XboxOneAllowedProductIds: []
   XboxOnePersistentLocalStorageSize: 0
   intPropertyNames:
+  - Android::ScriptingBackend
+  - Standalone::ScriptingBackend
   - WebPlayer::ScriptingBackend
+  - iOS::Architecture
+  - iOS::ScriptingBackend
+  Android::ScriptingBackend: 0
+  Standalone::ScriptingBackend: 0
   WebPlayer::ScriptingBackend: 0
+  iOS::Architecture: 2
+  iOS::ScriptingBackend: 1
   boolPropertyNames:
+  - Android::VR::enable
+  - Metro::VR::enable
+  - N3DS::VR::enable
+  - PS3::VR::enable
+  - PS4::VR::enable
+  - PSM::VR::enable
+  - PSP2::VR::enable
+  - SamsungTV::VR::enable
+  - Standalone::VR::enable
+  - Tizen::VR::enable
+  - WebGL::VR::enable
+  - WebPlayer::VR::enable
+  - WiiU::VR::enable
+  - Xbox360::VR::enable
+  - XboxOne::VR::enable
   - XboxOne::enus
+  - iOS::VR::enable
+  - tvOS::VR::enable
+  Android::VR::enable: 0
+  Metro::VR::enable: 0
+  N3DS::VR::enable: 0
+  PS3::VR::enable: 0
+  PS4::VR::enable: 0
+  PSM::VR::enable: 0
+  PSP2::VR::enable: 0
+  SamsungTV::VR::enable: 0
+  Standalone::VR::enable: 0
+  Tizen::VR::enable: 0
+  WebGL::VR::enable: 0
+  WebPlayer::VR::enable: 0
+  WiiU::VR::enable: 0
+  Xbox360::VR::enable: 0
+  XboxOne::VR::enable: 0
   XboxOne::enus: 1
-  stringPropertyNames: []
-  vectorPropertyNames: []
+  iOS::VR::enable: 0
+  tvOS::VR::enable: 0
+  stringPropertyNames:
+  - Analytics_ServiceEnabled::Analytics_ServiceEnabled
+  - Build_ServiceEnabled::Build_ServiceEnabled
+  - Collab_ServiceEnabled::Collab_ServiceEnabled
+  - ErrorHub_ServiceEnabled::ErrorHub_ServiceEnabled
+  - Game_Performance_ServiceEnabled::Game_Performance_ServiceEnabled
+  - Hub_ServiceEnabled::Hub_ServiceEnabled
+  - Purchasing_ServiceEnabled::Purchasing_ServiceEnabled
+  - UNet_ServiceEnabled::UNet_ServiceEnabled
+  - Unity_Ads_ServiceEnabled::Unity_Ads_ServiceEnabled
+  Analytics_ServiceEnabled::Analytics_ServiceEnabled: False
+  Build_ServiceEnabled::Build_ServiceEnabled: False
+  Collab_ServiceEnabled::Collab_ServiceEnabled: False
+  ErrorHub_ServiceEnabled::ErrorHub_ServiceEnabled: False
+  Game_Performance_ServiceEnabled::Game_Performance_ServiceEnabled: False
+  Hub_ServiceEnabled::Hub_ServiceEnabled: False
+  Purchasing_ServiceEnabled::Purchasing_ServiceEnabled: False
+  UNet_ServiceEnabled::UNet_ServiceEnabled: False
+  Unity_Ads_ServiceEnabled::Unity_Ads_ServiceEnabled: False
+  vectorPropertyNames:
+  - Android::VR::enabledDevices
+  - Metro::VR::enabledDevices
+  - N3DS::VR::enabledDevices
+  - PS3::VR::enabledDevices
+  - PS4::VR::enabledDevices
+  - PSM::VR::enabledDevices
+  - PSP2::VR::enabledDevices
+  - SamsungTV::VR::enabledDevices
+  - Standalone::VR::enabledDevices
+  - Tizen::VR::enabledDevices
+  - WebGL::VR::enabledDevices
+  - WebPlayer::VR::enabledDevices
+  - WiiU::VR::enabledDevices
+  - Xbox360::VR::enabledDevices
+  - XboxOne::VR::enabledDevices
+  - iOS::VR::enabledDevices
+  - tvOS::VR::enabledDevices
+  Android::VR::enabledDevices:
+  - Oculus
+  Metro::VR::enabledDevices: []
+  N3DS::VR::enabledDevices: []
+  PS3::VR::enabledDevices: []
+  PS4::VR::enabledDevices:
+  - PlayStationVR
+  PSM::VR::enabledDevices: []
+  PSP2::VR::enabledDevices: []
+  SamsungTV::VR::enabledDevices: []
+  Standalone::VR::enabledDevices:
+  - Oculus
+  Tizen::VR::enabledDevices: []
+  WebGL::VR::enabledDevices: []
+  WebPlayer::VR::enabledDevices: []
+  WiiU::VR::enabledDevices: []
+  Xbox360::VR::enabledDevices: []
+  XboxOne::VR::enabledDevices: []
+  iOS::VR::enabledDevices: []
+  tvOS::VR::enabledDevices: []
   cloudProjectId: 
   projectName: 
   organizationId: 
