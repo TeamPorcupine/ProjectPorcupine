@@ -1,5 +1,7 @@
 # ProjectPorcupine [![Build Status](https://travis-ci.org/TeamPorcupine/ProjectPorcupine.svg?branch=master)](https://travis-ci.org/TeamPorcupine/ProjectPorcupine)
 
+**NOTE** We have now moved over to a new repository due to change in management, find it [here](https://github.com/OrderOfThePorcupine/ProjectPorcupine)
+
 ### Project Porcupine: A Base-Building Game...in Space!
 
 ![Preview Thumbnail](https://cloud.githubusercontent.com/assets/22880786/19826387/7ad0f0d2-9dd4-11e6-92f3-eb47b395ac63.png)
