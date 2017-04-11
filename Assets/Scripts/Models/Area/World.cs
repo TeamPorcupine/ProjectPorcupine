@@ -25,7 +25,7 @@ public class World
     public Material skybox;
 
     // Store all temperature information
-    public Temperature temperature;
+    public TemperatureDiffusion temperature;
 
     // The pathfinding graph used to navigate our world map.
     public Path_TileGraph tileGraph;
@@ -461,7 +461,7 @@ public class World
         GameEventManager = new GameEventManager();
         PowerNetwork = new PowerNetwork();
         FluidNetwork = new FluidNetwork();
-        temperature = new Temperature();
+        temperature = new TemperatureDiffusion();
         ShipManager = new ShipManager();
         Wallet = new Wallet();
         CameraData = new CameraData();

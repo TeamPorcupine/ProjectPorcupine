@@ -17,8 +17,6 @@ namespace ProjectPorcupine.Rooms
     [MoonSharpUserData]
     public class Room
     {
-        // Dictionary with the amount of gas in room stored in preasure(in atm) multiplyed by number of tiles.
-        private Dictionary<string, float> atmosphericGasses;
         private Dictionary<string, string> deltaGas;
 
         private List<Tile> tiles;
@@ -26,7 +24,7 @@ namespace ProjectPorcupine.Rooms
         public Room()
         {
             tiles = new List<Tile>();
-            atmosphericGasses = new Dictionary<string, float>();
+            Atmosphere = new AtmosphereComponent();
             deltaGas = new Dictionary<string, string>();
             RoomBehaviors = new Dictionary<string, RoomBehavior>();
         }
@@ -49,6 +47,18 @@ namespace ProjectPorcupine.Rooms
 
         // RoomBehavior is something like an airlock or office.
         public Dictionary<string, RoomBehavior> RoomBehaviors { get; private set; }
+
+        public AtmosphereComponent Atmosphere { get; private set; }
+
+        public float GetGasPressure()
+        {
+            return IsOutsideRoom() ? 0.0f : Atmosphere.GetGasAmount() / TileCount;
+        }
+
+        public float GetGasPressure(string gasName)
+        {
+            return IsOutsideRoom() ? 0.0f : Atmosphere.GetGasAmount(gasName) / TileCount;
+        }
 
         public Tile FindExitBetween(Room room2)
         {
@@ -113,23 +123,6 @@ namespace ProjectPorcupine.Rooms
             return this == World.Current.RoomManager.OutsideRoom;
         }
 
-        // Changes gas by amount in pressure (atm) per tile, evenly distributed over all gases present
-        // Possibly deprecated. Use MoveGasTo(room, amount)
-        public void ChangeGas(float amount)
-        {
-            if (IsOutsideRoom())
-            {
-                return;
-            }
-
-            List<string> names = new List<string>(atmosphericGasses.Keys);
-            foreach (string name in names)
-            {
-                float fraction = GetGasFraction(name);
-                ChangeGas(name, amount * fraction);
-            }
-        }
-
         public List<Tile> FindExits()
         {
             List<Tile> exits = new List<Tile>();
@@ -180,189 +173,12 @@ namespace ProjectPorcupine.Rooms
             return neighboursRooms;
         }
 
-        // Changes gas by an amount in preasure(in atm) multiplyed by number of tiles, limited to a pressure
-        public void ChangeGas(string name, float amount, float pressureLimit)
-        {
-            ChangeGas(name, Mathf.Min(amount, (TileCount * pressureLimit) - GetGasAmount(name)));
-        }
-
-        // Changes gas by an amount in pressure(in atm) multiplyed by number of tiles
-        // Note: This description is somewhat misleading. Pressure is stored as the sum total pressure 
-        //       of every tile's pressure, so while it is technically accurate, it implies that
-        //       this method does the multiplication, when it is already stored that way
-        public void ChangeGas(string name, float amount)
-        {
-            if (IsOutsideRoom())
-            {
-                return;
-            }
-
-            if (atmosphericGasses.ContainsKey(name))
-            {
-                atmosphericGasses[name] += amount;
-                if (amount.IsZero())
-                {
-                    deltaGas[name] = "=";
-                }
-                else if (Mathf.Sign(amount) == 1)
-                {
-                    deltaGas[name] = "+";
-                }
-                else
-                {
-                    deltaGas[name] = "-";
-                }
-            }
-            else
-            {
-                atmosphericGasses[name] = amount;
-                deltaGas[name] = "=";
-            }
-
-            if (atmosphericGasses[name] < 0)
-            {
-                atmosphericGasses[name] = 0;
-            }
-        }
-
-        public void SetGas(string name, float amount)
-        {
-            if (IsOutsideRoom())
-            {
-                return;
-            }
-
-            atmosphericGasses[name] = amount;
-        }
-
-        public string ChangeInGas(string name)
-        {
-            if (deltaGas.ContainsKey(name))
-            {
-                return deltaGas[name];
-            }
-
-            return "=";
-        }
-
-        public void EqualiseGas(Room otherRoom, float leakFactor)
-        {
-            if (otherRoom == null)
-            {
-                return;
-            }
-
-            List<string> gasses = this.GetGasNames().ToList();
-            gasses = gasses.Union(otherRoom.GetGasNames().ToList()).ToList();
-            foreach (string gas in gasses)
-            {
-                float pressureDifference = this.GetGasPressure(gas) - otherRoom.GetGasPressure(gas);
-                this.ChangeGas(gas, (-1) * pressureDifference * leakFactor);
-                otherRoom.ChangeGas(gas, pressureDifference * leakFactor);
-            }
-        }
-
-        // Gets absolute gas amount in pressure(in atm) multiplied by number of tiles.
-        public float GetGasAmount(string name)
-        {
-            if (atmosphericGasses.ContainsKey(name))
-            {
-                return atmosphericGasses[name];
-            }
-
-            return 0;
-        }
-
-        // Gets gas amount in pressure(in atm).
-        public float GetGasPressure()
-        {
-            float pressure = 0;
-            foreach (float p in atmosphericGasses.Values)
-            {
-                pressure += p;
-            }
-
-            return pressure;
-        }
-
-        // Gets gas amount in pressure (in atm).
-        public float GetGasPressure(string name)
-        {
-            if (atmosphericGasses.ContainsKey(name))
-            {
-                return atmosphericGasses[name] / TileCount;
-            }
-
-            return 0;
-        }
-
-        public float GetGasFraction(string name)
-        {
-            if (atmosphericGasses.ContainsKey(name) == false)
-            {
-                return 0;
-            }
-
-            float totalGasses = GetTotalGas();
-            return totalGasses == 0 ? 0 : atmosphericGasses[name] / totalGasses;
-        }
-
-        public float GetTotalGasPressure()
-        {
-            float totalPressure = 0;
-
-            foreach (float pressure in atmosphericGasses.Values)
-            {
-                totalPressure += pressure / TileCount;
-            }
-
-            return totalPressure;
-        }
-
-        public float GetTotalGas()
-        {
-            float totalGas = 0;
-
-            foreach (string n in atmosphericGasses.Keys)
-            {
-                totalGas += atmosphericGasses[n];
-            }
-
-            return totalGas;
-        }
-
-        public void MoveGasTo(Room room, float amount, float pressureLimit)
-        {
-            MoveGasTo(room, Mathf.Min(amount, (room.TileCount * pressureLimit) - room.GetTotalGas()));
-        }
-
-        public void MoveGasTo(Room room, float amount)
-        {
-            List<string> names = new List<string>(atmosphericGasses.Keys);
-            foreach (string name in names)
-            {
-                MoveGasTo(room, name, amount * GetGasFraction(name));
-            }
-        }
-
-        public void MoveGasTo(Room room, string name, float amount)
-        {
-            float amountMoved = Mathf.Min(amount, GetGasAmount(name));
-            this.ChangeGas(name, -amountMoved);
-            room.ChangeGas(name, amountMoved);
-        }
-
-        public string[] GetGasNames()
-        {
-            return atmosphericGasses.Keys.ToArray();
-        }
-
         public JObject ToJson()
         {
             JObject roomGasses = new JObject();
-            foreach (string k in atmosphericGasses.Keys)
+            foreach (string k in Atmosphere.GetGasNames())
             {
-                roomGasses.Add(k, atmosphericGasses[k]);
+                roomGasses.Add(k, Atmosphere.GetGasAmount(k));
             }
 
             return roomGasses;
@@ -374,23 +190,7 @@ namespace ProjectPorcupine.Rooms
             {
                 string k = gas.Name;
                 float v = (float)gas.Value;
-                atmosphericGasses[k] = v;
-            }
-        }
-
-        public void SplitGas(Room other, int sizeOfOtherRoom)
-        {
-            foreach (string n in other.atmosphericGasses.Keys)
-            {
-                this.atmosphericGasses[n] = other.atmosphericGasses[n] * TileCount / sizeOfOtherRoom;
-            }
-        }
-
-        public void MoveGas(Room other)
-        {
-            foreach (string n in other.atmosphericGasses.Keys)
-            {
-                this.ChangeGas(n, other.atmosphericGasses[n]);
+                Atmosphere.SetGas(k, v);
             }
         }
 

@@ -185,7 +185,7 @@ namespace ProjectPorcupine.Rooms
                 {
                     foreach (Room r in roomsDone)
                     {
-                        t.Room.EqualiseGas(r, leakFactor);
+                        AtmosphereUtils.EqualizeRooms(t.Room, r, leakFactor);
                     }
 
                     roomsDone.Add(t.Room);
@@ -498,7 +498,7 @@ namespace ProjectPorcupine.Rooms
                     if (currentTile.Room != null && listOfOldRooms.Contains(currentTile.Room) == false)
                     {
                         listOfOldRooms.Add(currentTile.Room);
-                        newRoom.MoveGas(currentTile.Room);
+                        AtmosphereUtils.MovePercentageOfAtmosphere(currentTile.Room.Atmosphere, newRoom.Atmosphere, 1.0f);
                     }
 
                     newRoom.AssignTile(currentTile);
@@ -544,7 +544,9 @@ namespace ProjectPorcupine.Rooms
                 // so we can just copy the old gas ratios.
                 // 1 is subtracted from size of old room to account for tile being filled by furniture,
                 // this prevents gas from being lost
-                newRoom.SplitGas(oldRoom, sizeOfOldRoom - 1);
+                float ratio = oldRoom.IsOutsideRoom() ? 0.0f : (float)newRoom.TileCount / (sizeOfOldRoom - 1);
+                ////UnityDebugger.Debugger.Log("Splitting atmo between " + oldRoom.ID + " and " + newRoom.ID + ". " + newRoom.TileCount + " / " + (sizeOfOldRoom - 1) + " = " + ratio);
+                AtmosphereUtils.MovePercentageOfAtmosphere(oldRoom.Atmosphere, newRoom.Atmosphere, ratio);
             }
 
             // Tell the world that a new room has been formed.

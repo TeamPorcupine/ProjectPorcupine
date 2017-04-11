@@ -68,7 +68,7 @@ function IsEnterable_AirlockDoor( furniture )
         end
         -- Pressure locked but not controlled by an airlock we only open 
         if(furniture.Parameters["airlock_controlled"].ToBool() == false) then
-            if (ModUtils.Round(adjacentRooms[1].GetTotalGasPressure(),3) == ModUtils.Round(adjacentRooms[2].GetTotalGasPressure(),3)) then
+            if (ModUtils.Round(adjacentRooms[1].GetGasPressure(),3) == ModUtils.Round(adjacentRooms[2].GetGasPressure(),3)) then
                 furniture.Parameters["is_opening"].SetValue(1)
                 return ENTERABILITY_SOON
             else
@@ -89,11 +89,11 @@ function IsEnterable_AirlockDoor( furniture )
                     outsideRoom = adjacentRooms[1]
                 end
                 -- Pressure's different, pump to equalize
-                if(math.abs(ModUtils.Round(insideRoom.GetTotalGasPressure(),3) - ModUtils.Round(outsideRoom.GetTotalGasPressure(),3)) > tolerance) then
-                    if (insideRoom.GetTotalGasPressure() < outsideRoom.GetTotalGasPressure()) then
-                        insideRoom.RoomBehaviors["roombehavior_airlock"].CallEventAction("PumpIn",  outsideRoom.GetTotalGasPressure())
+                if(math.abs(ModUtils.Round(insideRoom.GetGasPressure(),3) - ModUtils.Round(outsideRoom.GetGasPressure(),3)) > tolerance) then
+                    if (insideRoom.GetGasPressure() < outsideRoom.GetGasPressure()) then
+                        insideRoom.RoomBehaviors["roombehavior_airlock"].CallEventAction("PumpIn",  outsideRoom.GetGasPressure())
                     else
-                        insideRoom.RoomBehaviors["roombehavior_airlock"].CallEventAction("PumpOut", outsideRoom.GetTotalGasPressure())
+                        insideRoom.RoomBehaviors["roombehavior_airlock"].CallEventAction("PumpOut", outsideRoom.GetGasPressure())
                     end
                     return ENTERABILITY_SOON
                 else
@@ -449,14 +449,14 @@ function OxygenCompressor_OnUpdate(furniture, deltaTime)
         -- Expel gas if available
         if (furniture.Parameters["gas_content"].ToFloat() > 0) then
             furniture.Parameters["gas_content"].ChangeFloatValue(-gasAmount)
-            room.ChangeGas("O2", gasAmount / room.TileCount)
+            room.Atmosphere.CreateGas("O2", gasAmount / room.TileCount, 0.0)
             furniture.UpdateOnChanged(furniture)
         end
     elseif (pressure > furniture.Parameters["take_threshold"].ToFloat()) then
         -- Suck in gas if not full
         if (furniture.Parameters["gas_content"].ToFloat() < furniture.Parameters["max_gas_content"].ToFloat()) then
             furniture.Parameters["gas_content"].ChangeFloatValue(gasAmount)
-            room.ChangeGas("O2", -gasAmount / room.TileCount)
+            room.Atmosphere.DestroyGas("O2", gasAmount / room.TileCount)
             furniture.UpdateOnChanged(furniture)
         end
     end
@@ -523,8 +523,8 @@ function AirPump_OnUpdate(furniture, deltaTime)
         local flow = furniture.Parameters["gas_throughput"].ToFloat() * deltaTime
         
         -- Only transfer gas if the pressures are within the defined bounds
-        if (sourceRoom.GetTotalGasPressure() > sourcePressureLimit and targetRoom.GetTotalGasPressure() < targetPressureLimit) then
-            sourceRoom.MoveGasTo(targetRoom, flow, targetPressureLimit)
+        if (sourceRoom.GetGasPressure() > sourcePressureLimit and targetRoom.GetGasPressure() < targetPressureLimit) then
+            sourceRoom.Atmosphere.MoveGasTo(targetRoom.Atmosphere, flow)
         end
     end
 end

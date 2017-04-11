@@ -479,15 +479,6 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         // Call LUA install scripts
         furnObj.EventActions.Trigger("OnInstall", furnObj);
 
-        // Update thermalDiffusivity using coefficient
-        float thermalDiffusivity = Temperature.defaultThermalDiffusivity;
-        if (furnObj.Parameters.ContainsKey("thermal_diffusivity"))
-        {
-            thermalDiffusivity = furnObj.Parameters["thermal_diffusivity"].ToFloat();
-        }
-
-        World.Current.temperature.SetThermalDiffusivity(tile.X, tile.Y, tile.Z, thermalDiffusivity);
-
         return furnObj;
     }
 
@@ -913,9 +904,6 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         // We call lua to decostruct
         EventActions.Trigger("OnUninstall", this);
 
-        // Update thermalDiffusifity to default value
-        World.Current.temperature.SetThermalDiffusivity(Tile.X, Tile.Y, Tile.Z, Temperature.defaultThermalDiffusivity);
-
         // Let our workspot tile know it is no longer reserved for us
         World.Current.UnreserveTileAsWorkSpot(this);
 
@@ -1017,9 +1005,6 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
 
         // We call lua to decostruct
         EventActions.Trigger("OnUninstall", this);
-
-        // Update thermalDiffusifity to default value
-        World.Current.temperature.SetThermalDiffusivity(Tile.X, Tile.Y, Tile.Z, Temperature.defaultThermalDiffusivity);
 
         // Let our workspot tile know it is no longer reserved for us
         World.Current.UnreserveTileAsWorkSpot(this);
