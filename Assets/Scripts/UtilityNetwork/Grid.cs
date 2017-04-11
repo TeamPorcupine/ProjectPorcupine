@@ -10,6 +10,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace ProjectPorcupine.PowerNetwork
 {
@@ -22,6 +23,7 @@ namespace ProjectPorcupine.PowerNetwork
             connections = new HashSet<IPluggable>();
             UtilityType = string.Empty;
             SubType = string.Empty;
+            Efficiency = 1f;
         }
 
         /// <summary>
@@ -47,6 +49,8 @@ namespace ProjectPorcupine.PowerNetwork
                 return connections.Count; 
             }
         }
+
+        public float Efficiency { get; private set; }
 
         public string UtilityType { get; private set; }
 
@@ -142,26 +146,85 @@ namespace ProjectPorcupine.PowerNetwork
             connections.Remove(connection);
         }
 
-        public void Tick()
+        public bool HasAnyProducer()
         {
-            float currentLevel = 0.0f;
             foreach (IPluggable connection in connections)
             {
                 if (connection.IsProducer)
                 {
-                    currentLevel += connection.OutputRate;
-                }
-
-                if (connection.IsConsumer)
-                {
-                    currentLevel -= connection.InputRate;
+                    return true;
                 }
             }
 
-            if (currentLevel.IsZero())
+            return false;
+        }
+
+        public void Tick()
+        {
+            float producers = 0f;
+            float producersVarying = 0f;
+            float producersStable = 0;
+            float consumersVarying = 0f;
+            float consumersStable = 0;
+            
+            foreach (IPluggable connection in connections)
+            {
+                if (connection.IsProducer && connection.AllRequirementsFulfilled)
+                {
+                    producersStable += connection.OutputRate;
+                }
+
+                if (connection.IsConsumer && connection.AllRequirementsFulfilled)
+                {
+                    if (connection.InputCanVary)
+                    {
+                        consumersVarying += connection.InputRate;
+                    }
+                    else
+                    {
+                        consumersStable += connection.InputRate;
+                    }
+                }
+            }
+            
+            float currentLevel = producersStable - consumersVarying - consumersStable;
+
+            if (producersStable > 0f && currentLevel.IsZero())
             {
                 IsOperating = true;
                 return;
+            }
+
+            // if there is power shortage, check if you can get power from 'on demand' producers
+            if (currentLevel < 0.0f)
+            {
+                float curLevelWithVaryingOutput = currentLevel;
+
+                // here check if we can plug in some varying output
+                // can't use connection.IsProducer as it's hooked on IsRunning already
+                foreach (IPluggable connection in connections)
+                {
+                    if (connection.OutputCanVary) 
+                    {
+                        connection.OutputIsNeeded = true;
+                    }
+                }
+            }
+            else
+            {
+                // there is more power than needed, check if you can shut down some 'on demand' producers
+                float curLevelWithVaryingOutput = currentLevel;
+                foreach (IPluggable connection in connections)
+                {
+                    if (connection.IsProducer && connection.OutputCanVary && connection.OutputIsNeeded && connection.AllRequirementsFulfilled)
+                    {
+                        curLevelWithVaryingOutput -= connection.OutputRate;
+                        if (curLevelWithVaryingOutput >= 0)
+                        {
+                            connection.OutputIsNeeded = false;
+                        }
+                    }
+                }
             }
 
             if (currentLevel > 0.0f)
@@ -169,11 +232,35 @@ namespace ProjectPorcupine.PowerNetwork
                 FillStorage(ref currentLevel);
             }
             else
-            {
+            {                
                 EmptyStorage(ref currentLevel);
             }
 
-            IsOperating = currentLevel >= 0.0f;
+            producers = producersStable + producersVarying;
+
+            Efficiency = 1f;
+
+            // calculate immediate efficiency
+            if (currentLevel < 0 && consumersVarying > 0)
+            {
+                float curLevelWithoutVary = currentLevel + consumersVarying;
+
+                // if there is enough power when discarting varying consumers, calculate efficiency for them 
+                if (curLevelWithoutVary > 0)
+                {
+                    float efficiency = curLevelWithoutVary / consumersVarying;
+
+                    Efficiency = Mathf.Clamp(efficiency, 0, 1f);
+                    currentLevel = 0f;
+                }
+                else
+                {
+                    Efficiency = 0f;
+                }
+            }
+            
+            // Efficiency == 1f condition prevents flickering of machines without varying input
+            IsOperating = currentLevel >= 0.0f && Efficiency == 1f;
         }
 
         /// <summary>

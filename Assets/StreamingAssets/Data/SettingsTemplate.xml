@@ -16,7 +16,6 @@
     <OptionHeading Name="localization">
       <Option Name="language" Key="general_localization_language" DefaultValue="en_US" ClassName="LocalizationComboBox" />
       <Option Name="auto_update_language" Key="general_localization_autoUpdate" DefaultValue="true" ClassName="GenericToggle" />
-      <Option Name="ui_scale" Key="ui_scale" DefaultValue="1" ClassName="UIScaleSlider" />
     </OptionHeading>
   </Category>
   <Category Name="sound">
@@ -72,6 +71,12 @@
       <Option Name="ui_skin" Key="video_general_uiSkin" DefaultValue="0" ClassName="UISkinComboBox" />
       <Option Name="quality" Key="video_general_quality" DefaultValue="2" ClassName="QualityComboBox" />
       <Option Name="vsync" Key="video_general_vsync" DefaultValue="0" ClassName="VSyncComboBox" />
+      <Option Name="ui_scale" Key="ui_scale" DefaultValue="1" ClassName="UIScaleSlider">
+        <Params>
+          <Param name="MinimumValue" value="0.5" />
+          <Param name="MaximumValue" value="2" />
+        </Params>
+      </Option>
     </OptionHeading>
     <OptionHeading Name="advanced">
       <Option Name="soft_particles" Key="video_advanced_particles" DefaultValue="true" ClassName="SoftParticlesToggle" />

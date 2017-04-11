@@ -33,6 +33,7 @@ namespace ProjectPorcupine.Buildable.Components
             ParamsDefinitions = other.ParamsDefinitions;
             Provides = other.Provides;
             Requires = other.Requires;
+            RunConditions = other.RunConditions;
             SubType = other.SubType;
 
             Reconnecting += OnReconnecting;
@@ -81,6 +82,10 @@ namespace ProjectPorcupine.Buildable.Components
         [XmlElement("Requires")]
         [JsonProperty("Requires")]
         public Info Requires { get; set; }
+
+        [XmlElement("RunConditions")]
+        [JsonProperty("RunConditions")]
+        public Conditions RunConditions { get; set; }
 
         [XmlIgnore]
         public float StoredAmount
@@ -155,10 +160,35 @@ namespace ProjectPorcupine.Buildable.Components
             get { return IsStorage ? Provides.Capacity : 0f; }
         }
 
+        public bool InputCanVary
+        {
+            get { return false; }
+        }
+
         public override bool RequiresSlowUpdate
         {
             get
             {
+                return true;
+            }
+        }
+
+        public bool OutputCanVary
+        {
+            get
+            {
+                // TODO: implement for fluids
+                return false;
+            }
+        }
+
+        public bool OutputIsNeeded { get; set; }
+       
+        public bool AllRequirementsFulfilled
+        {
+            get
+            {
+                // TODO: implement for fluids
                 return true;
             }
         }
@@ -182,9 +212,9 @@ namespace ProjectPorcupine.Buildable.Components
         public override void FixedFrequencyUpdate(float deltaTime)
         {
             bool areAllParamReqsFulfilled = true;
-            if (Requires != null)
+            if (RunConditions != null)
             {
-                areAllParamReqsFulfilled = AreParameterConditionsFulfilled(Requires.ParamConditions);
+                areAllParamReqsFulfilled = AreParameterConditionsFulfilled(RunConditions.ParamConditions);
             }
 
             if (IsStorage)
@@ -268,24 +298,7 @@ namespace ProjectPorcupine.Buildable.Components
             // TODO: Make this not a Universal Connection
             World.Current.FluidNetwork.PlugIn(this);
         }
-
-        [Serializable]
-        [JsonObject(MemberSerialization.OptOut)]
-        public class Info
-        {
-            [XmlAttribute("rate")]
-            public float Rate { get; set; }
-
-            [XmlAttribute("capacity")]
-            public float Capacity { get; set; }
-
-            [XmlAttribute("capacityThresholds")]
-            public int CapacityThresholds { get; set; }
-
-            [XmlElement("Param")]
-            public List<ParameterCondition> ParamConditions { get; set; }            
-        }
-
+        
         [Serializable]
         [JsonObject(MemberSerialization.OptOut)]
         public class FluidConnectionParameterDefinitions

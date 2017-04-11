@@ -34,15 +34,15 @@ namespace ProjectPorcupine.Buildable.Components
 
         [XmlElement("DefaultSpriteName")]
         [JsonProperty("DefaultSpriteName")]
-        public SpriteNameInfo DefaultSpriteName { get; set; }
+        public SourceDataInfo DefaultSpriteName { get; set; }
 
         [XmlElement("SpriteName")]
         [JsonProperty("SpriteName")]
-        public SpriteNameInfo SpriteName { get; set; }
+        public SourceDataInfo SpriteName { get; set; }
 
         [XmlElement("OverlaySpriteName")]
         [JsonProperty("OverlaySpriteName")]
-        public SpriteNameInfo OverlaySpriteName { get; set; }
+        public SourceDataInfo OverlaySpriteName { get; set; }
 
         [XmlElement("UseAnimation")]
         [JsonProperty("UseAnimation")]
@@ -82,9 +82,9 @@ namespace ProjectPorcupine.Buildable.Components
                             ParentFurniture.Animation.SetFrameIndex(frmIdx);
                         }
                     }
-                    else if (anim.Requires.ParamConditions != null)
+                    else if (anim.RunConditions.ParamConditions != null)
                     {
-                        if (AreParameterConditionsFulfilled(anim.Requires.ParamConditions))
+                        if (AreParameterConditionsFulfilled(anim.RunConditions.ParamConditions))
                         {
                             ChangeAnimation(anim.Name);
                             break;
@@ -97,7 +97,7 @@ namespace ProjectPorcupine.Buildable.Components
         public override void InitializePrototype(Furniture protoFurniture)
         {
             // default sprite (used for showing sprite in menu)
-            protoFurniture.DefaultSpriteName = RetrieveSpriteNameFor(DefaultSpriteName, protoFurniture);
+            protoFurniture.DefaultSpriteName = RetrieveStringFor(DefaultSpriteName, protoFurniture);
         }
 
         protected override void Initialize()
@@ -115,33 +115,10 @@ namespace ProjectPorcupine.Buildable.Components
         private void FurnitureChanged(Furniture obj)
         {
             // regular sprite
-            ParentFurniture.SpriteName = RetrieveSpriteNameFor(SpriteName, ParentFurniture);
+            ParentFurniture.SpriteName = RetrieveStringFor(SpriteName, ParentFurniture);
 
             // overlay sprite, if any
-            ParentFurniture.OverlaySpriteName = RetrieveSpriteNameFor(OverlaySpriteName, ParentFurniture);
-        }
-
-        private string RetrieveSpriteNameFor(SpriteNameInfo spriteNameInfo, Furniture furniture)
-        {
-            string useSpriteName = null;
-            if (spriteNameInfo != null)
-            {
-                if (!string.IsNullOrEmpty(spriteNameInfo.UseName))
-                {
-                    useSpriteName = spriteNameInfo.UseName;
-                }
-                else if (!string.IsNullOrEmpty(spriteNameInfo.FromFunction))
-                {
-                    DynValue ret = FunctionsManager.Furniture.Call(spriteNameInfo.FromFunction, furniture);
-                    useSpriteName = ret.String;
-                }
-                else if (!string.IsNullOrEmpty(spriteNameInfo.FromParameter))
-                {
-                    useSpriteName = furniture.Parameters[spriteNameInfo.FromParameter].ToString();
-                }                
-            }
-
-            return useSpriteName;
+            ParentFurniture.OverlaySpriteName = RetrieveStringFor(OverlaySpriteName, ParentFurniture);
         }
 
         private void ChangeAnimation(string newAnimation)
@@ -159,20 +136,6 @@ namespace ProjectPorcupine.Buildable.Components
             {
                 ChangeAnimation(DefaultAnimationName);
             }
-        }       
-
-        [Serializable]
-        [JsonObject(MemberSerialization.OptOut)]
-        public class SpriteNameInfo
-        {
-            [XmlAttribute("useName")]
-            public string UseName { get; set; }
-
-            [XmlAttribute("fromParameter")]
-            public string FromParameter { get; set; }
-
-            [XmlAttribute("fromFunction")]
-            public string FromFunction { get; set; }
-        }
+        }   
     }
 }

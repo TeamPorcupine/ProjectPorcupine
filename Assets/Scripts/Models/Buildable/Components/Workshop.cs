@@ -30,6 +30,9 @@ namespace ProjectPorcupine.Buildable.Components
         {
             ParamsDefinitions = other.ParamsDefinitions;
             PossibleProductions = other.PossibleProductions;
+            RunConditions = other.RunConditions;
+            HaulConditions = other.HaulConditions;
+            Efficiency = other.Efficiency;
         }
 
         [XmlElement("ParameterDefinitions")]
@@ -52,14 +55,31 @@ namespace ProjectPorcupine.Buildable.Components
             }
         }
         
-        public Parameter IsProcessing
+        /// <summary>
+        /// Means that there is input being processed (input was consumed and is inside machine).
+        /// </summary>
+        public Parameter InputProcessed
         {
             get
             {
-                return FurnitureParams[ParamsDefinitions.IsProcessing.ParameterName];
+                return FurnitureParams[ParamsDefinitions.InputProcessed.ParameterName];
             }
         }
         
+        [XmlIgnore]
+        public Parameter IsRunning
+        {
+            get
+            {
+                return FurnitureParams[ParamsDefinitions.IsRunning.ParameterName];
+            }
+
+            set 
+            {
+                FurnitureParams[ParamsDefinitions.IsRunning.ParameterName] = value;
+            }
+        }
+
         public Parameter CurrentProductionChainName
         { 
             get
@@ -68,9 +88,37 @@ namespace ProjectPorcupine.Buildable.Components
             }
         }
 
+        public Parameter InputHaulingJobsCount
+        {
+            get
+            {
+                return FurnitureParams[ParamsDefinitions.InputHaulingJobsCount.ParameterName];
+            }
+        }
+
+        public Parameter HasAllNeededInputInventory
+        {
+            get
+            {
+                return FurnitureParams[ParamsDefinitions.HasAllNeededInputInventory.ParameterName];
+            }
+        }
+
         [XmlElement("ProductionChain")]
         [JsonProperty("ProductionChain")]
         public List<ProductionChain> PossibleProductions { get; set; }
+
+        [XmlElement("RunConditions")]
+        [JsonProperty("RunConditions")]
+        public Conditions RunConditions { get; set; }
+
+        [XmlElement("HaulConditions")]
+        [JsonProperty("HaulConditions")]
+        public Conditions HaulConditions { get; set; }
+
+        [XmlElement("Efficiency")]
+        [JsonProperty("Efficiency")]
+        public SourceDataInfo Efficiency { get; set; }
 
         public override bool RequiresSlowUpdate
         {
@@ -95,6 +143,29 @@ namespace ProjectPorcupine.Buildable.Components
                 StringBuilder sb = new StringBuilder();
                 string prodChain = CurrentProductionChainName.ToString();
                 sb.AppendLine(!string.IsNullOrEmpty(prodChain) ? string.Format("Production: {0}", prodChain) : "No selected production");
+                float curProcessingTime = CurrentProcessingTime.ToFloat();
+                if (!ParentFurniture.HasCustomProgressReport && curProcessingTime > 0f)
+                {
+                    float perc = 0f;
+                    float maxProcessingTime = MaxProcessingTime.ToFloat();
+                    if (maxProcessingTime != 0f)
+                    {
+                        perc = curProcessingTime * 100f / maxProcessingTime;
+                        if (perc > 100f)
+                        {
+                            perc = 100f;
+                        }
+                    }
+
+                    sb.AppendLine(string.Format("Progress: {0:0}%", perc));
+                }
+
+                int numHaulingJobs = InputHaulingJobsCount.ToInt();
+                if (numHaulingJobs > 0)
+                {
+                    sb.AppendLine(string.Format("Hauling jobs: {0}", numHaulingJobs));
+                }
+
                 yield return sb.ToString();
             }
             else
@@ -107,13 +178,25 @@ namespace ProjectPorcupine.Buildable.Components
         {
             bool canWork = false;
             string curSetupChainName = CurrentProductionChainName.ToString();
-
+            
             if (!string.IsNullOrEmpty(curSetupChainName))
             {
+                canWork = true;
                 ProductionChain prodChain = GetProductionChainByName(curSetupChainName);
                 //// create possible jobs for factory(hauling input)
-                HaulingJobForInputs(prodChain);
-                canWork = true;
+                bool areAllHaulParamReqsFulfilled = true;
+                if (HaulConditions != null)
+                {
+                    areAllHaulParamReqsFulfilled = AreParameterConditionsFulfilled(RunConditions.ParamConditions);
+                }
+
+                if (areAllHaulParamReqsFulfilled)
+                {
+                    HaulingJobForInputs(prodChain);
+                    canWork = true;
+                }
+                
+                componentRequirements = Requirements.None;
             }
             else
             {
@@ -136,6 +219,18 @@ namespace ProjectPorcupine.Buildable.Components
                 return;
             }
 
+            if (RunConditions != null && AreParameterConditionsFulfilled(RunConditions.ParamConditions) == false)
+            {
+                IsRunning.SetValue(false);
+                return;
+            }
+
+            float efficiency = 1f;
+            if (Efficiency != null)
+            {
+                efficiency = RetrieveFloatFor(Efficiency, ParentFurniture);
+            }
+            
             string curSetupChainName = CurrentProductionChainName.ToString();
 
             if (!string.IsNullOrEmpty(curSetupChainName))
@@ -143,7 +238,7 @@ namespace ProjectPorcupine.Buildable.Components
                 ProductionChain prodChain = GetProductionChainByName(curSetupChainName);
 
                 // if there is no processing in progress
-                if (IsProcessing.ToInt() == 0)
+                if (InputProcessed.ToInt() == 0)
                 {
                     // check input slots for input inventory               
                     List<KeyValuePair<Tile, int>> flaggedForTaking = CheckForInventoryAtInput(prodChain);
@@ -154,17 +249,24 @@ namespace ProjectPorcupine.Buildable.Components
                         // consume input inventory
                         ConsumeInventories(flaggedForTaking);
 
-                        IsProcessing.SetValue(1); // check if it can be bool
+                        InputProcessed.SetValue(1); // check if it can be bool
+                        IsRunning.SetValue(true);
 
                         // reset processing timer and set max time for processing for this prod. chain
                         CurrentProcessingTime.SetValue(0f);
                         MaxProcessingTime.SetValue(prodChain.ProcessingTime);
-                    }                  
+                        HasAllNeededInputInventory.SetValue(true);
+                    }
+                    else
+                    {
+                        HasAllNeededInputInventory.SetValue(false);
+                    } 
                 }
                 else
                 {
                     // processing is in progress
-                    CurrentProcessingTime.ChangeFloatValue(deltaTime);
+                    CurrentProcessingTime.ChangeFloatValue(deltaTime * efficiency);
+                    IsRunning.SetValue(true);
 
                     if (CurrentProcessingTime.ToFloat() >=
                         MaxProcessingTime.ToFloat())
@@ -176,7 +278,9 @@ namespace ProjectPorcupine.Buildable.Components
                         {
                             PlaceInventories(outPlacement);
                             //// processing done, can fetch input for another processing
-                            IsProcessing.SetValue(0);
+                            InputProcessed.SetValue(0);
+                            IsRunning.SetValue(false);
+                            CurrentProcessingTime.SetValue(0f);
                         }
                     }                    
                 }
@@ -236,7 +340,7 @@ namespace ProjectPorcupine.Buildable.Components
             // add dynamic params here
             CurrentProcessingTime.SetValue(0);
             MaxProcessingTime.SetValue(0);
-            IsProcessing.SetValue(0);
+            InputProcessed.SetValue(0);
             
             ParentFurniture.Removed += WorkshopRemoved;
         }
@@ -308,7 +412,7 @@ namespace ProjectPorcupine.Buildable.Components
         private void ChangeCurrentProductionChain(Furniture furniture, string newProductionChainName)
         {
             string oldProductionChainName = furniture.Parameters[ParamsDefinitions.CurrentProductionChainName.ParameterName].Value;
-            bool isProcessing = furniture.Parameters[ParamsDefinitions.IsProcessing.ParameterName].ToInt() > 0;
+            bool isProcessing = furniture.Parameters[ParamsDefinitions.InputProcessed.ParameterName].ToInt() > 0;
 
             // if selected production really changes and nothing is being processed now
             if (isProcessing || newProductionChainName.Equals(oldProductionChainName))
@@ -325,19 +429,26 @@ namespace ProjectPorcupine.Buildable.Components
 
         private void HaulingJobForInputs(ProductionChain prodChain)
         {
-            bool isProcessing = IsProcessing.ToInt() > 0;
+            int numHaulingJobs = 0;
+            bool isProcessing = InputProcessed.ToInt() > 0;
             //// for all inputs in production chain
             foreach (Item reqInputItem in prodChain.Input)
-            {
+            {                
                 if (isProcessing && !reqInputItem.HasHopper)
                 {
                     continue;
                 }
-                //// if there is no hauling job for input object type, create one
+
+                //// if there is no hauling job for input object type, create one                
                 Job furnJob;
                 string requiredType = reqInputItem.ObjectType;
                 bool existingHaulingJob = ParentFurniture.Jobs.HasJobWithPredicate(x => x.RequestedItems.ContainsKey(requiredType), out furnJob);
-                if (!existingHaulingJob)
+
+                if (existingHaulingJob)
+                {
+                    numHaulingJobs++;
+                }
+                else
                 {
                     Tile inTile = World.Current.GetTileAt(
                                       ParentFurniture.Tile.X + reqInputItem.SlotPosX,
@@ -375,9 +486,12 @@ namespace ProjectPorcupine.Buildable.Components
                         job.Description = string.Format("Hauling '{0}' to '{1}'", desiredInv, ParentFurniture.GetName());
                         job.OnJobWorked += PlaceInventoryToWorkshopInput;
                         ParentFurniture.Jobs.Add(job);
+                        numHaulingJobs++;
                     }
                 }
             }
+
+            InputHaulingJobsCount.SetValue(numHaulingJobs);
         }
 
         private List<TileObjectTypeAmount> CheckForInventoryAtOutput(ProductionChain prodChain)
@@ -480,24 +594,36 @@ namespace ProjectPorcupine.Buildable.Components
             public const string CurProcessingTimeParamName = "cur_processing_time";
             public const string MaxProcessingTimeParamName = "max_processing_time";
             public const string CurProcessedInvParamName = "cur_processed_inv";
+            public const string CurIsRunningParamName = "workshop_is_running";
             public const string CurProductionChainParamName = "cur_production_chain";
+            public const string InputHaulingJobsCountParamName = "input_hauling_job_count";
+            public const string HasAllNeededInputInventoryParamName = "has_all_needed_input_inv";
             
             public WorkShopParameterDefinitions()
             {
                 // default values if not defined from outside
                 CurrentProcessingTime = new ParameterDefinition(CurProcessingTimeParamName);
                 MaxProcessingTime = new ParameterDefinition(MaxProcessingTimeParamName);
-                IsProcessing = new ParameterDefinition(CurProcessedInvParamName);
+                InputProcessed = new ParameterDefinition(CurProcessedInvParamName);
+                IsRunning = new ParameterDefinition(CurIsRunningParamName);
                 CurrentProductionChainName = new ParameterDefinition(CurProductionChainParamName);
+                InputHaulingJobsCount = new ParameterDefinition(InputHaulingJobsCountParamName);
+                HasAllNeededInputInventory = new ParameterDefinition(HasAllNeededInputInventoryParamName);
             }
 
             public ParameterDefinition CurrentProcessingTime { get; set; }
 
             public ParameterDefinition MaxProcessingTime { get; set; }
 
-            public ParameterDefinition IsProcessing { get; set; }
+            public ParameterDefinition InputProcessed { get; set; }
+
+            public ParameterDefinition IsRunning { get; set; }
 
             public ParameterDefinition CurrentProductionChainName { get; set; }
+
+            public ParameterDefinition InputHaulingJobsCount { get; set; }
+
+            public ParameterDefinition HasAllNeededInputInventory { get; set; }
         }
         
         private class TileObjectTypeAmount

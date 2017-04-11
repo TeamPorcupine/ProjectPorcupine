@@ -966,41 +966,15 @@ public class DeveloperConsoleSlider : GenericSlider
 
 public class UIScaleSlider : GenericSlider
 {
-    public override GameObject InitializeElement()
-    {
-        GameObject go = base.InitializeElement();
-
-        // Set it from 0 - 100 (still reflective of 0-1, but shows from 0 - 100)
-        format = "({0:0.#}) ";
-
-        sliderElement.wholeNumbers = true;
-        sliderElement.minValue = 5;
-        sliderElement.maxValue = 20;
-        sliderElement.value = getValue() * 10;
-        // We want to apply our own listener
-        sliderElement.onValueChanged.RemoveAllListeners();
-        sliderElement.onValueChanged.AddListener(
-            (float v) =>
-            {
-                if (v != value)
-                {
-                    valueChanged = true;
-                    value = v;
-                    textElement.text = string.Format(format, value / 10) + LocalizationTable.GetLocalization(option.name);
-                }
-            });
-
-        sliderElement.onValueChanged.Invoke(sliderElement.value);
-        textElement.text = string.Format(format, value / 10) + LocalizationTable.GetLocalization(option.name);
-
-        return go;
-    }
-
     public override void ApplySetting()
     {
         base.ApplySetting();
+        sliderElement.GetComponentInParent<UIRescaler>().AdjustScale();
+    }
 
-        Settings.SetSetting(option.key, value / 10);
+    public override void CancelSetting()
+    {
+        base.CancelSetting();
         sliderElement.GetComponentInParent<UIRescaler>().AdjustScale();
     }
 }

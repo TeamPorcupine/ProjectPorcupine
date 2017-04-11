@@ -3,7 +3,7 @@
 [Unity Version](#unity-version)  
 [General resources](#general-resources)  
 [Style Guidelines](#style-guidelines)  
-[Adding Furniture and Inventory](#adding-furniture-and-inventory)  
+[Adding Furniture and Inventory](#adding-new-types-of-furniture-inventory-commands)  
 [Best Practices for Contributing](#best-practices-for-contributing)  
 [Image & Sound File Formats](#file-formats)  
 
@@ -73,8 +73,8 @@ git push origin my-feature-branch-name
 The pull request should automatically update to reflect your changes.
 
 # Unity Version
-We are using Unity version 5.4.
-All pull requests must build in 5.4 to be a valid patch.
+We are using Unity version 5.4.2.
+All pull requests must build in 5.4.2 to be a valid patch.  Though you can use `#IF UNITY_X_Y_Z` with x, y, z referring to the version details such as 5.4.2 or 5.6.1, More details [here](https://docs.unity3d.com/Manual/PlatformDependentCompilation.html)
 
 # General resources
 * [Github Tutorial by Quill18](https://www.youtube.com/watch?v=R2fl17eEpwI)
@@ -156,8 +156,10 @@ Additionally, for the sake of simplicity, we are standardizing on what should be
 
 It is also highly recommended that you install [StyleCop](https://github.com/TeamPorcupine/ProjectPorcupine/wiki/StyleCop), which will automatically point out any deviations from the project's style guidelines. Any deviations in your code which can be tracked by StyleCop will result in the rejection of your Pull Request.
 
-## Adding Furniture and Inventory
+## Adding New Types of Furniture, Inventory, Commands...
+There are multiple examples and it should be reasonably easy to add new types, when building a PR of just these you don't need to open an issue though it is encouraged for balancing purposes.  Any new types should be fully implemented in PR and shouldn't just be placeholders.
 
+### Furniture/Inventory
 We have standardized the Types of Furniture and Inventory to match `type_material`, such as `wall_steel` and `generator_oxygen` or `generator_power`, for localization a matching prefix is added automatically to Type such as `inv` and `furn`. This means a few things:
 
 * When adding a new Furniture or inventory the files should have the Type "type_material", you could give it the more english sounding name, as of now name is not used for anything.
@@ -185,6 +187,14 @@ We have standardized the Types of Furniture and Inventory to match `type_materia
    If your code is untested, log heavy, or incomplete, prefix your PR with "[WIP]", so others know it is still being tested and shouldn't be considered for merging yet.
 
 * Small changes are preferable over large ones. The larger a change is the more likely it is to conflict with the project and thus be denied. If your addition is large, be sure to extensively discuss it in an "issue" before you submit a PR, or even start coding.
+
+* Changes to code that your PR isn't specifically fixing, try to keep your PR focused cause people may have problems with a small section of your PR but the rest is ready to be merged which complicates the merging procedure.
+
+* Limit any change to code definitions (variables, functions, properties, and classes/structs/interfaces)
+    * A restructure/overhaul is defined as the focus being on the entire system rather than a small module so almost every one of these 'cautions' are void in that case.
+    * Any changes to functions should be limited, you should try to work 'within' the current project.  Any system 'restructures' or overhauls are obviously a different matter.  This is because if you have to manipulate and twist functions to achieve certain functionality you are most likely applying a hack, or the system is very limited in scope and in that case it is most likely a restructure or overhaul that you are doing.  
+    * Adding new public variables should always be a cautionary procedure, so unless you are specifically exposing private variables for modding purposes or removing public variables since they aren't needed, you should take care with adding a bunch of public variables.  Exceptions being new systems entirely or system restructures.
+    * Shouldn't remove any classes/interfaces/structs unless your PR is a restructure/overhaul.  
 
 * Document your changes in your PR. If you add a feature that you expect others to use, explain exactly how future code should interact with your additions.
 
