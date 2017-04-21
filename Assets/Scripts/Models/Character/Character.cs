@@ -81,7 +81,7 @@ public class Character : ISelectable, IContextActionProvider, IUpdatable
     private State state;
 
     // List of global states that always run
-    private List<State> globalStates;
+    private HashSet<State> globalStates;
 
     // Queue of states that aren't important enough to interrupt, but should run soon
     private Queue<State> stateQueue;
@@ -101,7 +101,7 @@ public class Character : ISelectable, IContextActionProvider, IUpdatable
         characterSkinColor = skinColor;
         InitializeCharacterValues();
         stateQueue = new Queue<State>();
-        globalStates = new List<State>
+        globalStates = new HashSet<State>
         {
             new NeedState(this)
         };
