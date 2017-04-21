@@ -22,8 +22,9 @@ namespace Scheduler
     public class Scheduler
     {
         private static Scheduler instance;
-        private List<ScheduledEvent> events;
-        private List<ScheduledEvent> eventsToAddNextTick;
+        private HashSet<ScheduledEvent> events;
+        private HashSet<ScheduledEvent> eventsToAddNextTick;
+        private float purgeTime = 3f;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Scheduler.Scheduler"/> class.
@@ -31,8 +32,8 @@ namespace Scheduler
         /// </summary>
         public Scheduler()
         {
-            this.events = new List<ScheduledEvent>();
-            this.eventsToAddNextTick = new List<ScheduledEvent>();
+            this.events = new HashSet<ScheduledEvent>();
+            this.eventsToAddNextTick = new HashSet<ScheduledEvent>();
 
             TimeManager.Instance.EveryFrameUnpaused += Update;
         }
@@ -60,10 +61,9 @@ namespace Scheduler
         /// <value>The events.</value>
         public ReadOnlyCollection<ScheduledEvent> Events
         {
-            // FIXME: Currently does not include eventsToAddNextTick!
             get
             {
-                return new ReadOnlyCollection<ScheduledEvent>(events);
+                return new ReadOnlyCollection<ScheduledEvent>(events.Concat(eventsToAddNextTick).ToList());
             }
         }
 
@@ -151,7 +151,7 @@ namespace Scheduler
             }
 
             // additions to the event list which were queued up last tick
-            events.AddRange(eventsToAddNextTick);
+            events.UnionWith(eventsToAddNextTick);
             eventsToAddNextTick.Clear();
 
             return events.Min((e) => e.TimeToWait);
@@ -170,17 +170,34 @@ namespace Scheduler
             }
 
             // additions to the event list which were queued up last tick
-            events.AddRange(eventsToAddNextTick);
+            events.UnionWith(eventsToAddNextTick);
             eventsToAddNextTick.Clear();
 
             foreach (ScheduledEvent evt in events)
             {
-                evt.Update(deltaTime);
+                if (evt.Finished)
+                {
+                    events.Remove(evt);
+                }
+                else
+                {
+                    evt.Update(deltaTime);
+                }
             }
 
-            // TODO: this is an O(n) operation every tick.
-            // Potentially this could be optimized by delaying purging!
-            ClearFinishedEvents();
+            // This way the O(n) is only run every so often.  
+            // Events won't update if they are finished, 
+            // and will remove themselves if they are finished.  
+            // This is just more cleanup basically
+            if (purgeTime <= 0)
+            {
+                purgeTime = 3f;
+                ClearFinishedEvents();
+            }
+            else
+            {
+                purgeTime -= deltaTime;
+            }
         }
 
         /// <summary>
@@ -244,12 +261,12 @@ namespace Scheduler
         {
             if (events != null)
             {
-                events.RemoveAll((evt) => evt.Finished);
+                events.RemoveWhere((evt) => evt.Finished);
             }
 
             if (eventsToAddNextTick != null)
             {
-                eventsToAddNextTick.RemoveAll((evt) => evt.Finished);
+                eventsToAddNextTick.RemoveWhere((evt) => evt.Finished);
             }
         }
 
@@ -258,6 +275,7 @@ namespace Scheduler
         /// </summary>
         private void CleanUp()
         {
+            // Can be a little slower, cause this is just a cleanup function.
             if (events != null)
             {
                 foreach (ScheduledEvent evt in events)
@@ -274,8 +292,8 @@ namespace Scheduler
                 }
             }
 
-            events = new List<ScheduledEvent>();
-            eventsToAddNextTick = new List<ScheduledEvent>();
+            events = new HashSet<ScheduledEvent>();
+            eventsToAddNextTick = new HashSet<ScheduledEvent>();
         }
     }
 }
