@@ -72,7 +72,7 @@ Make sure that you are using Unity 5.4.2 [Windows](https://unity3d.com/get-unity
 
 ## Community
 
-* [Unoffical Discord Channel ](https://discord.gg/68hkpSA)<discord.projectporcupine.com>
+* [Unoffical Discord Channel ](https://discord.gg/68hkpSA)
 * [Unoffical Subreddit](https://reddit.com/r/ProjectPorcupine)
 
 ## Contact
